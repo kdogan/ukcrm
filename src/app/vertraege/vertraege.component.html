@@ -1,0 +1,9 @@
+<div class="vertraege-liste">
+    <ul>
+      <li *ngFor="let vertrag of vertraege">
+        {{ vertrag.name }}
+      </li>
+    </ul>
+  
+    <button class="btn btn-primary" (click)="addVertrag()">Neuer Vertrag</button>
+  </div>
