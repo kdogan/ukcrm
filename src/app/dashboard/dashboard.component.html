@@ -1,0 +1,32 @@
+<div class="container-fluid">
+
+    <div class="row card-container p-3">
+        <div class="col-sm-4">
+            <div class="card text-center dash-card">
+                <div class="card-body" routerLink="/vertraege">
+                    <h5 class="card-title">Verträge</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card text-center dash-card">
+                <div class="card-body" routerLink="/kunden">
+                    <h5 class="card-title">Kunden</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card text-center dash-card">
+                <div class="card-body" routerLink="/aufgaben">
+                    <h5 class="card-title">Aufgaben</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row py-3">
+        <app-tasks-list [tasks]="tasks"></app-tasks-list>
+        <div class="show-more" routerLink="/aufgaben">mehr anzeigen...</div>
+    </div>
+
+</div>

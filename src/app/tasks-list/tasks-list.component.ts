@@ -9,4 +9,6 @@ import { Task } from '../tasks/tasks.component';
 export class TasksListComponent {
 
   @Input() tasks!:Task[];
+  selectedTask: Task | null = null;
+  showModal: boolean = false;
 }

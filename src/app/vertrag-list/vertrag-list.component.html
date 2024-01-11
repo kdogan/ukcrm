@@ -1,18 +1,26 @@
 <div class="task-list">
     <div class="task-header">
-        <span>Titel</span>
+        <span>VertragNr.</span>
+        <span>Kunde</span>
+        <span>Firma</span>
+        <span>Begin</span>
+        <span>Ende</span>
         <span>Status</span>
-        <span>Aktionen</span>
+        <span>Actionen</span>
     </div>
     <div class="task-items">
-        <div class="task-item" *ngFor="let task of tasks">
-            <span>{{ task.title }}</span>
-                <div class="status-indicator-container">
-                    <span class="status-indicator"
-                        [ngClass]="{'active': task.status === 'active', 'completed': task.status === 'completed'}"></span>
-                </div>
+        <div class="task-item" *ngFor="let contract of vertraege">
+            <span>{{ contract.vertragnummer }}</span>
+            <span>{{ contract.kundennummer }}</span>
+            <span>{{ contract.firma }}</span>
+            <span>{{ contract.vertragstart }}</span>
+            <span>{{ contract.vertragsende }}</span>
+            <div class="status-indicator-container">
+                <span class="status-indicator"
+                    [ngClass]="{'active': contract.status, 'completed': !contract.status}"></span>
+            </div>
             <div class="task-actions">
-                <button class="btn btn-primary btn-sm" (click)="selectedTask = task; showModal = true">
+                <button class="btn btn-primary btn-sm" (click)="selectedTask = contract; showModal = true">
                     <i class="fa fa-eye"></i>
                     <span>Ansehen</span>
                 </button>
@@ -31,13 +39,13 @@
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">{{ selectedTask?.title }}</h5>
+                  <h5 class="modal-title">{{ selectedTask?.kundennummer }}</h5>
                   <button class="btn btn-danger btn-sm" (click)="showModal = false">
                     <i class="fa fa-times"></i>
                   </button>
                 </div>
                 <div class="modal-body" style="min-height: 300px;">
-                  <p>{{ selectedTask?.description }}</p>
+                  <p>{{ selectedTask?.kundennummer }}</p>
                 </div>
               </div>
             </div>

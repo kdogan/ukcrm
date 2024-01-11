@@ -9,17 +9,12 @@
         font-weight: bold;
 
         span {
-            &:first-child {
-                flex-grow: 2;
-            }
-
-            &:nth-child(2) {
-                flex-basis: 15%;
-            }
-
-            &:last-child {
-                flex-basis: 15%;
-            }
+            &:first-child {flex-basis: 15%;}
+            &:nth-child(2) {flex-basis: 15%;}
+            &:nth-child(3) {flex-basis: 15%;}
+            &:nth-child(4) {flex-basis: 15%;}
+            &:nth-child(5) {flex-basis: 15%;}
+            &:last-child {flex-basis: 15%;}
 
             @media (max-width: 576px) {
                 &:first-child {
@@ -53,14 +48,38 @@
             }
 
             >span:first-child {
-                flex-grow: 2;
+                flex-basis: 15%;
 
                 @media (max-width: 576px) {
                     flex-basis: 100%;
                     order: 1;
                 }
             }
+            >span:nth-child(2) {
+                flex-basis: 15%;
 
+                @media (max-width: 576px) {
+                    flex-basis: 100%;
+                    order: 1;
+                }
+            }
+            >span:nth-child(3) {
+                flex-basis: 15%;
+
+                @media (max-width: 576px) {
+                    flex-basis: 100%;
+                    order: 1;
+                }
+            }
+            >span:nth-child(4) {
+                flex-basis: 15%;
+
+                @media (max-width: 576px) {
+                    flex-basis: 100%;
+                    order: 1;
+                }
+            }
+            
             .task-actions {
                 display: flex;
                 gap: 10px;
@@ -71,9 +90,7 @@
                     order: 3;
 
                     button {
-                        span {
-                            display: none;
-                        }
+                        span {display: none;}
                     }
                 }
             }
@@ -95,14 +112,8 @@
                     height: 15px;
                     width: 15px;
                     border-radius: 50%;
-
-                    &.active {
-                        background-color: red;
-                    }
-
-                    &.completed {
-                        background-color: green;
-                    }
+                    &.active {background-color: red;}
+                    &.completed {background-color: green;}
                 }
             }
         }
