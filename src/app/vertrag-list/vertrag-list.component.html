@@ -20,7 +20,7 @@
                     [ngClass]="{'active': contract.status, 'completed': !contract.status}"></span>
             </div>
             <div class="task-actions">
-                <button class="btn btn-primary btn-sm" (click)="selectedTask = contract; showModal = true">
+                <button class="btn btn-primary btn-sm" (click)="showVertrag(contract)">
                     <i class="fa fa-eye"></i>
                     <span>Ansehen</span>
                 </button>

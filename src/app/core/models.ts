@@ -13,3 +13,8 @@ export interface Contract {
     status:boolean;
     kundennummer:string
 }
+
+export interface Breadcrumb {
+    label: string;
+    url: string;
+  }
