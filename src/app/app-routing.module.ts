@@ -4,8 +4,8 @@ import { VertraegeComponent } from './vertraege/vertraege.component';
 import { KundenComponent } from './kunden/kunden.component';
 import { TasksComponent } from './tasks/tasks.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { VertragComponent } from './vertrag/vertrag.component';
-import { AllVertraegeComponent } from './all-vertraege/all-vertraege.component';
+import { VertragComponent } from './vertraege/vertrag/vertrag.component';
+import { AllVertraegeComponent } from './vertraege/all-vertraege/all-vertraege.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, 
@@ -21,11 +21,13 @@ const routes: Routes = [
               },
               {
                 path: 'all',
-                component: AllVertraegeComponent
+                component: AllVertraegeComponent,
+                data: { breadcrumb: 'Alle Verträge' }
               },
               {
                 path: 'view/:vertragnummer',
-                component: VertragComponent
+                component: VertragComponent,
+                data: { breadcrumb: 'Vertrag' }
               }
             ]},
   { path: 'kunden', component: KundenComponent, data: { breadcrumb: 'Kunden' }  },

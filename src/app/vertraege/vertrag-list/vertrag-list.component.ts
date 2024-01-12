@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Contract } from '../core/models';
+import { Contract } from '../../core/models';
 import { Router } from '@angular/router';
 
 @Component({

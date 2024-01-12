@@ -3,10 +3,6 @@ import { Contract } from '../core/models';
 
 @Component({
   selector: 'app-vertraege',
-  templateUrl: './vertraege.component.html',
-  styleUrl: './vertraege.component.scss'
+  template: `<router-outlet></router-outlet>`
 })
-export class VertraegeComponent {
-
-
-}
+export class VertraegeComponent {}

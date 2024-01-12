@@ -12,12 +12,15 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { NgxsModule } from '@ngxs/store';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
-import { VertragListComponent } from './vertrag-list/vertrag-list.component';
+import { VertragListComponent } from './vertraege/vertrag-list/vertrag-list.component';
 import { DividerComponent } from './elements/divider/divider.component';
 import { BottomBtnComponent } from './elements/bottom-btn/bottom-btn.component';
 import { BreadcrumbComponent } from './elements/breadcrumb/breadcrumb.component';
-import { VertragComponent } from './vertrag/vertrag.component';
-import { AllVertraegeComponent } from './all-vertraege/all-vertraege.component';
+import { VertragComponent } from './vertraege/vertrag/vertrag.component';
+import { AllVertraegeComponent } from './vertraege/all-vertraege/all-vertraege.component';
+import { CustomersState } from './core/store/customers.state';
+import { ContractsState } from './core/store/contracts.state';
+import { AddressComponent } from './elements/address/address.component';
 
 @NgModule({
   declarations: [
@@ -33,13 +36,14 @@ import { AllVertraegeComponent } from './all-vertraege/all-vertraege.component';
     BottomBtnComponent,
     BreadcrumbComponent,
     VertragComponent,
-    AllVertraegeComponent
+    AllVertraegeComponent,
+    AddressComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NgxsModule.forRoot([
-      // Ihre States
+      CustomersState, ContractsState
     ]),
     NgxsLoggerPluginModule.forRoot(),
     NgxsReduxDevtoolsPluginModule.forRoot(),
