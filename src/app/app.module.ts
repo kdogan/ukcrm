@@ -21,6 +21,11 @@ import { AllVertraegeComponent } from './vertraege/all-vertraege/all-vertraege.c
 import { CustomersState } from './core/store/customers.state';
 import { ContractsState } from './core/store/contracts.state';
 import { AddressComponent } from './elements/address/address.component';
+import { CounterListComponent } from './counter-list/counter-list.component';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -37,9 +42,11 @@ import { AddressComponent } from './elements/address/address.component';
     BreadcrumbComponent,
     VertragComponent,
     AllVertraegeComponent,
-    AddressComponent
+    AddressComponent,
+    CounterListComponent
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     AppRoutingModule,
     NgxsModule.forRoot([
@@ -47,6 +54,9 @@ import { AddressComponent } from './elements/address/address.component';
     ]),
     NgxsLoggerPluginModule.forRoot(),
     NgxsReduxDevtoolsPluginModule.forRoot(),
+    MatMenuModule,
+    MatButtonModule, 
+    MatIconModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

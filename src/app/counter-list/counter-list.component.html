@@ -1,0 +1,51 @@
+
+    <div class="row">
+      <div class="w-100">
+        <div class="row mb-2 font-weight-bold">
+          <div class="col-md-1">Zähler Nr.</div>
+          <div class="col-md-1">Vertrag Nr.</div>
+          <div class="col-md-2">Firma</div>
+          <div class="col-md-2">Vertrag Start</div>
+          <div class="col-md-2">Vertrag Ende</div>
+          <div class="col-md-1">Status</div>
+          <div class="col-md-1">Kundennummer</div>
+        </div>
+        <div class="row mb-2" *ngFor="let contract of contracts">
+          <div class="col-md-1">{{ contract.zaehlernummer }}</div>
+          <div class="col-md-1">{{ contract.vertragnummer }}</div>
+          <div class="col-md-2">{{ contract.firma }}</div>
+          <div class="col-md-2">{{ contract.vertragstart }}</div>
+          <div class="col-md-2">{{ contract.vertragsende }}</div>
+          <div class="col-md-1">{{ contract.status }}</div>
+          <div class="col-md-1">{{ contract.kundennummer }}</div>
+          <div class="col-lg-2 d-none d-lg-block">
+            <button class="navbar-toggler"type="button" data-bs-toggle="collapse"[attr.data-bs-target]="'#menu'+contract.id" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+
+            <div class="collapse" [id]="'menu' + contract.id" data-bs-toggle="collapse">
+              <div class="card card-body">
+                <button class="btn btn-primary btn-sm mb-1 w-100"><i class="fas fa-eye"></i> Anschauen</button>
+                <button class="btn btn-secondary btn-sm mb-1 w-100"><i class="fas fa-edit"></i> Bearbeiten</button>
+                <button class="btn btn-danger btn-sm w-100"><i class="fas fa-archive"></i> Archivieren</button>
+              </div>
+            </div>
+          </div>
+    
+          <div class="col-lg-1 d-lg-none">
+            <button class="btn btn-primary btn-sm mr-1"><i class="fas fa-eye"></i></button>
+            <button class="btn btn-secondary btn-sm mr-1"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger btn-sm"><i class="fas fa-archive"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <i class="fa-solid fa-ellipsis-vertical"></i>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item class="btn btn-primary btn-sm mb-1 w-100"><i class="fas fa-eye"></i> Anschauen</button>
+    <button mat-menu-item class="btn btn-secondary btn-sm mb-1 w-100"><i class="fas fa-edit"></i> Bearbeiten</button>
+    <button mat-menu-item class="btn btn-danger btn-sm w-100"><i class="fas fa-archive"></i> Archivieren</button>
+  </mat-menu> -->

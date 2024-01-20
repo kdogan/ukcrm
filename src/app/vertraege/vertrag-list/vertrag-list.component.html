@@ -15,10 +15,11 @@
             <span>{{ contract.firma }}</span>
             <span>{{ contract.vertragstart }}</span>
             <span>{{ contract.vertragsende }}</span>
-            <div class="status-indicator-container">
+            <span>{{ contract.status }}</span>
+            <!-- <div class="status-indicator-container">
                 <span class="status-indicator"
                     [ngClass]="{'active': contract.status, 'completed': !contract.status}"></span>
-            </div>
+            </div> -->
             <div class="task-actions">
                 <button class="btn btn-primary btn-sm" (click)="showVertrag(contract)">
                     <i class="fa fa-eye"></i>

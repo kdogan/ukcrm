@@ -6,8 +6,15 @@ export interface Contract {
     firma: string;
     vertragstart: string;
     vertragsende: string;
-    status: boolean;
+    status: ContractState;
     kundennummer: string
+}
+export enum ContractState {
+    ENTWURF = 'Entwurf',
+    BEARBEITUNG ='Bearbeitung',
+    BELIEFERUNG ='Belieferung',
+    GEKUENDIGT='Gekündigt', 
+    BEENDET='Beende',
 }
 
 export interface Breadcrumb {
@@ -26,4 +33,10 @@ export interface Address {
     zipCode: string
     country: string;
   }
+
+export interface Counter {
+    id:number;
+    nummer:string;
+    address:Address;
+}
 

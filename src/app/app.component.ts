@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Contract } from './core/models';
+import { Contract, ContractState } from './core/models';
 import { Store } from '@ngxs/store';
 import { AddContract } from './core/store/contract.action';
 import { AddCustomer } from './core/store/customers.state';
@@ -12,9 +12,9 @@ import { AddCustomer } from './core/store/customers.state';
 export class AppComponent {
   title = 'kdcrm';
   contracts: Contract[] = [
-    { id: "1234", zaehlernummer: 'D12345678',vertragnummer: 'D12345678',vertragstart: '31.08.2023',vertragsende: '31.08.2024',firma:"EnBW", kundennummer:"1234567",status: false },
-    { id: "4321", zaehlernummer: 'ZDK776543',vertragnummer: 'D12345678',vertragstart: '31.08.2023',vertragsende: '31.08.2024',firma:"Rheinenergie", kundennummer:"7654321",status: true },
-    { id: "76543", zaehlernummer: 'ZDK11133',vertragnummer: 'D12345678',vertragstart: '31.08.2023',vertragsende: '31.08.2024',firma:"Vattenfall", kundennummer:"77774444",status: false }
+    { id: "1234", zaehlernummer: 'D12345678',vertragnummer: 'D12345678',vertragstart: '31.08.2023',vertragsende: '31.08.2024',firma:"EnBW", kundennummer:"1234567",status: ContractState.ENTWURF },
+    { id: "4321", zaehlernummer: 'ZDK776543',vertragnummer: 'D12345678',vertragstart: '31.08.2023',vertragsende: '31.08.2024',firma:"Rheinenergie", kundennummer:"7654321",status: ContractState.BELIEFERUNG },
+    { id: "76543", zaehlernummer: 'ZDK11133',vertragnummer: 'D12345678',vertragstart: '31.08.2023',vertragsende: '31.08.2024',firma:"Vattenfall", kundennummer:"77774444",status: ContractState.BEENDET }
   ];
   customers = [
     {id: "1234567", firstname: "Murat", lastname: "Aydin"},
