@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { Contract } from '../../core/models';
 import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { ContractsState } from '../../core/store/contracts.state';
+import { Contract } from '../../../core/models';
+import { ContractsState } from '../../../core/store/contracts.state';
 
 @Component({
   selector: 'app-all-vertraege',
@@ -16,6 +16,5 @@ export class AllVertraegeComponent {
   }
   addVertrag() {
     console.log('Neuer Vertrag hinzufügen');
-    
   }
 }

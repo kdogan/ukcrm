@@ -14,7 +14,7 @@ export enum ContractState {
     BEARBEITUNG ='Bearbeitung',
     BELIEFERUNG ='Belieferung',
     GEKUENDIGT='Gekündigt', 
-    BEENDET='Beende',
+    BEENDET='Beendet',
 }
 
 export interface Breadcrumb {
@@ -36,7 +36,13 @@ export interface Address {
 
 export interface Counter {
     id:number;
-    nummer:string;
+    zaehlernummer:string;
     address:Address;
+    type:CounterType
+}
+
+export enum CounterType {
+    STROM='Strom',
+    GAS='Gas'
 }
 

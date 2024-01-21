@@ -1,0 +1,19 @@
+.container {
+  @media (max-width: 576px) {
+    .dash-card {
+      margin-bottom: 5px
+    }
+  }
+}
+
+.dash-card {
+  min-height: 100px;
+  background-color: #f4f6f7;
+  cursor: pointer;
+}
+
+.show-more {
+  text-align: end;
+  padding: 10px;
+  cursor: pointer;
+}

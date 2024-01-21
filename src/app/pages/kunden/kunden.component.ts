@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
-import { Customer } from '../core/models';
-import { AddCustomer, CustomersState } from '../core/store/customers.state';
+import { Customer } from '../../core/models';
+import { AddCustomer, CustomersState } from '../../core/store/customers.state';
 import { Observable } from 'rxjs';
 
 @Component({

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
-import { CustomersState } from '../../core/store/customers.state';
 import { Observable, map, of, switchMap } from 'rxjs';
-import { Contract, Customer } from '../../core/models';
-import { ContractsState, ContractsStateModel } from '../../core/store/contracts.state';
 import { ActivatedRoute } from '@angular/router';
+import { Customer, Contract } from '../../../core/models';
+import { ContractsState } from '../../../core/store/contracts.state';
+import { CustomersState } from '../../../core/store/customers.state';
 
 @Component({
   selector: 'app-vertrag',
