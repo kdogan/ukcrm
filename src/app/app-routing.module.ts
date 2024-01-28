@@ -4,9 +4,10 @@ import { KundenComponent } from './pages/kunden/kunden.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { CountersComponent } from './pages/counters/counters.component';
 import { AllCountersComponent } from './pages/counters/all-counters/all-counters.component';
+import { VertraegeComponent } from './pages/vertraege/vertraege.component';
+import { CreateCounterComponent } from './pages/counters/create-counter/create-counter.component';
 import { TasksComponent } from './pages/tasks/tasks.component';
 import { AllVertraegeComponent } from './pages/vertraege/all-vertraege/all-vertraege.component';
-import { VertraegeComponent } from './pages/vertraege/vertraege.component';
 import { VertragComponent } from './pages/vertraege/vertrag/vertrag.component';
 
 const routes: Routes = [
@@ -51,10 +52,14 @@ const routes: Routes = [
       },
       {
         path: 'view/:zählernummer',
-        component: VertragComponent,
+        component: VertraegeComponent,
         data: { breadcrumb: 'Zähler' }
       },
-
+      {
+        path: 'create',
+        component: CreateCounterComponent,
+        data: { breadcrumb: 'Zähler erstellen' }
+      },
     ]
   }
 ];

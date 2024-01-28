@@ -1,5 +1,6 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { Customer } from '../models';
+import { Injectable } from '@angular/core';
 
 export class AddCustomer {
   static readonly type = '[Customer] Add';
@@ -16,6 +17,7 @@ export class CustomersStateModel {
   }
 })
 
+@Injectable()
 export class CustomersState {
   @Selector()
   static getAllCustomers(state: Customer[]) {
@@ -25,7 +27,7 @@ export class CustomersState {
   @Selector()
   static getCustomertById(state: CustomersStateModel) {
     return (customerId: string) => {
-      return state.customers?.find(customer => customer.id === customerId);
+      return state.customers?.find(customer => customer._id === customerId);
     };
   }
 

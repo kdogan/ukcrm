@@ -1,9 +1,10 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { Breadcrumb } from '../models';
+import { Injectable } from '@angular/core';
 
 export class CreateBreadcrumbs {
   static readonly type = '[Breadcrumbs] Add';
-  constructor(public payload: Breadcrumb[]) {}
+  constructor(public payload: Breadcrumb) {}
 }
 export class UpdateBreadcrumb {
   static readonly type = '[Breadcrumbs] Update';
@@ -11,16 +12,17 @@ export class UpdateBreadcrumb {
 }
 
 export class BreadcrumbsStateModel {
-  public breadcrumbs: Breadcrumb[]=[];
+  public breadcrumbs: Breadcrumb|undefined=undefined;
 }
 
 @State<BreadcrumbsStateModel>({
   name: 'breadcrumbs',
   defaults: {
-    breadcrumbs: []
+    breadcrumbs: undefined
   }
 })
 
+@Injectable()
 export class BreadcrumbsState {
   @Selector()
   static getAllbreadcrumbs(state: BreadcrumbsStateModel) {
@@ -30,11 +32,11 @@ export class BreadcrumbsState {
   @Action(CreateBreadcrumbs)
   add({ getState, patchState }: StateContext<BreadcrumbsStateModel>, { payload }: CreateBreadcrumbs) {
     const state = getState();
-    patchState({ breadcrumbs: [...state.breadcrumbs, payload] });
+    patchState({ breadcrumbs:  payload });
   }
   @Action(UpdateBreadcrumb)
-  update({ getState, patchState }: StateContext<BreadcrumbsStateModel>, { payload }: AddBreadcrumbs) {
+  update({ getState, patchState }: StateContext<BreadcrumbsStateModel>, { payload }: UpdateBreadcrumb) {
     const state = getState();
-    patchState({ breadcrumbs: [...state.breadcrumbs, payload] });
+    patchState({ breadcrumbs: payload });
   }
 }

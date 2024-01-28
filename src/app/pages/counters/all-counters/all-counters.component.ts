@@ -13,8 +13,8 @@ import { AddCounter } from '../../../core/store/counter.action';
 export class AllCountersComponent {
 
   @Select(CountersState.getAllCounters) counters$: Observable<Counter[]> | undefined;
-  constructor(private readonly store: Store){
-    
+  constructor(){
+    this.counters$?.subscribe(c =>console.log(c))
   }
   addCounter() {
     console.log('Neuer Vertrag hinzufügen');

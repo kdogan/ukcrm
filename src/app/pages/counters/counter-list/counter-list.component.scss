@@ -22,3 +22,26 @@
   .btn {
     margin-bottom: 5px;
   }
+
+
+  .right-aligned {
+    text-align: right;
+  }
+
+  
+  /* Stil für die Actions-Buttons */
+  .actions-btn {
+    display: flex;
+    justify-content: flex-end; /* Rechtsausrichtung der Buttons */
+  }
+  /* Standardmäßig rechts ausrichten */
+.right-aligned {
+  text-align: right;
+}
+
+/* Für kleine Bildschirme (z.B. unter 600px) */
+@media screen and (max-width: 600px) {
+  .right-aligned {
+    text-align: left; /* oder center, je nach Bedarf */
+  }
+}

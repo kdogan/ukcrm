@@ -1,6 +1,8 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { Counter } from '../models';
-import { AddCounter } from './counter.action';
+import { AddAllCounters, AddCounter } from './counter.action';
+import { Injectable } from '@angular/core';
+
 
 export class CountersStateModel {
   public counters: Counter[]=[];
@@ -12,7 +14,7 @@ export class CountersStateModel {
     counters: []
   }
 })
-
+@Injectable()
 export class CountersState {
   @Selector()
   static getAllCounters(state: CountersStateModel) {
@@ -30,5 +32,11 @@ export class CountersState {
   add({ getState, patchState }: StateContext<CountersStateModel>, { payload }: AddCounter) {
     const state = getState();
     patchState({ counters: [...state.counters, payload] });
+  }
+
+  @Action(AddAllCounters)
+  addAll({ getState, patchState }: StateContext<CountersStateModel>, { payload }: AddAllCounters) {
+    const state = getState();
+    patchState({ counters: [...state.counters, ...payload] });
   }
 }

@@ -1,0 +1,12 @@
+<div class="px-2">
+    <form [formGroup]="counterForm" (ngSubmit)="onSubmit()">
+        <input formControlName="zaehlernummer" placeholder="Zählernummer">
+        <app-address-form (isAddressValidation)="isAddressValid=$event" (address)="address = $event"></app-address-form>
+        <select formControlName="type">
+            <option value="STROM">Strom</option>
+            <option value="GAS">Gas</option>
+        </select>
+        <app-divider></app-divider>
+    </form>
+    <app-bottom-btn type="submit" [text]="'Erstellen'" [icon]="'fa fa-plus'" (click)="addCounter()"></app-bottom-btn>
+</div>

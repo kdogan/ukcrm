@@ -1,6 +1,7 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { Contract } from '../models';
 import { AddContract } from './contract.action';
+import { Injectable } from '@angular/core';
 
 export class ContractsStateModel {
   public contracts: Contract[]=[];
@@ -13,6 +14,7 @@ export class ContractsStateModel {
   }
 })
 
+@Injectable()
 export class ContractsState {
   @Selector()
   static getAllContracts(state: ContractsStateModel) {

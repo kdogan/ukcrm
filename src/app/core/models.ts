@@ -1,6 +1,6 @@
 
 export interface Contract {
-    id: string;
+    _id?: string;
     zaehlernummer: string;
     vertragnummer: string;
     firma: string;
@@ -22,7 +22,7 @@ export interface Breadcrumb {
     url: string;
 }
 export interface Customer {
-    id: string;
+    _id?: string;
     firstname:string;
     lastname:string;
 }
@@ -32,14 +32,29 @@ export interface Address {
     city: string;
     zipCode: string
     country: string;
+    _id?:string;
   }
 
 export interface Counter {
-    id:number;
+    _id?:string;
     zaehlernummer:string;
     address:Address;
-    type:CounterType
+    type:CounterType;
+    user?:string;
+    __v?:number
 }
+
+export interface User {
+    _id?:string;
+    firstname: string,
+    middlename:string,
+    lastname: string,
+    email:string,
+    phone_mobile:string,
+    phone:string,
+    address: Address,
+    token:string
+};
 
 export enum CounterType {
     STROM='Strom',

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Select, Store } from '@ngxs/store';
+import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Contract } from '../../../core/models';
 import { ContractsState } from '../../../core/store/contracts.state';
@@ -11,9 +11,6 @@ import { ContractsState } from '../../../core/store/contracts.state';
 })
 export class AllVertraegeComponent {
   @Select(ContractsState.getAllContracts) contracts$: Observable<Contract[]> | undefined;
-  constructor(private readonly store: Store){
-
-  }
   addVertrag() {
     console.log('Neuer Vertrag hinzufügen');
   }

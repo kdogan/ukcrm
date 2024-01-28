@@ -16,9 +16,9 @@ import { CustomersState } from './core/store/customers.state';
 import { ContractsState } from './core/store/contracts.state';
 import { AddressComponent } from './elements/address/address.component';
 import { CounterListComponent } from './pages/counters/counter-list/counter-list.component';
-import {MatIconModule} from '@angular/material/icon';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatButtonModule} from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { CountersComponent } from './pages/counters/counters.component';
@@ -31,6 +31,13 @@ import { AllVertraegeComponent } from './pages/vertraege/all-vertraege/all-vertr
 import { VertraegeComponent } from './pages/vertraege/vertraege.component';
 import { VertragListComponent } from './pages/vertraege/vertrag-list/vertrag-list.component';
 import { VertragComponent } from './pages/vertraege/vertrag/vertrag.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CreateCounterComponent } from './pages/counters/create-counter/create-counter.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { AddressFormComponent } from './forms/address-form/address-form.component';
+import { MatInputModule } from '@angular/material/input';
+import { HttpClientModule } from '@angular/common/http';
+import { UserState } from './core/store/user.state';
 
 @NgModule({
   declarations: [
@@ -51,14 +58,17 @@ import { VertragComponent } from './pages/vertraege/vertrag/vertrag.component';
     CounterListComponent,
     CountersComponent,
     AllCountersComponent,
-    SucherComponent
+    SucherComponent,
+    CreateCounterComponent,
+    AddressComponent,
+    AddressFormComponent
   ],
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
     AppRoutingModule,
     NgxsModule.forRoot([
-      CustomersState, ContractsState, CountersState
+      CustomersState, ContractsState, CountersState, UserState
     ]),
     NgxsLoggerPluginModule.forRoot(),
     NgxsReduxDevtoolsPluginModule.forRoot(),
@@ -66,6 +76,11 @@ import { VertragComponent } from './pages/vertraege/vertrag/vertrag.component';
     MatButtonModule, 
     MatIconModule,
     MatTableModule, 
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

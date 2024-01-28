@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Address, Contract, ContractState, Counter } from '../../../core/models';
 import { Router } from '@angular/router';
 
@@ -7,18 +7,30 @@ import { Router } from '@angular/router';
   templateUrl: './counter-list.component.html',
   styleUrl: './counter-list.component.scss',
 })
-export class CounterListComponent {
-
+export class CounterListComponent implements OnInit {
 
   isMobile = false;
-  @Input() counters!: Counter[];
-  selectedTask: Contract | null = null;
+  private _counters: Counter[] = [];
+  @Input() set counters(value: Counter[]) {
+    this._counters = value || [];
+    this.filteredContracts = this._counters;
+  }
+
+  selectedTask!: Counter;
   showModal: boolean = false;
   displayedColumns: string[] = ['zaehlernummer', 'address', 'type', 'actions'];
+  filteredContracts: Counter[] = [];
+
+
   constructor(private readonly route: Router) { }
 
-  showVertrag(vertrag: Contract) {
-    this.route.navigate(['vertraege/view', vertrag.vertragnummer])
+  ngOnInit(): void {
+  }
+  get counters(): Counter[] {
+    return this._counters;
+  }
+  showVertrag(counter: Counter) {
+    this.route.navigate(['zaehler/view', counter.zaehlernummer])
   }
 
   deleteVertrag(_t67: any) {
@@ -29,5 +41,18 @@ export class CounterListComponent {
   }
   getAddress(address: Address) {
    return `${address.street}, ${address.zipCode} ${address.city}`;
+  }
+
+  filterContracts(searchTerm: string) {
+    if (!searchTerm) {
+      this.filteredContracts = this.counters;
+    } else {
+      this.filteredContracts = this.counters.filter(
+        counter =>
+        this.getAddress(counter.address).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        counter.zaehlernummer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        counter.type.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+      );
+    }
   }
 }

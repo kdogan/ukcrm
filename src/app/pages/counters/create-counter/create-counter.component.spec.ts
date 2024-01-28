@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SucherComponent } from './sucher.component';
+import { CreateCounterComponent } from './create-counter.component';
 
-describe('SucherComponent', () => {
-  let component: SucherComponent;
-  let fixture: ComponentFixture<SucherComponent>;
+describe('CreateCounterComponent', () => {
+  let component: CreateCounterComponent;
+  let fixture: ComponentFixture<CreateCounterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SucherComponent]
+      declarations: [CreateCounterComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(SucherComponent);
+    fixture = TestBed.createComponent(CreateCounterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
