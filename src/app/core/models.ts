@@ -25,6 +25,11 @@ export interface Customer {
     _id?: string;
     firstname:string;
     lastname:string;
+    email?:string;
+    phone?:string;
+    address?:Address;
+    contracts?:any[];
+    __v?:number
 }
 
 export interface Address {
@@ -60,4 +65,22 @@ export enum CounterType {
     STROM='Strom',
     GAS='Gas'
 }
+
+export interface Task {
+    _id?: string;
+    title: string;
+    description: string;
+    status: TaskStatus;
+  }
+  export enum TaskStatus {
+    ACTIVE='active',
+    COMPLETED='completed'
+  }
+
+  export interface Note {
+    _id?:string;
+    text:string;
+    customerId:string;
+    user_id:string;
+  }
 

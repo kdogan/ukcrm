@@ -1,6 +1,6 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { Contract } from '../models';
-import { AddContract } from './contract.action';
+import { AddAllContracts, AddContract } from './contract.action';
 import { Injectable } from '@angular/core';
 
 export class ContractsStateModel {
@@ -32,5 +32,12 @@ export class ContractsState {
   add({ getState, patchState }: StateContext<ContractsStateModel>, { payload }: AddContract) {
     const state = getState();
     patchState({ contracts: [...state.contracts, payload] });
+  }
+
+  
+  @Action(AddAllContracts)
+  addAll({ getState, patchState }: StateContext<ContractsStateModel>, { payload }: AddAllContracts) {
+    const state = getState();
+    patchState({ contracts: [...state.contracts, ...payload] });
   }
 }

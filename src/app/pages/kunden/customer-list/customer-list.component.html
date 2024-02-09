@@ -1,18 +1,22 @@
 <div class="task-list">
     <div class="task-header">
-        <span>Titel</span>
-        <span>Status</span>
-        <span>Aktionen</span>
+        <span>Name</span>
+        <span>Anschrifft</span>
+        <span>Telefonnummer</span>
+        <span>Email</span>
+        <span>Actions</span>
     </div>
     <div class="task-items">
-        <div class="task-item" *ngFor="let task of tasks | slice:0:maxTasksToShow">
-            <span>{{ task.title }}</span>
-                <div class="status-indicator-container">
-                    <span class="status-indicator"
-                        [ngClass]="{'active': task.status === 'active', 'completed': task.status === 'completed'}"></span>
-                </div>
+        <div class="task-item" *ngFor="let customer of customers">
+            <span>{{ customer.firstname + ' ' + customer.lastname }}</span>
+            <span>{{ customer.address }}</span>
+            <span>{{ customer.phone }}</span>
+            <span>{{ customer.email }}</span>
+            <div class="status-indicator-container">
+                <span class="status-indicator"> </span>
+            </div>
             <div class="task-actions">
-                <button class="btn btn-primary btn-sm" (click)="selectedTask = task; showModal = true">
+                <button class="btn btn-primary btn-sm" (click)="goToCustomer(customer)">
                     <i class="fa fa-eye"></i>
                     <span>Ansehen</span>
                 </button>
@@ -27,7 +31,7 @@
             </div>
         </div>
 
-        <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': showModal}" [ngStyle]="{'display': showModal ? 'block' : 'none'}">
+        <!-- <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': showModal}" [ngStyle]="{'display': showModal ? 'block' : 'none'}">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -47,6 +51,6 @@
                  </div>
               </div>
             </div>
-          </div>
+          </div> -->
     </div>
 </div>

@@ -1,5 +1,7 @@
 <div class="container-fluid">
+    <div *ngIf="tasks$ | async as tasks">
     <app-tasks-list [tasks]="tasks"></app-tasks-list>
+  </div>
     <app-divider></app-divider>
     <app-bottom-btn 
       [text]="'Hinzufügen'"

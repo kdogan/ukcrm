@@ -31,8 +31,8 @@
         </div>
     </div>
 
-    <div class="row py-3">
-        <app-tasks-list [tasks]="tasks"></app-tasks-list>
+    <div class="row py-3" *ngIf="tasks$ | async as tasks">
+        <app-tasks-list [tasks]="tasks" [maxTasksToShow]="5"></app-tasks-list>
         <div class="show-more" routerLink="/aufgaben">mehr anzeigen...</div>
     </div>
 

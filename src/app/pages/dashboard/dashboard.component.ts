@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
-import { Task } from '../tasks/tasks.component';
+import { Counter, Task } from '../../core/models';
+import { Select, Store } from '@ngxs/store';
+import { TasksState } from '../../core/store/tasks.state';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,10 +11,8 @@ import { Task } from '../tasks/tasks.component';
 })
 export class DashboardComponent {
 
-  //TODO hier sollen letzte fünf Tasks nur gezeigt werden
-  tasks: Task[] = [
-    { id: 1, title: 'Der Vertrag v123456 läuft ab',description: 'Der Vertrag v123456 läuft ab', status: 'active' },
-    { id: 2, title: 'lkdjflksdfl sldkflskdjf lksdflk ',description: 'Der Vertrag v123456 läuft ab', status: 'completed' },
-    { id: 3, title: 'Der Vertrag v555888 läuft ab',description: 'Der Vertrag v123456 läuft ab', status: 'active' }
-  ];
+  @Select(TasksState.getAllTasks) tasks$: Observable<Task[]> | undefined;
+  constructor(private store:Store) {
+
+  }
 }

@@ -9,6 +9,10 @@ import { CreateCounterComponent } from './pages/counters/create-counter/create-c
 import { TasksComponent } from './pages/tasks/tasks.component';
 import { AllVertraegeComponent } from './pages/vertraege/all-vertraege/all-vertraege.component';
 import { VertragComponent } from './pages/vertraege/vertrag/vertrag.component';
+import { CreateVertragComponent } from './pages/vertraege/create-vertrag/create-vertrag.component';
+import { AllCustomersComponent } from './pages/kunden/all-customers/all-customers.component';
+import { CustomerComponent } from './pages/kunden/customer/customer.component';
+import { CreateCustomerComponent } from './pages/kunden/create-customer/create-customer.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, 
@@ -32,9 +36,38 @@ const routes: Routes = [
         component: VertragComponent,
         data: { breadcrumb: 'Vertrag' }
       },
+      {
+        path: 'add',
+        component: CreateVertragComponent,
+        data: { breadcrumb: 'Vertrag erzeugen' }
+      },
     ]
   },
-  { path: 'kunden', component: KundenComponent, data: { breadcrumb: 'Kunden' }  },
+  { path: 'kunden', component: KundenComponent, 
+    data: { breadcrumb: 'Kunden' },
+    children: [
+      {
+        path: '',
+        redirectTo: 'all',
+        pathMatch: 'full'
+      },
+      {
+        path: 'all',
+        component: AllCustomersComponent,
+        data: { breadcrumb: 'Alle Kunden' }
+      },
+      {
+        path: 'view',
+        component: CustomerComponent,
+        data: { breadcrumb: 'Kunde' }
+      },
+      {
+        path: 'add',
+        component: CreateCustomerComponent,
+        data: { breadcrumb: 'Kunden anlegen' }
+      },
+    ]
+  },
   { path: 'aufgaben', component: TasksComponent, data: { breadcrumb: 'Aufgaben' } },
   { path: 'zaehler',
     component:CountersComponent,

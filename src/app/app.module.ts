@@ -38,6 +38,13 @@ import { AddressFormComponent } from './forms/address-form/address-form.componen
 import { MatInputModule } from '@angular/material/input';
 import { HttpClientModule } from '@angular/common/http';
 import { UserState } from './core/store/user.state';
+import { CreateVertragComponent } from './pages/vertraege/create-vertrag/create-vertrag.component';
+import { TasksState } from './core/store/tasks.state';
+import { CreateCustomerComponent } from './pages/kunden/create-customer/create-customer.component';
+import { AllCustomersComponent } from './pages/kunden/all-customers/all-customers.component';
+import { CustomerListComponent } from './pages/kunden/customer-list/customer-list.component';
+import { CustomerComponent } from './pages/kunden/customer/customer.component';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -61,14 +68,19 @@ import { UserState } from './core/store/user.state';
     SucherComponent,
     CreateCounterComponent,
     AddressComponent,
-    AddressFormComponent
+    AddressFormComponent,
+    CreateVertragComponent,
+    CreateCustomerComponent,
+    AllCustomersComponent,
+    CustomerListComponent,
+    CustomerComponent
   ],
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
     AppRoutingModule,
     NgxsModule.forRoot([
-      CustomersState, ContractsState, CountersState, UserState
+      CustomersState, ContractsState, CountersState, UserState, TasksState
     ]),
     NgxsLoggerPluginModule.forRoot(),
     NgxsReduxDevtoolsPluginModule.forRoot(),
@@ -80,7 +92,8 @@ import { UserState } from './core/store/user.state';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    HttpClientModule
+    HttpClientModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

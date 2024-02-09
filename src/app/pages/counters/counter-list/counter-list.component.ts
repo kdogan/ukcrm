@@ -11,6 +11,7 @@ export class CounterListComponent implements OnInit {
 
   isMobile = false;
   private _counters: Counter[] = [];
+  filteredContracts: Counter[] = [];
   @Input() set counters(value: Counter[]) {
     this._counters = value || [];
     this.filteredContracts = this._counters;
@@ -19,7 +20,7 @@ export class CounterListComponent implements OnInit {
   selectedTask!: Counter;
   showModal: boolean = false;
   displayedColumns: string[] = ['zaehlernummer', 'address', 'type', 'actions'];
-  filteredContracts: Counter[] = [];
+
 
 
   constructor(private readonly route: Router) { }

@@ -1,0 +1,40 @@
+<div class="container-fluid">
+
+    <form [formGroup]="vertragForm" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          <input matInput formControlName="zaehlernummer" placeholder="Zählernummer">
+        </mat-form-field>
+      
+        <mat-form-field>
+          <input matInput formControlName="vertragnummer" placeholder="Vertragnummer">
+        </mat-form-field>
+      
+        <mat-form-field>
+          <input matInput formControlName="firma" placeholder="Firma">
+        </mat-form-field>
+      
+        <!-- Für Datumsfelder können Sie den MatDatePicker verwenden -->
+        <!--<mat-form-field>
+          <input matInput [matDatepicker]="picker1" formControlName="vertragstart" placeholder="Vertragsstart">
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker2" formControlName="vertragsende" placeholder="Vertragsende">
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>-->
+      
+        <!-- Für Status, könnten Sie ein Dropdown oder ähnliches verwenden -->
+        <mat-form-field>
+          <input matInput formControlName="status" placeholder="Status">
+        </mat-form-field>
+      
+        <mat-form-field>
+          <input matInput formControlName="kundennummer" placeholder="Kundennummer">
+        </mat-form-field>
+      
+        <button mat-raised-button type="submit">Vertrag erstellen</button>
+      </form>
+</div>

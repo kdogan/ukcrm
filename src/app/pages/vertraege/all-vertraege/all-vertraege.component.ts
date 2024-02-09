@@ -3,6 +3,7 @@ import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Contract } from '../../../core/models';
 import { ContractsState } from '../../../core/store/contracts.state';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-all-vertraege',
@@ -11,7 +12,11 @@ import { ContractsState } from '../../../core/store/contracts.state';
 })
 export class AllVertraegeComponent {
   @Select(ContractsState.getAllContracts) contracts$: Observable<Contract[]> | undefined;
+
+  constructor(private router:Router){
+
+  }
   addVertrag() {
-    console.log('Neuer Vertrag hinzufügen');
+    this.router.navigate(['vertraege/add'])
   }
 }
