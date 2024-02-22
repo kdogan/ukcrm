@@ -1,6 +1,7 @@
 <div class="container-fluid">
-  <div *ngIf="customers$ | async as customers; else noData">
-      <app-customer-list [customers]="customers"></app-customer-list>
+  <app-sucher (search)="filterContracts($event)"></app-sucher>
+  <div *ngIf="filteredCustomers.length>0; else noData">
+      <app-customer-list [customers]="filteredCustomers"></app-customer-list>
   </div>
   <ng-template #noData>
       <p>Keine Daten vorhanden.</p>

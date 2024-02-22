@@ -1,40 +1,118 @@
-<div class="container-fluid">
+<div class="container-flued">
+  <div class="row">
+    <div class="col-md-6 p-2">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Vertragsdaten</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="vertragForm">
+            <!-- Umgestaltetes Input für Vertragnummer -->
+            <mat-form-field class="w-100">
+              <mat-label>Vertragnummer</mat-label>
+              <input matInput formControlName="vertragnummer">
+            </mat-form-field>
+            <div class="d-flex justify-content-between">
+              <!-- Startdatum mit Datepicker -->
+              <div class="w-50 pl-1">
+                <mat-form-field class="w-100">
+                  <mat-label>Startdatum</mat-label>
+                  <input matInput [matDatepicker]="startPicker" formControlName="vertragstart">
+                  <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #startPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="w-50 pr-1">
+                <!-- Enddatum mit Datepicker -->
+                <mat-form-field  class="w-100">
+                  <mat-label>Enddatum</mat-label>
+                  <input matInput [matDatepicker]="endPicker" formControlName="vertragsende">
+                  <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #endPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+                
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
 
-    <form [formGroup]="vertragForm" (ngSubmit)="onSubmit()">
-        <mat-form-field>
-          <input matInput formControlName="zaehlernummer" placeholder="Zählernummer">
-        </mat-form-field>
-      
-        <mat-form-field>
-          <input matInput formControlName="vertragnummer" placeholder="Vertragnummer">
-        </mat-form-field>
-      
-        <mat-form-field>
-          <input matInput formControlName="firma" placeholder="Firma">
-        </mat-form-field>
-      
-        <!-- Für Datumsfelder können Sie den MatDatePicker verwenden -->
-        <!--<mat-form-field>
-          <input matInput [matDatepicker]="picker1" formControlName="vertragstart" placeholder="Vertragsstart">
-          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-          <mat-datepicker #picker1></mat-datepicker>
-        </mat-form-field>
-      
-        <mat-form-field>
-          <input matInput [matDatepicker]="picker2" formControlName="vertragsende" placeholder="Vertragsende">
-          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-          <mat-datepicker #picker2></mat-datepicker>
-        </mat-form-field>-->
-      
-        <!-- Für Status, könnten Sie ein Dropdown oder ähnliches verwenden -->
-        <mat-form-field>
-          <input matInput formControlName="status" placeholder="Status">
-        </mat-form-field>
-      
-        <mat-form-field>
-          <input matInput formControlName="kundennummer" placeholder="Kundennummer">
-        </mat-form-field>
-      
-        <button mat-raised-button type="submit">Vertrag erstellen</button>
-      </form>
+        <div class="col-md-6 p-2">
+          <mat-card >
+              <mat-card-header>
+                  <mat-card-title>Adresse</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+              </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div class="col-md-3 p-2">
+          <mat-card >
+              <mat-card-header>
+                  <mat-card-title>Kunde</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                    <div *ngIf="customer" class="customer-details">
+                      <p><strong>Vorname:</strong> {{ customer.firstname }}</p>
+                      <p><strong>Nachname:</strong> {{ customer.lastname }}</p>
+                      <p><strong>E-Mail:</strong> {{ customer.email }}</p>
+                      <p><strong>Telefon:</strong> {{ customer.phone }}</p>
+                      <hr/>
+                      <h5>Adresse :</h5>
+                      <p>{{customer.address?.street+ ', '+customer.address?.zipCode+' '+customer.address?.city }}</p>
+                    </div>
+              </mat-card-content>
+              <mat-card-actions>
+              <app-bottom-btn [icon]="'fa fa-plus'" (click)="openDialog('customer')" ></app-bottom-btn>
+              </mat-card-actions>
+          </mat-card>
+        </div>
+        <div class="col-md-3 p-2">
+          <mat-card >
+              <mat-card-header>
+                  <mat-card-title>Firma</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <div></div>
+              </mat-card-content>
+              <mat-card-actions>
+              <app-bottom-btn [icon]="'fa fa-plus'" ></app-bottom-btn>
+              </mat-card-actions>
+          </mat-card>
+        </div>
+        <div class="col-md-3 p-2">
+          <mat-card >
+              <mat-card-header>
+                  <mat-card-title>Zähler</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <div></div>
+              </mat-card-content>
+              <mat-card-actions>
+              <app-bottom-btn [icon]="'fa fa-plus'" ></app-bottom-btn>
+              </mat-card-actions>
+          </mat-card>
+        </div>
+        <div class="col-md-3 p-2">
+          <mat-card >
+              <mat-card-header>
+                  <mat-card-title>Aufgabe</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <div></div>
+              </mat-card-content>
+              <mat-card-actions>
+              <app-bottom-btn [icon]="'fa fa-plus'" ></app-bottom-btn>
+              </mat-card-actions>
+          </mat-card>
+        </div>
+  </div>
+  <app-divider></app-divider>
+  <div class="p-2" style="float:right">
+      <app-bottom-btn type="submit" [text]="'Erstellen'" [icon]="'fa fa-plus'"></app-bottom-btn>
+  </div>
+  
+  
 </div>

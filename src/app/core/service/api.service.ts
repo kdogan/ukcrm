@@ -30,9 +30,7 @@ export class ApiService {
     return this.http.get<Counter[]>(this.getApiUrlFor('counters'));
   }
 
-  getAllContracts():Observable<Contract[]> {
-    return this.http.get<Contract[]>(this.getApiUrlFor('contracts'));
-  }
+ 
   
   //TASKS
   addTask(newTask:Task):Observable<Task>{
@@ -63,10 +61,21 @@ export class ApiService {
   }
 
   fetchNoteForCustomer(id: string) {
-    return this.http.get<Note>(this.getApiUrlFor('customers/note/'+id));
+    return this.http.get<Note[]>(this.getApiUrlFor('customers/note/'+id));
   }
 
   addNote(note: Note) {
     return this.http.post<Note>(this.getApiUrlFor('customers/note/add'), note);
+  }
+  updateNote(note: Note) {
+    return this.http.put<Note>(this.getApiUrlFor('customers/note/update/'+note._id), {text:note.text});
+  }
+
+  ////// CONTRACTS ///////////
+  addContract(contract:Contract):Observable<Contract> {
+    return this.http.post<Contract>(this.getApiUrlFor('contracts/add'), contract);
+  }
+  getAllContracts():Observable<Contract[]> {
+    return this.http.get<Contract[]>(this.getApiUrlFor('contracts'));
   }
 }

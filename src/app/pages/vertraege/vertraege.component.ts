@@ -3,6 +3,7 @@ import { ApiService } from '../../core/service/api.service';
 import { Subject, takeUntil } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { AddAllContracts } from '../../core/store/contract.action';
+import { Contract } from '../../core/models';
 
 @Component({
   selector: 'app-vertraege',
@@ -15,10 +16,10 @@ export class VertraegeComponent implements OnInit {
 
   ngOnInit(): void {
     this.apiService.getAllContracts().pipe(takeUntil(this.destroyed$)).subscribe({
-      next: (contracts) => {
+      next: (contracts:Contract[]) => {
         this.store.dispatch(new AddAllContracts(contracts));
       },
-      error: (error) => console.error("Fehler beim Abrufen der Zähler: ", error)
+      error: (error:any) => console.error("Fehler beim Abrufen der Zähler: ", error)
     });
   }
 }

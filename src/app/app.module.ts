@@ -45,6 +45,11 @@ import { AllCustomersComponent } from './pages/kunden/all-customers/all-customer
 import { CustomerListComponent } from './pages/kunden/customer-list/customer-list.component';
 import { CustomerComponent } from './pages/kunden/customer/customer.component';
 import { MatCardModule } from '@angular/material/card';
+import { NoteFormComponent } from './forms/note-form/note-form.component';
+import { MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
+import { CustomersDialogComponent } from './dialogs/customers-dialog/customers-dialog.component';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [
@@ -73,7 +78,9 @@ import { MatCardModule } from '@angular/material/card';
     CreateCustomerComponent,
     AllCustomersComponent,
     CustomerListComponent,
-    CustomerComponent
+    CustomerComponent,
+    NoteFormComponent,
+    CustomersDialogComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -93,7 +100,16 @@ import { MatCardModule } from '@angular/material/card';
     MatFormFieldModule,
     MatInputModule,
     HttpClientModule,
-    MatCardModule
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+    MatNativeDateModule,
+    MatDatepickerModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

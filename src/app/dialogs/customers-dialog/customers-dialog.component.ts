@@ -1,45 +1,56 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CustomersState } from '../../../core/store/customers.state';
-import { Observable, Subject, takeUntil } from 'rxjs';
-import { Address, Customer } from '../../../core/models';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  MatDialogRef
+} from '@angular/material/dialog';
 import { Select } from '@ngxs/store';
-import { Router } from '@angular/router';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { Address, Customer } from '../../core/models';
+import { CustomersState } from '../../core/store/customers.state';
 
 @Component({
-  selector: 'app-all-customers',
-  templateUrl: './all-customers.component.html',
-  styleUrl: './all-customers.component.scss'
-})
-export class AllCustomersComponent implements OnInit, OnDestroy {
-  customers:Customer[]=[];
-  filteredCustomers:Customer[]=[];
-  destroyed$ = new Subject<void>();
-  @Select(CustomersState.getAllCustomers) customers$!: Observable<Customer[]>;
+  selector: 'app-customers-dialog',
+  templateUrl: './customers-dialog.component.html',
+  styleUrl: './customers-dialog.component.scss'
 
-  constructor(private router: Router) {
-  }
+})
+export class CustomersDialogComponent implements OnInit, OnDestroy {
+
+  customers!:Customer[];
+  filteredCustomers!:Customer[];
+  destroyed$ = new Subject<void>();
+  selected!:Customer;
+
+  @Select(CustomersState.getAllCustomers) customers$!: Observable<Customer[]>;
+  constructor(
+    public dialogRef: MatDialogRef<CustomersDialogComponent>
+  ) {}
 
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
   }
+
   ngOnInit(): void {
     this.customers$?.pipe(takeUntil(this.destroyed$)).subscribe({
-      next:(customers)=>{
+      next:(customers: Customer[])=>{
         this.filteredCustomers = customers;
         this.customers = customers;
       }
     })
   }
-  addCustomer() {
-    this.router.navigate(['kunden/add'])
+
+  add(): void {
+    this.dialogRef.close(this.selected);
+  }
+
+  close(): void {
+    this.dialogRef.close();
   }
 
   getAddress(address: Address|undefined) {
     if(!address) return ""
    return `${address.street}, ${address.zipCode} ${address.city}`;
   }
-  
   filterContracts(searchTerm: string) {
     if (!searchTerm) {
       this.filteredCustomers = this.customers;
@@ -52,5 +63,4 @@ export class AllCustomersComponent implements OnInit, OnDestroy {
       );
     }
   }
-
 }

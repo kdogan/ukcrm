@@ -1,8 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Address, Customer } from '../../../core/models';
+import { Address, Customer, Note } from '../../../core/models';
 import { Select, Store } from '@ngxs/store';
 import { CustomersState } from '../../../core/store/customers.state';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, map, of, switchMap, takeUntil } from 'rxjs';
 import { ApiService } from '../../../core/service/api.service';
 import { UserState } from '../../../core/store/user.state';
 
@@ -15,38 +15,43 @@ export class CustomerComponent implements OnInit, OnDestroy{
 
   @Select(CustomersState.getCurrentCustomer) customer$: Observable<Customer> | undefined;
   address = "";
-  note = "";
+  note!:Observable<Note|null>;
+  currentNote!:Note|null;
   destroyed$ = new Subject<void>();
   constructor(private readonly apiService: ApiService, private readonly store:Store){
 
   }
   ngOnDestroy(): void {
-    throw new Error('Method not implemented.');
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
-  ngOnInit() {
-    this.customer$?.pipe().subscribe({
-      next: (customer)=>{
-        if(customer){
-          this.address = `${customer.address?.street}, ${customer.address?.zipCode} ${customer.address?.city}`;
-          if(customer._id)
-          {this.apiService.fetchNoteForCustomer(customer._id).pipe(takeUntil(this.destroyed$)).subscribe({
-            next:(note => this.note = note.text)
-          })}
-        }
-        }
-    })
-   }
+  
+   ngOnInit() {
+    this.customer$?.pipe(
+      switchMap(customer => 
+        customer && customer._id ? this.apiService.fetchNoteForCustomer(customer._id) : of(null)
+      ),
+      map(notes => notes && notes.length > 0 ? notes[0] : null)
+    ).subscribe(note => {
+      this.currentNote = note;
+      this.note = of(note);
+    });
+  }
 
-   addNote(customerId:string|undefined) {
+   addNote(noteText:string, customerId:string|undefined) {
     if(!customerId) return;
+    const userId = this.store.selectSnapshot(UserState).currentUser._id??""
     this.apiService.addNote({
-      text:"Das ist ein zum testen ersten Notiz und kommt aus dem Backend",
+      text:noteText,
       customerId:customerId,
-      user_id:this.store.selectSnapshot(UserState).currentUser._id??"",
-    })
+      user_id:userId,
+    }).subscribe();
    }
 
-   showNote(){
-
+   updateNote(noteText:string, customerId:string|undefined){
+    if(!customerId || !this.currentNote) return;
+    const userId = this.store.selectSnapshot(UserState).currentUser._id??""
+    this.currentNote.text = noteText;
+    this.apiService.updateNote(this.currentNote).subscribe();
    }
 }

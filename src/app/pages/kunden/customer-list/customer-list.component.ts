@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Address, Customer } from '../../../core/models';
 import { Router } from '@angular/router';
 import { ApiService } from '../../../core/service/api.service';
@@ -19,13 +19,11 @@ export class CustomerListComponent {
 
   @Input() maxTasksToShow = 20;
   @Input() customers:Customer[]|undefined;
+  @Input() withActions = true;
+  @Output() selected = new EventEmitter<Customer>();
   
-  // @Input() set customers(value: Customer[]) {
-  //   this._customers = value || [];
-  //   this.filteredCustomers = value;
-  // }
 
-  selectedTask!: Customer|undefined;
+  selectedCustomer!: Customer|undefined;
   
   showModal: boolean = false;
   
@@ -33,14 +31,15 @@ export class CustomerListComponent {
 
   closeModal() {
     this.showModal = false;
-    this.selectedTask = undefined;
+    this.selectedCustomer = undefined;
   }
 
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
   }
-  getAddress(address: Address) {
+  getAddress(address: Address|undefined) {
+    if(!address) return ""
    return `${address.street}, ${address.zipCode} ${address.city}`;
   }
 
@@ -49,16 +48,10 @@ export class CustomerListComponent {
     this.route.navigate(['kunden/view'])
     }
 
-  filterContracts(searchTerm: string) {
-    // if (!searchTerm) {
-    //   this.filteredCustomers = this.customers;
-    // } else {
-    //   this.filteredCustomers = this.customers.filter(
-    //     customers =>
-    //     this.getAddress(customers.address).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //     customers.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //     customers.lastname.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
-    //   );
-    // }
+  selectCustomer(customer:Customer){
+    if(!this.withActions){
+      this.selected.next(customer)
+      this.selectedCustomer = customer;
+    }
   }
-}
+  }

@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-bottom-btn',
   template: `<div class="d-flex flex-row-reverse">
-              <button [ngClass]="btnClass" (click)="actionEmitter()" >
+              <button [ngClass]="btnClass" (click)="actionEmitter()" style="margin-right:5px">
                 <i class="fa fa-plus"></i>
                 <span style="margin-left:5px">{{text}}</span>
               </button>
