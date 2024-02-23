@@ -1,59 +1,56 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Address, Contract, ContractState, Counter } from '../../../core/models';
 import { Router } from '@angular/router';
+import { ApiService } from '../../../core/service/api.service';
+import { Store } from '@ngxs/store';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-counter-list',
   templateUrl: './counter-list.component.html',
   styleUrl: './counter-list.component.scss',
 })
-export class CounterListComponent implements OnInit {
+export class CounterListComponent {
 
   isMobile = false;
-  private _counters: Counter[] = [];
-  filteredContracts: Counter[] = [];
-  @Input() set counters(value: Counter[]) {
-    this._counters = value || [];
-    this.filteredContracts = this._counters;
-  }
+  filteredCounters: Counter[] = [];
+  destroyed$ = new Subject<void>();
 
-  selectedTask!: Counter;
+  @Input() maxTasksToShow = 20;
+  @Input() counters: Counter[] | undefined;
+  @Input() withActions = true;
+  @Output() selected = new EventEmitter<Counter>();
+
+
+  selectedCounter!: Counter | undefined;
+
   showModal: boolean = false;
-  displayedColumns: string[] = ['zaehlernummer', 'address', 'type', 'actions'];
 
+  constructor(private readonly route: Router, private apiService: ApiService, private store: Store) { }
 
-
-  constructor(private readonly route: Router) { }
-
-  ngOnInit(): void {
-  }
-  get counters(): Counter[] {
-    return this._counters;
-  }
-  showVertrag(counter: Counter) {
-    this.route.navigate(['zaehler/view', counter.zaehlernummer])
+  closeModal() {
+    this.showModal = false;
+    this.selectedCounter = undefined;
   }
 
-  deleteVertrag(_t67: any) {
-    throw new Error('Method not implemented.');
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
-  editVertrag(_t67: any) {
-    throw new Error('Method not implemented.');
-  }
-  getAddress(address: Address) {
-   return `${address.street}, ${address.zipCode} ${address.city}`;
+  getAddress(address: Address | undefined) {
+    if (!address) return ""
+    return `${address.street}, ${address.zipCode} ${address.city}`;
   }
 
-  filterContracts(searchTerm: string) {
-    if (!searchTerm) {
-      this.filteredContracts = this.counters;
-    } else {
-      this.filteredContracts = this.counters.filter(
-        counter =>
-        this.getAddress(counter.address).toLowerCase().includes(searchTerm.toLowerCase()) ||
-        counter.zaehlernummer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        counter.type.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
-      );
+  goToCounter(customer: Counter) {
+    //this.store.dispatch(new SetCurentCustomer(customer))
+    this.route.navigate(['zaehler/view'])
+  }
+
+  selectCounter(counter: Counter) {
+    if (!this.withActions) {
+      this.selected.next(counter)
+      this.selectedCounter = counter;
     }
   }
 }

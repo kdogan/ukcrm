@@ -1,0 +1,15 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Kundenauswählen</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div *ngIf="filteredCounters.length>0">
+            <app-sucher (search)="filterContracts($event)"></app-sucher>
+            <app-counter-list [counters]="filteredCounters" [withActions]="false" (selected)="selected=$event"></app-counter-list>
+        </div>
+    </mat-card-content>
+    <mat-card-actions class="d-flex justify-content-end">
+        <app-bottom-btn [text]="'schliessen'" [icon]="'fa fa-times'" (click)="close()"></app-bottom-btn>
+        <app-bottom-btn [text]="'hinzufügen'" [icon]="'fa fa-plus'" (click)="add()"></app-bottom-btn>
+    </mat-card-actions>
+</mat-card>

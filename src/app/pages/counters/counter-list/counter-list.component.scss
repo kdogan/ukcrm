@@ -1,47 +1,131 @@
-.row {
-    align-items: center;
-  }
-  
-  .row.mb-2 {
-    border-bottom: 1px solid #eee;
-    padding: 8px 0;
-  }
-  
-  .font-weight-bold div {
-    font-weight: bold;
+.task-list {
+  .task-header {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 2px solid #ccc;
+      background-color: #f4f6f7;
+      border-radius: 15px 15px 0px 0px;
+      font-weight: bold;
+
+      span {
+          &:first-child {
+              flex-basis: 20%;
+          }
+
+          &:nth-child(2) {
+              flex-basis: 30%;
+          }
+          &:nth-child(3) {
+              flex-basis: 10%;
+          }
+
+          &:last-child {
+              flex-basis: 40%;
+          }
+
+          @media (max-width: 576px) {
+              &:first-child {
+                  flex-grow: 2;
+              }
+
+              &:nth-child(2) {
+                  display: none;
+              }
+
+              &:last-child {
+                  flex-basis: 15%;
+              }
+          }
+      }
   }
 
-  .btn-sm {
-    margin-right: 5px;
-  }
-  
-  .card {
-    padding: 0;
-  }
-  
-  .btn {
-    margin-bottom: 5px;
-  }
+  .task-items {
+      border-radius: 0px 0px 15px 15px;
+      background-color: #f4f6f7;
 
+      .task-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px;
+          border-bottom: 1px solid #ccc;
 
-  .right-aligned {
-    text-align: right;
-  }
+          @media (max-width: 576px) {
+              flex-wrap: wrap;
+          }
 
-  
-  /* Stil für die Actions-Buttons */
-  .actions-btn {
-    display: flex;
-    justify-content: flex-end; /* Rechtsausrichtung der Buttons */
+          // >span:first-child {
+          //     // flex-grow: 1;
+
+          //     @media (max-width: 576px) {
+          //         flex-basis: 100%;
+          //         order: 1;
+          //     }
+          // }
+          
+      span {
+        &:first-child {
+            flex-basis: 20%;
+        }
+
+        &:nth-child(2) {
+            flex-basis: 30%;
+        }
+        &:nth-child(3) {
+            flex-basis: 10%;
+        }
+
+        &:last-child {
+            flex-basis: 40%;
+        }
+
+        @media (max-width: 576px) {
+            &:first-child {
+                flex-grow: 2;
+            }
+
+            &:nth-child(2) {
+                display: none;
+            }
+
+            &:last-child {
+                flex-basis: 15%;
+            }
+        }
+    }
+
+          .task-actions {
+              display: flex;
+              gap: 10px;
+
+              @media (max-width: 576px) {
+                  flex-basis: 50%;
+                  justify-content: end;
+                  order: 3;
+
+                  button {
+                      span {
+                          display: none;
+                      }
+                  }
+              }
+          }
+      }
   }
-  /* Standardmäßig rechts ausrichten */
-.right-aligned {
-  text-align: right;
 }
 
-/* Für kleine Bildschirme (z.B. unter 600px) */
-@media screen and (max-width: 600px) {
-  .right-aligned {
-    text-align: left; /* oder center, je nach Bedarf */
+.modal {
+  width: 100%;
+  .modal-body {
+      min-height: 300px;
+      background-color: #f4f6f7;
   }
+  .modal-footer {
+      justify-content: end;
+  }
+}
+
+.task-item.selected {
+  background-color: #f0f0f0; /* Oder jede Farbe Ihrer Wahl */
 }

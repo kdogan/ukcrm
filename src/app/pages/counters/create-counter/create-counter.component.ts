@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../../core/service/api.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { UserState } from '../../../core/store/user.state';
+import { CountersState } from '../../../core/store/counters.state';
 
 @Component({
   selector: 'app-create-counter',
@@ -19,7 +20,7 @@ export class CreateCounterComponent implements OnInit, OnDestroy {
   isAddressValid = false;
   address!: Address;
   destroyed$ = new Subject<void>();
-  @Select(UserState.getCurrentUser) currentUser$: Observable<User> | undefined;
+  @Select(CountersState.getAllCounters) counters$: Observable<User> | undefined;
   currentUser!:User;
   constructor(private fb: FormBuilder, private store: Store, private router: Router, private apiService: ApiService, ) { }
 
@@ -30,13 +31,13 @@ export class CreateCounterComponent implements OnInit, OnDestroy {
       address: [''],
       type: ['']
     });
-    this.currentUser$?.pipe(takeUntil(this.destroyed$)).subscribe({
-      next: (user) =>{
-        if(user){
-          this.currentUser = user;
-        }
-      }
-    });
+    // this.currentUser$?.pipe(takeUntil(this.destroyed$)).subscribe({
+    //   next: (user) =>{
+    //     if(user){
+    //       this.currentUser = user;
+    //     }
+    //   }
+    // });
   }
   ngOnDestroy(): void {
     this.destroyed$.next();

@@ -43,7 +43,8 @@
               <mat-card-header>
                   <mat-card-title>Adresse</mat-card-title>
               </mat-card-header>
-              <mat-card-content>
+              <mat-card-content *ngIf="counter">
+                <p>{{counter.address?.street+ ', '+counter.address?.zipCode+' '+counter.address?.city }}</p>
               </mat-card-content>
           </mat-card>
         </div>
@@ -88,10 +89,15 @@
                   <mat-card-title>Zähler</mat-card-title>
               </mat-card-header>
               <mat-card-content>
-                  <div></div>
+                <div *ngIf="counter" class="customer-details">
+                  <p><strong>Zaehlernummer:</strong> {{ counter.zaehlernummer }}</p>
+                  <p><strong>Type:</strong> {{ counter.type }}</p>
+                  <hr/>
+                
+                </div>
               </mat-card-content>
               <mat-card-actions>
-              <app-bottom-btn [icon]="'fa fa-plus'" ></app-bottom-btn>
+                <app-bottom-btn [icon]="'fa fa-plus'" (click)="openDialog('counter')" ></app-bottom-btn>
               </mat-card-actions>
           </mat-card>
         </div>
@@ -111,7 +117,7 @@
   </div>
   <app-divider></app-divider>
   <div class="p-2" style="float:right">
-      <app-bottom-btn type="submit" [text]="'Erstellen'" [icon]="'fa fa-plus'"></app-bottom-btn>
+      <app-bottom-btn type="submit" [text]="'Erstellen'" [icon]="'fa fa-plus'" (click)="create()"></app-bottom-btn>
   </div>
   
   

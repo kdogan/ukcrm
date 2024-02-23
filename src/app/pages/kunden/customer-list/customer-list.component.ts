@@ -18,16 +18,16 @@ export class CustomerListComponent {
   destroyed$ = new Subject<void>();
 
   @Input() maxTasksToShow = 20;
-  @Input() customers:Customer[]|undefined;
+  @Input() customers: Customer[] | undefined;
   @Input() withActions = true;
   @Output() selected = new EventEmitter<Customer>();
-  
 
-  selectedCustomer!: Customer|undefined;
-  
+
+  selectedCustomer!: Customer | undefined;
+
   showModal: boolean = false;
-  
-  constructor(private readonly route: Router, private apiService:ApiService, private store:Store) { }
+
+  constructor(private readonly route: Router, private apiService: ApiService, private store: Store) { }
 
   closeModal() {
     this.showModal = false;
@@ -38,20 +38,20 @@ export class CustomerListComponent {
     this.destroyed$.next();
     this.destroyed$.complete();
   }
-  getAddress(address: Address|undefined) {
-    if(!address) return ""
-   return `${address.street}, ${address.zipCode} ${address.city}`;
+  getAddress(address: Address | undefined) {
+    if (!address) return ""
+    return `${address.street}, ${address.zipCode} ${address.city}`;
   }
 
   goToCustomer(customer: Customer) {
     this.store.dispatch(new SetCurentCustomer(customer))
     this.route.navigate(['kunden/view'])
-    }
+  }
 
-  selectCustomer(customer:Customer){
-    if(!this.withActions){
+  selectCustomer(customer: Customer) {
+    if (!this.withActions) {
       this.selected.next(customer)
       this.selectedCustomer = customer;
     }
   }
-  }
+}

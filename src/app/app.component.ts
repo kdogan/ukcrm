@@ -6,6 +6,7 @@ import { SetCurrentUser } from './core/store/user.action';
 import { Subject, takeUntil } from 'rxjs';
 import { AddAllTasks } from './core/store/tasks.action';
 import { AddCustomer } from './core/store/customers.action';
+import { AddAllCounters } from './core/store/counter.action';
 
 @Component({
   selector: 'app-root',
@@ -61,6 +62,12 @@ export class AppComponent {
     this.apiService.getTasks().pipe(takeUntil(this.destroyed$)).subscribe({
       next: (tasks) => {
         this.store.dispatch(new AddAllTasks(tasks));
+      },
+      error: (error) => console.error("Fehler beim Abrufen der Tasks: ", error)
+    });
+    this.apiService.getAllCounters().pipe(takeUntil(this.destroyed$)).subscribe({
+      next: (counters) => {
+        this.store.dispatch(new AddAllCounters(counters));
       },
       error: (error) => console.error("Fehler beim Abrufen der Tasks: ", error)
     });

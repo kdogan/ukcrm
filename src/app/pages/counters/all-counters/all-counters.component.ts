@@ -13,7 +13,4 @@ export class AllCountersComponent {
 
   @Select(CountersState.getAllCounters) counters$: Observable<Counter[]> | undefined;
 
-  addCounter() {
-    console.log('Neuer Vertrag hinzufügen');
-  }
 }

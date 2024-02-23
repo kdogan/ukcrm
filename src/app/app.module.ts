@@ -50,6 +50,7 @@ import { MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } fr
 import { CustomersDialogComponent } from './dialogs/customers-dialog/customers-dialog.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { CountersDialogComponent } from './dialogs/counters-dialog/counters-dialog.component';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     CustomerListComponent,
     CustomerComponent,
     NoteFormComponent,
-    CustomersDialogComponent
+    CustomersDialogComponent,
+    CountersDialogComponent
   ],
   imports: [
     BrowserAnimationsModule,
