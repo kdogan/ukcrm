@@ -31,7 +31,8 @@ export class CreateVertragComponent implements OnInit, OnDestroy {
       vertragnummer: new FormControl(''),
       vertragstart: new FormControl(''),
       vertragsende: new FormControl(''),
-      status: new FormControl('')
+      status: new FormControl(''),
+      company:new FormControl('')
     });
   }
   ngOnDestroy(): void {
@@ -74,12 +75,12 @@ export class CreateVertragComponent implements OnInit, OnDestroy {
     if(!(this.customer && this.counter && this.customer._id)) return;
     this.apiService.addContract({
       kundennummer:this.customer._id,
-      firma:"Test",
       status:ContractState.BEARBEITUNG,
       vertragnummer:this.vertragForm.get("vertragnummer")?.value,
       vertragstart: formatDate(this.vertragForm.get("vertragstart")?.value),
       vertragsende:formatDate(this.vertragForm.get("vertragsende")?.value),
-      zaehlernummer:this.counter.zaehlernummer
+      zaehlernummer:this.counter.zaehlernummer,
+      firma:this.vertragForm.get('company')?.value
     }).pipe(takeUntil(this.destroyed$)).subscribe({
       next: (contract) =>{
         this.store.dispatch(new AddContract(contract));
