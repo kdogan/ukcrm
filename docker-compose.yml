@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: berater-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: berater_app
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - berater-network
+
+  backend:
+    build: ./backend
+    container_name: berater-backend
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://mongodb:27017/berater_app
+      JWT_SECRET: change-this-secret-in-production
+      JWT_EXPIRE: 30m
+      JWT_REFRESH_EXPIRE: 7d
+      BCRYPT_ROUNDS: 12
+      CORS_ORIGIN: http://localhost:4200
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    networks:
+      - berater-network
+
+  frontend:
+    build: ./frontend
+    container_name: berater-frontend
+    restart: always
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - berater-network
+
+networks:
+  berater-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

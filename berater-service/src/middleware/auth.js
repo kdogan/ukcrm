@@ -1,0 +1,75 @@
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+
+// Token generieren
+exports.generateToken = (userId) => {
+  return jwt.sign(
+    { userId },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || '30m' }
+  );
+};
+
+// Refresh Token generieren
+exports.generateRefreshToken = (userId) => {
+  return jwt.sign(
+    { userId, type: 'refresh' },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
+  );
+};
+
+// Auth Middleware
+exports.authenticate = async (req, res, next) => {
+  try {
+    // Token aus Header extrahieren
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Kein Token vorhanden'
+      });
+    }
+
+    const token = authHeader.substring(7);
+
+    // Token verifizieren
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // User laden
+    const user = await User.findById(decoded.userId).select('-passwordHash');
+    if (!user || !user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: 'Ungültiger Token oder Benutzer inaktiv'
+      });
+    }
+
+    // User an Request anhängen
+    req.user = user;
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Token abgelaufen'
+      });
+    }
+    
+    return res.status(401).json({
+      success: false,
+      message: 'Ungültiger Token'
+    });
+  }
+};
+
+// Admin-only Middleware
+exports.requireAdmin = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Admin-Rechte erforderlich'
+    });
+  }
+  next();
+};
