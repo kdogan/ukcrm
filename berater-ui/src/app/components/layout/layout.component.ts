@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { SettingsService, UserSettings } from '../../services/settings.service';
 
 @Component({
   selector: 'app-layout',
@@ -10,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
   template: `
     <div class="app-layout">
       <!-- Navigation -->
-      <nav class="sidebar">
+      <nav class="sidebar" [style.background]="sidebarColor">
         <div class="logo">
           <span class="logo-icon">🏢</span>
           <h2 class="logo-text">Berater App</h2>
@@ -20,31 +21,37 @@ import { AuthService } from '../../services/auth.service';
           <li>
             <a routerLink="/dashboard" routerLinkActive="active">
               <span class="icon">📊</span>
-              <span class="nav-text">Dashboard</span>
+              <span class="nav-text">{{ settings.sidebarLabels.dashboard }}</span>
             </a>
           </li>
           <li>
             <a routerLink="/customers" routerLinkActive="active">
               <span class="icon">👥</span>
-              <span class="nav-text">Kunden</span>
+              <span class="nav-text">{{ settings.sidebarLabels.customers }}</span>
             </a>
           </li>
           <li>
             <a routerLink="/meters" routerLinkActive="active">
               <span class="icon">⚡</span>
-              <span class="nav-text">Zähler</span>
+              <span class="nav-text">{{ settings.sidebarLabels.meters }}</span>
             </a>
           </li>
           <li>
             <a routerLink="/contracts" routerLinkActive="active">
               <span class="icon">📋</span>
-              <span class="nav-text">Verträge</span>
+              <span class="nav-text">{{ settings.sidebarLabels.contracts }}</span>
             </a>
           </li>
           <li>
             <a routerLink="/todos" routerLinkActive="active">
               <span class="icon">✓</span>
-              <span class="nav-text">TODOs</span>
+              <span class="nav-text">{{ settings.sidebarLabels.todos }}</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/settings" routerLinkActive="active">
+              <span class="icon">⚙️</span>
+              <span class="nav-text">Einstellungen</span>
             </a>
           </li>
         </ul>
@@ -79,7 +86,6 @@ import { AuthService } from '../../services/auth.service';
 
     .sidebar {
       width: 70px;
-      background: linear-gradient(180deg, #e5ffe5 0%, #34d399 100%);
       color: white;
       display: flex;
       flex-direction: column;
@@ -252,14 +258,28 @@ import { AuthService } from '../../services/auth.service';
     }
   `]
 })
-export class LayoutComponent {
+export class LayoutComponent implements OnInit {
   currentUser: any = null;
+  settings!: UserSettings;
+  sidebarColor: string = '';
 
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private settingsService: SettingsService
   ) {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
+    });
+  }
+
+  ngOnInit(): void {
+    this.settings = this.settingsService.getSettings();
+    this.sidebarColor = this.settingsService.getSidebarColor();
+
+    // Subscribe to settings changes
+    this.settingsService.settings$.subscribe(settings => {
+      this.settings = settings;
+      this.sidebarColor = this.settingsService.getSidebarColor();
     });
   }
 

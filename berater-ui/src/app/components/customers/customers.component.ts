@@ -46,7 +46,13 @@ import { CustomerService, Customer } from '../../services/customer.service';
               <td>{{ customer.customerNumber }}</td>
               <td>{{ customer.firstName }} {{ customer.lastName }}</td>
               <td>{{ customer.email || '-' }}</td>
-              <td>{{ customer.phone || '-' }}</td>
+              <td>
+                <span *ngIf="customer.phone" class="phone-container">
+                  {{ customer.phone }}
+                  <a [href]="'tel:' + customer.phone" class="phone-icon" title="Anrufen">📞</a>
+                </span>
+                <span *ngIf="!customer.phone">-</span>
+              </td>
               <td>
                 <span class="badge" [class.badge-active]="customer.isActive">
                   {{ customer.isActive ? 'Aktiv' : 'Inaktiv' }}
@@ -144,6 +150,23 @@ import { CustomerService, Customer } from '../../services/customer.service';
       color: #555;
     }
     .data-table td { padding: 1rem; border-top: 1px solid #eee; }
+    .phone-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .phone-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .phone-icon:hover {
+      transform: scale(1.2);
+    }
     .badge {
       display: inline-block;
       padding: 0.25rem 0.75rem;

@@ -51,6 +51,10 @@ export const routes: Routes = [
       {
         path: 'reminders',
         loadComponent: () => import('./components/reminders/reminders.component').then(m => m.RemindersComponent)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./components/settings/settings.component').then(m => m.SettingsComponent)
       }
     ]
   },

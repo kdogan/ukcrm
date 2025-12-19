@@ -1,5 +1,6 @@
 const Meter = require('../models/Meter');
 const MeterHistory = require('../models/MeterHistory');
+const MeterReading = require('../models/MeterReading');
 
 // @desc    Get all meters
 // @route   GET /api/meters
@@ -27,9 +28,24 @@ exports.getMeters = async (req, res, next) => {
       .limit(parseInt(limit))
       .skip(skip);
 
+    // Hole letzte Ablesungen für alle Zähler
+    const metersWithReadings = await Promise.all(
+      meters.map(async (meter) => {
+        const latestReading = await MeterReading.findOne({ meterId: meter._id })
+          .sort({ readingDate: -1 });
+
+        const meterObj = meter.toObject();
+        if (latestReading) {
+          meterObj.currentReading = latestReading.readingValue;
+          meterObj.lastReadingDate = latestReading.readingDate;
+        }
+        return meterObj;
+      })
+    );
+
     res.status(200).json({
       success: true,
-      data: meters,
+      data: metersWithReadings,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -221,6 +237,166 @@ exports.updateMeter = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: meter
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get meter readings
+// @route   GET /api/meters/:id/readings
+// @access  Private
+exports.getMeterReadings = async (req, res, next) => {
+  try {
+    const meter = await Meter.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!meter) {
+      return res.status(404).json({
+        success: false,
+        message: 'Zähler nicht gefunden'
+      });
+    }
+
+    const readings = await MeterReading.find({ meterId: req.params.id })
+      .populate('customerId', 'firstName lastName customerNumber')
+      .populate('contractId', 'contractNumber')
+      .sort({ readingDate: -1 });
+
+    // Berechne Verbrauch zwischen Ablesungen
+    const readingsWithConsumption = readings.map((reading, index) => {
+      const readingObj = reading.toJSON();
+      if (index < readings.length - 1) {
+        const previousReading = readings[index + 1];
+        readingObj.consumption = reading.readingValue - previousReading.readingValue;
+        const daysDiff = Math.ceil((reading.readingDate - previousReading.readingDate) / (1000 * 60 * 60 * 24));
+        readingObj.daysSinceLastReading = daysDiff;
+      }
+      return readingObj;
+    });
+
+    res.status(200).json({
+      success: true,
+      data: readingsWithConsumption
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Create meter reading
+// @route   POST /api/meters/:id/readings
+// @access  Private
+exports.createMeterReading = async (req, res, next) => {
+  try {
+    const meter = await Meter.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!meter) {
+      return res.status(404).json({
+        success: false,
+        message: 'Zähler nicht gefunden'
+      });
+    }
+
+    const readingData = {
+      meterId: req.params.id,
+      beraterId: req.user._id,
+      customerId: meter.currentCustomerId || null,
+      contractId: req.body.contractId || null,
+      readingValue: req.body.readingValue,
+      readingDate: req.body.readingDate || new Date(),
+      readingType: req.body.readingType || 'regular',
+      notes: req.body.notes || '',
+      imageUrl: req.body.imageUrl || null
+    };
+
+    const reading = await MeterReading.create(readingData);
+
+    res.status(201).json({
+      success: true,
+      data: reading
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get latest meter reading
+// @route   GET /api/meters/:id/readings/latest
+// @access  Private
+exports.getLatestMeterReading = async (req, res, next) => {
+  try {
+    const meter = await Meter.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!meter) {
+      return res.status(404).json({
+        success: false,
+        message: 'Zähler nicht gefunden'
+      });
+    }
+
+    const latestReading = await MeterReading.findOne({ meterId: req.params.id })
+      .populate('customerId', 'firstName lastName customerNumber')
+      .populate('contractId', 'contractNumber')
+      .sort({ readingDate: -1 });
+
+    if (!latestReading) {
+      return res.status(404).json({
+        success: false,
+        message: 'Keine Ablesung gefunden'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: latestReading
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete meter reading
+// @route   DELETE /api/meters/:id/readings/:readingId
+// @access  Private
+exports.deleteMeterReading = async (req, res, next) => {
+  try {
+    const meter = await Meter.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!meter) {
+      return res.status(404).json({
+        success: false,
+        message: 'Zähler nicht gefunden'
+      });
+    }
+
+    const reading = await MeterReading.findOneAndDelete({
+      _id: req.params.readingId,
+      meterId: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!reading) {
+      return res.status(404).json({
+        success: false,
+        message: 'Ablesung nicht gefunden'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Ablesung gelöscht'
     });
   } catch (error) {
     next(error);

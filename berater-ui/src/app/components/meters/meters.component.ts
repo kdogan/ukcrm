@@ -6,6 +6,7 @@ import { MeterService } from '../../services/meter.service';
 import { ReminderService } from '../../services/reminder.service';
 import { CustomerService } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
+import { MeterReadingService } from '../../services/meter-reading.service';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -516,6 +517,8 @@ export class ContractsComponent implements OnInit {
               <th>Zählernummer</th>
               <th>Typ</th>
               <th>Status</th>
+              <th>Aktueller Zählerstand</th>
+              <th>Letzte Ablesung</th>
               <th>Aktueller Kunde</th>
               <th>Aktionen</th>
             </tr>
@@ -530,12 +533,19 @@ export class ContractsComponent implements OnInit {
                 </span>
               </td>
               <td>
+                <strong>{{ meter.currentReading || '-' }}</strong>
+              </td>
+              <td>
+                {{ meter.lastReadingDate ? (meter.lastReadingDate | date:'dd.MM.yyyy') : '-' }}
+              </td>
+              <td>
                 {{ meter.currentCustomerId ?
                    (meter.currentCustomerId.firstName + ' ' + meter.currentCustomerId.lastName) : '-' }}
               </td>
               <td>
+                <button class="btn-small" (click)="showAddReadingModal(meter)">+ Ablesung</button>
+                <button class="btn-small" (click)="viewReadings(meter)">Ablesungen</button>
                 <button class="btn-small" (click)="editMeter(meter)">Bearbeiten</button>
-                <button class="btn-small" (click)="viewHistory(meter._id)">Historie</button>
               </td>
             </tr>
           </tbody>
@@ -639,6 +649,135 @@ export class ContractsComponent implements OnInit {
               </button>
             </div>
           </form>
+        </div>
+      </div>
+
+      <!-- Modal for Adding Reading -->
+      <div class="modal-overlay" *ngIf="showReadingModal" (click)="closeReadingModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Neue Ablesung für {{ selectedMeter?.meterNumber }}</h2>
+            <button class="btn-close" (click)="closeReadingModal()">&times;</button>
+          </div>
+          <form (ngSubmit)="saveReading()" #readingForm="ngForm">
+            <div class="form-group">
+              <label for="readingValue">Zählerstand *</label>
+              <input
+                type="number"
+                id="readingValue"
+                name="readingValue"
+                [(ngModel)]="currentReading.readingValue"
+                required
+                min="0"
+                step="0.01"
+                placeholder="z.B. 12345"
+                class="form-control"
+              />
+              <small *ngIf="selectedMeter?.currentReading" style="color: #666;">
+                Letzter Zählerstand: {{ selectedMeter.currentReading }}
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="readingDate">Ablesedatum *</label>
+              <input
+                type="date"
+                id="readingDate"
+                name="readingDate"
+                [(ngModel)]="currentReading.readingDate"
+                required
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="readingType">Typ</label>
+              <select
+                id="readingType"
+                name="readingType"
+                [(ngModel)]="currentReading.readingType"
+                class="form-control"
+              >
+                <option value="initial">Erstablesung</option>
+                <option value="regular">Reguläre Ablesung</option>
+                <option value="final">Schlussablesung</option>
+                <option value="special">Sonderablesung</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="notes">Notizen</label>
+              <textarea
+                id="notes"
+                name="notes"
+                [(ngModel)]="currentReading.notes"
+                rows="3"
+                placeholder="Optional: Zusätzliche Informationen"
+                class="form-control"
+              ></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-secondary" (click)="closeReadingModal()">Abbrechen</button>
+              <button type="submit" class="btn-primary" [disabled]="!readingForm.form.valid">
+                Speichern
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal for Viewing Readings -->
+      <div class="modal-overlay" *ngIf="showReadingsListModal" (click)="closeReadingsListModal()">
+        <div class="modal-content modal-wide" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Ablesungen für {{ selectedMeter?.meterNumber }}</h2>
+            <button class="btn-close" (click)="closeReadingsListModal()">&times;</button>
+          </div>
+
+          <div class="readings-list">
+            <div *ngIf="meterReadings.length === 0" class="no-data">
+              Keine Ablesungen vorhanden
+            </div>
+
+            <table class="data-table" *ngIf="meterReadings.length > 0">
+              <thead>
+                <tr>
+                  <th>Datum</th>
+                  <th>Zählerstand</th>
+                  <th>Verbrauch</th>
+                  <th>Typ</th>
+                  <th>Notizen</th>
+                  <th>Aktionen</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let reading of meterReadings">
+                  <td>{{ reading.readingDate | date:'dd.MM.yyyy' }}</td>
+                  <td><strong>{{ reading.readingValue }}</strong></td>
+                  <td>
+                    <span *ngIf="reading.consumption">
+                      {{ reading.consumption }} ({{ reading.daysSinceLastReading }} Tage)
+                    </span>
+                    <span *ngIf="!reading.consumption">-</span>
+                  </td>
+                  <td>{{ getReadingTypeLabel(reading.readingType) }}</td>
+                  <td>{{ reading.notes || '-' }}</td>
+                  <td>
+                    <button class="btn-small btn-danger" (click)="deleteReading(reading._id)">
+                      Löschen
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="closeReadingsListModal()">
+              Schließen
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -806,6 +945,15 @@ export class ContractsComponent implements OnInit {
       opacity: 0.5;
       cursor: not-allowed;
     }
+    .modal-wide {
+      max-width: 900px;
+    }
+    .no-data {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #888;
+      font-size: 1.1rem;
+    }
   `]
 })
 export class MetersComponent implements OnInit {
@@ -818,7 +966,22 @@ export class MetersComponent implements OnInit {
   currentMeter: any = this.getEmptyMeter();
   currentYear = new Date().getFullYear();
 
-  constructor(private meterService: MeterService) {}
+  // Reading modal
+  showReadingModal = false;
+  showReadingsListModal = false;
+  selectedMeter: any = null;
+  currentReading: any = {
+    readingValue: null,
+    readingDate: new Date().toISOString().split('T')[0],
+    readingType: 'regular',
+    notes: ''
+  };
+  meterReadings: any[] = [];
+
+  constructor(
+    private meterService: MeterService,
+    private meterReadingService: MeterReadingService
+  ) {}
 
   ngOnInit(): void {
     this.loadMeters();
@@ -925,6 +1088,91 @@ export class MetersComponent implements OnInit {
 
   viewHistory(meterId: string): void {
     alert('Historie-Ansicht für Zähler: ' + meterId);
+  }
+
+  showAddReadingModal(meter: any): void {
+    this.selectedMeter = meter;
+    this.currentReading = {
+      readingValue: null,
+      readingDate: new Date().toISOString().split('T')[0],
+      readingType: 'regular',
+      notes: ''
+    };
+    this.showReadingModal = true;
+  }
+
+  closeReadingModal(): void {
+    this.showReadingModal = false;
+    this.selectedMeter = null;
+  }
+
+  saveReading(): void {
+    if (!this.selectedMeter || !this.currentReading.readingValue) {
+      alert('Bitte geben Sie einen Zählerstand ein');
+      return;
+    }
+
+    this.meterReadingService.createReading(this.selectedMeter._id, this.currentReading).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.closeReadingModal();
+          this.loadMeters(); // Reload to get updated reading
+          alert('Ablesung erfolgreich gespeichert');
+        }
+      },
+      error: (error) => {
+        alert('Fehler beim Speichern der Ablesung: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  viewReadings(meter: any): void {
+    this.selectedMeter = meter;
+    this.meterReadingService.getMeterReadings(meter._id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.meterReadings = response.data;
+          this.showReadingsListModal = true;
+        }
+      },
+      error: (error) => {
+        alert('Fehler beim Laden der Ablesungen: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  closeReadingsListModal(): void {
+    this.showReadingsListModal = false;
+    this.meterReadings = [];
+    this.selectedMeter = null;
+  }
+
+  deleteReading(readingId: string): void {
+    if (!confirm('Möchten Sie diese Ablesung wirklich löschen?')) {
+      return;
+    }
+
+    this.meterReadingService.deleteReading(this.selectedMeter._id, readingId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.viewReadings(this.selectedMeter); // Reload readings
+          this.loadMeters(); // Reload meters to update current reading
+        }
+      },
+      error: (error) => {
+        alert('Fehler beim Löschen der Ablesung: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  getReadingTypeLabel(type: string): string {
+    const labels: any = {
+      initial: 'Erstablesung',
+      regular: 'Regulär',
+      final: 'Schlussablesung',
+      special: 'Sonderablesung'
+    };
+    return labels[type] || type;
   }
 }
 

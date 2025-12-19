@@ -50,6 +50,13 @@ meterSchema.virtual('isFree').get(function() {
   return this.currentCustomerId === null;
 });
 
+// Virtuelles Feld für aktuellen Ablesewert (wird auf Anwendungsebene gesetzt)
+meterSchema.virtual('currentReading');
+
+// Virtuelles Feld für letzte Ablesung (wird auf Anwendungsebene gesetzt)
+meterSchema.virtual('lastReadingDate');
+
 meterSchema.set('toJSON', { virtuals: true });
+meterSchema.set('toObject', { virtuals: true });
 
 module.exports = mongoose.model('Meter', meterSchema);

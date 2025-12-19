@@ -6,7 +6,11 @@ const {
   getMeterHistory,
   createMeter,
   assignMeter,
-  updateMeter
+  updateMeter,
+  getMeterReadings,
+  createMeterReading,
+  getLatestMeterReading,
+  deleteMeterReading
 } = require('../controllers/meterController');
 const { authenticate } = require('../middleware/auth');
 
@@ -22,5 +26,12 @@ router.route('/:id')
 
 router.get('/:id/history', getMeterHistory);
 router.post('/:id/assign', assignMeter);
+
+// Meter reading routes
+router.get('/:id/readings/latest', getLatestMeterReading);
+router.route('/:id/readings')
+  .get(getMeterReadings)
+  .post(createMeterReading);
+router.delete('/:id/readings/:readingId', deleteMeterReading);
 
 module.exports = router;

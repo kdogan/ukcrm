@@ -41,6 +41,28 @@ const userSchema = new mongoose.Schema({
   emailNotifications: {
     type: Boolean,
     default: true
+  },
+  settings: {
+    reminderDays: {
+      days90: { type: Boolean, default: true },
+      days60: { type: Boolean, default: true },
+      days30: { type: Boolean, default: true },
+      custom: { type: Number }
+    },
+    sidebarLabels: {
+      dashboard: { type: String, default: 'Dashboard' },
+      customers: { type: String, default: 'Kunden' },
+      meters: { type: String, default: 'Zähler' },
+      contracts: { type: String, default: 'Verträge' },
+      todos: { type: String, default: 'TODOs' }
+    },
+    notifications: {
+      email: { type: Boolean, default: true },
+      browser: { type: Boolean, default: false }
+    },
+    theme: {
+      sidebarColor: { type: String, default: 'mint' }
+    }
   }
 }, {
   timestamps: true

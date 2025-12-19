@@ -46,13 +46,36 @@ exports.login = async (req, res, next) => {
     const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
-    // User ohne Passwort zurückgeben
+    // User ohne Passwort zurückgeben, inkl. Settings
     const userObj = user.toJSON();
 
     res.status(200).json({
       success: true,
       data: {
-        user: userObj,
+        user: {
+          ...userObj,
+          settings: user.settings || {
+            reminderDays: {
+              days90: true,
+              days60: true,
+              days30: true
+            },
+            sidebarLabels: {
+              dashboard: 'Dashboard',
+              customers: 'Kunden',
+              meters: 'Zähler',
+              contracts: 'Verträge',
+              todos: 'TODOs'
+            },
+            notifications: {
+              email: true,
+              browser: false
+            },
+            theme: {
+              sidebarColor: 'mint'
+            }
+          }
+        },
         token,
         refreshToken
       }
@@ -147,6 +170,67 @@ exports.changePassword = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Passwort erfolgreich geändert'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get user settings
+// @route   GET /api/auth/settings
+// @access  Private
+exports.getSettings = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select('settings');
+
+    const defaultSettings = {
+      reminderDays: {
+        days90: true,
+        days60: true,
+        days30: true
+      },
+      sidebarLabels: {
+        dashboard: 'Dashboard',
+        customers: 'Kunden',
+        meters: 'Zähler',
+        contracts: 'Verträge',
+        todos: 'TODOs'
+      },
+      notifications: {
+        email: true,
+        browser: false
+      },
+      theme: {
+        sidebarColor: 'mint'
+      }
+    };
+
+    res.status(200).json({
+      success: true,
+      data: user.settings || defaultSettings
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update user settings
+// @route   PUT /api/auth/settings
+// @access  Private
+exports.updateSettings = async (req, res, next) => {
+  try {
+    const { settings } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { settings },
+      { new: true, runValidators: true }
+    ).select('settings');
+
+    res.status(200).json({
+      success: true,
+      message: 'Einstellungen gespeichert',
+      data: user.settings
     });
   } catch (error) {
     next(error);

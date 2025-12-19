@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { SettingsService, UserSettings } from './settings.service';
 
 export interface User {
   _id: string;
@@ -12,6 +13,7 @@ export interface User {
   role: string;
   phone?: string;
   emailNotifications: boolean;
+  settings?: UserSettings;
 }
 
 export interface LoginResponse {
@@ -34,7 +36,8 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private settingsService: SettingsService
   ) {
     this.loadUserFromStorage();
   }
@@ -45,6 +48,10 @@ export class AuthService {
         tap(response => {
           if (response.success) {
             this.setSession(response.data);
+            // Initialize settings from login response
+            if (response.data.user.settings) {
+              this.settingsService.initializeSettings(response.data.user.settings);
+            }
           }
         })
       );
@@ -117,6 +124,10 @@ export class AuthService {
       try {
         const user = JSON.parse(userStr);
         this.currentUserSubject.next(user);
+        // Initialize settings if available
+        if (user.settings) {
+          this.settingsService.initializeSettings(user.settings);
+        }
       } catch (e) {
         this.clearSession();
       }

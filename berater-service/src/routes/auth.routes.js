@@ -116,8 +116,10 @@ router.post('/login', [
         user: {
           id: user._id,
           email: user.email,
-          fullName: user.fullName,
-          role: user.role
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          settings: user.settings
         },
         token,
         refreshToken
@@ -236,6 +238,65 @@ router.put('/change-password', authMiddleware, [
     res.json({
       success: true,
       message: 'Passwort erfolgreich geändert'
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @route   GET /api/auth/settings
+// @desc    Einstellungen des Benutzers abrufen
+// @access  Private
+router.get('/settings', authMiddleware, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select('settings');
+
+    res.json({
+      success: true,
+      data: user.settings || {
+        reminderDays: {
+          days90: true,
+          days60: true,
+          days30: true
+        },
+        sidebarLabels: {
+          dashboard: 'Dashboard',
+          customers: 'Kunden',
+          meters: 'Zähler',
+          contracts: 'Verträge',
+          todos: 'TODOs'
+        },
+        notifications: {
+          email: true,
+          browser: false
+        },
+        theme: {
+          sidebarColor: 'mint'
+        }
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @route   PUT /api/auth/settings
+// @desc    Einstellungen des Benutzers aktualisieren
+// @access  Private
+router.put('/settings', authMiddleware, async (req, res, next) => {
+  try {
+    const { settings } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { settings },
+      { new: true, runValidators: true }
+    ).select('settings');
+
+    res.json({
+      success: true,
+      message: 'Einstellungen gespeichert',
+      data: user.settings
     });
   } catch (error) {
     next(error);
