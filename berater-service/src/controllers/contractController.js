@@ -86,8 +86,17 @@ exports.getContract = async (req, res, next) => {
 // @access  Private
 exports.createContract = async (req, res, next) => {
   try {
+    // Calculate endDate from startDate and durationMonths
+    let endDate = req.body.endDate;
+    if (!endDate && req.body.startDate && req.body.durationMonths) {
+      const startDate = new Date(req.body.startDate);
+      endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + parseInt(req.body.durationMonths));
+    }
+
     const contractData = {
       ...req.body,
+      endDate,
       beraterId: req.user._id,
       auditLog: [{
         userId: req.user._id,
@@ -97,6 +106,24 @@ exports.createContract = async (req, res, next) => {
     };
 
     const contract = await Contract.create(contractData);
+
+    // Zähler als belegt markieren und Historie erstellen
+    const Meter = require('../models/Meter');
+    const MeterHistory = require('../models/MeterHistory');
+
+    await Meter.findByIdAndUpdate(req.body.meterId, {
+      currentCustomerId: req.body.customerId
+    });
+
+    // Erstelle Historieneintrag für die Zählerzuordnung
+    await MeterHistory.create({
+      meterId: req.body.meterId,
+      beraterId: req.user._id,
+      customerId: req.body.customerId,
+      contractId: contract._id,
+      startDate: new Date(req.body.startDate),
+      endDate: null
+    });
 
     // Erinnerungen erstellen
     await createReminders(contract);
@@ -193,15 +220,37 @@ exports.updateContractStatus = async (req, res, next) => {
       });
     }
 
+    const oldStatus = contract.status;
     contract.status = status;
     contract.auditLog.push({
       userId: req.user._id,
       action: 'status_changed',
-      changes: { status: { old: contract.status, new: status } },
+      changes: { status: { old: oldStatus, new: status } },
       timestamp: new Date()
     });
 
     await contract.save();
+
+    // Zähler freigeben wenn Vertrag beendet oder archiviert wird
+    if ((status === 'ended' || status === 'archived') && oldStatus === 'active') {
+      const Meter = require('../models/Meter');
+      const MeterHistory = require('../models/MeterHistory');
+
+      await Meter.findByIdAndUpdate(contract.meterId, {
+        currentCustomerId: null
+      });
+
+      // Schließe offene Historie für diesen Vertrag
+      await MeterHistory.findOneAndUpdate(
+        {
+          contractId: contract._id,
+          endDate: null
+        },
+        {
+          endDate: contract.endDate || new Date()
+        }
+      );
+    }
 
     res.status(200).json({
       success: true,

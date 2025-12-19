@@ -12,38 +12,39 @@ import { AuthService } from '../../services/auth.service';
       <!-- Navigation -->
       <nav class="sidebar">
         <div class="logo">
-          <h2>Berater App</h2>
+          <span class="logo-icon">🏢</span>
+          <h2 class="logo-text">Berater App</h2>
         </div>
 
         <ul class="nav-menu">
           <li>
             <a routerLink="/dashboard" routerLinkActive="active">
               <span class="icon">📊</span>
-              <span>Dashboard</span>
+              <span class="nav-text">Dashboard</span>
             </a>
           </li>
           <li>
             <a routerLink="/customers" routerLinkActive="active">
               <span class="icon">👥</span>
-              <span>Kunden</span>
+              <span class="nav-text">Kunden</span>
             </a>
           </li>
           <li>
             <a routerLink="/meters" routerLinkActive="active">
               <span class="icon">⚡</span>
-              <span>Zähler</span>
+              <span class="nav-text">Zähler</span>
             </a>
           </li>
           <li>
             <a routerLink="/contracts" routerLinkActive="active">
               <span class="icon">📋</span>
-              <span>Verträge</span>
+              <span class="nav-text">Verträge</span>
             </a>
           </li>
           <li>
             <a routerLink="/todos" routerLinkActive="active">
               <span class="icon">✓</span>
-              <span>TODOs</span>
+              <span class="nav-text">TODOs</span>
             </a>
           </li>
         </ul>
@@ -58,7 +59,7 @@ import { AuthService } from '../../services/auth.service';
           </div>
           <button class="logout-btn" (click)="logout()">
             <span class="icon">🚪</span>
-            <span>Abmelden</span>
+            <span class="nav-text">Abmelden</span>
           </button>
         </div>
       </nav>
@@ -77,8 +78,8 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .sidebar {
-      width: 260px;
-      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      width: 70px;
+      background: linear-gradient(180deg, #e5ffe5 0%, #34d399 100%);
       color: white;
       display: flex;
       flex-direction: column;
@@ -86,17 +87,38 @@ import { AuthService } from '../../services/auth.service';
       height: 100vh;
       left: 0;
       top: 0;
+      transition: width 0.3s ease;
+      overflow: hidden;
+    }
+
+    .sidebar:hover {
+      width: 260px;
     }
 
     .logo {
-      padding: 2rem 1.5rem;
+      padding: 1.5rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      white-space: nowrap;
     }
 
-    .logo h2 {
+    .logo-icon {
+      font-size: 1.75rem;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
       margin: 0;
       font-size: 1.5rem;
       font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar:hover .logo-text {
+      opacity: 1;
     }
 
     .nav-menu {
@@ -120,6 +142,7 @@ import { AuthService } from '../../services/auth.service';
       color: rgba(255, 255, 255, 0.8);
       text-decoration: none;
       transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .nav-menu a:hover {
@@ -135,6 +158,18 @@ import { AuthService } from '../../services/auth.service';
 
     .nav-menu .icon {
       font-size: 1.25rem;
+      flex-shrink: 0;
+      width: 1.25rem;
+      text-align: center;
+    }
+
+    .nav-text {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar:hover .nav-text {
+      opacity: 1;
     }
 
     .user-section {
@@ -147,6 +182,7 @@ import { AuthService } from '../../services/auth.service';
       align-items: center;
       gap: 0.75rem;
       margin-bottom: 1rem;
+      white-space: nowrap;
     }
 
     .user-avatar {
@@ -159,10 +195,17 @@ import { AuthService } from '../../services/auth.service';
       justify-content: center;
       font-weight: 600;
       font-size: 1rem;
+      flex-shrink: 0;
     }
 
     .user-details {
       flex: 1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar:hover .user-details {
+      opacity: 1;
     }
 
     .user-name {
@@ -189,17 +232,23 @@ import { AuthService } from '../../services/auth.service';
       cursor: pointer;
       transition: all 0.2s;
       font-size: 0.9rem;
+      white-space: nowrap;
     }
 
     .logout-btn:hover {
       background: rgba(255, 255, 255, 0.2);
     }
 
+    .logout-btn .icon {
+      flex-shrink: 0;
+    }
+
     .main-content {
       flex: 1;
-      margin-left: 260px;
+      margin-left: 70px;
       padding: 0;
       overflow-y: auto;
+      transition: margin-left 0.3s ease;
     }
   `]
 })

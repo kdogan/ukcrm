@@ -51,7 +51,13 @@ export class AuthService {
   }
 
   logout(): void {
-    this.http.post(`${this.apiUrl}/logout`, {}).subscribe();
+    // Call backend logout endpoint, but don't wait for response
+    // Clear session and redirect regardless of backend response
+    this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
+      error: () => {
+        // Ignore errors - we're logging out anyway
+      }
+    });
     this.clearSession();
     this.router.navigate(['/login']);
   }

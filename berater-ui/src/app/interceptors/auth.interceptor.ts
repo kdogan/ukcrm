@@ -32,7 +32,10 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
           // Token abgelaufen oder ungültig
-          this.authService.logout();
+          // Nicht logout aufrufen wenn wir bereits beim Logout-Endpoint sind
+          if (!request.url.includes('/auth/logout')) {
+            this.authService.logout();
+          }
         }
         return throwError(() => error);
       })
