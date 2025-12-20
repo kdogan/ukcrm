@@ -1,29 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { CustomerService, Customer } from '../../services/customer.service';
+import { SupplierService, Supplier } from '../../services/supplier.service';
 
 @Component({
-  selector: 'app-customers',
+  selector: 'app-suppliers',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
     <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
-        <h1>Kunden</h1>
-        <button class="btn-primary" (click)="showCreateModal()">+ Neuer Kunde</button>
+        <h1>Anbieter</h1>
+        <button class="btn-primary" (click)="showCreateModal()">+ Neuer Anbieter</button>
       </div>
 
       <div class="filters">
-        <input
-          type="search"
-          placeholder="Suche nach Name, E-Mail..."
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange()"
-          class="search-input"
-        />
-        <select [(ngModel)]="filterActive" (ngModelChange)="loadCustomers()" class="filter-select">
+        <select [(ngModel)]="filterActive" (ngModelChange)="loadSuppliers()" class="filter-select">
           <option [ngValue]="undefined">Alle</option>
           <option [ngValue]="true">Aktiv</option>
           <option [ngValue]="false">Inaktiv</option>
@@ -34,46 +26,56 @@ import { CustomerService, Customer } from '../../services/customer.service';
         <table class="data-table">
           <thead>
             <tr>
-              <th>Kundennr.</th>
               <th>Name</th>
-              <th>E-Mail</th>
+              <th>Kurzbezeichnung</th>
+              <th>Adresse</th>
               <th>Telefon</th>
+              <th>E-Mail</th>
               <th>Status</th>
               <th>Aktionen</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let customer of customers">
-              <td>{{ customer.customerNumber }}</td>
-              <td>{{ customer.firstName }} {{ customer.lastName }}</td>
-              <td>{{ customer.email || '-' }}</td>
+            <tr *ngFor="let supplier of suppliers">
+              <td>{{ supplier.name }}</td>
+              <td>{{ supplier.shortName }}</td>
               <td>
-                <span *ngIf="customer.phone" class="phone-container">
-                  {{ customer.phone }}
-                  <a [href]="'tel:' + customer.phone" class="phone-icon" title="Anrufen">📞</a>
+                <span *ngIf="supplier.address?.street || supplier.address?.city">
+                  <span *ngIf="supplier.address?.street">{{ supplier.address?.street }}<br></span>
+                  <span *ngIf="supplier.address?.zipCode || supplier.address?.city">
+                    {{ supplier.address?.zipCode }} {{ supplier.address?.city }}
+                  </span>
                 </span>
-                <span *ngIf="!customer.phone">-</span>
+                <span *ngIf="!supplier.address?.street && !supplier.address?.city">-</span>
               </td>
               <td>
-                <span class="badge" [class.badge-active]="customer.isActive">
-                  {{ customer.isActive ? 'Aktiv' : 'Inaktiv' }}
+                <span *ngIf="supplier.contactPhone" class="phone-container">
+                  {{ supplier.contactPhone }}
+                  <a [href]="'tel:' + supplier.contactPhone" class="phone-icon" title="Anrufen">📞</a>
+                </span>
+                <span *ngIf="!supplier.contactPhone">-</span>
+              </td>
+              <td>{{ supplier.contactEmail || '-' }}</td>
+              <td>
+                <span class="badge" [class.badge-active]="supplier.isActive">
+                  {{ supplier.isActive ? 'Aktiv' : 'Inaktiv' }}
                 </span>
               </td>
               <td class="actions-cell">
                 <div class="action-menu-container">
-                  <button class="action-menu-btn" (click)="toggleActionMenu(customer._id); $event.stopPropagation()">
+                  <button class="action-menu-btn" (click)="toggleActionMenu(supplier._id); $event.stopPropagation()">
                     ⋮
                   </button>
-                  <div class="action-menu" *ngIf="activeMenuId === customer._id" (click)="$event.stopPropagation()">
-                    <button class="menu-item" (click)="editCustomer(customer); closeActionMenu()">
+                  <div class="action-menu" *ngIf="activeMenuId === supplier._id" (click)="$event.stopPropagation()">
+                    <button class="menu-item" (click)="editSupplier(supplier); closeActionMenu()">
                       ✏️ Bearbeiten
                     </button>
                     <button
                       class="menu-item menu-item-danger"
-                      *ngIf="customer.isActive"
-                      (click)="deactivateCustomer(customer._id); closeActionMenu()"
+                      *ngIf="supplier.isActive"
+                      (click)="deleteSupplier(supplier._id); closeActionMenu()"
                     >
-                      🚫 Deaktivieren
+                      🗑️ Löschen
                     </button>
                   </div>
                 </div>
@@ -86,32 +88,51 @@ import { CustomerService, Customer } from '../../services/customer.service';
       <!-- Create/Edit Modal -->
       <div class="modal" *ngIf="showModal" (click)="closeModal()">
         <div class="modal-content" (click)="$event.stopPropagation()">
-          <h2>{{ editMode ? 'Kunde bearbeiten' : 'Neuer Kunde' }}</h2>
-          <form (ngSubmit)="saveCustomer()">
+          <h2>{{ editMode ? 'Anbieter bearbeiten' : 'Neuer Anbieter' }}</h2>
+          <form (ngSubmit)="saveSupplier()">
             <div class="form-row">
               <div class="form-group">
-                <label>Vorname*</label>
-                <input type="text" [(ngModel)]="currentCustomer.firstName" name="firstName" required />
+                <label>Name*</label>
+                <input type="text" [(ngModel)]="currentSupplier.name" name="name" required />
               </div>
               <div class="form-group">
-                <label>Nachname*</label>
-                <input type="text" [(ngModel)]="currentCustomer.lastName" name="lastName" required />
+                <label>Kurzbezeichnung*</label>
+                <input type="text" [(ngModel)]="currentSupplier.shortName" name="shortName" required />
               </div>
+            </div>
+
+            <h3 class="section-title">Adresse</h3>
+            <div class="form-group">
+              <label>Straße</label>
+              <input type="text" [(ngModel)]="currentSupplier.address!.street" name="street" />
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>E-Mail</label>
-                <input type="email" [(ngModel)]="currentCustomer.email" name="email" />
+                <label>PLZ</label>
+                <input type="text" [(ngModel)]="currentSupplier.address!.zipCode" name="zipCode" />
               </div>
               <div class="form-group">
-                <label>Telefon</label>
-                <input type="tel" [(ngModel)]="currentCustomer.phone" name="phone" />
+                <label>Stadt</label>
+                <input type="text" [(ngModel)]="currentSupplier.address!.city" name="city" />
               </div>
             </div>
             <div class="form-group">
-              <label>Notizen</label>
-              <textarea [(ngModel)]="currentCustomer.notes" name="notes" rows="3"></textarea>
+              <label>Land</label>
+              <input type="text" [(ngModel)]="currentSupplier.address!.country" name="country" />
             </div>
+
+            <h3 class="section-title">Kontakt</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Telefon</label>
+                <input type="tel" [(ngModel)]="currentSupplier.contactPhone" name="contactPhone" />
+              </div>
+              <div class="form-group">
+                <label>E-Mail</label>
+                <input type="email" [(ngModel)]="currentSupplier.contactEmail" name="contactEmail" />
+              </div>
+            </div>
+
             <div class="modal-actions">
               <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
               <button type="submit" class="btn-primary">Speichern</button>
@@ -135,15 +156,11 @@ import { CustomerService, Customer } from '../../services/customer.service';
       gap: 1rem;
       margin-bottom: 1.5rem;
     }
-    .search-input, .filter-select {
+    .filter-select {
       padding: 0.75rem;
       border: 2px solid #e0e0e0;
       border-radius: 8px;
       font-size: 1rem;
-    }
-    .search-input {
-      flex: 1;
-      max-width: 400px;
     }
     .table-container {
       background: white;
@@ -186,7 +203,7 @@ import { CustomerService, Customer } from '../../services/customer.service';
       font-size: 0.875rem;
     }
     .badge-active { background: #e8f5e9; color: #2e7d32; }
-    .btn-primary, .btn-secondary, .btn-small, .btn-danger {
+    .btn-primary, .btn-secondary {
       padding: 0.625rem 1.25rem;
       border: none;
       border-radius: 8px;
@@ -202,17 +219,6 @@ import { CustomerService, Customer } from '../../services/customer.service';
     .btn-secondary {
       background: #e0e0e0;
       color: #555;
-    }
-    .btn-small {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.875rem;
-      margin-right: 0.5rem;
-      background: #f0f0f0;
-      color: #555;
-    }
-    .btn-danger {
-      background: #ffebee;
-      color: #c62828;
     }
     .modal {
       position: fixed;
@@ -236,6 +242,13 @@ import { CustomerService, Customer } from '../../services/customer.service';
       overflow-y: auto;
     }
     .modal-content h2 { margin-top: 0; }
+    .section-title {
+      font-size: 1.2rem;
+      color: #555;
+      margin: 1.5rem 0 1rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e0e0e0;
+    }
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -256,6 +269,7 @@ import { CustomerService, Customer } from '../../services/customer.service';
       border: 2px solid #e0e0e0;
       border-radius: 8px;
       font-size: 1rem;
+      box-sizing: border-box;
     }
     .modal-actions {
       display: flex;
@@ -321,109 +335,89 @@ import { CustomerService, Customer } from '../../services/customer.service';
     }
   `]
 })
-export class CustomersComponent implements OnInit {
-  customers: Customer[] = [];
-  searchTerm = '';
+export class SuppliersComponent implements OnInit {
+  suppliers: Supplier[] = [];
   filterActive?: boolean = undefined;
   showModal = false;
   editMode = false;
-  currentCustomer: Partial<Customer> = {};
+  currentSupplier: Partial<Supplier> = { address: {} };
   activeMenuId: string | null = null;
 
-  constructor(
-    private customerService: CustomerService,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private supplierService: SupplierService) {}
 
   ngOnInit(): void {
-    // Prüfe ob eine ID in der Route vorhanden ist
-    this.route.params.subscribe(params => {
-      const customerId = params['id'];
-      if (customerId) {
-        // Zeige Kunde bearbeiten Modal
-        this.loadCustomerById(customerId);
-      } else {
-        this.loadCustomers();
-      }
-    });
+    this.loadSuppliers();
   }
 
-  loadCustomerById(id: string): void {
-    // Lade zuerst die Kundenliste
-    this.loadCustomers();
-
-    // Dann lade den spezifischen Kunden und öffne das Modal
-    this.customerService.getCustomer(id).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.currentCustomer = response.data;
-          this.editMode = true;
-          this.showModal = true;
-        }
-      },
-      error: (error) => {
-        console.error('Fehler beim Laden des Kunden:', error);
-        alert('Kunde konnte nicht geladen werden');
-      }
-    });
-  }
-
-  loadCustomers(): void {
-    this.customerService.getCustomers({
-      isActive: this.filterActive,
-      search: this.searchTerm
+  loadSuppliers(): void {
+    this.supplierService.getSuppliers({
+      isActive: this.filterActive
     }).subscribe({
       next: (response) => {
         if (response.success) {
-          this.customers = response.data;
+          this.suppliers = response.data;
         }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden der Anbieter:', error);
       }
     });
-  }
-
-  onSearchChange(): void {
-    setTimeout(() => this.loadCustomers(), 300);
   }
 
   showCreateModal(): void {
     this.editMode = false;
-    this.currentCustomer = {};
+    this.currentSupplier = { address: {} };
     this.showModal = true;
   }
 
-  editCustomer(customer: Customer): void {
+  editSupplier(supplier: Supplier): void {
     this.editMode = true;
-    this.currentCustomer = { ...customer };
+    this.currentSupplier = {
+      ...supplier,
+      address: { ...supplier.address }
+    };
     this.showModal = true;
   }
 
   closeModal(): void {
     this.showModal = false;
-    this.currentCustomer = {};
+    this.currentSupplier = { address: {} };
   }
 
-  saveCustomer(): void {
-    if (this.editMode && this.currentCustomer._id) {
-      this.customerService.updateCustomer(this.currentCustomer._id, this.currentCustomer).subscribe({
+  saveSupplier(): void {
+    if (this.editMode && this.currentSupplier._id) {
+      this.supplierService.updateSupplier(this.currentSupplier._id, this.currentSupplier).subscribe({
         next: () => {
-          this.loadCustomers();
+          this.loadSuppliers();
           this.closeModal();
+        },
+        error: (error) => {
+          console.error('Fehler beim Aktualisieren des Anbieters:', error);
+          alert('Fehler beim Aktualisieren des Anbieters');
         }
       });
     } else {
-      this.customerService.createCustomer(this.currentCustomer).subscribe({
+      this.supplierService.createSupplier(this.currentSupplier).subscribe({
         next: () => {
-          this.loadCustomers();
+          this.loadSuppliers();
           this.closeModal();
+        },
+        error: (error) => {
+          console.error('Fehler beim Erstellen des Anbieters:', error);
+          alert('Fehler beim Erstellen des Anbieters');
         }
       });
     }
   }
 
-  deactivateCustomer(id: string): void {
-    if (confirm('Kunde wirklich deaktivieren?')) {
-      this.customerService.deactivateCustomer(id).subscribe({
-        next: () => this.loadCustomers()
+  deleteSupplier(id: string): void {
+    if (confirm('Anbieter wirklich löschen?')) {
+      this.supplierService.deleteSupplier(id).subscribe({
+        next: () => this.loadSuppliers(),
+        error: (error) => {
+          console.error('Fehler beim Löschen des Anbieters:', error);
+          alert('Fehler beim Löschen des Anbieters');
+        }
       });
     }
   }

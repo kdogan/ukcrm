@@ -31,16 +31,40 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['berater', 'admin'],
+    enum: ['berater', 'admin', 'superadmin'],
     default: 'berater'
+  },
+  package: {
+    type: String,
+    enum: ['free', 'basic', 'professional', 'enterprise'],
+    default: 'free'
   },
   isActive: {
     type: Boolean,
     default: true
   },
+  isBlocked: {
+    type: Boolean,
+    default: false
+  },
+  blockedReason: {
+    type: String,
+    trim: true
+  },
+  blockedAt: {
+    type: Date
+  },
   emailNotifications: {
     type: Boolean,
     default: true
+  },
+  packageLimits: {
+    maxCustomers: { type: Number, default: 50 },
+    maxContracts: { type: Number, default: 100 },
+    maxMeters: { type: Number, default: 50 }
+  },
+  lastLogin: {
+    type: Date
   },
   settings: {
     reminderDays: {
@@ -54,7 +78,8 @@ const userSchema = new mongoose.Schema({
       customers: { type: String, default: 'Kunden' },
       meters: { type: String, default: 'Zähler' },
       contracts: { type: String, default: 'Verträge' },
-      todos: { type: String, default: 'TODOs' }
+      todos: { type: String, default: 'TODOs' },
+      suppliers: { type: String, default: 'Anbieter' }
     },
     notifications: {
       email: { type: Boolean, default: true },

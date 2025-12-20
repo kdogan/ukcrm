@@ -15,12 +15,19 @@ const meterRoutes = require('./src/routes/meterRoutes');
 const contractRoutes = require('./src/routes/contractRoutes');
 const reminderRoutes = require('./src/routes/reminderRoutes');
 const supplierRoutes = require('./src/routes/supplierRoutes');
+const todoRoutes = require('./src/routes/todoRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
+const packageRoutes = require('./src/routes/packageRoutes');
 
 // Initialize Express
 const app = express();
 
 // Connect to Database
 connectDB();
+
+// Initialize Cron Jobs
+const { initializeJobs } = require('./src/jobs/todoJobs');
+initializeJobs();
 
 // Security Middleware
 app.use(helmet());
@@ -67,6 +74,9 @@ app.use('/api/meters', meterRoutes);
 app.use('/api/contracts', contractRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api/todos', todoRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/packages', packageRoutes);
 
 // Dashboard route (separate from reminders)
 const { getDashboardStats } = require('./src/controllers/reminderController');

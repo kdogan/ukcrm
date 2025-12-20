@@ -53,6 +53,10 @@ export class MeterService {
     return this.http.put(`${this.apiUrl}/${id}`, meter);
   }
 
+  deleteMeter(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
   assignCustomer(meterId: string, customerId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/${meterId}/assign`, { customerId });
   }

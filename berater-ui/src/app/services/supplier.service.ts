@@ -7,6 +7,12 @@ export interface Supplier {
   _id: string;
   name: string;
   shortName: string;
+  address?: {
+    street?: string;
+    zipCode?: string;
+    city?: string;
+    country?: string;
+  };
   contactEmail?: string;
   contactPhone?: string;
   logoUrl?: string;
@@ -50,5 +56,9 @@ export class SupplierService {
 
   updateSupplier(id: string, supplier: Partial<Supplier>): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, supplier);
+  }
+
+  deleteSupplier(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

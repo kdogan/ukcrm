@@ -61,4 +61,8 @@ export class ContractService {
   updateStatus(id: string, status: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/status`, { status });
   }
+
+  deleteContract(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }

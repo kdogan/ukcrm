@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ContractService } from '../../services/contract.service';
 import { MeterService } from '../../services/meter.service';
 import { ReminderService } from '../../services/reminder.service';
@@ -351,14 +352,66 @@ export class ContractsComponent implements OnInit {
     private contractService: ContractService,
     private customerService: CustomerService,
     private supplierService: SupplierService,
-    private meterService: MeterService
+    private meterService: MeterService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.loadContracts();
+    // Lade immer Kunden, Lieferanten und freie Zähler
     this.loadCustomers();
     this.loadSuppliers();
     this.loadFreeMeters();
+
+    // Prüfe ob eine ID in der Route vorhanden ist
+    this.route.params.subscribe(params => {
+      const contractId = params['id'];
+      console.log('ContractsComponent - Route params:', params);
+      console.log('ContractsComponent - Contract ID:', contractId);
+
+      if (contractId) {
+        // Zeige Vertrag bearbeiten Modal
+        console.log('ContractsComponent - Loading contract by ID:', contractId);
+        this.loadContractById(contractId);
+      } else {
+        console.log('ContractsComponent - Loading all contracts');
+        this.loadContracts();
+      }
+    });
+  }
+
+  loadContractById(id: string): void {
+    console.log('loadContractById called with ID:', id);
+    // Lade zuerst die Vertragsliste
+    this.loadContracts();
+
+    // Dann lade den spezifischen Vertrag und öffne das Modal
+    this.contractService.getContract(id).subscribe({
+      next: (response) => {
+        console.log('Contract loaded from backend:', response);
+        if (response.success) {
+          const contract = response.data;
+          this.currentContract = {
+            _id: contract._id,
+            contractNumber: contract.contractNumber,
+            customerId: contract.customerId?._id || contract.customerId,
+            meterId: contract.meterId?._id || contract.meterId,
+            supplierId: contract.supplierId?._id || contract.supplierId,
+            startDate: contract.startDate ? new Date(contract.startDate).toISOString().split('T')[0] : '',
+            durationMonths: contract.durationMonths,
+            status: contract.status,
+            notes: contract.notes || ''
+          };
+          console.log('Setting currentContract:', this.currentContract);
+          console.log('Opening modal - isEditMode:', true, 'showModal:', true);
+          this.isEditMode = true;
+          this.showModal = true;
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden des Vertrags:', error);
+        alert('Vertrag konnte nicht geladen werden: ' + (error.error?.message || error.message));
+      }
+    });
   }
 
   getEmptyContract(): any {
@@ -483,7 +536,7 @@ export class ContractsComponent implements OnInit {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="page-container">
+    <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
         <h1>Zähler</h1>
         <button class="btn-primary" (click)="showCreateModal()">+ Neuer Zähler</button>
@@ -542,10 +595,26 @@ export class ContractsComponent implements OnInit {
                 {{ meter.currentCustomerId ?
                    (meter.currentCustomerId.firstName + ' ' + meter.currentCustomerId.lastName) : '-' }}
               </td>
-              <td>
-                <button class="btn-small" (click)="showAddReadingModal(meter)">+ Ablesung</button>
-                <button class="btn-small" (click)="viewReadings(meter)">Ablesungen</button>
-                <button class="btn-small" (click)="editMeter(meter)">Bearbeiten</button>
+              <td class="actions-cell">
+                <div class="action-menu-container">
+                  <button class="action-menu-btn" (click)="toggleActionMenu(meter._id); $event.stopPropagation()">
+                    ⋮
+                  </button>
+                  <div class="action-menu" *ngIf="activeMenuId === meter._id" (click)="$event.stopPropagation()">
+                    <button class="menu-item" (click)="showAddReadingModal(meter); closeActionMenu()">
+                      📊 Ablesung hinzufügen
+                    </button>
+                    <button class="menu-item" (click)="viewReadings(meter); closeActionMenu()">
+                      📋 Ablesungen anzeigen
+                    </button>
+                    <button class="menu-item" (click)="editMeter(meter); closeActionMenu()">
+                      ✏️ Bearbeiten
+                    </button>
+                    <button class="menu-item menu-item-danger" (click)="deleteMeter(meter._id); closeActionMenu()">
+                      🗑️ Löschen
+                    </button>
+                  </div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -954,6 +1023,62 @@ export class ContractsComponent implements OnInit {
       color: #888;
       font-size: 1.1rem;
     }
+    .actions-cell {
+      position: relative;
+      width: 60px;
+    }
+    .action-menu-container {
+      position: relative;
+      display: inline-block;
+    }
+    .action-menu-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      color: #666;
+      line-height: 1;
+      transition: all 0.2s;
+      border-radius: 4px;
+    }
+    .action-menu-btn:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+    .action-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      min-width: 200px;
+      z-index: 100;
+      margin-top: 0.25rem;
+      overflow: hidden;
+    }
+    .menu-item {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      background: white;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+      color: #333;
+    }
+    .menu-item:hover {
+      background: #f5f5f5;
+    }
+    .menu-item-danger {
+      color: #c62828;
+    }
+    .menu-item-danger:hover {
+      background: #ffebee;
+    }
   `]
 })
 export class MetersComponent implements OnInit {
@@ -965,6 +1090,7 @@ export class MetersComponent implements OnInit {
   isEditMode = false;
   currentMeter: any = this.getEmptyMeter();
   currentYear = new Date().getFullYear();
+  activeMenuId: string | null = null;
 
   // Reading modal
   showReadingModal = false;
@@ -980,11 +1106,41 @@ export class MetersComponent implements OnInit {
 
   constructor(
     private meterService: MeterService,
-    private meterReadingService: MeterReadingService
+    private meterReadingService: MeterReadingService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    // Prüfe ob eine ID in der Route vorhanden ist
+    this.route.params.subscribe(params => {
+      const meterId = params['id'];
+      if (meterId) {
+        // Zeige Zähler bearbeiten Modal
+        this.loadMeterById(meterId);
+      } else {
+        this.loadMeters();
+      }
+    });
+  }
+
+  loadMeterById(id: string): void {
+    // Lade zuerst die Zählerliste
     this.loadMeters();
+
+    // Dann lade den spezifischen Zähler und öffne das Modal
+    this.meterService.getMeter(id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.currentMeter = response.data;
+          this.isEditMode = true;
+          this.showModal = true;
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden des Zählers:', error);
+        alert('Zähler konnte nicht geladen werden');
+      }
+    });
   }
 
   getEmptyMeter(): any {
@@ -1173,6 +1329,32 @@ export class MetersComponent implements OnInit {
       special: 'Sonderablesung'
     };
     return labels[type] || type;
+  }
+
+  toggleActionMenu(id: string): void {
+    this.activeMenuId = this.activeMenuId === id ? null : id;
+  }
+
+  closeActionMenu(): void {
+    this.activeMenuId = null;
+  }
+
+  deleteMeter(id: string): void {
+    if (!confirm('Möchten Sie diesen Zähler wirklich löschen?')) {
+      return;
+    }
+
+    this.meterService.deleteMeter(id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadMeters();
+          alert('Zähler erfolgreich gelöscht');
+        }
+      },
+      error: (error) => {
+        alert('Fehler beim Löschen des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
   }
 }
 

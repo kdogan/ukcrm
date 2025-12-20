@@ -41,7 +41,15 @@ export const routes: Routes = [
         loadComponent: () => import('./components/customers/customers.component').then(m => m.CustomersComponent)
       },
       {
+        path: 'customers/:id',
+        loadComponent: () => import('./components/customers/customers.component').then(m => m.CustomersComponent)
+      },
+      {
         path: 'contracts',
+        loadComponent: () => import('./components/contracts/contracts.component').then(m => m.ContractsComponent)
+      },
+      {
+        path: 'contracts/:id',
         loadComponent: () => import('./components/contracts/contracts.component').then(m => m.ContractsComponent)
       },
       {
@@ -49,8 +57,28 @@ export const routes: Routes = [
         loadComponent: () => import('./components/meters/meters.component').then(m => m.MetersComponent)
       },
       {
+        path: 'meters/:id',
+        loadComponent: () => import('./components/meters/meters.component').then(m => m.MetersComponent)
+      },
+      {
         path: 'reminders',
         loadComponent: () => import('./components/reminders/reminders.component').then(m => m.RemindersComponent)
+      },
+      {
+        path: 'todos',
+        loadComponent: () => import('./components/todos/todos.component').then(m => m.TodosComponent)
+      },
+      {
+        path: 'suppliers',
+        loadComponent: () => import('./components/suppliers/suppliers.component').then(m => m.SuppliersComponent)
+      },
+      {
+        path: 'admin',
+        loadComponent: () => import('./components/admin/admin.component').then(m => m.AdminComponent)
+      },
+      {
+        path: 'packages',
+        loadComponent: () => import('./components/packages/packages.component').then(m => m.PackagesComponent)
       },
       {
         path: 'settings',

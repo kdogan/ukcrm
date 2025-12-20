@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ContractService } from '../../services/contract.service';
 import { CustomerService } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
 import { MeterService } from '../../services/meter.service';
 import { ReminderService } from '../../services/reminder.service';
+import { PackageService } from '../../services/package.service';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -13,7 +15,7 @@ import { ReminderService } from '../../services/reminder.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="page-container">
+    <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
         <h1>Verträge</h1>
         <button class="btn-primary" (click)="showCreateModal()">+ Neuer Vertrag</button>
@@ -38,6 +40,7 @@ import { ReminderService } from '../../services/reminder.service';
             <tr>
               <th>Vertragsnr.</th>
               <th>Kunde</th>
+              <th>Zähler</th>
               <th>Anbieter</th>
               <th>Startdatum</th>
               <th>Enddatum</th>
@@ -48,13 +51,59 @@ import { ReminderService } from '../../services/reminder.service';
           <tbody>
             <tr *ngFor="let contract of contracts">
               <td>{{ contract.contractNumber }}</td>
-              <td>{{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}</td>
-              <td>{{ contract.supplierId?.name }}</td>
+              <td>
+                <a
+                  *ngIf="contract.customerId"
+                  class="clickable-link"
+                  (click)="showCustomerDetails(contract.customerId); $event.stopPropagation()"
+                  title="Kunde anzeigen"
+                >
+                  {{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}
+                </a>
+                <span *ngIf="!contract.customerId">-</span>
+              </td>
+              <td>
+                <a
+                  *ngIf="contract.meterId"
+                  class="clickable-link"
+                  (click)="showMeterDetails(contract.meterId); $event.stopPropagation()"
+                  title="Zähler anzeigen"
+                >
+                  {{ contract.meterId?.meterNumber }}
+                </a>
+                <span *ngIf="!contract.meterId">-</span>
+              </td>
+              <td>
+                <a
+                  *ngIf="contract.supplierId"
+                  class="clickable-link"
+                  (click)="showSupplierDetails(contract.supplierId); $event.stopPropagation()"
+                  title="Anbieter anzeigen"
+                >
+                  {{ contract.supplierId?.name }}
+                </a>
+                <span *ngIf="!contract.supplierId">-</span>
+              </td>
               <td>{{ contract.startDate | date:'dd.MM.yyyy' }}</td>
               <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
               <td><span class="badge" [class.badge-active]="contract.status === 'active'">{{ getStatusLabel(contract.status) }}</span></td>
-              <td>
-                <button class="btn-small" (click)="editContract(contract)">Bearbeiten</button>
+              <td class="actions-cell">
+                <div class="action-menu-container">
+                  <button class="action-menu-btn" (click)="toggleActionMenu(contract._id); $event.stopPropagation()">
+                    ⋮
+                  </button>
+                  <div class="action-menu" *ngIf="activeMenuId === contract._id" (click)="$event.stopPropagation()">
+                    <button class="menu-item" (click)="editContract(contract); closeActionMenu()">
+                      ✏️ Bearbeiten
+                    </button>
+                    <button
+                      class="menu-item menu-item-danger"
+                      (click)="deleteContract(contract._id); closeActionMenu()"
+                    >
+                      🗑️ Löschen
+                    </button>
+                  </div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -222,6 +271,124 @@ import { ReminderService } from '../../services/reminder.service';
               </button>
             </div>
           </form>
+        </div>
+      </div>
+
+      <!-- Customer Details Modal -->
+      <div class="modal-overlay" *ngIf="showCustomerDetailsModal" (click)="closeCustomerDetails()">
+        <div class="modal-content detail-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Kundendetails</h2>
+            <button class="btn-close" (click)="closeCustomerDetails()">&times;</button>
+          </div>
+          <div class="detail-content" *ngIf="selectedCustomerDetails">
+            <div class="detail-row">
+              <span class="detail-label">Kundennummer:</span>
+              <span class="detail-value">{{ selectedCustomerDetails.customerNumber }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Name:</span>
+              <span class="detail-value">{{ selectedCustomerDetails.firstName }} {{ selectedCustomerDetails.lastName }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedCustomerDetails.email">
+              <span class="detail-label">E-Mail:</span>
+              <span class="detail-value">{{ selectedCustomerDetails.email }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedCustomerDetails.phone">
+              <span class="detail-label">Telefon:</span>
+              <span class="detail-value">
+                {{ selectedCustomerDetails.phone }}
+                <a [href]="'tel:' + selectedCustomerDetails.phone" class="phone-link" title="Anrufen">📞</a>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedCustomerDetails.address?.street || selectedCustomerDetails.address?.city">
+              <span class="detail-label">Adresse:</span>
+              <span class="detail-value">
+                <span *ngIf="selectedCustomerDetails.address?.street">{{ selectedCustomerDetails.address?.street }}<br></span>
+                <span *ngIf="selectedCustomerDetails.address?.zip || selectedCustomerDetails.address?.city">
+                  {{ selectedCustomerDetails.address?.zip }} {{ selectedCustomerDetails.address?.city }}
+                </span>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedCustomerDetails.notes">
+              <span class="detail-label">Notizen:</span>
+              <span class="detail-value">{{ selectedCustomerDetails.notes }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supplier Details Modal -->
+      <div class="modal-overlay" *ngIf="showSupplierDetailsModal" (click)="closeSupplierDetails()">
+        <div class="modal-content detail-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Anbieterdetails</h2>
+            <button class="btn-close" (click)="closeSupplierDetails()">&times;</button>
+          </div>
+          <div class="detail-content" *ngIf="selectedSupplierDetails">
+            <div class="detail-row">
+              <span class="detail-label">Name:</span>
+              <span class="detail-value">{{ selectedSupplierDetails.name }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Kurzbezeichnung:</span>
+              <span class="detail-value">{{ selectedSupplierDetails.shortName }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedSupplierDetails.address?.street || selectedSupplierDetails.address?.city">
+              <span class="detail-label">Adresse:</span>
+              <span class="detail-value">
+                <span *ngIf="selectedSupplierDetails.address?.street">{{ selectedSupplierDetails.address?.street }}<br></span>
+                <span *ngIf="selectedSupplierDetails.address?.zipCode || selectedSupplierDetails.address?.city">
+                  {{ selectedSupplierDetails.address?.zipCode }} {{ selectedSupplierDetails.address?.city }}
+                </span>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedSupplierDetails.contactPhone">
+              <span class="detail-label">Telefon:</span>
+              <span class="detail-value">
+                {{ selectedSupplierDetails.contactPhone }}
+                <a [href]="'tel:' + selectedSupplierDetails.contactPhone" class="phone-link" title="Anrufen">📞</a>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedSupplierDetails.contactEmail">
+              <span class="detail-label">E-Mail:</span>
+              <span class="detail-value">{{ selectedSupplierDetails.contactEmail }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meter Details Modal -->
+      <div class="modal-overlay" *ngIf="showMeterDetailsModal" (click)="closeMeterDetails()">
+        <div class="modal-content detail-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Zählerdetails</h2>
+            <button class="btn-close" (click)="closeMeterDetails()">&times;</button>
+          </div>
+          <div class="detail-content" *ngIf="selectedMeterDetails">
+            <div class="detail-row">
+              <span class="detail-label">Zählernummer:</span>
+              <span class="detail-value">{{ selectedMeterDetails.meterNumber }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Typ:</span>
+              <span class="detail-value">{{ getTypeLabel(selectedMeterDetails.type) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Status:</span>
+              <span class="detail-value">
+                <span class="badge" [class.badge-active]="!selectedMeterDetails.currentCustomerId">
+                  {{ selectedMeterDetails.currentCustomerId ? 'Belegt' : 'Frei' }}
+                </span>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedMeterDetails.currentCustomerId">
+              <span class="detail-label">Aktueller Kunde:</span>
+              <span class="detail-value">
+                {{ selectedMeterDetails.currentCustomerId.firstName }} {{ selectedMeterDetails.currentCustomerId.lastName }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -428,6 +595,107 @@ import { ReminderService } from '../../services/reminder.service';
       opacity: 0.5;
       cursor: not-allowed;
     }
+    .actions-cell {
+      position: relative;
+      width: 60px;
+    }
+    .action-menu-container {
+      position: relative;
+      display: inline-block;
+    }
+    .action-menu-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      color: #666;
+      line-height: 1;
+      transition: all 0.2s;
+      border-radius: 4px;
+    }
+    .action-menu-btn:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+    .action-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      min-width: 160px;
+      z-index: 100;
+      margin-top: 0.25rem;
+      overflow: hidden;
+    }
+    .menu-item {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      background: white;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+      color: #333;
+    }
+    .menu-item:hover {
+      background: #f5f5f5;
+    }
+    .menu-item-danger {
+      color: #c62828;
+    }
+    .menu-item-danger:hover {
+      background: #ffebee;
+    }
+    .clickable-link {
+      color: #667eea;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .clickable-link:hover {
+      color: #5568d3;
+      text-decoration: underline;
+    }
+    .detail-modal {
+      max-width: 500px;
+    }
+    .detail-content {
+      padding: 1rem 0;
+    }
+    .detail-row {
+      display: flex;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+    .detail-label {
+      font-weight: 600;
+      color: #555;
+      min-width: 150px;
+      flex-shrink: 0;
+    }
+    .detail-value {
+      color: #333;
+      flex: 1;
+    }
+    .phone-link {
+      margin-left: 0.5rem;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    .phone-link:hover {
+      transform: scale(1.2);
+    }
   `]
 })
 export class ContractsComponent implements OnInit {
@@ -448,19 +716,96 @@ export class ContractsComponent implements OnInit {
   showMeterDropdown = false;
   selectedCustomer: any = null;
   selectedMeter: any = null;
+  activeMenuId: string | null = null;
+  showCustomerDetailsModal = false;
+  showSupplierDetailsModal = false;
+  showMeterDetailsModal = false;
+  selectedCustomerDetails: any = null;
+  selectedSupplierDetails: any = null;
+  selectedMeterDetails: any = null;
 
   constructor(
     private contractService: ContractService,
     private customerService: CustomerService,
     private supplierService: SupplierService,
-    private meterService: MeterService
+    private meterService: MeterService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private packageService: PackageService
   ) {}
 
   ngOnInit(): void {
-    this.loadContracts();
+    // Lade immer Kunden, Lieferanten und freie Zähler
     this.loadCustomers();
     this.loadSuppliers();
     this.loadFreeMeters();
+
+    // Prüfe ob eine ID in der Route vorhanden ist
+    this.route.params.subscribe(params => {
+      const contractId = params['id'];
+      console.log('ContractsComponent - Route params:', params);
+      console.log('ContractsComponent - Contract ID:', contractId);
+
+      if (contractId) {
+        // Zeige Vertrag bearbeiten Modal
+        console.log('ContractsComponent - Loading contract by ID:', contractId);
+        this.loadContractById(contractId);
+      } else {
+        console.log('ContractsComponent - Loading all contracts');
+        this.loadContracts();
+      }
+    });
+  }
+
+  loadContractById(id: string): void {
+    console.log('loadContractById called with ID:', id);
+    // Lade zuerst die Vertragsliste
+    this.loadContracts();
+
+    // Dann lade den spezifischen Vertrag und öffne das Modal
+    this.contractService.getContract(id).subscribe({
+      next: (response) => {
+        console.log('Contract loaded from backend:', response);
+        if (response.success) {
+          const contract = response.data;
+          this.currentContract = {
+            _id: contract._id,
+            contractNumber: contract.contractNumber,
+            customerId: contract.customerId?._id || contract.customerId,
+            meterId: contract.meterId?._id || contract.meterId,
+            supplierId: contract.supplierId?._id || contract.supplierId,
+            startDate: contract.startDate ? new Date(contract.startDate).toISOString().split('T')[0] : '',
+            durationMonths: contract.durationMonths,
+            status: contract.status,
+            notes: contract.notes || ''
+          };
+
+          // Setze ausgewählten Kunden und Zähler für die Anzeige
+          if (contract.customerId) {
+            this.selectedCustomer = contract.customerId;
+            this.customerSearch = typeof contract.customerId === 'object'
+              ? `${contract.customerId.firstName} ${contract.customerId.lastName}`
+              : '';
+          }
+
+          if (contract.meterId) {
+            this.selectedMeter = contract.meterId;
+            this.meterSearch = typeof contract.meterId === 'object'
+              ? contract.meterId.meterNumber
+              : '';
+          }
+
+          console.log('Setting currentContract:', this.currentContract);
+          console.log('Opening modal - isEditMode:', true, 'showModal:', true);
+          this.isEditMode = true;
+          this.showModal = true;
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden des Vertrags:', error);
+        alert('Vertrag konnte nicht geladen werden: ' + (error.error?.message || error.message));
+      }
+    });
   }
 
   getEmptyContract(): any {
@@ -576,17 +921,55 @@ export class ContractsComponent implements OnInit {
   }
 
   showCreateModal(): void {
-    this.isEditMode = false;
-    this.currentContract = this.getEmptyContract();
-    this.customerSearch = '';
-    this.meterSearch = '';
-    this.selectedCustomer = null;
-    this.selectedMeter = null;
-    this.showCustomerDropdown = false;
-    this.showMeterDropdown = false;
-    this.filteredCustomers = this.customers;
-    this.filteredFreeMeters = this.freeMeters;
-    this.showModal = true;
+    // Prüfe zuerst die Paket-Limits
+    this.packageService.getUserLimits().subscribe({
+      next: (response) => {
+        const userLimits = response.data;
+
+        // Prüfe ob das Vertragslimit erreicht ist
+        if (userLimits.limits.isAtContractLimit) {
+          const confirmUpgrade = confirm(
+            `Sie haben das Vertragslimit Ihres ${userLimits.package.displayName}-Pakets erreicht!\n\n` +
+            `Aktuell: ${userLimits.usage.contracts} / ${userLimits.limits.maxContracts} Verträge\n\n` +
+            `Um weitere Verträge anzulegen, müssen Sie Ihr Paket upgraden.\n\n` +
+            `Möchten Sie jetzt zur Paket-Verwaltung wechseln?`
+          );
+
+          if (confirmUpgrade) {
+            this.router.navigate(['/settings']);
+          }
+          return;
+        }
+
+        // Wenn das Limit nicht erreicht ist, öffne das Formular
+        this.isEditMode = false;
+        this.currentContract = this.getEmptyContract();
+        this.customerSearch = '';
+        this.meterSearch = '';
+        this.selectedCustomer = null;
+        this.selectedMeter = null;
+        this.showCustomerDropdown = false;
+        this.showMeterDropdown = false;
+        this.filteredCustomers = this.customers;
+        this.filteredFreeMeters = this.freeMeters;
+        this.showModal = true;
+      },
+      error: (err) => {
+        console.error('Error checking package limits:', err);
+        // Bei Fehler trotzdem Formular öffnen (Backend prüft auch)
+        this.isEditMode = false;
+        this.currentContract = this.getEmptyContract();
+        this.customerSearch = '';
+        this.meterSearch = '';
+        this.selectedCustomer = null;
+        this.selectedMeter = null;
+        this.showCustomerDropdown = false;
+        this.showMeterDropdown = false;
+        this.filteredCustomers = this.customers;
+        this.filteredFreeMeters = this.freeMeters;
+        this.showModal = true;
+      }
+    });
   }
 
   editContract(contract: any): void {
@@ -640,7 +1023,15 @@ export class ContractsComponent implements OnInit {
           }
         },
         error: (error) => {
-          alert('Fehler beim Erstellen des Vertrags: ' + (error.error?.message || 'Unbekannter Fehler'));
+          const errorData = error.error;
+          if (errorData?.limitReached && errorData?.upgradeRequired) {
+            const message = `${errorData.message}\n\nSie haben derzeit ${errorData.currentCount} von ${errorData.maxAllowed} Verträgen.\n\nMöchten Sie Ihr Paket jetzt upgraden?`;
+            if (confirm(message)) {
+              this.router.navigate(['/packages']);
+            }
+          } else {
+            alert('Fehler beim Erstellen des Vertrags: ' + (errorData?.message || 'Unbekannter Fehler'));
+          }
         }
       });
     }
@@ -670,6 +1061,103 @@ export class ContractsComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  toggleActionMenu(id: string): void {
+    this.activeMenuId = this.activeMenuId === id ? null : id;
+  }
+
+  closeActionMenu(): void {
+    this.activeMenuId = null;
+  }
+
+  deleteContract(id: string): void {
+    if (confirm('Vertrag wirklich löschen?')) {
+      this.contractService.deleteContract(id).subscribe({
+        next: () => {
+          this.loadContracts();
+          this.loadFreeMeters();
+        },
+        error: (error: any) => {
+          alert('Fehler beim Löschen des Vertrags: ' + (error.error?.message || 'Unbekannter Fehler'));
+        }
+      });
+    }
+  }
+
+  showCustomerDetails(customer: any): void {
+    if (customer._id) {
+      this.customerService.getCustomer(customer._id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.selectedCustomerDetails = response.data;
+            this.showCustomerDetailsModal = true;
+          }
+        },
+        error: (error) => {
+          console.error('Fehler beim Laden der Kundendetails:', error);
+          alert('Kundendetails konnten nicht geladen werden');
+        }
+      });
+    } else {
+      this.selectedCustomerDetails = customer;
+      this.showCustomerDetailsModal = true;
+    }
+  }
+
+  closeCustomerDetails(): void {
+    this.showCustomerDetailsModal = false;
+    this.selectedCustomerDetails = null;
+  }
+
+  showSupplierDetails(supplier: any): void {
+    if (supplier._id) {
+      this.supplierService.getSupplier(supplier._id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.selectedSupplierDetails = response.data;
+            this.showSupplierDetailsModal = true;
+          }
+        },
+        error: (error) => {
+          console.error('Fehler beim Laden der Anbieterdetails:', error);
+          alert('Anbieterdetails konnten nicht geladen werden');
+        }
+      });
+    } else {
+      this.selectedSupplierDetails = supplier;
+      this.showSupplierDetailsModal = true;
+    }
+  }
+
+  closeSupplierDetails(): void {
+    this.showSupplierDetailsModal = false;
+    this.selectedSupplierDetails = null;
+  }
+
+  showMeterDetails(meter: any): void {
+    if (meter._id) {
+      this.meterService.getMeter(meter._id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.selectedMeterDetails = response.data;
+            this.showMeterDetailsModal = true;
+          }
+        },
+        error: (error) => {
+          console.error('Fehler beim Laden der Zählerdetails:', error);
+          alert('Zählerdetails konnten nicht geladen werden');
+        }
+      });
+    } else {
+      this.selectedMeterDetails = meter;
+      this.showMeterDetailsModal = true;
+    }
+  }
+
+  closeMeterDetails(): void {
+    this.showMeterDetailsModal = false;
+    this.selectedMeterDetails = null;
   }
 }
 

@@ -7,6 +7,7 @@ const Customer = require('../models/Customer');
 const Supplier = require('../models/Supplier');
 const Meter = require('../models/Meter');
 const Contract = require('../models/Contract');
+const Package = require('../models/Package');
 
 const connectDB = async () => {
   try {
@@ -26,8 +27,67 @@ const seedDatabase = async () => {
     await Supplier.deleteMany({});
     await Meter.deleteMany({});
     await Contract.deleteMany({});
+    await Package.deleteMany({});
 
     console.log('Vorhandene Daten gelöscht');
+
+    // Erstelle Pakete
+    const packages = await Package.insertMany([
+      {
+        name: 'free',
+        displayName: 'Kostenlos',
+        maxContracts: 10,
+        maxCustomers: 10,
+        maxMeters: 10,
+        price: 0,
+        currency: 'EUR',
+        billingPeriod: 'monthly',
+        isActive: true,
+        isFree: true,
+        order: 1
+      },
+      {
+        name: 'basic',
+        displayName: 'Basic',
+        maxContracts: 50,
+        maxCustomers: 50,
+        maxMeters: 50,
+        price: 29.99,
+        currency: 'EUR',
+        billingPeriod: 'monthly',
+        isActive: true,
+        isFree: false,
+        order: 2
+      },
+      {
+        name: 'professional',
+        displayName: 'Professional',
+        maxContracts: 200,
+        maxCustomers: 200,
+        maxMeters: 200,
+        price: 79.99,
+        currency: 'EUR',
+        billingPeriod: 'monthly',
+        isActive: true,
+        isFree: false,
+        order: 3
+      },
+      {
+        name: 'enterprise',
+        displayName: 'Enterprise',
+        maxContracts: -1, // unlimited
+        maxCustomers: -1,
+        maxMeters: -1,
+        price: 199.99,
+        currency: 'EUR',
+        billingPeriod: 'monthly',
+        isActive: true,
+        isFree: false,
+        order: 4
+      }
+    ]);
+
+    console.log('✓ Pakete erstellt:', packages.length);
 
     // Erstelle Berater (Passwort wird automatisch gehasht durch pre-save hook)
     const berater = await User.create({
@@ -37,6 +97,7 @@ const seedDatabase = async () => {
       lastName: 'Mustermann',
       phone: '+49 123 456789',
       role: 'berater',
+      package: 'free',
       isActive: true,
       emailNotifications: true
     });
@@ -51,10 +112,30 @@ const seedDatabase = async () => {
       lastName: 'Admin',
       phone: '+49 987 654321',
       role: 'admin',
+      package: 'professional',
       isActive: true
     });
 
     console.log('✓ Admin erstellt:', admin.email);
+
+    // Erstelle Superadmin (Passwort wird automatisch gehasht durch pre-save hook)
+    const superadmin = await User.create({
+      email: 'superadmin@example.com',
+      passwordHash: 'Super123!',
+      firstName: 'Super',
+      lastName: 'Administrator',
+      phone: '+49 800 999999',
+      role: 'superadmin',
+      package: 'enterprise',
+      isActive: true,
+      packageLimits: {
+        maxCustomers: -1, // unlimited
+        maxContracts: -1,
+        maxMeters: -1
+      }
+    });
+
+    console.log('✓ Superadmin erstellt:', superadmin.email);
 
     // Erstelle Anbieter
     const suppliers = await Supplier.insertMany([
@@ -247,8 +328,9 @@ const seedDatabase = async () => {
     console.log('Seeding erfolgreich abgeschlossen!');
     console.log('========================================');
     console.log('\nLogin-Daten:');
-    console.log('Berater: berater@example.com / Berater123!');
-    console.log('Admin:   admin@example.com / Admin123!');
+    console.log('Berater:    berater@example.com / Berater123!');
+    console.log('Admin:      admin@example.com / Admin123!');
+    console.log('Superadmin: superadmin@example.com / Super123!');
     console.log('========================================\n');
 
     process.exit(0);

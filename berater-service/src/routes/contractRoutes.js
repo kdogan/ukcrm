@@ -8,12 +8,13 @@ const {
   updateContractStatus
 } = require('../controllers/contractController');
 const { authenticate } = require('../middleware/auth');
+const { checkContractLimit } = require('../middleware/packageLimits');
 
 router.use(authenticate);
 
 router.route('/')
   .get(getContracts)
-  .post(createContract);
+  .post(checkContractLimit, createContract);
 
 router.route('/:id')
   .get(getContract)

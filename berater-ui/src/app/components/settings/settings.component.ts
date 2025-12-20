@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SettingsService, UserSettings } from '../../services/settings.service';
+import { PackageService, Package, UserLimits } from '../../services/package.service';
 
 @Component({
   selector: 'app-settings',
@@ -126,6 +127,17 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
                 class="input-field"
               />
             </div>
+
+            <div class="input-group">
+              <label>Anbieter:</label>
+              <input
+                type="text"
+                [(ngModel)]="settings.sidebarLabels.suppliers"
+                (blur)="saveSettings()"
+                placeholder="Anbieter"
+                class="input-field"
+              />
+            </div>
           </div>
         </div>
 
@@ -178,6 +190,89 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
                 <option value="orange">Orange</option>
                 <option value="red">Rot</option>
               </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paket-Verwaltung -->
+        <div class="settings-section">
+          <h2>📦 Ihr Paket</h2>
+          <p class="section-description">
+            Verwalten Sie Ihr aktuelles Paket und sehen Sie Ihre Nutzung.
+          </p>
+
+          <div *ngIf="userLimits" class="package-info">
+            <div class="current-package">
+              <div class="package-header">
+                <h3>{{ userLimits.package.displayName }}</h3>
+                <span class="package-price">{{ userLimits.package.price | number:'1.2-2' }} {{ userLimits.package.currency }} / {{ userLimits.package.billingPeriod === 'monthly' ? 'Monat' : 'Jahr' }}</span>
+              </div>
+
+              <div class="usage-section">
+                <div class="usage-item">
+                  <div class="usage-label">Verträge</div>
+                  <div class="usage-bar-container">
+                    <div class="usage-bar-bg">
+                      <div class="usage-bar-fill"
+                           [style.width.%]="getUsagePercentage('contracts')"
+                           [class.warning]="getUsagePercentage('contracts') >= 80"
+                           [class.danger]="getUsagePercentage('contracts') >= 100"></div>
+                    </div>
+                    <span class="usage-text">{{ userLimits.usage.contracts }} / {{ userLimits.limits.maxContracts === -1 ? '∞' : userLimits.limits.maxContracts }}</span>
+                  </div>
+                </div>
+
+                <div class="usage-item">
+                  <div class="usage-label">Kunden</div>
+                  <div class="usage-bar-container">
+                    <div class="usage-bar-bg">
+                      <div class="usage-bar-fill"
+                           [style.width.%]="getUsagePercentage('customers')"
+                           [class.warning]="getUsagePercentage('customers') >= 80"
+                           [class.danger]="getUsagePercentage('customers') >= 100"></div>
+                    </div>
+                    <span class="usage-text">{{ userLimits.usage.customers }} / {{ userLimits.limits.maxCustomers === -1 ? '∞' : userLimits.limits.maxCustomers }}</span>
+                  </div>
+                </div>
+
+                <div class="usage-item">
+                  <div class="usage-label">Zähler</div>
+                  <div class="usage-bar-container">
+                    <div class="usage-bar-bg">
+                      <div class="usage-bar-fill"
+                           [style.width.%]="getUsagePercentage('meters')"
+                           [class.warning]="getUsagePercentage('meters') >= 80"
+                           [class.danger]="getUsagePercentage('meters') >= 100"></div>
+                    </div>
+                    <span class="usage-text">{{ userLimits.usage.meters }} / {{ userLimits.limits.maxMeters === -1 ? '∞' : userLimits.limits.maxMeters }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="available-packages">
+              <h3>Verfügbare Pakete</h3>
+              <div class="packages-grid">
+                <div *ngFor="let pkg of packages"
+                     class="package-card"
+                     [class.current]="pkg.name === userLimits.package.name">
+                  <div class="package-card-header">
+                    <h4>{{ pkg.displayName }}</h4>
+                    <span class="current-badge" *ngIf="pkg.name === userLimits.package.name">Aktuell</span>
+                  </div>
+                  <div class="package-price-tag">{{ pkg.price | number:'1.2-2' }} {{ pkg.currency }}/{{ pkg.billingPeriod === 'monthly' ? 'Monat' : 'Jahr' }}</div>
+                  <div class="package-features">
+                    <div class="feature">✓ {{ pkg.maxContracts === -1 ? 'Unbegrenzt' : pkg.maxContracts }} Verträge</div>
+                    <div class="feature">✓ {{ pkg.maxCustomers === -1 ? 'Unbegrenzt' : pkg.maxCustomers }} Kunden</div>
+                    <div class="feature">✓ {{ pkg.maxMeters === -1 ? 'Unbegrenzt' : pkg.maxMeters }} Zähler</div>
+                  </div>
+                  <button *ngIf="pkg.name !== userLimits.package.name"
+                          [class]="pkg.order < userLimits.package.order ? 'btn-downgrade' : 'btn-upgrade'"
+                          (click)="changePackage(pkg.name, pkg.order)">
+                    {{ pkg.order < userLimits.package.order ? 'Downgraden' : 'Upgraden' }}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -384,16 +479,267 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
         opacity: 1;
       }
     }
+
+    /* Package Management Styles */
+    .package-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .current-package {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 2px solid #e0e0e0;
+    }
+
+    .package-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .package-header h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .package-price {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #34d399;
+    }
+
+    .usage-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .usage-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .usage-label {
+      font-weight: 600;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .usage-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .usage-bar-bg {
+      flex: 1;
+      height: 24px;
+      background: #e0e0e0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .usage-bar-fill {
+      height: 100%;
+      background: #34d399;
+      transition: width 0.3s, background 0.3s;
+      border-radius: 12px;
+    }
+
+    .usage-bar-fill.warning {
+      background: #fbbf24;
+    }
+
+    .usage-bar-fill.danger {
+      background: #ef4444;
+    }
+
+    .usage-text {
+      min-width: 80px;
+      text-align: right;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .available-packages {
+      margin-top: 1rem;
+    }
+
+    .available-packages h3 {
+      margin: 0 0 1.5rem 0;
+      font-size: 1.25rem;
+      color: #333;
+    }
+
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .package-card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .package-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .package-card.current {
+      border-color: #34d399;
+      background: #f0fdf4;
+    }
+
+    .package-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .package-card-header h4 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: #333;
+    }
+
+    .current-badge {
+      background: #34d399;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .package-price-tag {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #34d399;
+    }
+
+    .package-features {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .feature {
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .btn-upgrade, .btn-downgrade {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .btn-upgrade {
+      background: #34d399;
+      color: white;
+    }
+
+    .btn-upgrade:hover {
+      background: #10b981;
+    }
+
+    .btn-downgrade {
+      background: #fbbf24;
+      color: white;
+    }
+
+    .btn-downgrade:hover {
+      background: #f59e0b;
+    }
   `]
 })
 export class SettingsComponent implements OnInit {
   settings!: UserSettings;
   showSaveIndicator = false;
+  userLimits: UserLimits | null = null;
+  packages: Package[] = [];
 
-  constructor(private settingsService: SettingsService) {}
+  constructor(
+    private settingsService: SettingsService,
+    private packageService: PackageService
+  ) {}
 
   ngOnInit(): void {
     this.settings = this.settingsService.getSettings();
+    this.loadUserLimits();
+    this.loadPackages();
+  }
+
+  loadUserLimits(): void {
+    this.packageService.getUserLimits().subscribe({
+      next: (response) => {
+        this.userLimits = response.data;
+      },
+      error: (err) => {
+        console.error('Error loading user limits:', err);
+      }
+    });
+  }
+
+  loadPackages(): void {
+    this.packageService.getAllPackages().subscribe({
+      next: (response) => {
+        this.packages = response.data.filter((pkg: Package) => pkg.isActive);
+      },
+      error: (err) => {
+        console.error('Error loading packages:', err);
+      }
+    });
+  }
+
+  getUsagePercentage(type: 'contracts' | 'customers' | 'meters'): number {
+    if (!this.userLimits) return 0;
+
+    const usage = this.userLimits.usage[type];
+    const limit = this.userLimits.limits[`max${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof this.userLimits.limits];
+
+    if (limit === -1) return 0;
+    return Math.min(100, (usage / (limit as number)) * 100);
+  }
+
+  changePackage(packageName: string, order: number): void {
+    const currentOrder = this.userLimits?.package.order || 0;
+    const action = order < currentOrder ? 'Downgrade' : 'Upgrade';
+
+    if (confirm(`Möchten Sie wirklich auf dieses Paket ${action === 'Upgrade' ? 'upgraden' : 'downgraden'}?`)) {
+      this.packageService.upgradePackage(packageName).subscribe({
+        next: (response) => {
+          alert(response.message);
+          this.loadUserLimits();
+        },
+        error: (err) => {
+          console.error('Error changing package:', err);
+          alert(err.error?.message || 'Fehler beim Paket-Wechsel');
+        }
+      });
+    }
   }
 
   saveSettings(): void {

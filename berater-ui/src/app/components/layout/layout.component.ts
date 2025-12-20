@@ -24,19 +24,19 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
               <span class="nav-text">{{ settings.sidebarLabels.dashboard }}</span>
             </a>
           </li>
-          <li>
+          <li *ngIf="currentUser?.role !== 'superadmin'">
             <a routerLink="/customers" routerLinkActive="active">
               <span class="icon">👥</span>
               <span class="nav-text">{{ settings.sidebarLabels.customers }}</span>
             </a>
           </li>
-          <li>
+          <li *ngIf="currentUser?.role !== 'superadmin'">
             <a routerLink="/meters" routerLinkActive="active">
               <span class="icon">⚡</span>
               <span class="nav-text">{{ settings.sidebarLabels.meters }}</span>
             </a>
           </li>
-          <li>
+          <li *ngIf="currentUser?.role !== 'superadmin'">
             <a routerLink="/contracts" routerLinkActive="active">
               <span class="icon">📋</span>
               <span class="nav-text">{{ settings.sidebarLabels.contracts }}</span>
@@ -48,7 +48,25 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
               <span class="nav-text">{{ settings.sidebarLabels.todos }}</span>
             </a>
           </li>
-          <li>
+          <li *ngIf="currentUser?.role !== 'superadmin'">
+            <a routerLink="/suppliers" routerLinkActive="active">
+              <span class="icon">🏭</span>
+              <span class="nav-text">{{ settings.sidebarLabels.suppliers || 'Anbieter' }}</span>
+            </a>
+          </li>
+          <li *ngIf="currentUser?.role === 'superadmin'">
+            <a routerLink="/admin" routerLinkActive="active">
+              <span class="icon">👑</span>
+              <span class="nav-text">Benutzer</span>
+            </a>
+          </li>
+          <li *ngIf="currentUser?.role === 'superadmin'">
+            <a routerLink="/packages" routerLinkActive="active">
+              <span class="icon">📦</span>
+              <span class="nav-text">Pakete</span>
+            </a>
+          </li>
+          <li *ngIf="currentUser?.role !== 'superadmin'">
             <a routerLink="/settings" routerLinkActive="active">
               <span class="icon">⚙️</span>
               <span class="nav-text">Einstellungen</span>
@@ -95,6 +113,7 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
       top: 0;
       transition: width 0.3s ease;
       overflow: hidden;
+      z-index: 1000;
     }
 
     .sidebar:hover {
@@ -102,7 +121,7 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
     }
 
     .logo {
-      padding: 1.5rem;
+      padding: 1rem 1.5rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
@@ -130,21 +149,21 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
     .nav-menu {
       flex: 1;
       list-style: none;
-      padding: 1rem 0;
+      padding: 0.5rem 0;
       margin: 0;
       display: flex;
       flex-direction: column;
     }
 
     .nav-menu li {
-      margin: 0.25rem 0;
+      margin: 0;
     }
 
     .nav-menu a {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.875rem 1.5rem;
+      padding: 0.65rem 1.5rem;
       color: rgba(255, 255, 255, 0.8);
       text-decoration: none;
       transition: all 0.2s;
@@ -179,15 +198,16 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
     }
 
     .user-section {
-      padding: 1.5rem;
+      padding: 1rem 1.5rem;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
     }
 
     .user-info {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       white-space: nowrap;
     }
 

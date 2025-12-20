@@ -12,6 +12,25 @@ const supplierSchema = new mongoose.Schema({
     required: [true, 'Kurzbezeichnung ist erforderlich'],
     trim: true
   },
+  address: {
+    street: {
+      type: String,
+      trim: true
+    },
+    zipCode: {
+      type: String,
+      trim: true
+    },
+    city: {
+      type: String,
+      trim: true
+    },
+    country: {
+      type: String,
+      trim: true,
+      default: 'Deutschland'
+    }
+  },
   contactEmail: {
     type: String,
     trim: true,

@@ -45,6 +45,14 @@ exports.authenticate = async (req, res, next) => {
       });
     }
 
+    // Prüfe ob Benutzer blockiert ist
+    if (user.isBlocked) {
+      return res.status(403).json({
+        success: false,
+        message: 'Ihr Konto wurde blockiert. Grund: ' + (user.blockedReason || 'Keine Angabe')
+      });
+    }
+
     // User an Request anhängen
     req.user = user;
     next();
@@ -65,10 +73,21 @@ exports.authenticate = async (req, res, next) => {
 
 // Admin-only Middleware
 exports.requireAdmin = (req, res, next) => {
-  if (req.user.role !== 'admin') {
+  if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
     return res.status(403).json({
       success: false,
       message: 'Admin-Rechte erforderlich'
+    });
+  }
+  next();
+};
+
+// Superadmin-only Middleware
+exports.requireSuperAdmin = (req, res, next) => {
+  if (req.user.role !== 'superadmin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Superadmin-Rechte erforderlich'
     });
   }
   next();

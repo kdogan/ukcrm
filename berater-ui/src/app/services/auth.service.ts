@@ -58,13 +58,7 @@ export class AuthService {
   }
 
   logout(): void {
-    // Call backend logout endpoint, but don't wait for response
-    // Clear session and redirect regardless of backend response
-    this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
-      error: () => {
-        // Ignore errors - we're logging out anyway
-      }
-    });
+    // Clear session locally - this is sufficient for stateless JWT auth
     this.clearSession();
     this.router.navigate(['/login']);
   }

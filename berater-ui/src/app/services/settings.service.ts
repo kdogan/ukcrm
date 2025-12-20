@@ -16,6 +16,7 @@ export interface UserSettings {
     meters: string;
     contracts: string;
     todos: string;
+    suppliers: string;
   };
   notifications: {
     email: boolean;
@@ -38,7 +39,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     customers: 'Kunden',
     meters: 'Zähler',
     contracts: 'Verträge',
-    todos: 'TODOs'
+    todos: 'TODOs',
+    suppliers: 'Anbieter'
   },
   notifications: {
     email: true,
