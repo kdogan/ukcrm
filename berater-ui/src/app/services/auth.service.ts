@@ -42,6 +42,18 @@ export class AuthService {
     this.loadUserFromStorage();
   }
 
+  register(userData: { firstName: string; lastName: string; email: string; phone?: string; password: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, userData);
+  }
+
+  verifyEmail(token: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/verify-email/${token}`);
+  }
+
+  resendVerificationEmail(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/resend-verification`, { email });
+  }
+
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password })
       .pipe(

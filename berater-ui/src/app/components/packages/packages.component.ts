@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PackageService, Package, UserLimits } from '../../services/package.service';
+import { UpgradeService } from '../../services/upgrade.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -564,6 +565,7 @@ export class PackagesComponent implements OnInit {
 
   constructor(
     private packageService: PackageService,
+    private upgradeService: UpgradeService,
     private authService: AuthService
   ) {}
 
@@ -688,25 +690,25 @@ export class PackagesComponent implements OnInit {
     const isDowngrade = this.userLimits && packageOrder < this.userLimits.package.order;
     const action = isDowngrade ? 'downgraden' : 'upgraden';
 
-    let confirmMessage = `Möchten Sie wirklich zu diesem Paket ${action}?`;
+    let confirmMessage = `Möchten Sie wirklich eine ${action}-Anfrage für dieses Paket erstellen?\n\nHinweis: Die Anfrage muss vom Administrator genehmigt werden, nachdem die Zahlung eingegangen ist.`;
 
     if (isDowngrade) {
-      confirmMessage = `ACHTUNG: Sie sind dabei, Ihr Paket zu downgraden.\n\nWenn Ihre aktuelle Nutzung die Limits des neuen Pakets überschreitet, wird das Downgrade abgelehnt.\n\nMöchten Sie fortfahren?`;
+      confirmMessage = `ACHTUNG: Sie sind dabei, eine Downgrade-Anfrage zu erstellen.\n\nWenn Ihre aktuelle Nutzung die Limits des neuen Pakets überschreitet, wird die Anfrage abgelehnt.\n\nDie Anfrage muss vom Administrator genehmigt werden.\n\nMöchten Sie fortfahren?`;
     }
 
     if (confirm(confirmMessage)) {
-      this.packageService.upgradePackage(packageName).subscribe({
+      this.upgradeService.createUpgradeRequest(packageName).subscribe({
         next: (response: any) => {
           if (response.success) {
-            alert('Paket erfolgreich aktualisiert!');
+            alert(`Upgrade-Anfrage erfolgreich erstellt!\n\nStatus: ${response.data.status}\nGewünschtes Paket: ${response.data.packageDetails.displayName}\nPreis: ${response.data.packageDetails.price} ${response.data.packageDetails.currency}\n\nBitte überweisen Sie den Betrag und laden Sie anschließend den Zahlungsnachweis hoch.\nIhre Anfrage wird nach Zahlungseingang vom Administrator geprüft.`);
             this.loadUserLimits();
             this.loadPackages();
           }
         },
         error: (error: any) => {
-          console.error('Error changing package:', error);
+          console.error('Error creating upgrade request:', error);
           const errorMessage = error.error?.message || 'Unbekannter Fehler';
-          alert('Fehler beim Paket-Wechsel: ' + errorMessage);
+          alert('Fehler beim Erstellen der Upgrade-Anfrage: ' + errorMessage);
         }
       });
     }

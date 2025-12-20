@@ -66,6 +66,73 @@ import { Subscription } from 'rxjs';
             </div>
           </div>
         </div>
+
+        <!-- Upgrade-Anfragen -->
+        <div class="upgrade-requests-section" *ngIf="stats?.upgradeRequests">
+          <h2>🔄 Upgrade-Anfragen</h2>
+          <div class="stats-grid" style="margin-bottom: 20px;">
+            <div class="stat-card priority-high">
+              <h3>⏳ Warten auf Prüfung</h3>
+              <div class="stat-number">{{ stats.upgradeRequests.counts?.awaitingReview || 0 }}</div>
+              <div class="stat-label">Pending & Payment Received</div>
+            </div>
+            <div class="stat-card">
+              <h3>📝 Pending</h3>
+              <div class="stat-number">{{ stats.upgradeRequests.counts?.pending || 0 }}</div>
+              <div class="stat-label">Neu erstellt</div>
+            </div>
+            <div class="stat-card">
+              <h3>💰 Payment Received</h3>
+              <div class="stat-number">{{ stats.upgradeRequests.counts?.paymentReceived || 0 }}</div>
+              <div class="stat-label">Zahlung eingegangen</div>
+            </div>
+          </div>
+
+          <div *ngIf="stats.upgradeRequests.pending?.length > 0" class="requests-list">
+            <h3>Offene Anfragen</h3>
+            <div *ngFor="let request of stats.upgradeRequests.pending" class="request-card">
+              <div class="request-header">
+                <div class="user-info">
+                  <strong>{{ request.user.firstName }} {{ request.user.lastName }}</strong>
+                  <span class="email">{{ request.user.email }}</span>
+                </div>
+                <span class="status-badge" [class]="'status-' + request.status">
+                  {{ getStatusLabel(request.status) }}
+                </span>
+              </div>
+              <div class="request-details">
+                <div class="detail-item">
+                  <span class="label">Aktuell:</span>
+                  <span class="value">{{ request.currentPackage }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Gewünscht:</span>
+                  <span class="value highlight">{{ request.packageDetails.displayName }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Preis:</span>
+                  <span class="value">{{ request.packageDetails.price }} {{ request.packageDetails.currency }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Datum:</span>
+                  <span class="value">{{ formatDate(request.createdAt) }}</span>
+                </div>
+              </div>
+              <div class="request-actions">
+                <button class="btn-success" (click)="approveUpgrade(request._id)">
+                  ✓ Genehmigen
+                </button>
+                <button class="btn-danger" (click)="rejectUpgrade(request._id)">
+                  ✗ Ablehnen
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!stats.upgradeRequests.pending || stats.upgradeRequests.pending.length === 0" class="no-data">
+            <p>Keine offenen Upgrade-Anfragen</p>
+          </div>
+        </div>
       </div>
 
       <!-- Berater/Admin Dashboard -->
@@ -312,6 +379,154 @@ import { Subscription } from 'rxjs';
       color: #667eea;
       min-width: 30px;
     }
+
+    /* Upgrade Requests Styles */
+    .upgrade-requests-section {
+      margin-top: 2rem;
+    }
+
+    .requests-list {
+      margin-top: 1.5rem;
+    }
+
+    .requests-list h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #555;
+    }
+
+    .request-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .request-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .user-info strong {
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    .user-info .email {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .status-badge.status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-badge.status-payment_received {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .status-badge.status-approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-badge.status-rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .request-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .detail-item .label {
+      font-size: 0.875rem;
+      color: #888;
+    }
+
+    .detail-item .value {
+      font-size: 1rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .detail-item .value.highlight {
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .request-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .no-data {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      color: #888;
+    }
   `]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
@@ -338,6 +553,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       if (this.isSuperAdmin) {
         this.loadUserStats();
+        this.loadStats(); // Load dashboard stats to get upgrade requests
       } else {
         this.loadStats();
       }
@@ -412,5 +628,84 @@ export class DashboardComponent implements OnInit, OnDestroy {
   getPercentage(count: number): number {
     const max = this.isSuperAdmin ? this.maxUsers : this.maxContracts;
     return (count / max) * 100;
+  }
+
+  getStatusLabel(status: string): string {
+    const labels: any = {
+      pending: 'Neu',
+      payment_received: 'Zahlung erhalten',
+      approved: 'Genehmigt',
+      rejected: 'Abgelehnt',
+      cancelled: 'Storniert'
+    };
+    return labels[status] || status;
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  approveUpgrade(requestId: string): void {
+    const adminNotes = prompt('Optional: Notizen zur Genehmigung eingeben');
+
+    if (confirm('Möchten Sie diese Upgrade-Anfrage wirklich genehmigen?\n\nDas Benutzer-Paket wird automatisch aktualisiert.')) {
+      this.adminService.approveUpgradeRequest(requestId, adminNotes || undefined).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            alert(`Upgrade erfolgreich genehmigt!\n\nBenutzer: ${response.data.updatedUser.email}\nNeues Paket: ${response.data.updatedUser.package}`);
+            // Dashboard neu laden
+            if (this.isSuperAdmin) {
+              this.loadUserStats();
+              this.loadStats(); // Reload to update upgrade requests
+            } else {
+              this.loadStats();
+            }
+          }
+        },
+        error: (error: any) => {
+          console.error('Error approving upgrade:', error);
+          alert(error.error?.message || 'Fehler beim Genehmigen der Anfrage');
+        }
+      });
+    }
+  }
+
+  rejectUpgrade(requestId: string): void {
+    const rejectionReason = prompt('Bitte geben Sie einen Ablehnungsgrund ein:');
+
+    if (!rejectionReason) {
+      alert('Ablehnungsgrund ist erforderlich');
+      return;
+    }
+
+    const adminNotes = prompt('Optional: Zusätzliche Notizen eingeben');
+
+    if (confirm(`Möchten Sie diese Upgrade-Anfrage wirklich ablehnen?\n\nGrund: ${rejectionReason}`)) {
+      this.adminService.rejectUpgradeRequest(requestId, rejectionReason, adminNotes || undefined).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            alert('Upgrade-Anfrage wurde abgelehnt');
+            // Dashboard neu laden
+            if (this.isSuperAdmin) {
+              this.loadUserStats();
+              this.loadStats(); // Reload to update upgrade requests
+            } else {
+              this.loadStats();
+            }
+          }
+        },
+        error: (error: any) => {
+          console.error('Error rejecting upgrade:', error);
+          alert(error.error?.message || 'Fehler beim Ablehnen der Anfrage');
+        }
+      });
+    }
   }
 }

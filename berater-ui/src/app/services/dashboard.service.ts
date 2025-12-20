@@ -24,6 +24,14 @@ export interface DashboardStats {
     total: number;
     urgent: number;
   };
+  upgradeRequests?: {
+    pending: any[];
+    counts: {
+      pending: number;
+      paymentReceived: number;
+      awaitingReview: number;
+    };
+  };
 }
 
 @Injectable({

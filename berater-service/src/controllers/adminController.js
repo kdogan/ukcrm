@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const Package = require('../models/Package');
+const PackageUpgradeRequest = require('../models/PackageUpgradeRequest');
 const bcrypt = require('bcrypt');
 
 // Paket-Konfigurationen
@@ -369,6 +371,250 @@ exports.resetPassword = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Passwort erfolgreich zurückgesetzt'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Alle Upgrade-Anfragen abrufen
+// @route   GET /api/admin/upgrade-requests
+// @access  Superadmin only
+exports.getAllUpgradeRequests = async (req, res, next) => {
+  try {
+    const { status, page = 1, limit = 50 } = req.query;
+
+    const filter = {};
+    if (status) {
+      filter.status = status;
+    }
+
+    const skip = (page - 1) * limit;
+    const total = await PackageUpgradeRequest.countDocuments(filter);
+
+    const requests = await PackageUpgradeRequest.find(filter)
+      .populate('user', 'email firstName lastName package')
+      .populate('paymentMethod')
+      .populate('reviewedBy', 'firstName lastName email')
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip(skip);
+
+    res.status(200).json({
+      success: true,
+      data: requests,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Einzelne Upgrade-Anfrage abrufen
+// @route   GET /api/admin/upgrade-requests/:id
+// @access  Superadmin only
+exports.getUpgradeRequest = async (req, res, next) => {
+  try {
+    const request = await PackageUpgradeRequest.findById(req.params.id)
+      .populate('user', 'email firstName lastName phone package packageLimits')
+      .populate('paymentMethod')
+      .populate('reviewedBy', 'firstName lastName email');
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: 'Upgrade-Anfrage nicht gefunden'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: request
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Upgrade-Anfrage genehmigen
+// @route   PATCH /api/admin/upgrade-requests/:id/approve
+// @access  Superadmin only
+exports.approveUpgradeRequest = async (req, res, next) => {
+  try {
+    const { adminNotes } = req.body;
+
+    const request = await PackageUpgradeRequest.findById(req.params.id)
+      .populate('user');
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: 'Upgrade-Anfrage nicht gefunden'
+      });
+    }
+
+    if (request.status === 'approved') {
+      return res.status(400).json({
+        success: false,
+        message: 'Anfrage wurde bereits genehmigt'
+      });
+    }
+
+    if (request.status === 'cancelled') {
+      return res.status(400).json({
+        success: false,
+        message: 'Stornierte Anfragen können nicht genehmigt werden'
+      });
+    }
+
+    // User-Paket aktualisieren
+    const user = await User.findById(request.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Benutzer nicht gefunden'
+      });
+    }
+
+    // Package-Details aus DB holen für aktuelle Limits
+    const packageDetails = await Package.findOne({ name: request.requestedPackage });
+
+    let packageLimits;
+    if (packageDetails) {
+      packageLimits = {
+        maxCustomers: packageDetails.maxCustomers,
+        maxContracts: packageDetails.maxContracts,
+        maxMeters: packageDetails.maxMeters
+      };
+    } else {
+      // Fallback auf gespeicherte Limits in der Anfrage
+      packageLimits = {
+        maxCustomers: request.packageDetails.maxCustomers,
+        maxContracts: request.packageDetails.maxContracts,
+        maxMeters: request.packageDetails.maxMeters
+      };
+    }
+
+    // User aktualisieren
+    user.package = request.requestedPackage;
+    user.packageLimits = packageLimits;
+    await user.save();
+
+    // Request aktualisieren
+    request.status = 'approved';
+    request.reviewedBy = req.user._id;
+    request.reviewedAt = new Date();
+    request.adminNotes = adminNotes || '';
+    await request.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Upgrade-Anfrage genehmigt und Benutzer-Paket aktualisiert',
+      data: {
+        request: await PackageUpgradeRequest.findById(request._id)
+          .populate('user', 'email firstName lastName package packageLimits')
+          .populate('reviewedBy', 'firstName lastName email'),
+        updatedUser: user.toJSON()
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Upgrade-Anfrage ablehnen
+// @route   PATCH /api/admin/upgrade-requests/:id/reject
+// @access  Superadmin only
+exports.rejectUpgradeRequest = async (req, res, next) => {
+  try {
+    const { rejectionReason, adminNotes } = req.body;
+
+    if (!rejectionReason) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ablehnungsgrund ist erforderlich'
+      });
+    }
+
+    const request = await PackageUpgradeRequest.findById(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: 'Upgrade-Anfrage nicht gefunden'
+      });
+    }
+
+    if (request.status === 'approved') {
+      return res.status(400).json({
+        success: false,
+        message: 'Genehmigte Anfragen können nicht abgelehnt werden'
+      });
+    }
+
+    if (request.status === 'rejected') {
+      return res.status(400).json({
+        success: false,
+        message: 'Anfrage wurde bereits abgelehnt'
+      });
+    }
+
+    request.status = 'rejected';
+    request.rejectionReason = rejectionReason;
+    request.adminNotes = adminNotes || '';
+    request.reviewedBy = req.user._id;
+    request.reviewedAt = new Date();
+    await request.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Upgrade-Anfrage abgelehnt',
+      data: await PackageUpgradeRequest.findById(request._id)
+        .populate('user', 'email firstName lastName')
+        .populate('reviewedBy', 'firstName lastName email')
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Upgrade-Anfragen Statistiken
+// @route   GET /api/admin/upgrade-requests/stats
+// @access  Superadmin only
+exports.getUpgradeRequestStats = async (req, res, next) => {
+  try {
+    const total = await PackageUpgradeRequest.countDocuments();
+    const pending = await PackageUpgradeRequest.countDocuments({ status: 'pending' });
+    const paymentReceived = await PackageUpgradeRequest.countDocuments({ status: 'payment_received' });
+    const approved = await PackageUpgradeRequest.countDocuments({ status: 'approved' });
+    const rejected = await PackageUpgradeRequest.countDocuments({ status: 'rejected' });
+    const cancelled = await PackageUpgradeRequest.countDocuments({ status: 'cancelled' });
+
+    const byPackage = await PackageUpgradeRequest.aggregate([
+      { $match: { status: { $in: ['pending', 'payment_received', 'approved'] } } },
+      { $group: { _id: '$requestedPackage', count: { $sum: 1 } } }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        total,
+        pending,
+        paymentReceived,
+        approved,
+        rejected,
+        cancelled,
+        awaitingReview: pending + paymentReceived,
+        byPackage: byPackage.reduce((acc, item) => {
+          acc[item._id] = item.count;
+          return acc;
+        }, {})
+      }
     });
   } catch (error) {
     next(error);

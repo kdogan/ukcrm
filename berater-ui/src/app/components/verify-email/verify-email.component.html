@@ -1,0 +1,31 @@
+<div class="verify-container">
+  <div class="verify-box">
+    <div class="logo-section">
+      <h1>Berater App</h1>
+      <p>E-Mail Verifizierung</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-section">
+      <div class="spinner"></div>
+      <p>Ihre E-Mail-Adresse wird verifiziert...</p>
+    </div>
+
+    <div *ngIf="!loading && success" class="success-section">
+      <div class="success-icon">✓</div>
+      <h2>Verifizierung erfolgreich!</h2>
+      <p>{{ message }}</p>
+      <p class="redirect-message">Sie werden automatisch zum Login weitergeleitet...</p>
+      <a routerLink="/login" class="btn-primary">Jetzt anmelden</a>
+    </div>
+
+    <div *ngIf="!loading && !success" class="error-section">
+      <div class="error-icon">✗</div>
+      <h2>Verifizierung fehlgeschlagen</h2>
+      <p>{{ error }}</p>
+      <div class="action-buttons">
+        <a routerLink="/login" class="btn-secondary">Zum Login</a>
+        <a routerLink="/register" class="btn-primary">Erneut registrieren</a>
+      </div>
+    </div>
+  </div>
+</div>

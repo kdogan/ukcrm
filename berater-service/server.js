@@ -18,6 +18,7 @@ const supplierRoutes = require('./src/routes/supplierRoutes');
 const todoRoutes = require('./src/routes/todoRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
 const packageRoutes = require('./src/routes/packageRoutes');
+const upgradeRoutes = require('./src/routes/upgradeRoutes');
 
 // Initialize Express
 const app = express();
@@ -34,10 +35,11 @@ app.use(helmet());
 
 // CORS
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
-  credentials: true
+  origin: ['http://berater.eskapp.com', 'http://localhost:4200'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
 // Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 Minuten
@@ -77,6 +79,7 @@ app.use('/api/suppliers', supplierRoutes);
 app.use('/api/todos', todoRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/packages', packageRoutes);
+app.use('/api/upgrade', upgradeRoutes);
 
 // Dashboard route (separate from reminders)
 const { getDashboardStats } = require('./src/controllers/reminderController');

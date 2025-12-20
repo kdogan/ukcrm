@@ -61,10 +61,9 @@ export class PackageService {
     return this.http.get(`${this.apiUrl}/my/limits`);
   }
 
-  // Upgrade user's package
-  upgradePackage(packageName: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/my/upgrade`, { packageName });
-  }
+  // WICHTIG: Die alte upgradePackage Methode wurde entfernt!
+  // Verwenden Sie stattdessen UpgradeService.createUpgradeRequest()
+  // Berater müssen jetzt eine Upgrade-Anfrage erstellen, die vom Superadmin genehmigt werden muss
 
   // Superadmin: Create package
   createPackage(packageData: Partial<Package>): Observable<any> {

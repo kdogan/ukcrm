@@ -2,6 +2,7 @@ const Reminder = require('../models/Reminder');
 const Contract = require('../models/Contract');
 const Customer = require('../models/Customer');
 const Meter = require('../models/Meter');
+const PackageUpgradeRequest = require('../models/PackageUpgradeRequest');
 
 // @desc    Get all reminders
 // @route   GET /api/reminders
@@ -181,25 +182,62 @@ exports.getDashboardStats = async (req, res, next) => {
       dueDate: { $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) }
     });
 
+    // Upgrade-Anfragen (nur für Superadmin)
+    let upgradeRequests = null;
+    if (req.user.role === 'superadmin') {
+      // Pending und Payment Received Anfragen (warten auf Review)
+      const pendingUpgrades = await PackageUpgradeRequest.find({
+        status: { $in: ['pending', 'payment_received'] }
+      })
+        .populate('user', 'email firstName lastName package')
+        .populate('paymentMethod')
+        .sort({ createdAt: -1 })
+        .limit(10);
+
+      const pendingCount = await PackageUpgradeRequest.countDocuments({
+        status: 'pending'
+      });
+
+      const paymentReceivedCount = await PackageUpgradeRequest.countDocuments({
+        status: 'payment_received'
+      });
+
+      upgradeRequests = {
+        pending: pendingUpgrades,
+        counts: {
+          pending: pendingCount,
+          paymentReceived: paymentReceivedCount,
+          awaitingReview: pendingCount + paymentReceivedCount
+        }
+      };
+    }
+
+    const dashboardData = {
+      expiringContracts,
+      contractsBySupplier,
+      customers: {
+        active: activeCustomers,
+        withExpiringContracts: customersWithExpiringContracts.length
+      },
+      meters: {
+        total: totalMeters,
+        free: freeMeters,
+        occupied: occupiedMeters
+      },
+      reminders: {
+        total: openReminders,
+        urgent: urgentReminders
+      }
+    };
+
+    // Nur für Superadmin: Upgrade-Anfragen hinzufügen
+    if (upgradeRequests) {
+      dashboardData.upgradeRequests = upgradeRequests;
+    }
+
     res.status(200).json({
       success: true,
-      data: {
-        expiringContracts,
-        contractsBySupplier,
-        customers: {
-          active: activeCustomers,
-          withExpiringContracts: customersWithExpiringContracts.length
-        },
-        meters: {
-          total: totalMeters,
-          free: freeMeters,
-          occupied: occupiedMeters
-        },
-        reminders: {
-          total: openReminders,
-          urgent: urgentReminders
-        }
-      }
+      data: dashboardData
     });
   } catch (error) {
     next(error);

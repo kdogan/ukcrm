@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 import { PackageService, Package, UserLimits } from '../../services/package.service';
+import { UpgradeService } from '../../services/upgrade.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -253,13 +254,38 @@ import { AuthService } from '../../services/auth.service';
 
             <div class="available-packages">
               <h3>Verfügbare Pakete</h3>
+
+              <!-- Pending Upgrade Request Info Banner -->
+              <div *ngIf="pendingUpgradeRequest" class="upgrade-pending-banner">
+                <div class="banner-icon">⏳</div>
+                <div class="banner-content">
+                  <div class="banner-title">
+                    Upgrade-Anfrage wird bearbeitet
+                  </div>
+                  <div class="banner-message">
+                    Ihr Upgrade auf <strong>{{ pendingUpgradeRequest.packageDetails.displayName }}</strong>
+                    <span *ngIf="pendingUpgradeRequest.status === 'pending'">wurde erstellt und wartet auf Zahlung.</span>
+                    <span *ngIf="pendingUpgradeRequest.status === 'payment_received'">wird vom Administrator geprüft.</span>
+                  </div>
+                  <div class="banner-details">
+                    <span class="detail-item">Preis: {{ pendingUpgradeRequest.packageDetails.price }} {{ pendingUpgradeRequest.packageDetails.currency }}</span>
+                    <span class="detail-separator">•</span>
+                    <span class="detail-item">Status: {{ getStatusLabel(pendingUpgradeRequest.status) }}</span>
+                    <span class="detail-separator">•</span>
+                    <span class="detail-item">Erstellt: {{ formatDate(pendingUpgradeRequest.createdAt) }}</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="packages-grid">
                 <div *ngFor="let pkg of packages"
                      class="package-card"
-                     [class.current]="pkg.name === userLimits.package.name">
+                     [class.current]="pkg.name === userLimits.package.name"
+                     [class.pending-upgrade]="pendingUpgradeRequest && pkg.name === pendingUpgradeRequest.requestedPackage">
                   <div class="package-card-header">
                     <h4>{{ pkg.displayName }}</h4>
                     <span class="current-badge" *ngIf="pkg.name === userLimits.package.name">Aktuell</span>
+                    <span class="pending-badge" *ngIf="pendingUpgradeRequest && pkg.name === pendingUpgradeRequest.requestedPackage">Beantragt</span>
                   </div>
                   <div class="package-price-tag">{{ pkg.price | number:'1.2-2' }} {{ pkg.currency }}/{{ pkg.billingPeriod === 'monthly' ? 'Monat' : 'Jahr' }}</div>
                   <div class="package-features">
@@ -267,10 +293,15 @@ import { AuthService } from '../../services/auth.service';
                     <div class="feature">✓ {{ pkg.maxCustomers === -1 ? 'Unbegrenzt' : pkg.maxCustomers }} Kunden</div>
                     <div class="feature">✓ {{ pkg.maxMeters === -1 ? 'Unbegrenzt' : pkg.maxMeters }} Zähler</div>
                   </div>
-                  <button *ngIf="pkg.name !== userLimits.package.name"
+                  <button *ngIf="pkg.name !== userLimits.package.name && !pendingUpgradeRequest"
                           [class]="pkg.order < userLimits.package.order ? 'btn-downgrade' : 'btn-upgrade'"
                           (click)="changePackage(pkg.name, pkg.order)">
                     {{ pkg.order < userLimits.package.order ? 'Downgraden' : 'Upgraden' }}
+                  </button>
+                  <button *ngIf="pendingUpgradeRequest && pkg.name !== userLimits.package.name"
+                          class="btn-disabled"
+                          disabled>
+                    {{ pkg.name === pendingUpgradeRequest.requestedPackage ? 'In Bearbeitung...' : 'Nicht verfügbar' }}
                   </button>
                 </div>
               </div>
@@ -628,6 +659,20 @@ import { AuthService } from '../../services/auth.service';
       font-weight: 600;
     }
 
+    .pending-badge {
+      background: #f59e0b;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .package-card.pending-upgrade {
+      border-color: #f59e0b;
+      background: #fffbeb;
+    }
+
     .package-price-tag {
       font-size: 1.5rem;
       font-weight: 700;
@@ -674,6 +719,77 @@ import { AuthService } from '../../services/auth.service';
     .btn-downgrade:hover {
       background: #f59e0b;
     }
+
+    .btn-disabled {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      width: 100%;
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .upgrade-pending-banner {
+      display: flex;
+      gap: 1rem;
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+    }
+
+    .banner-icon {
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+
+    .banner-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .banner-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #92400e;
+    }
+
+    .banner-message {
+      font-size: 1rem;
+      color: #78350f;
+      line-height: 1.5;
+    }
+
+    .banner-message strong {
+      color: #92400e;
+      font-weight: 700;
+    }
+
+    .banner-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: #78350f;
+    }
+
+    .detail-item {
+      font-weight: 500;
+    }
+
+    .detail-separator {
+      color: #d97706;
+      font-weight: 700;
+    }
   `]
 })
 export class SettingsComponent implements OnInit {
@@ -681,10 +797,12 @@ export class SettingsComponent implements OnInit {
   showSaveIndicator = false;
   userLimits: UserLimits | null = null;
   packages: Package[] = [];
+  pendingUpgradeRequest: any = null;
 
   constructor(
     private settingsService: SettingsService,
     private packageService: PackageService,
+    private upgradeService: UpgradeService,
     private authService: AuthService
   ) {}
 
@@ -695,7 +813,24 @@ export class SettingsComponent implements OnInit {
     if (this.authService.isAuthenticated()) {
       this.loadUserLimits();
       this.loadPackages();
+      this.loadPendingUpgradeRequest();
     }
+  }
+
+  loadPendingUpgradeRequest(): void {
+    this.upgradeService.getMyUpgradeRequests().subscribe({
+      next: (response: any) => {
+        if (response.success && response.data.length > 0) {
+          // Finde die erste ausstehende Anfrage (pending oder payment_received)
+          this.pendingUpgradeRequest = response.data.find((req: any) =>
+            req.status === 'pending' || req.status === 'payment_received'
+          );
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading upgrade requests:', err);
+      }
+    });
   }
 
   loadUserLimits(): void {
@@ -736,18 +871,39 @@ export class SettingsComponent implements OnInit {
     const currentOrder = this.userLimits?.package.order || 0;
     const action = order < currentOrder ? 'Downgrade' : 'Upgrade';
 
-    if (confirm(`Möchten Sie wirklich auf dieses Paket ${action === 'Upgrade' ? 'upgraden' : 'downgraden'}?`)) {
-      this.packageService.upgradePackage(packageName).subscribe({
-        next: (response) => {
-          alert(response.message);
+    if (confirm(`Möchten Sie wirklich eine ${action === 'Upgrade' ? 'Upgrade' : 'Downgrade'}-Anfrage für dieses Paket erstellen?\n\nHinweis: Die Anfrage muss vom Administrator genehmigt werden, nachdem die Zahlung eingegangen ist.`)) {
+      this.upgradeService.createUpgradeRequest(packageName).subscribe({
+        next: (response: any) => {
+          alert(`Upgrade-Anfrage erfolgreich erstellt!\n\nStatus: ${response.data.status}\nGewünschtes Paket: ${response.data.packageDetails.displayName}\nPreis: ${response.data.packageDetails.price} ${response.data.packageDetails.currency}\n\nBitte überweisen Sie den Betrag und laden Sie anschließend den Zahlungsnachweis hoch.\nIhre Anfrage wird nach Zahlungseingang vom Administrator geprüft.`);
           this.loadUserLimits();
+          this.loadPendingUpgradeRequest();
         },
-        error: (err) => {
-          console.error('Error changing package:', err);
-          alert(err.error?.message || 'Fehler beim Paket-Wechsel');
+        error: (err: any) => {
+          console.error('Error creating upgrade request:', err);
+          alert(err.error?.message || 'Fehler beim Erstellen der Upgrade-Anfrage');
         }
       });
     }
+  }
+
+  getStatusLabel(status: string): string {
+    const labels: any = {
+      pending: 'Neu',
+      payment_received: 'Zahlung erhalten',
+      approved: 'Genehmigt',
+      rejected: 'Abgelehnt',
+      cancelled: 'Storniert'
+    };
+    return labels[status] || status;
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   }
 
   saveSettings(): void {

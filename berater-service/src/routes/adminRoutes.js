@@ -9,7 +9,12 @@ const {
   unblockUser,
   deleteUser,
   getUserStats,
-  resetPassword
+  resetPassword,
+  getAllUpgradeRequests,
+  getUpgradeRequest,
+  approveUpgradeRequest,
+  rejectUpgradeRequest,
+  getUpgradeRequestStats
 } = require('../controllers/adminController');
 const { authenticate, requireSuperAdmin } = require('../middleware/auth');
 
@@ -19,6 +24,7 @@ router.use(requireSuperAdmin);
 
 // Statistiken
 router.get('/stats', getUserStats);
+router.get('/upgrade-requests/stats', getUpgradeRequestStats);
 
 // User Management
 router.route('/users')
@@ -34,5 +40,11 @@ router.route('/users/:id')
 router.patch('/users/:id/block', blockUser);
 router.patch('/users/:id/unblock', unblockUser);
 router.patch('/users/:id/reset-password', resetPassword);
+
+// Upgrade Request Management
+router.get('/upgrade-requests', getAllUpgradeRequests);
+router.get('/upgrade-requests/:id', getUpgradeRequest);
+router.patch('/upgrade-requests/:id/approve', approveUpgradeRequest);
+router.patch('/upgrade-requests/:id/reject', rejectUpgradeRequest);
 
 module.exports = router;

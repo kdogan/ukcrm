@@ -6,8 +6,7 @@ const {
   createPackage,
   updatePackage,
   deletePackage,
-  checkUserLimits,
-  upgradeUserPackage
+  checkUserLimits
 } = require('../controllers/packageController');
 const { authenticate, requireSuperAdmin } = require('../middleware/auth');
 
@@ -17,7 +16,10 @@ router.get('/:id', getPackage);
 
 // Protected routes for users
 router.get('/my/limits', authenticate, checkUserLimits);
-router.post('/my/upgrade', authenticate, upgradeUserPackage);
+
+// WICHTIG: Die alte /my/upgrade Route wurde entfernt!
+// Berater müssen jetzt über /api/upgrade/request einen Upgrade-Request erstellen
+// Der Superadmin muss diesen dann über /api/admin/upgrade-requests/:id/approve genehmigen
 
 // Superadmin routes
 router.post('/admin/create', authenticate, requireSuperAdmin, createPackage);

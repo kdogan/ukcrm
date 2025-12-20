@@ -1,0 +1,114 @@
+<div class="register-container">
+  <div class="register-box">
+    <div class="logo-section">
+      <h1>Berater App</h1>
+      <p>Erstellen Sie Ihr Konto</p>
+    </div>
+
+    <div *ngIf="success" class="success-message">
+      <div class="success-icon">✓</div>
+      <p>{{ successMessage }}</p>
+      <p class="small">Sie werden in Kürze zum Login weitergeleitet...</p>
+    </div>
+
+    <form *ngIf="!success" [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">Vorname *</label>
+          <input
+            type="text"
+            id="firstName"
+            formControlName="firstName"
+            [class.error]="hasFieldError('firstName')"
+            placeholder="Max"
+          />
+          <span *ngIf="hasFieldError('firstName')" class="error-message">
+            {{ getFieldError('firstName') }}
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Nachname *</label>
+          <input
+            type="text"
+            id="lastName"
+            formControlName="lastName"
+            [class.error]="hasFieldError('lastName')"
+            placeholder="Mustermann"
+          />
+          <span *ngIf="hasFieldError('lastName')" class="error-message">
+            {{ getFieldError('lastName') }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-Mail-Adresse *</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          [class.error]="hasFieldError('email')"
+          placeholder="max.mustermann@example.com"
+        />
+        <span *ngIf="hasFieldError('email')" class="error-message">
+          {{ getFieldError('email') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Telefon (optional)</label>
+        <input
+          type="tel"
+          id="phone"
+          formControlName="phone"
+          placeholder="+49 123 456789"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Passwort *</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          [class.error]="hasFieldError('password')"
+          placeholder="Mindestens 8 Zeichen"
+        />
+        <span *ngIf="hasFieldError('password')" class="error-message">
+          {{ getFieldError('password') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Passwort wiederholen *</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          formControlName="confirmPassword"
+          [class.error]="hasFieldError('confirmPassword')"
+          placeholder="Passwort wiederholen"
+        />
+        <span *ngIf="hasFieldError('confirmPassword')" class="error-message">
+          {{ getFieldError('confirmPassword') }}
+        </span>
+      </div>
+
+      <div *ngIf="error" class="error-box">
+        <p>{{ error }}</p>
+      </div>
+
+      <button
+        type="submit"
+        class="btn-register"
+        [disabled]="loading"
+      >
+        {{ loading ? 'Registrierung läuft...' : 'Registrieren' }}
+      </button>
+
+      <div class="login-link">
+        <p>Haben Sie bereits ein Konto? <a routerLink="/login">Hier anmelden</a></p>
+      </div>
+    </form>
+  </div>
+</div>

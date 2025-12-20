@@ -108,4 +108,38 @@ export class AdminService {
   resetPassword(id: string, newPassword: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/users/${id}/reset-password`, { newPassword });
   }
+
+  // Upgrade Request Management
+  getAllUpgradeRequests(filters: {
+    status?: string;
+    page?: number;
+    limit?: number;
+  } = {}): Observable<any> {
+    let params = new HttpParams();
+
+    if (filters.status) params = params.set('status', filters.status);
+    if (filters.page) params = params.set('page', filters.page.toString());
+    if (filters.limit) params = params.set('limit', filters.limit.toString());
+
+    return this.http.get(`${this.apiUrl}/upgrade-requests`, { params });
+  }
+
+  getUpgradeRequest(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/upgrade-requests/${id}`);
+  }
+
+  approveUpgradeRequest(id: string, adminNotes?: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/upgrade-requests/${id}/approve`, { adminNotes });
+  }
+
+  rejectUpgradeRequest(id: string, rejectionReason: string, adminNotes?: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/upgrade-requests/${id}/reject`, {
+      rejectionReason,
+      adminNotes
+    });
+  }
+
+  getUpgradeRequestStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/upgrade-requests/stats`);
+  }
 }
