@@ -1,37 +1,37 @@
-name: Deploy Berater App
+name: Deploy Eskapp Backend
 
 on:
   push:
     branches:
-      - main  # Oder master, je nach Branch-Name
-  workflow_dispatch:  # Ermöglicht manuellen Start
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.9.0
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Debug SSH Connection
+      run: |
+        echo "Checking if secrets are set..."
+        if [ -z "${{ secrets.SERVER_HOST }}" ]; then echo "SERVER_HOST is empty!"; fi
+        if [ -z "${{ secrets.SERVER_USER }}" ]; then echo "SERVER_USER is empty!"; fi
+        if [ -z "${{ secrets.SERVER_SSH_KEY }}" ]; then echo "SERVER_SSH_KEY is empty!"; fi
+        echo "Host: ${{ secrets.SERVER_HOST }}"
+        echo "User: ${{ secrets.SERVER_USER }}"
+
+    - name: Deploy Backend via SSH
+      uses: appleboy/ssh-action@v0.1.7
       with:
-        ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
-    
-    - name: Add server to known_hosts
-      run: |
-        ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-    
-    - name: Deploy to Server
-      env:
-        SERVER_HOST: ${{ secrets.SERVER_HOST }}
-        SERVER_USER: ${{ secrets.SERVER_USER }}
-      run: |
-        ssh $SERVER_USER@$SERVER_HOST << 'ENDSSH'
-          set -e
-          
-          echo "📦 Pulling latest code..."
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        port: 22
+        debug: true
+        script: |
           cd /var/www/berater-eskapp
           git pull origin main
           
@@ -53,3 +53,4 @@ jobs:
           echo "✅ Deployment completed!"
           pm2 status
         ENDSSH
+        
