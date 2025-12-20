@@ -1,0 +1,55 @@
+name: Deploy Berater App
+
+on:
+  push:
+    branches:
+      - main  # Oder master, je nach Branch-Name
+  workflow_dispatch:  # Ermöglicht manuellen Start
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+    
+    - name: Add server to known_hosts
+      run: |
+        ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+    
+    - name: Deploy to Server
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+      run: |
+        ssh $SERVER_USER@$SERVER_HOST << 'ENDSSH'
+          set -e
+          
+          echo "📦 Pulling latest code..."
+          cd /var/www/berater-eskapp
+          git pull origin main
+          
+          echo "🔧 Updating Backend..."
+          cd /var/www/berater-eskapp/berater-service
+          npm install --production
+          pm2 restart berater-api || pm2 start server.js --name berater-api
+          
+          echo "🎨 Building Frontend..."
+          cd /var/www/berater-eskapp/berater-ui
+          npm install
+          npm run build --configuration=production
+          
+          echo "📋 Deploying Frontend..."
+          sudo rm -rf /var/www/berater-ui/dist/berater-ui/*
+          sudo cp -r dist/berater-ui/* /var/www/berater-ui/dist/berater-ui/
+          sudo chown -R www-data:www-data /var/www/berater-ui/
+          
+          echo "✅ Deployment completed!"
+          pm2 status
+        ENDSSH
