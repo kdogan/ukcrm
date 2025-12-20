@@ -1,14 +1,11 @@
-name: Deploy Eskapp Backend
-
+name: Deploy Backend
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -28,29 +25,29 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         port: 22
-        debug: true
         script: |
+          echo "📦 Pulling latest code..."
           cd /var/www/berater-eskapp
-          git pull origin main
-          
+          git fetch origin main
+          git reset --hard origin/main
+
           echo "🔧 Updating Backend..."
-          cd /var/www/berater-eskapp/berater-service
-          npm install --production
-          pm2 restart berater-api || pm2 start server.js --name berater-api
-          
+          cd berater-service
+          npm ci --omit=dev
+          pm2 describe berater-api >/dev/null \
+            && pm2 restart berater-api \
+            || pm2 start server.js --name berater-api
+
           echo "🎨 Building Frontend..."
-          cd /var/www/berater-eskapp/berater-ui
-          npm install
+          cd ../berater-ui
+          npm ci
           npm run build --configuration=production
-          
+
           echo "📋 Deploying Frontend..."
-          sudo rm -rf /var/www/berater-ui/dist/berater-ui/*
-          sudo cp -r dist/berater-ui/* /var/www/berater-ui/dist/berater-ui/
-          sudo chown -R www-data:www-data /var/www/berater-ui/
-          
+          mkdir -p /var/www/berater-ui/dist/berater-ui
+          rm -rf /var/www/berater-ui/dist/berater-ui/*
+          cp -r dist/berater-ui/* /var/www/berater-ui/dist/berater-ui/
+
           echo "✅ Deployment completed!"
           pm2 status
-        ENDSSH
-        
