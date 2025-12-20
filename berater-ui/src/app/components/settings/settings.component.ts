@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 import { PackageService, Package, UserLimits } from '../../services/package.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-settings',
@@ -683,13 +684,18 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private settingsService: SettingsService,
-    private packageService: PackageService
+    private packageService: PackageService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.settings = this.settingsService.getSettings();
-    this.loadUserLimits();
-    this.loadPackages();
+
+    // Nur Limits und Pakete laden, wenn der Benutzer eingeloggt ist
+    if (this.authService.isAuthenticated()) {
+      this.loadUserLimits();
+      this.loadPackages();
+    }
   }
 
   loadUserLimits(): void {
@@ -699,6 +705,7 @@ export class SettingsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading user limits:', err);
+        // Bei 401-Fehler wird der Interceptor den Benutzer ausloggen
       }
     });
   }
@@ -710,6 +717,7 @@ export class SettingsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading packages:', err);
+        // Bei 401-Fehler wird der Interceptor den Benutzer ausloggen
       }
     });
   }
