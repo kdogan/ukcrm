@@ -22,6 +22,7 @@ const upgradeRoutes = require('./src/routes/upgradeRoutes');
 
 // Initialize Express
 const app = express();
+app.set('trust proxy', true);
 
 // Connect to Database
 connectDB();
