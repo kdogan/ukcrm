@@ -6,15 +6,17 @@ import { TodoService, Todo, CreateTodoDto } from '../../services/todo.service';
 import { CustomerService } from '../../services/customer.service';
 import { ContractService } from '../../services/contract.service';
 import { MeterService } from '../../services/meter.service';
+import { TodoComponent } from "./todo.component";
 
 @Component({
   selector: 'app-todos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TodoComponent],
   templateUrl: './todos.component.html',
   styleUrls: ['./todos.component.scss']
 })
 export class TodosComponent implements OnInit {
+
   todos: Todo[] = [];
   filteredTodos: Todo[] = [];
   searchTerm = '';
@@ -28,6 +30,12 @@ export class TodosComponent implements OnInit {
   customers: any[] = [];
   contracts: any[] = [];
   meters: any[] = [];
+
+    /* 🔹 Views */
+  mainView: 'list' | 'calendar' = 'list';
+  calendarView: 'month' | 'day' = 'month';
+  calendarDate: Date = new Date();
+  selectedDay: Date | null = null;
 
   constructor(
     private todoService: TodoService,
@@ -55,7 +63,6 @@ export class TodosComponent implements OnInit {
       }
     });
   }
-
   loadRelatedData(): void {
     // Lade Kunden für Dropdown
     this.customerService.getCustomers().subscribe({
@@ -104,12 +111,20 @@ export class TodosComponent implements OnInit {
       description: '',
       status: 'open',
       priority: 'medium',
-      dueDate: '',
+      dueDate: this.selectedDay ? this.formatDateForInput(this.selectedDay) : '',
       relatedCustomerId: undefined,
       relatedContractId: undefined,
       relatedMeterId: undefined
     };
   }
+
+  formatDateForInput(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 
   showCreateModal(): void {
     this.currentTodo = this.getEmptyTodo();
@@ -238,43 +253,74 @@ export class TodosComponent implements OnInit {
     this.router.navigate(['/meters', meterId]);
   }
 
-  getPriorityLabel(priority: string): string {
-    const labels: any = {
-      high: 'Hoch',
-      medium: 'Mittel',
-      low: 'Niedrig'
-    };
-    return labels[priority] || priority;
-  }
-
-  getStatusLabel(status: string): string {
-    const labels: any = {
-      open: 'Offen',
-      in_progress: 'In Bearbeitung',
-      completed: 'Erledigt'
-    };
-    return labels[status] || status;
-  }
-
   getTypeLabel(type: string): string {
     const labels: any = {
       electricity: 'Strom',
       gas: 'Gas',
-      water: 'Wasser'
+      water: 'Wasser',
+      heat: 'Wärme'
     };
     return labels[type] || type;
   }
+  // Kalender-Ansicht Methoden
+  get monthDays(): Date[] {
+    const first = new Date(this.calendarDate.getFullYear(), this.calendarDate.getMonth(), 1);
+    const start = new Date(first);
+    start.setDate(first.getDate() - ((first.getDay() + 6) % 7));
 
-  isOverdue(dueDate: Date): boolean {
-    if (!dueDate) return false;
-    return new Date(dueDate) < new Date();
+    return Array.from({ length: 42 }, (_, i) => {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      return d;
+    });
   }
 
-  hasRelations(todo: Todo): boolean {
-    return !!(
-      (todo.relatedCustomerId && typeof todo.relatedCustomerId === 'object' && todo.relatedCustomerId.firstName) ||
-      (todo.relatedContractId && typeof todo.relatedContractId === 'object' && todo.relatedContractId.contractNumber) ||
-      (todo.relatedMeterId && typeof todo.relatedMeterId === 'object' && todo.relatedMeterId.meterNumber)
+ todosForDate(date: Date): Todo[] {
+  return this.filteredTodos.filter(t => {
+    if (!t.dueDate) return false;
+
+    const todoDate = new Date(t.dueDate);
+    return this.sameDate(todoDate, date);
+  });
+}
+
+  openDay(date: Date): void {
+  this.selectedDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+  this.calendarView = 'day';
+}
+
+
+  backToMonth(): void {
+    this.calendarView = 'month';
+    this.selectedDay = null;
+  }
+
+  changeMonth(step: number): void {
+    this.calendarDate = new Date(
+      this.calendarDate.getFullYear(),
+      this.calendarDate.getMonth() + step,
+      1
     );
   }
+
+  isToday(date: Date): boolean {
+    return date.toDateString() === new Date().toDateString();
+  }
+
+  isSameMonth(date: Date): boolean {
+    return date.getMonth() === this.calendarDate.getMonth();
+  }
+
+  sameDate(d1: Date, d2: Date): boolean {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+}
+
 }
