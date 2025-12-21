@@ -1,0 +1,314 @@
+    <div class="page-container" (click)="closeActionMenu()">
+      <div class="page-header">
+        <h1>Zähler</h1>
+        <button class="btn-primary" (click)="showCreateModal()">+ Neuer Zähler</button>
+      </div>
+
+      <div class="filters">
+        <input
+          type="search"
+          placeholder="Suche nach Zählernummer..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+          class="search-input"
+        />
+        <select [(ngModel)]="statusFilter" (ngModelChange)="loadMeters()" class="filter-select">
+          <option value="">Alle Status</option>
+          <option value="free">Frei</option>
+          <option value="occupied">Belegt</option>
+        </select>
+        <select [(ngModel)]="typeFilter" (ngModelChange)="loadMeters()" class="filter-select">
+          <option value="">Alle Typen</option>
+          <option value="electricity">Strom</option>
+          <option value="gas">Gas</option>
+          <option value="water">Wasser</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Zählernummer</th>
+              <th>Typ</th>
+              <th>Status</th>
+              <th>Aktueller Zählerstand</th>
+              <th>Letzte Ablesung</th>
+              <th>Aktueller Kunde</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let meter of filteredMeters">
+              <td>{{ meter.meterNumber }}</td>
+              <td>{{ getTypeLabel(meter.type) }}</td>
+              <td>
+                <span class="badge" [class.badge-active]="!meter.currentCustomerId">
+                  {{ meter.currentCustomerId ? 'Belegt' : 'Frei' }}
+                </span>
+              </td>
+              <td>
+                <strong>{{ meter.currentReading || '-' }}</strong>
+              </td>
+              <td>
+                {{ meter.lastReadingDate ? (meter.lastReadingDate | date:'dd.MM.yyyy') : '-' }}
+              </td>
+              <td>
+                {{ meter.currentCustomerId ?
+                   (meter.currentCustomerId.firstName + ' ' + meter.currentCustomerId.lastName) : '-' }}
+              </td>
+              <td class="actions-cell">
+                <div class="action-menu-container">
+                  <button class="action-menu-btn" (click)="toggleActionMenu(meter._id); $event.stopPropagation()">
+                    ⋮
+                  </button>
+                  <div class="action-menu" *ngIf="activeMenuId === meter._id" (click)="$event.stopPropagation()">
+                    <button class="menu-item" (click)="showAddReadingModal(meter); closeActionMenu()">
+                      📊 Ablesung hinzufügen
+                    </button>
+                    <button class="menu-item" (click)="viewReadings(meter); closeActionMenu()">
+                      📋 Ablesungen anzeigen
+                    </button>
+                    <button class="menu-item" (click)="editMeter(meter); closeActionMenu()">
+                      ✏️ Bearbeiten
+                    </button>
+                    <button class="menu-item menu-item-danger" (click)="deleteMeter(meter._id); closeActionMenu()">
+                      🗑️ Löschen
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modal for Create/Edit Meter -->
+      <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>{{ isEditMode ? 'Zähler bearbeiten' : 'Neuer Zähler' }}</h2>
+            <button class="btn-close" (click)="closeModal()">&times;</button>
+          </div>
+          <form (ngSubmit)="saveMeter()" #meterForm="ngForm">
+            <div class="form-group">
+              <label for="meterNumber">Zählernummer *</label>
+              <input
+                type="text"
+                id="meterNumber"
+                name="meterNumber"
+                [(ngModel)]="currentMeter.meterNumber"
+                required
+                placeholder="z.B. Z-2024-001"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="type">Typ *</label>
+              <select
+                id="type"
+                name="type"
+                [(ngModel)]="currentMeter.type"
+                required
+                class="form-control"
+              >
+                <option value="">Bitte wählen</option>
+                <option value="electricity">Strom</option>
+                <option value="gas">Gas</option>
+                <option value="water">Wasser</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="manufacturer">Hersteller</label>
+              <input
+                type="text"
+                id="manufacturer"
+                name="manufacturer"
+                [(ngModel)]="currentMeter.manufacturer"
+                placeholder="z.B. Siemens"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="yearBuilt">Baujahr</label>
+              <input
+                type="number"
+                id="yearBuilt"
+                name="yearBuilt"
+                [(ngModel)]="currentMeter.yearBuilt"
+                [min]="1950"
+                [max]="currentYear"
+                placeholder="z.B. 2020"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Standort</label>
+              <input
+                type="text"
+                name="street"
+                [(ngModel)]="currentMeter.location.street"
+                placeholder="Straße"
+                class="form-control"
+              />
+              <div class="form-row">
+                <input
+                  type="text"
+                  name="zip"
+                  [(ngModel)]="currentMeter.location.zip"
+                  placeholder="PLZ"
+                  class="form-control"
+                />
+                <input
+                  type="text"
+                  name="city"
+                  [(ngModel)]="currentMeter.location.city"
+                  placeholder="Stadt"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
+              <button type="submit" class="btn-primary" [disabled]="!meterForm.form.valid">
+                {{ isEditMode ? 'Speichern' : 'Erstellen' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal for Adding Reading -->
+      <div class="modal-overlay" *ngIf="showReadingModal" (click)="closeReadingModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Neue Ablesung für {{ selectedMeter?.meterNumber }}</h2>
+            <button class="btn-close" (click)="closeReadingModal()">&times;</button>
+          </div>
+          <form (ngSubmit)="saveReading()" #readingForm="ngForm">
+            <div class="form-group">
+              <label for="readingValue">Zählerstand *</label>
+              <input
+                type="number"
+                id="readingValue"
+                name="readingValue"
+                [(ngModel)]="currentReading.readingValue"
+                required
+                min="0"
+                step="0.01"
+                placeholder="z.B. 12345"
+                class="form-control"
+              />
+              <small *ngIf="selectedMeter?.currentReading" style="color: #666;">
+                Letzter Zählerstand: {{ selectedMeter.currentReading }}
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="readingDate">Ablesedatum *</label>
+              <input
+                type="date"
+                id="readingDate"
+                name="readingDate"
+                [(ngModel)]="currentReading.readingDate"
+                required
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="readingType">Typ</label>
+              <select
+                id="readingType"
+                name="readingType"
+                [(ngModel)]="currentReading.readingType"
+                class="form-control"
+              >
+                <option value="initial">Erstablesung</option>
+                <option value="regular">Reguläre Ablesung</option>
+                <option value="final">Schlussablesung</option>
+                <option value="special">Sonderablesung</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="notes">Notizen</label>
+              <textarea
+                id="notes"
+                name="notes"
+                [(ngModel)]="currentReading.notes"
+                rows="3"
+                placeholder="Optional: Zusätzliche Informationen"
+                class="form-control"
+              ></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-secondary" (click)="closeReadingModal()">Abbrechen</button>
+              <button type="submit" class="btn-primary" [disabled]="!readingForm.form.valid">
+                Speichern
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal for Viewing Readings -->
+      <div class="modal-overlay" *ngIf="showReadingsListModal" (click)="closeReadingsListModal()">
+        <div class="modal-content modal-wide" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Ablesungen für {{ selectedMeter?.meterNumber }}</h2>
+            <button class="btn-close" (click)="closeReadingsListModal()">&times;</button>
+          </div>
+
+          <div class="readings-list">
+            <div *ngIf="meterReadings.length === 0" class="no-data">
+              Keine Ablesungen vorhanden
+            </div>
+
+            <table class="data-table" *ngIf="meterReadings.length > 0">
+              <thead>
+                <tr>
+                  <th>Datum</th>
+                  <th>Zählerstand</th>
+                  <th>Verbrauch</th>
+                  <th>Typ</th>
+                  <th>Notizen</th>
+                  <th>Aktionen</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let reading of meterReadings">
+                  <td>{{ reading.readingDate | date:'dd.MM.yyyy' }}</td>
+                  <td><strong>{{ reading.readingValue }}</strong></td>
+                  <td>
+                    <span *ngIf="reading.consumption">
+                      {{ reading.consumption }} ({{ reading.daysSinceLastReading }} Tage)
+                    </span>
+                    <span *ngIf="!reading.consumption">-</span>
+                  </td>
+                  <td>{{ getReadingTypeLabel(reading.readingType) }}</td>
+                  <td>{{ reading.notes || '-' }}</td>
+                  <td>
+                    <button class="btn-small btn-danger" (click)="deleteReading(reading._id)">
+                      Löschen
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="closeReadingsListModal()">
+              Schließen
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
