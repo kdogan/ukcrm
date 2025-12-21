@@ -31,7 +31,7 @@ export class TodosComponent implements OnInit {
   contracts: any[] = [];
   meters: any[] = [];
 
-    /* 🔹 Views */
+  /* 🔹 Views */
   mainView: 'list' | 'calendar' = 'list';
   calendarView: 'month' | 'day' = 'month';
   calendarDate: Date = new Date();
@@ -43,7 +43,7 @@ export class TodosComponent implements OnInit {
     private contractService: ContractService,
     private meterService: MeterService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadTodos();
@@ -123,8 +123,7 @@ export class TodosComponent implements OnInit {
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
-}
-
+  }
 
   showCreateModal(): void {
     this.currentTodo = this.getEmptyTodo();
@@ -275,23 +274,23 @@ export class TodosComponent implements OnInit {
     });
   }
 
- todosForDate(date: Date): Todo[] {
-  return this.filteredTodos.filter(t => {
-    if (!t.dueDate) return false;
+  todosForDate(date: Date): Todo[] {
+    return this.filteredTodos.filter(t => {
+      if (!t.dueDate) return false;
 
-    const todoDate = new Date(t.dueDate);
-    return this.sameDate(todoDate, date);
-  });
-}
+      const todoDate = new Date(t.dueDate);
+      return this.sameDate(todoDate, date);
+    });
+  }
 
   openDay(date: Date): void {
-  this.selectedDay = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate()
-  );
-  this.calendarView = 'day';
-}
+    this.selectedDay = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
+    this.calendarView = 'day';
+  }
 
 
   backToMonth(): void {
@@ -316,11 +315,11 @@ export class TodosComponent implements OnInit {
   }
 
   sameDate(d1: Date, d2: Date): boolean {
-  return (
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate()
-  );
-}
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
+  }
 
 }

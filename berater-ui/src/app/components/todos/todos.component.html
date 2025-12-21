@@ -28,22 +28,20 @@
             <option value="medium">Mittel</option>
             <option value="low">Niedrig</option>
         </select>
-    </div>
-    <div class="todos-grid">
-        <app-todo *ngFor="let todo of filteredTodos" [todo]="todo" (deleteTodoEmiter)="deleteTodo($event)"
-            (completeTodoEmiter)="completeTodo($event)" (editTodoEmiter)="editTodo($event)"
-            (navigateToCustomerEmiter)="navigateToCustomer($event)"
-            (navigateToContractEmiter)="navigateToContract($event)" (navigateToMeterEmiter)="navigateToMeter($event)" />
-
-        <div *ngIf="filteredTodos.length === 0" class="no-data">
-            <p>Keine TODOs gefunden</p>
         </div>
-    </div>
-}
-    <div *ngIf="mainView === 'calendar'">
+        <div class="todos-grid">
+            <app-todo *ngFor="let todo of filteredTodos" [todo]="todo" (deleteTodoEmiter)="deleteTodo($event)"
+                (completeTodoEmiter)="completeTodo($event)" (editTodoEmiter)="editTodo($event)"
+                (navigateToCustomerEmiter)="navigateToCustomer($event)"
+                (navigateToContractEmiter)="navigateToContract($event)" (navigateToMeterEmiter)="navigateToMeter($event)" />
 
-        <!-- MONAT -->
-        <div *ngIf="calendarView === 'month'">
+            <div *ngIf="filteredTodos.length === 0" class="no-data">
+                <p>Keine TODOs gefunden</p>
+            </div>
+        </div>
+    }
+    @if(mainView === 'calendar'){
+        @if(calendarView === 'month'){
             <div class="calendar-header">
                 <button (click)="changeMonth(-1)">‹</button>
                 <h2>{{ calendarDate | date:'MMMM yyyy' }}</h2>
@@ -63,10 +61,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- TAG -->
-        <div *ngIf="calendarView === 'day'">
+        }
+        @if(calendarView === 'day'){
             <button class="btn-small" (click)="backToMonth()">← Zurück</button>
             <h2>{{ selectedDay | date:'fullDate' }}</h2>
 
@@ -84,12 +80,11 @@
                     Keine TODOs
                 </div>
             </div>
-        </div>
-
-    </div>
-
+        }
+    }
     <!-- Modal for Create/Edit TODO -->
-    <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+     @if(showModal){
+        <div class="modal-overlay" (click)="closeModal()">
         <div class="modal-content" (click)="$event.stopPropagation()">
             <div class="modal-header">
                 <h2>{{ isEditMode ? 'TODO bearbeiten' : 'Neues TODO' }}</h2>
@@ -181,5 +176,6 @@
                 </div>
             </form>
         </div>
-    </div>
+        </div>
+    }
 </div>
