@@ -1,0 +1,374 @@
+<div class="page-container" (click)="closeActionMenu()">
+      <div class="page-header">
+        <h1>Verträge</h1>
+        <button class="btn-primary" (click)="showCreateModal()">+ Neuer Vertrag</button>
+      </div>
+      <div class="filters">
+        <select [(ngModel)]="statusFilter" (ngModelChange)="loadContracts()">
+          <option value="">Alle</option>
+          <option value="active">Aktiv</option>
+          <option value="ended">Beendet</option>
+          <option value="archived">Archiviert</option>
+        </select>
+        <select [(ngModel)]="daysFilter" (ngModelChange)="loadContracts()">
+          <option value="">Alle Laufzeiten</option>
+          <option value="30">Nächste 30 Tage</option>
+          <option value="60">Nächste 60 Tage</option>
+          <option value="90">Nächste 90 Tage</option>
+        </select>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Vertragsnr.</th>
+              <th>Kunde</th>
+              <th>Zähler</th>
+              <th>Anbieter</th>
+              <th>Startdatum</th>
+              <th>Enddatum</th>
+              <th>Status</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let contract of contracts">
+              <td>{{ contract.contractNumber }}</td>
+              <td>
+                <a
+                  *ngIf="contract.customerId"
+                  class="clickable-link"
+                  (click)="showCustomerDetails(contract.customerId); $event.stopPropagation()"
+                  title="Kunde anzeigen"
+                >
+                  {{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}
+                </a>
+                <span *ngIf="!contract.customerId">-</span>
+              </td>
+              <td>
+                <a
+                  *ngIf="contract.meterId"
+                  class="clickable-link"
+                  (click)="showMeterDetails(contract.meterId); $event.stopPropagation()"
+                  title="Zähler anzeigen"
+                >
+                  {{ contract.meterId?.meterNumber }}
+                </a>
+                <span *ngIf="!contract.meterId">-</span>
+              </td>
+              <td>
+                <a
+                  *ngIf="contract.supplierId"
+                  class="clickable-link"
+                  (click)="showSupplierDetails(contract.supplierId); $event.stopPropagation()"
+                  title="Anbieter anzeigen"
+                >
+                  {{ contract.supplierId?.name }}
+                </a>
+                <span *ngIf="!contract.supplierId">-</span>
+              </td>
+              <td>{{ contract.startDate | date:'dd.MM.yyyy' }}</td>
+              <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
+              <td><span class="badge" [class.badge-active]="contract.status === 'active'">{{ getStatusLabel(contract.status) }}</span></td>
+              <td class="actions-cell">
+                <div class="action-menu-container">
+                  <button class="action-menu-btn" (click)="toggleActionMenu(contract._id); $event.stopPropagation()">
+                    ⋮
+                  </button>
+                  <div class="action-menu" *ngIf="activeMenuId === contract._id" (click)="$event.stopPropagation()">
+                    <button class="menu-item" (click)="editContract(contract); closeActionMenu()">
+                      ✏️ Bearbeiten
+                    </button>
+                    <button
+                      class="menu-item menu-item-danger"
+                      (click)="deleteContract(contract._id); closeActionMenu()"
+                    >
+                      🗑️ Löschen
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modal for Create/Edit Contract -->
+      <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>{{ isEditMode ? 'Vertrag bearbeiten' : 'Neuer Vertrag' }}</h2>
+            <button class="btn-close" (click)="closeModal()">&times;</button>
+          </div>
+          <form (ngSubmit)="saveContract()" #contractForm="ngForm">
+            <div class="form-group" *ngIf="isEditMode">
+            <label>Vertragsnummer</label>
+            <input
+                type="text"
+                class="form-control"
+                [value]="currentContract.contractNumber"
+                disabled
+            />
+            </div>
+
+            <div class="form-group">
+              <label for="customerId">Kunde *</label>
+              <input
+                type="text"
+                placeholder="Suche nach Kunden..."
+                [(ngModel)]="customerSearch"
+                (ngModelChange)="filterCustomers()"
+                (focus)="showCustomerDropdown = true"
+                class="form-control search-input"
+                [ngModelOptions]="{standalone: true}"
+                autocomplete="off"
+              />
+              <div class="dropdown-list" *ngIf="showCustomerDropdown && filteredCustomers.length > 0">
+                <div
+                  *ngFor="let customer of filteredCustomers"
+                  class="dropdown-item"
+                  [class.selected]="currentContract.customerId === customer._id"
+                  (click)="selectCustomer(customer)"
+                >
+                  {{ customer.firstName }} {{ customer.lastName }} ({{ customer.customerNumber }})
+                </div>
+              </div>
+              <input type="hidden" id="customerId" name="customerId" [(ngModel)]="currentContract.customerId" required />
+              <div class="selected-item" *ngIf="selectedCustomer">
+                Ausgewählt: <strong>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</strong> ({{ selectedCustomer.customerNumber }})
+                <button type="button" class="btn-clear" (click)="clearCustomer()">&times;</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="meterId">Zähler *</label>
+              <input
+                type="text"
+                placeholder="Suche nach Zählernummer..."
+                [(ngModel)]="meterSearch"
+                (ngModelChange)="filterMeters()"
+                (focus)="showMeterDropdown = true"
+                class="form-control search-input"
+                [ngModelOptions]="{standalone: true}"
+                autocomplete="off"
+              />
+              <div class="dropdown-list" *ngIf="showMeterDropdown && filteredFreeMeters.length > 0">
+                <div
+                  *ngFor="let meter of filteredFreeMeters"
+                  class="dropdown-item"
+                  [class.selected]="currentContract.meterId === meter._id"
+                  [class.occupied]="!isMeterFree(meter)"
+                  [class.disabled]="!isMeterFree(meter)"
+                  (click)="isMeterFree(meter) && selectMeter(meter)"
+                  [style.cursor]="isMeterFree(meter) ? 'pointer' : 'not-allowed'"
+                >
+                  {{ meter.meterNumber }} ({{ getTypeLabel(meter.type) }})
+                  <span *ngIf="!isMeterFree(meter)" style="color: #c62828; font-weight: bold; margin-left: 0.5rem;">- Belegt</span>
+                </div>
+              </div>
+              <input type="hidden" id="meterId" name="meterId" [(ngModel)]="currentContract.meterId" required />
+              <div class="selected-item" *ngIf="selectedMeter">
+                Ausgewählt: <strong>{{ selectedMeter.meterNumber }}</strong> ({{ getTypeLabel(selectedMeter.type) }})
+                <button type="button" class="btn-clear" (click)="clearMeter()">&times;</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="supplierId">Anbieter *</label>
+              <select
+                id="supplierId"
+                name="supplierId"
+                [(ngModel)]="currentContract.supplierId"
+                required
+                class="form-control"
+              >
+                <option value="">Bitte wählen</option>
+                <option *ngFor="let supplier of suppliers" [value]="supplier._id">
+                  {{ supplier.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="startDate">Startdatum *</label>
+                <input
+                  type="date"
+                  id="startDate"
+                  name="startDate"
+                  [(ngModel)]="currentContract.startDate"
+                  required
+                  class="form-control"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="durationMonths">Laufzeit (Monate) *</label>
+                <input
+                  type="number"
+                  id="durationMonths"
+                  name="durationMonths"
+                  [(ngModel)]="currentContract.durationMonths"
+                  required
+                  min="1"
+                  max="120"
+                  placeholder="z.B. 24"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="status">Status</label>
+              <select
+                id="status"
+                name="status"
+                [(ngModel)]="currentContract.status"
+                class="form-control"
+              >
+                <option value="active">Aktiv</option>
+                <option value="ended">Beendet</option>
+                <option value="archived">Archiviert</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="notes">Notizen</label>
+              <textarea
+                id="notes"
+                name="notes"
+                [(ngModel)]="currentContract.notes"
+                rows="3"
+                placeholder="Optional: Zusätzliche Informationen zum Vertrag"
+                class="form-control"
+              ></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
+              <button type="submit" class="btn-primary" [disabled]="!contractForm.form.valid || !isFormValid()">
+                {{ isEditMode ? 'Speichern' : 'Erstellen' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Customer Details Modal -->
+      <div class="modal-overlay" *ngIf="showCustomerDetailsModal" (click)="closeCustomerDetails()">
+        <div class="modal-content detail-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Kundendetails</h2>
+            <button class="btn-close" (click)="closeCustomerDetails()">&times;</button>
+          </div>
+          <div class="detail-content" *ngIf="selectedCustomerDetails">
+            <div class="detail-row">
+              <span class="detail-label">Kundennummer:</span>
+              <span class="detail-value">{{ selectedCustomerDetails.customerNumber }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Name:</span>
+              <span class="detail-value">{{ selectedCustomerDetails.firstName }} {{ selectedCustomerDetails.lastName }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedCustomerDetails.email">
+              <span class="detail-label">E-Mail:</span>
+              <span class="detail-value">{{ selectedCustomerDetails.email }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedCustomerDetails.phone">
+              <span class="detail-label">Telefon:</span>
+              <span class="detail-value">
+                {{ selectedCustomerDetails.phone }}
+                <a [href]="'tel:' + selectedCustomerDetails.phone" class="phone-link" title="Anrufen">📞</a>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedCustomerDetails.address?.street || selectedCustomerDetails.address?.city">
+              <span class="detail-label">Adresse:</span>
+              <span class="detail-value">
+                <span *ngIf="selectedCustomerDetails.address?.street">{{ selectedCustomerDetails.address?.street }}<br></span>
+                <span *ngIf="selectedCustomerDetails.address?.zip || selectedCustomerDetails.address?.city">
+                  {{ selectedCustomerDetails.address?.zip }} {{ selectedCustomerDetails.address?.city }}
+                </span>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedCustomerDetails.notes">
+              <span class="detail-label">Notizen:</span>
+              <span class="detail-value">{{ selectedCustomerDetails.notes }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supplier Details Modal -->
+      <div class="modal-overlay" *ngIf="showSupplierDetailsModal" (click)="closeSupplierDetails()">
+        <div class="modal-content detail-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Anbieterdetails</h2>
+            <button class="btn-close" (click)="closeSupplierDetails()">&times;</button>
+          </div>
+          <div class="detail-content" *ngIf="selectedSupplierDetails">
+            <div class="detail-row">
+              <span class="detail-label">Name:</span>
+              <span class="detail-value">{{ selectedSupplierDetails.name }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Kurzbezeichnung:</span>
+              <span class="detail-value">{{ selectedSupplierDetails.shortName }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedSupplierDetails.address?.street || selectedSupplierDetails.address?.city">
+              <span class="detail-label">Adresse:</span>
+              <span class="detail-value">
+                <span *ngIf="selectedSupplierDetails.address?.street">{{ selectedSupplierDetails.address?.street }}<br></span>
+                <span *ngIf="selectedSupplierDetails.address?.zipCode || selectedSupplierDetails.address?.city">
+                  {{ selectedSupplierDetails.address?.zipCode }} {{ selectedSupplierDetails.address?.city }}
+                </span>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedSupplierDetails.contactPhone">
+              <span class="detail-label">Telefon:</span>
+              <span class="detail-value">
+                {{ selectedSupplierDetails.contactPhone }}
+                <a [href]="'tel:' + selectedSupplierDetails.contactPhone" class="phone-link" title="Anrufen">📞</a>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedSupplierDetails.contactEmail">
+              <span class="detail-label">E-Mail:</span>
+              <span class="detail-value">{{ selectedSupplierDetails.contactEmail }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meter Details Modal -->
+      <div class="modal-overlay" *ngIf="showMeterDetailsModal" (click)="closeMeterDetails()">
+        <div class="modal-content detail-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Zählerdetails</h2>
+            <button class="btn-close" (click)="closeMeterDetails()">&times;</button>
+          </div>
+          <div class="detail-content" *ngIf="selectedMeterDetails">
+            <div class="detail-row">
+              <span class="detail-label">Zählernummer:</span>
+              <span class="detail-value">{{ selectedMeterDetails.meterNumber }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Typ:</span>
+              <span class="detail-value">{{ getTypeLabel(selectedMeterDetails.type) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Status:</span>
+              <span class="detail-value">
+                <span class="badge" [class.badge-active]="!selectedMeterDetails.currentCustomerId">
+                  {{ selectedMeterDetails.currentCustomerId ? 'Belegt' : 'Frei' }}
+                </span>
+              </span>
+            </div>
+            <div class="detail-row" *ngIf="selectedMeterDetails.currentCustomerId">
+              <span class="detail-label">Aktueller Kunde:</span>
+              <span class="detail-value">
+                {{ selectedMeterDetails.currentCustomerId.firstName }} {{ selectedMeterDetails.currentCustomerId.lastName }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

@@ -1,5 +1,6 @@
 const Contract = require('../models/Contract');
 const Reminder = require('../models/Reminder');
+const getNextContractNumber = require('../utils/getNextContractNumber');
 
 // @desc    Get all contracts
 // @route   GET /api/contracts
@@ -86,7 +87,7 @@ exports.getContract = async (req, res, next) => {
 // @access  Private
 exports.createContract = async (req, res, next) => {
   try {
-    // Calculate endDate from startDate and durationMonths
+    // Enddatum berechnen
     let endDate = req.body.endDate;
     if (!endDate && req.body.startDate && req.body.durationMonths) {
       const startDate = new Date(req.body.startDate);
@@ -94,8 +95,12 @@ exports.createContract = async (req, res, next) => {
       endDate.setMonth(endDate.getMonth() + parseInt(req.body.durationMonths));
     }
 
+    // ✅ Vertragsnummer automatisch erzeugen
+    const contractNumber = await getNextContractNumber();
+
     const contractData = {
       ...req.body,
+      contractNumber,          // 🔥 HIER
       endDate,
       beraterId: req.user._id,
       auditLog: [{
@@ -107,7 +112,7 @@ exports.createContract = async (req, res, next) => {
 
     const contract = await Contract.create(contractData);
 
-    // Zähler als belegt markieren und Historie erstellen
+    // Zähler belegen
     const Meter = require('../models/Meter');
     const MeterHistory = require('../models/MeterHistory');
 
@@ -115,7 +120,6 @@ exports.createContract = async (req, res, next) => {
       currentCustomerId: req.body.customerId
     });
 
-    // Erstelle Historieneintrag für die Zählerzuordnung
     await MeterHistory.create({
       meterId: req.body.meterId,
       beraterId: req.user._id,
@@ -125,7 +129,6 @@ exports.createContract = async (req, res, next) => {
       endDate: null
     });
 
-    // Erinnerungen erstellen
     await createReminders(contract);
 
     const populatedContract = await Contract.findById(contract._id)
