@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService, AppUser, UserStats } from '../../services/admin.service';
+import { TableContainerComponent } from "../shared/tablecontainer.component";
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TableContainerComponent],
   template: `
     <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
@@ -68,7 +69,7 @@ import { AdminService, AppUser, UserStats } from '../../services/admin.service';
       </div>
 
       <!-- Users Table -->
-      <div class="table-container">
+      <app-table-container>
         <table class="data-table">
           <thead>
             <tr>
@@ -139,7 +140,7 @@ import { AdminService, AppUser, UserStats } from '../../services/admin.service';
             </tr>
           </tbody>
         </table>
-      </div>
+      </app-table-container>
 
       <!-- Create/Edit User Modal -->
       <div class="modal" *ngIf="showModal" (click)="closeModal()">
@@ -305,12 +306,6 @@ import { AdminService, AppUser, UserStats } from '../../services/admin.service';
       font-size: 1rem;
     }
 
-    .table-container {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      overflow: visible;
-    }
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th {
       background: #f8f9fa;

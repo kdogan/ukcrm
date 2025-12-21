@@ -8,6 +8,7 @@ import { ReminderService } from '../../services/reminder.service';
 import { CustomerService } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
 import { MeterReadingService } from '../../services/meter-reading.service';
+import { TableContainerComponent } from '../shared/tablecontainer.component';
 
 // CONTRACTS COMPONENT
 // @Component({
@@ -215,7 +216,7 @@ import { MeterReadingService } from '../../services/meter-reading.service';
 @Component({
   selector: 'app-meters',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TableContainerComponent],
   styleUrls: ['./meters.component.scss'],
   templateUrl: './meters.component.html',
 })

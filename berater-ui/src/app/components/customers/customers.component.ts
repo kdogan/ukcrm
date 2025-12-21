@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CustomerService, Customer } from '../../services/customer.service';
+import { TableContainerComponent } from '../shared/tablecontainer.component';
 
 @Component({
   selector: 'app-customers',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TableContainerComponent],
   template: `
     <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
@@ -30,7 +31,7 @@ import { CustomerService, Customer } from '../../services/customer.service';
         </select>
       </div>
 
-      <div class="table-container">
+      <app-table-container>
         <table class="data-table">
           <thead>
             <tr>
@@ -81,7 +82,7 @@ import { CustomerService, Customer } from '../../services/customer.service';
             </tr>
           </tbody>
         </table>
-      </div>
+      </app-table-container>
 
       <!-- Create/Edit Modal -->
       <div class="modal" *ngIf="showModal" (click)="closeModal()">
@@ -144,12 +145,6 @@ import { CustomerService, Customer } from '../../services/customer.service';
     .search-input {
       flex: 1;
       max-width: 400px;
-    }
-    .table-container {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
     }
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th {

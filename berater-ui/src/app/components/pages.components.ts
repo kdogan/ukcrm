@@ -25,7 +25,7 @@ import { ContractService, MeterService, ReminderService } from '../../services/d
           <option value="90">Nächste 90 Tage</option>
         </select>
       </div>
-      <div class="table-container">
+      <app-table-container>
         <table class="data-table">
           <thead>
             <tr>
@@ -48,7 +48,7 @@ import { ContractService, MeterService, ReminderService } from '../../services/d
             </tr>
           </tbody>
         </table>
-      </div>
+      </app-table-container>
     </div>
   `,
   styles: [`
@@ -56,7 +56,6 @@ import { ContractService, MeterService, ReminderService } from '../../services/d
     h1 { font-size: 2rem; margin-bottom: 1.5rem; }
     .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
     select { padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; }
-    .table-container { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th { background: #f8f9fa; padding: 1rem; text-align: left; font-weight: 600; }
     .data-table td { padding: 1rem; border-top: 1px solid #eee; }
@@ -102,7 +101,7 @@ export class ContractsComponent implements OnInit {
           <option value="occupied">Belegt</option>
         </select>
       </div>
-      <div class="table-container">
+      <app-table-container>
         <table class="data-table">
           <thead>
             <tr>
@@ -132,7 +131,7 @@ export class ContractsComponent implements OnInit {
             </tr>
           </tbody>
         </table>
-      </div>
+      </app-table-container>
     </div>
   `,
   styles: [`
@@ -140,7 +139,6 @@ export class ContractsComponent implements OnInit {
     h1 { font-size: 2rem; margin-bottom: 1.5rem; }
     .filters { margin-bottom: 1.5rem; }
     select { padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; }
-    .table-container { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th { background: #f8f9fa; padding: 1rem; text-align: left; font-weight: 600; }
     .data-table td { padding: 1rem; border-top: 1px solid #eee; }

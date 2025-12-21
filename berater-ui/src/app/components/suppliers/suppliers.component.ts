@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupplierService, Supplier } from '../../services/supplier.service';
+import { TableContainerComponent } from '../shared/tablecontainer.component';
 
 @Component({
   selector: 'app-suppliers',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TableContainerComponent],
   template: `
     <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
@@ -22,7 +23,7 @@ import { SupplierService, Supplier } from '../../services/supplier.service';
         </select>
       </div>
 
-      <div class="table-container">
+      <app-table-container>
         <table class="data-table">
           <thead>
             <tr>
@@ -83,7 +84,7 @@ import { SupplierService, Supplier } from '../../services/supplier.service';
             </tr>
           </tbody>
         </table>
-      </div>
+      </app-table-container>
 
       <!-- Create/Edit Modal -->
       <div class="modal" *ngIf="showModal" (click)="closeModal()">

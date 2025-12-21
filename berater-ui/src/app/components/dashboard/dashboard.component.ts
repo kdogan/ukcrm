@@ -5,11 +5,12 @@ import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { Subscription } from 'rxjs';
+import { TableContainerComponent } from '../shared/tablecontainer.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TableContainerComponent],
   template: `
     <div class="dashboard">
       <h1>Dashboard</h1>
@@ -179,7 +180,7 @@ import { Subscription } from 'rxjs';
         <!-- Auslaufende Verträge -->
         <div class="contracts-section" *ngIf="stats?.expiringContracts">
           <h2>📋 Bald auslaufende Verträge</h2>
-          <div class="table-container">
+          <app-table-container>
             <table class="data-table">
               <thead>
                 <tr>
@@ -204,7 +205,7 @@ import { Subscription } from 'rxjs';
                 </tr>
               </tbody>
             </table>
-          </div>
+          </app-table-container>
         </div>
 
         <!-- Verträge nach Anbieter -->
@@ -303,13 +304,6 @@ import { Subscription } from 'rxjs';
     .reminder-item.high .count { color: #e74c3c; }
     .reminder-item.medium .count { color: #f39c12; }
     .reminder-item.low .count { color: #27ae60; }
-
-    .table-container {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
 
     .data-table {
       width: 100%;
