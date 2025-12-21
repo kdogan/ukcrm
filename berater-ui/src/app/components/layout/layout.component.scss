@@ -179,15 +179,33 @@
   transition: margin-left 0.3s ease;
 }
 
+
 /* =========================
    MOBILE APP NAVIGATION
 ========================= */
+  .bottom-sheet-backdrop {
+    display: none;
+  }
 
+  .bottom-sheet {
+    display: none;
+  }
+
+  .bottom-sheet.open {
+    bottom: 0;
+  }
 .bottom-nav {
   display: none;
 }
 
 @media (max-width: 768px) {
+    .bottom-sheet-backdrop {
+    display: block;
+  }
+
+  .bottom-sheet {
+    display: block;
+  }
 
   .sidebar {
     display: none;
