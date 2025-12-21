@@ -103,10 +103,10 @@ import { AdminService, AppUser, UserStats } from '../../services/admin.service';
               <td>{{ user.createdAt | date:'dd.MM.yyyy' }}</td>
               <td class="actions-cell">
                 <div class="action-menu-container">
-                  <button class="action-menu-btn" (click)="toggleActionMenu(user._id); $event.stopPropagation()">
+                  <button class="action-menu-btn" (click)="toggleActionMenu(user._id, $event, user.isBlocked); $event.stopPropagation()">
                     ⋮
                   </button>
-                  <div class="action-menu" *ngIf="activeMenuId === user._id" (click)="$event.stopPropagation()">
+                  <div class="action-menu" [class.action-menu-up]="menuOpenUpwards" *ngIf="activeMenuId === user._id" (click)="$event.stopPropagation()">
                     <button class="menu-item" (click)="editUser(user); closeActionMenu()">
                       ✏️ Bearbeiten
                     </button>
@@ -309,7 +309,7 @@ import { AdminService, AppUser, UserStats } from '../../services/admin.service';
       background: white;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
+      overflow: visible;
     }
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th {
@@ -464,6 +464,12 @@ import { AdminService, AppUser, UserStats } from '../../services/admin.service';
       margin-top: 0.25rem;
       overflow: hidden;
     }
+    .action-menu-up {
+      top: auto;
+      bottom: 100%;
+      margin-top: 0;
+      margin-bottom: 0.25rem;
+    }
     .menu-item {
       display: block;
       width: 100%;
@@ -503,6 +509,7 @@ export class AdminComponent implements OnInit {
   editMode = false;
   currentUser: Partial<AppUser> & { password?: string } = {};
   activeMenuId: string | null = null;
+  menuOpenUpwards = false;
   showBlockUserModal = false;
   showPasswordModal = false;
   selectedUser: AppUser | null = null;
@@ -687,12 +694,33 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  toggleActionMenu(id: string): void {
-    this.activeMenuId = this.activeMenuId === id ? null : id;
+  toggleActionMenu(id: string, event: MouseEvent, isBlocked: boolean = false): void {
+    if (this.activeMenuId === id) {
+      this.activeMenuId = null;
+      this.menuOpenUpwards = false;
+      return;
+    }
+
+    this.activeMenuId = id;
+
+    // Intelligente Positionierung: Prüfe verfügbaren Platz oben und unten
+    const button = event.target as HTMLElement;
+    const rect = button.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+
+    // Geschätzte Menühöhe (5 Menüeinträge * ~44px pro Eintrag)
+    const menuHeight = 220;
+
+    const spaceBelow = windowHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    // Öffne nach oben, wenn unten nicht genug Platz ist UND oben mehr Platz ist
+    this.menuOpenUpwards = spaceBelow < menuHeight && spaceAbove > spaceBelow;
   }
 
   closeActionMenu(): void {
     this.activeMenuId = null;
+    this.menuOpenUpwards = false;
   }
 
   getRoleLabel(role: string): string {

@@ -2,26 +2,32 @@ const nodemailer = require('nodemailer');
 
 // Email-Transporter konfigurieren
 const createTransporter = () => {
-  // Für Entwicklung: Ethereal Email (Test-Account)
-  // Für Produktion: Echten SMTP-Server verwenden
-  if (process.env.NODE_ENV === 'production') {
-    return nodemailer.createTransporter({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT || 587,
-      secure: process.env.SMTP_SECURE === 'true',
+  // Prüfe ob Email-Konfiguration vorhanden ist
+  if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+    console.log('✓ Using SMTP server:', process.env.EMAIL_HOST);
+    return nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT || 587,
+      secure: process.env.EMAIL_SECURE === 'true',
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
       }
     });
   } else {
-    // Für Development: Console-Logger
+    // Für Development ohne SMTP: Console-Logger
+    console.log('⚠ No SMTP configured - emails will be logged to console');
     return {
       sendMail: async (mailOptions) => {
-        console.log('\n=== EMAIL SENT (Development Mode) ===');
+        console.log('\n=== EMAIL SENT (Development Mode - No SMTP) ===');
         console.log('To:', mailOptions.to);
         console.log('Subject:', mailOptions.subject);
-        console.log('HTML:', mailOptions.html);
+        console.log('\n--- Verification Link ---');
+        // Extrahiere den Link aus der HTML
+        const linkMatch = mailOptions.html.match(/href="([^"]+)"/);
+        if (linkMatch) {
+          console.log('Verification URL:', linkMatch[1]);
+        }
         console.log('=====================================\n');
         return { messageId: 'dev-' + Date.now() };
       }
