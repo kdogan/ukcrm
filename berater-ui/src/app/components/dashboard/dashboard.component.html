@@ -1,0 +1,217 @@
+    <div class="dashboard">
+      <h1>Dashboard</h1>
+
+      <!-- Superadmin Dashboard -->
+      <div *ngIf="isSuperAdmin">
+        <div class="stats-grid" *ngIf="userStats">
+          <!-- Gesamt Benutzer -->
+          <div class="stat-card">
+            <h3>👥 Benutzer</h3>
+            <div class="stat-number">{{ userStats.total || 0 }}</div>
+            <div class="stat-label">Gesamt</div>
+          </div>
+      
+          <!-- Aktive Benutzer -->
+          <div class="stat-card">
+            <h3>✅ Aktive</h3>
+            <div class="stat-number">{{ userStats.active || 0 }}</div>
+            <div class="stat-label">Aktive Benutzer</div>
+          </div>
+      
+          <!-- Blockierte Benutzer -->
+          <div class="stat-card">
+            <h3>🚫 Blockiert</h3>
+            <div class="stat-number">{{ userStats.blocked || 0 }}</div>
+            <div class="stat-label">Blockierte Benutzer</div>
+          </div>
+          <div class="stat-card">
+            <h3>📦 Paket</h3>
+            <div class="stat-number">{{ userStats.package || 0 }}</div>
+            <div class="stat-label">Paket</div>
+          </div>
+      
+        </div>
+
+        <!-- Benutzer nach Rolle -->
+        <div class="supplier-section" *ngIf="userStats?.byRole">
+          <h2>📊 Benutzer nach Rolle</h2>
+          <div class="chart-container">
+            <div *ngFor="let item of getRoleStats()" class="chart-bar">
+              <div class="bar-label">{{ item.name }}</div>
+              <div class="bar-wrapper">
+                <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+                <span class="bar-value">{{ item.count }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benutzer nach Paket -->
+        <div class="supplier-section" *ngIf="userStats?.byPackage">
+          <h2>📦 Benutzer nach Paket</h2>
+          <div class="chart-container">
+            <div *ngFor="let item of getPackageStats()" class="chart-bar">
+              <div class="bar-label">{{ item.name }}</div>
+              <div class="bar-wrapper">
+                <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+                <span class="bar-value">{{ item.count }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upgrade-Anfragen -->
+        <div class="upgrade-requests-section" *ngIf="stats?.upgradeRequests">
+          <h2>🔄 Upgrade-Anfragen</h2>
+          <div class="stats-grid" style="margin-bottom: 20px;">
+            <div class="stat-card priority-high">
+              <h3>⏳ Warten auf Prüfung</h3>
+              <div class="stat-number">{{ stats.upgradeRequests.counts?.awaitingReview || 0 }}</div>
+              <div class="stat-label">Pending & Payment Received</div>
+            </div>
+            <div class="stat-card">
+              <h3>📝 Pending</h3>
+              <div class="stat-number">{{ stats.upgradeRequests.counts?.pending || 0 }}</div>
+              <div class="stat-label">Neu erstellt</div>
+            </div>
+            <div class="stat-card">
+              <h3>💰 Payment Received</h3>
+              <div class="stat-number">{{ stats.upgradeRequests.counts?.paymentReceived || 0 }}</div>
+              <div class="stat-label">Zahlung eingegangen</div>
+            </div>
+          </div>
+
+          <div *ngIf="stats.upgradeRequests.pending?.length > 0" class="requests-list">
+            <h3>Offene Anfragen</h3>
+            <div *ngFor="let request of stats.upgradeRequests.pending" class="request-card">
+              <div class="request-header">
+                <div class="user-info">
+                  <strong>{{ request.user.firstName }} {{ request.user.lastName }}</strong>
+                  <span class="email">{{ request.user.email }}</span>
+                </div>
+                <span class="status-badge" [class]="'status-' + request.status">
+                  {{ getStatusLabel(request.status) }}
+                </span>
+              </div>
+              <div class="request-details">
+                <div class="detail-item">
+                  <span class="label">Aktuell:</span>
+                  <span class="value">{{ request.currentPackage }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Gewünscht:</span>
+                  <span class="value highlight">{{ request.packageDetails.displayName }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Preis:</span>
+                  <span class="value">{{ request.packageDetails.price }} {{ request.packageDetails.currency }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Datum:</span>
+                  <span class="value">{{ formatDate(request.createdAt) }}</span>
+                </div>
+              </div>
+              <div class="request-actions">
+                <button class="btn-success" (click)="approveUpgrade(request._id)">
+                  ✓ Genehmigen
+                </button>
+                <button class="btn-danger" (click)="rejectUpgrade(request._id)">
+                  ✗ Ablehnen
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!stats.upgradeRequests.pending || stats.upgradeRequests.pending.length === 0" class="no-data">
+            <p>Keine offenen Upgrade-Anfragen</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Berater/Admin Dashboard -->
+      <div *ngIf="!isSuperAdmin">
+        <div class="stats-grid" *ngIf="stats">
+          <!-- Erinnerungen -->
+          <div class="stat-card priority-high" *ngIf="stats.reminders">
+            <h3>🔔 Erinnerungen</h3>
+            <div class="reminder-stats">
+              <div class="reminder-item high">
+                <span class="count">{{ stats.reminders.urgent || 0 }}</span>
+                <span class="label">Dringend</span>
+              </div>
+              <div class="reminder-item medium">
+                <span class="count">{{ stats.reminders.total || 0 }}</span>
+                <span class="label">Gesamt</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kunden -->
+          <div class="stat-card">
+            <h3>👥 Kunden</h3>
+            <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
+            <div class="stat-label">Aktive Kunden</div>
+          </div>
+
+          <!-- Zähler -->
+          <div class="stat-card">
+            <h3>⚡ Zähler</h3>
+            <div class="stat-split">
+              <div>
+                <div class="stat-number small">{{ stats.meters?.free || 0 }}</div>
+                <div class="stat-label">Frei</div>
+              </div>
+              <div>
+                <div class="stat-number small">{{ stats.meters?.occupied || 0 }}</div>
+                <div class="stat-label">Belegt</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Auslaufende Verträge -->
+        <div class="contracts-section" *ngIf="stats?.expiringContracts">
+          <h2>📋 Bald auslaufende Verträge</h2>
+          <app-table-container>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Vertragsnr.</th>
+                  <th>Kunde</th>
+                  <th>Anbieter</th>
+                  <th>Enddatum</th>
+                  <th>Restlaufzeit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let contract of stats.expiringContracts">
+                  <td>{{ contract.contractNumber }}</td>
+                  <td>{{ contract.customerId.firstName }} {{ contract.customerId.lastName }}</td>
+                  <td>{{ contract.supplierId.name }}</td>
+                  <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
+                  <td>
+                    <span class="badge" [class.badge-danger]="getDaysRemaining(contract.endDate) <= 30">
+                      {{ getDaysRemaining(contract.endDate) }} Tage
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </app-table-container>
+        </div>
+
+        <!-- Verträge nach Anbieter -->
+        <div class="supplier-section" *ngIf="stats?.contractsBySupplier">
+          <h2>📊 Verträge nach Anbieter</h2>
+          <div class="chart-container">
+            <div *ngFor="let item of stats.contractsBySupplier" class="chart-bar">
+              <div class="bar-label">{{ item.name }}</div>
+              <div class="bar-wrapper">
+                <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+                <span class="bar-value">{{ item.count }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
