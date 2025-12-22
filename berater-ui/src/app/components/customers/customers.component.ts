@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CustomerService, Customer } from '../../services/customer.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
+import { ViewportService, ViewportType } from 'src/app/services/viewport.service';
+import { CustomersMobileComponent } from "./mobile/customers-mobile/customers-mobile.component";
 
 @Component({
   selector: 'app-customers',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent],
+  imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent],
   templateUrl: './customers.component.html',
   styleUrls: ['./customers.component.scss']
 })
@@ -20,11 +22,17 @@ export class CustomersComponent implements OnInit {
   editMode = false;
   currentCustomer: Partial<Customer> = {};
   activeMenuId: string | null = null;
+  
 
   constructor(
     private customerService: CustomerService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private viewport: ViewportService
   ) {}
+
+    get isMobile() {
+      return this.viewport.isMobile();
+    }
 
   ngOnInit(): void {
     // Prüfe ob eine ID in der Route vorhanden ist
@@ -82,9 +90,16 @@ export class CustomersComponent implements OnInit {
     this.showModal = true;
   }
 
-  editCustomer(customer: Customer): void {
+  editCustomer(customer: Customer) {
     this.editMode = true;
-    this.currentCustomer = { ...customer };
+    this.currentCustomer = {
+      ...customer,
+      address: {
+        street: customer.address?.street ?? '',
+        zip: customer.address?.zip ?? '',
+        city: customer.address?.city ?? ''
+      }
+    };
     this.showModal = true;
   }
 

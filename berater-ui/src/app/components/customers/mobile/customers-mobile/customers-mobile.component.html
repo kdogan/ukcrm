@@ -1,0 +1,55 @@
+<div class="mobile-page">
+
+  <!-- HEADER -->
+  <div class="mobile-header">
+    <h1>Kunden</h1>
+    <button class="fab" (click)="create.emit()">➕</button>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="mobile-filters">
+    <input
+      type="search"
+      placeholder="Suche..."
+      [ngModel]="searchTerm"
+      (ngModelChange)="searchTermChange.emit($event)"
+    />
+
+    <select
+      [ngModel]="filterActive"
+      (ngModelChange)="filterActiveChange.emit($event)"
+    >
+      <option [ngValue]="undefined">Alle</option>
+      <option [ngValue]="true">Aktiv</option>
+      <option [ngValue]="false">Inaktiv</option>
+    </select>
+  </div>
+
+  <!-- LIST -->
+  <div class="customer-list">
+    <div class="customer-card" *ngFor="let c of customers">
+
+      <!-- STATUS -->
+      <div class="status-icon"
+           [class.active]="c.isActive"
+           [class.inactive]="!c.isActive">
+        {{ c.isActive ? '✔️' : '⛔' }}
+      </div>
+
+      <strong>{{ c.firstName }} {{ c.lastName }}</strong>
+      <div>{{ c.email || '-' }}</div>
+
+      <div class="phone" *ngIf="c.phone">
+        {{ c.phone }}
+        <a [href]="'tel:' + c.phone">📞</a>
+      </div>
+
+      <div class="actions">
+        <button (click)="edit.emit(c)">✏️</button>
+        <button *ngIf="c.isActive" class="danger" (click)="deactivate.emit(c._id)">🚫</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

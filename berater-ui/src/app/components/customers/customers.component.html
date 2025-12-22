@@ -1,3 +1,15 @@
+@if(isMobile){
+  <app-customers-mobile 
+    [customers]="customers" 
+    (create)="showCreateModal()" 
+    (edit)="editCustomer($event)" 
+    (deactivate)="deactivateCustomer($event)"
+    (closeActionMenu)="closeActionMenu()"
+    (filterActiveChange)="filterActive = $event; loadCustomers()"
+    (toggleActionMenu)="toggleActionMenu($event)"
+    (searchTermChange)="searchTerm = $event; onSearchChange()"
+  />
+} @else {
 <div class="page-container" (click)="closeActionMenu()">
   <div class="page-header">
     <h1>Kunden</h1>
@@ -62,6 +74,10 @@
     </table>
   </app-table-container>
 
+
+</div>
+}
+
   <!-- Modal -->
   <div class="modal" *ngIf="showModal" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
@@ -86,6 +102,32 @@
             <label>Telefon</label>
             <input type="tel" [(ngModel)]="currentCustomer.phone" name="phone" />
           </div>
+            <div class="form-group" *ngIf="currentCustomer.address !== undefined">
+              <label>Adresse</label>
+              <input
+                type="text"
+                name="street"
+                [(ngModel)]="currentCustomer.address.street"
+                placeholder="Straße"
+                class="form-control"
+              />
+              <div class="form-row">
+                <input
+                  type="text"
+                  name="zip"
+                  [(ngModel)]="currentCustomer.address.zip"
+                  placeholder="PLZ"
+                  class="form-control"
+                />
+                <input
+                  type="text"
+                  name="city"
+                  [(ngModel)]="currentCustomer.address.city"
+                  placeholder="Stadt"
+                  class="form-control"
+                />
+              </div>
+            </div>
         </div>
         <div class="form-group">
           <label>Notizen</label>
@@ -98,4 +140,3 @@
       </form>
     </div>
   </div>
-</div>
