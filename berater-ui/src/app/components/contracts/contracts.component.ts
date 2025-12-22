@@ -9,6 +9,10 @@ import { MeterService } from '../../services/meter.service';
 import { ReminderService } from '../../services/reminder.service';
 import { PackageService } from '../../services/package.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
+import { ViewportService, ViewportType } from 'src/app/services/viewport.service';
+import { Subscription } from 'rxjs';
+import { ContractsMobileComponent } from './mobile/contracts-mobile/contracts-mobile.component';
+import { ContractsDesktopComponent } from './desktop/contracts-desktop/contracts-desktop.component';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -16,9 +20,14 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
   styleUrls: ['./contracts.component.scss'],
   templateUrl: './contracts.component.html',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent],
+  imports: [CommonModule, 
+    FormsModule, 
+    TableContainerComponent, 
+    ContractsDesktopComponent,
+    ContractsMobileComponent],
 })
 export class ContractsComponent implements OnInit {
+
   contracts: any[] = [];
   customers: any[] = [];
   suppliers: any[] = [];
@@ -43,6 +52,8 @@ export class ContractsComponent implements OnInit {
   selectedCustomerDetails: any = null;
   selectedSupplierDetails: any = null;
   selectedMeterDetails: any = null;
+  viewport: ViewportType = ViewportType.Desktop;
+  private sub!: Subscription;
 
   constructor(
     private contractService: ContractService,
@@ -51,10 +62,13 @@ export class ContractsComponent implements OnInit {
     private meterService: MeterService,
     private route: ActivatedRoute,
     private router: Router,
-    private packageService: PackageService
+    private packageService: PackageService,
+    public viewportService: ViewportService
   ) {}
 
   ngOnInit(): void {
+    this.sub = this.viewportService.viewportType$
+      .subscribe(v => this.viewport = v);
     // Lade immer Kunden, Lieferanten und freie Zähler
     this.loadCustomers();
     this.loadSuppliers();
@@ -63,29 +77,39 @@ export class ContractsComponent implements OnInit {
     // Prüfe ob eine ID in der Route vorhanden ist
     this.route.params.subscribe(params => {
       const contractId = params['id'];
-      console.log('ContractsComponent - Route params:', params);
-      console.log('ContractsComponent - Contract ID:', contractId);
 
       if (contractId) {
         // Zeige Vertrag bearbeiten Modal
-        console.log('ContractsComponent - Loading contract by ID:', contractId);
         this.loadContractById(contractId);
       } else {
-        console.log('ContractsComponent - Loading all contracts');
         this.loadContracts();
       }
     });
   }
 
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+  }
+
+  get isMobile() {
+    return this.viewport === ViewportType.Mobile;
+  }
+  onStatusChange($event: string) {
+    this.statusFilter = $event;
+    this.loadContracts();
+  }
+  onDaysChange($event: string) { 
+    this.daysFilter = $event;
+    this.loadContracts();
+  }
+
   loadContractById(id: string): void {
-    console.log('loadContractById called with ID:', id);
     // Lade zuerst die Vertragsliste
     this.loadContracts();
 
     // Dann lade den spezifischen Vertrag und öffne das Modal
     this.contractService.getContract(id).subscribe({
       next: (response) => {
-        console.log('Contract loaded from backend:', response);
         if (response.success) {
           const contract = response.data;
           this.currentContract = {
@@ -404,9 +428,9 @@ export class ContractsComponent implements OnInit {
     }
   }
 
-  showCustomerDetails(customer: any): void {
-    if (customer._id) {
-      this.customerService.getCustomer(customer._id).subscribe({
+  showCustomerDetails(id: string): void {
+    if (id) {
+      this.customerService.getCustomer(id).subscribe({
         next: (response) => {
           if (response.success) {
             this.selectedCustomerDetails = response.data;
@@ -419,7 +443,7 @@ export class ContractsComponent implements OnInit {
         }
       });
     } else {
-      this.selectedCustomerDetails = customer;
+      this.selectedCustomerDetails = null;
       this.showCustomerDetailsModal = true;
     }
   }
@@ -429,9 +453,9 @@ export class ContractsComponent implements OnInit {
     this.selectedCustomerDetails = null;
   }
 
-  showSupplierDetails(supplier: any): void {
-    if (supplier._id) {
-      this.supplierService.getSupplier(supplier._id).subscribe({
+  showSupplierDetails(id: string): void {
+    if (id) {
+      this.supplierService.getSupplier(id).subscribe({
         next: (response) => {
           if (response.success) {
             this.selectedSupplierDetails = response.data;
@@ -444,7 +468,7 @@ export class ContractsComponent implements OnInit {
         }
       });
     } else {
-      this.selectedSupplierDetails = supplier;
+      this.selectedSupplierDetails = null;
       this.showSupplierDetailsModal = true;
     }
   }
@@ -454,9 +478,9 @@ export class ContractsComponent implements OnInit {
     this.selectedSupplierDetails = null;
   }
 
-  showMeterDetails(meter: any): void {
-    if (meter._id) {
-      this.meterService.getMeter(meter._id).subscribe({
+  showMeterDetails(id: string): void {
+    if (id) {
+      this.meterService.getMeter(id).subscribe({
         next: (response) => {
           if (response.success) {
             this.selectedMeterDetails = response.data;
@@ -469,7 +493,7 @@ export class ContractsComponent implements OnInit {
         }
       });
     } else {
-      this.selectedMeterDetails = meter;
+      this.selectedMeterDetails = null;
       this.showMeterDetailsModal = true;
     }
   }

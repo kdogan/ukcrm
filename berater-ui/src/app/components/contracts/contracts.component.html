@@ -1,99 +1,42 @@
-<div class="page-container" (click)="closeActionMenu()">
-      <div class="page-header">
-        <h1>Verträge</h1>
-        <button class="btn-primary" (click)="showCreateModal()">+ Neuer Vertrag</button>
-      </div>
-      <div class="filters">
-        <select [(ngModel)]="statusFilter" (ngModelChange)="loadContracts()">
-          <option value="">Alle</option>
-          <option value="active">Aktiv</option>
-          <option value="ended">Beendet</option>
-          <option value="archived">Archiviert</option>
-        </select>
-        <select [(ngModel)]="daysFilter" (ngModelChange)="loadContracts()">
-          <option value="">Alle Laufzeiten</option>
-          <option value="30">Nächste 30 Tage</option>
-          <option value="60">Nächste 60 Tage</option>
-          <option value="90">Nächste 90 Tage</option>
-        </select>
-      </div>
-      <app-table-container>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Vertragsnr.</th>
-              <th>Kunde</th>
-              <th>Zähler</th>
-              <th>Anbieter</th>
-              <th>Startdatum</th>
-              <th>Enddatum</th>
-              <th>Status</th>
-              <th>Aktionen</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let contract of contracts">
-              <td>{{ contract.contractNumber }}</td>
-              <td>
-                <a
-                  *ngIf="contract.customerId"
-                  class="clickable-link"
-                  (click)="showCustomerDetails(contract.customerId); $event.stopPropagation()"
-                  title="Kunde anzeigen"
-                >
-                  {{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}
-                </a>
-                <span *ngIf="!contract.customerId">-</span>
-              </td>
-              <td>
-                <a
-                  *ngIf="contract.meterId"
-                  class="clickable-link"
-                  (click)="showMeterDetails(contract.meterId); $event.stopPropagation()"
-                  title="Zähler anzeigen"
-                >
-                  {{ contract.meterId?.meterNumber }}
-                </a>
-                <span *ngIf="!contract.meterId">-</span>
-              </td>
-              <td>
-                <a
-                  *ngIf="contract.supplierId"
-                  class="clickable-link"
-                  (click)="showSupplierDetails(contract.supplierId); $event.stopPropagation()"
-                  title="Anbieter anzeigen"
-                >
-                  {{ contract.supplierId?.name }}
-                </a>
-                <span *ngIf="!contract.supplierId">-</span>
-              </td>
-              <td>{{ contract.startDate | date:'dd.MM.yyyy' }}</td>
-              <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
-              <td><span class="badge" [class.badge-active]="contract.status === 'active'">{{ getStatusLabel(contract.status) }}</span></td>
-              <td class="actions-cell">
-                <div class="action-menu-container">
-                  <button class="action-menu-btn" (click)="toggleActionMenu(contract._id); $event.stopPropagation()">
-                    ⋮
-                  </button>
-                  <div class="action-menu" *ngIf="activeMenuId === contract._id" (click)="$event.stopPropagation()">
-                    <button class="menu-item" (click)="editContract(contract); closeActionMenu()">
-                      ✏️ Bearbeiten
-                    </button>
-                    <button
-                      class="menu-item menu-item-danger"
-                      (click)="deleteContract(contract._id); closeActionMenu()"
-                    >
-                      🗑️ Löschen
-                    </button>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </app-table-container>
+@if(viewportService.isDesktop()){
+<app-contracts-desktop
+  [contracts]="contracts"
 
-      <!-- Modal for Create/Edit Contract -->
+  (create)="showCreateModal()"
+  (edit)="editContract($event)"
+  (delete)="deleteContract($event)"
+
+  (statusFilterChange)="onStatusChange($event)"
+  (daysFilterChange)="onDaysChange($event)"
+
+  (showCustomer)="showCustomerDetails($event)"
+  (showMeter)="showMeterDetails($event)"
+  (showSupplier)="showSupplierDetails($event)"
+
+  (toggleActionMenu)="activeMenuId = $event"
+/>
+}
+
+@if(viewportService.isMobile()){
+<app-contracts-mobile
+  [contracts]="contracts"
+  (create)="showCreateModal()"
+  (edit)="editContract($event)"
+  (delete)="deleteContract($event)"
+
+  (statusFilterChange)="onStatusChange($event)"
+  (daysFilterChange)="onDaysChange($event)"
+
+  (showCustomer)="showCustomerDetails($event)"
+  (showMeter)="showMeterDetails($event)"
+  (showSupplier)="showSupplierDetails($event)"
+  (toggleActionMenu)="activeMenuId = $event"
+  />
+}
+
+
+
+<!-- Modal for Create/Edit Contract -->
       <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
         <div class="modal-content" (click)="$event.stopPropagation()">
           <div class="modal-header">
@@ -371,4 +314,3 @@
           </div>
         </div>
       </div>
-    </div>

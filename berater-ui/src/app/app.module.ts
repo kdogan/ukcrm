@@ -15,6 +15,7 @@ import { CustomersComponent } from './components/customers/customers.component';
 import { MetersComponent } from './components/meters/meters.component';
 import { ContractsComponent } from './components/contracts/contracts.component';
 import { RemindersComponent } from './components/reminders/reminders.component';
+import { ViewportService } from './services/viewport.service';
 
 @NgModule({
   declarations: [],
@@ -40,7 +41,8 @@ import { RemindersComponent } from './components/reminders/reminders.component';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    ViewportService
   ],
   bootstrap: [AppComponent]
 })

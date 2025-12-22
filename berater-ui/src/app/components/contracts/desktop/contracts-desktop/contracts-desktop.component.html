@@ -1,0 +1,100 @@
+
+<div class="page-container" (click)="closeActionMenu.emit()">
+      <div class="page-header">
+        <h1>Verträge</h1>
+        <button class="btn-primary" (click)="create.emit()">+ Neuer Vertrag</button>
+      </div>
+      <div class="filters">
+        <select
+  [ngModel]="statusFilter"
+  (ngModelChange)="statusFilterChange.emit($event)">
+  <option value="">Alle</option>
+  <option value="active">Aktiv</option>
+  <option value="ended">Beendet</option>
+  <option value="archived">Archiviert</option>
+</select>
+        <select
+  [ngModel]="daysFilter"
+  (ngModelChange)="daysFilterChange.emit($event)">
+  <option value="">Alle Laufzeiten</option>
+  <option value="30">Nächste 30 Tage</option>
+  <option value="60">Nächste 60 Tage</option>
+  <option value="90">Nächste 90 Tage</option>
+</select>
+      </div>
+      <app-table-container>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Vertragsnr.</th>
+              <th>Kunde</th>
+              <th>Zähler</th>
+              <th>Anbieter</th>
+              <th>Startdatum</th>
+              <th>Enddatum</th>
+              <th>Status</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let contract of contracts">
+              <td>{{ contract.contractNumber }}</td>
+              <td>
+                <a
+                  *ngIf="contract.customerId"
+                  class="clickable-link"
+                  (click)="showCustomer.emit(contract.customerId._id); $event.stopPropagation()"
+                  title="Kunde anzeigen"
+                >
+                  {{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}
+                </a>
+                <span *ngIf="!contract.customerId">-</span>
+              </td>
+              <td>
+                <a
+                  *ngIf="contract.meterId"
+                  class="clickable-link"
+                  (click)="showMeter.emit(contract.meterId._id); $event.stopPropagation()"
+                  title="Zähler anzeigen"
+                >
+                  {{ contract.meterId?.meterNumber }}
+                </a>
+                <span *ngIf="!contract.meterId">-</span>
+              </td>
+              <td>
+                <a
+                  *ngIf="contract.supplierId"
+                  class="clickable-link"
+                  (click)="showSupplier.emit(contract.supplierId._id); $event.stopPropagation()"
+                  title="Anbieter anzeigen"
+                >
+                  {{ contract.supplierId?.name }}
+                </a>
+                <span *ngIf="!contract.supplierId">-</span>
+              </td>
+              <td>{{ contract.startDate | date:'dd.MM.yyyy' }}</td>
+              <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
+              <td><span class="badge" [class.badge-active]="contract.status === 'active'">{{ getStatusLabel(contract.status) }}</span></td>
+              <td class="actions-cell">
+                <div class="action-menu-container">
+                  <button class="action-menu-btn" (click)="emitActionMenuId(contract._id); $event.stopPropagation()">
+                    ⋮
+                  </button>
+                  <div class="action-menu" *ngIf="activeMenuId === contract._id" (click)="$event.stopPropagation()">
+                    <button class="menu-item" (click)="edit.emit(contract); closeActionMenu.emit()">
+                      ✏️ Bearbeiten
+                    </button>
+                    <button
+                      class="menu-item menu-item-danger"
+                      (click)="delete.emit(contract._id); closeActionMenu.emit()"
+                    >
+                      🗑️ Löschen
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </app-table-container>
+    </div>

@@ -1,0 +1,53 @@
+<div class="mobile-page">
+
+    <!-- HEADER -->
+    <div class="mobile-header">
+        <h1>Verträge</h1>
+        <button class="fab" (click)="create.emit()">➕</button>
+    </div>
+
+    <!-- LIST -->
+    <div class="contract-list">
+        <div class="contract-card" *ngFor="let c of contracts">
+            <div class="status-icon" [ngClass]="c.status" [title]="c.status">
+                <span *ngIf="c.status === 'active'">✔️</span>
+                <span *ngIf="c.status === 'ended'">⏸️</span>
+                <span *ngIf="c.status === 'archived'">📦</span>
+                <span *ngIf="c.status === 'pending'">⏳</span>
+                <span *ngIf="c.status === 'canceled'">❌</span>
+            </div>
+            <div class="card-header">
+                <strong>{{ c.contractNumber }}</strong>
+            </div>
+
+            <div class="row">
+                Kunde: <a *ngIf="c.customerId" class="clickable-link"
+                    (click)="showCustomer.emit(c.customerId._id); $event.stopPropagation()" title="Kunde anzeigen">
+                    {{ c.customerId?.firstName }} {{ c.customerId?.lastName }}
+                </a>
+            </div>
+            <div class="row">
+                Zähler: <a *ngIf="c.meterId" class="clickable-link"
+                    (click)="showMeter.emit(c.meterId._id); $event.stopPropagation()" title="Zähler anzeigen">
+                    {{ c.meterId?.meterNumber }}
+                </a>
+            </div>
+            <div class="row">
+                Anbieter: <a *ngIf="c.supplierId" class="clickable-link"
+                    (click)="showSupplier.emit(c.supplierId._id); $event.stopPropagation()" title="Anbieter anzeigen">
+                    {{ c.supplierId?.name }}
+                </a>
+
+                <div class="row">
+                    {{ c.startDate | date:'dd.MM.yyyy' }} – {{ c.endDate | date:'dd.MM.yyyy' }}
+                </div>
+
+                <div class="actions">
+                    <button (click)="edit.emit(c)">✏️</button>
+                    <button class="danger" (click)="delete.emit(c._id)">🗑️</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
