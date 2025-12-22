@@ -164,7 +164,7 @@ exports.updateContract = async (req, res, next) => {
 
     // Audit Log
     const changes = {};
-    const allowedFields = ['durationMonths', 'notes'];
+    const allowedFields = ['durationMonths', 'notes', 'status', 'endDate'];
     
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined && req.body[field] !== contract[field]) {
