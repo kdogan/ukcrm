@@ -1,0 +1,60 @@
+<div class="chat-page">
+
+  <!-- SIDEBAR / KONVERSATIONEN -->
+  <div class="sidebar">
+    <h3>
+      Unterhaltungen
+      <button class="new-conv-btn" (click)="showUserPicker = true">+</button>
+    </h3>
+    <ul>
+      <li *ngFor="let conv of conversations" [class.active]="conv._id === selectedConversation?._id"
+          (click)="selectConversation(conv)">
+        {{ conv.otherUserName }}
+        <span *ngIf="conv.unreadCount > 0" class="unread-badge">{{ conv.unreadCount }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- USER PICKER POPUP -->
+  <div class="user-picker-popup" *ngIf="showUserPicker">
+    <h4>Wähle einen Nutzer</h4>
+    <ul>
+      <li *ngFor="let u of users" (click)="startConversation(u._id)">
+        {{ u.name }} <span *ngIf="u.address">({{ u.address }})</span>
+      </li>
+    </ul>
+    <button (click)="showUserPicker = false">Abbrechen</button>
+  </div>
+
+  <!-- CHAT FENSTER -->
+  <div class="chat-window" *ngIf="selectedConversation">
+    <div class="chat-container">
+      <!-- HEADER -->
+      <div class="chat-header">
+        <strong>{{ selectedConversation.otherUserName }}</strong>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="chat-messages">
+        <div *ngFor="let m of messages" class="message" [class.me]="m.senderId === currentUserId"
+            [class.other]="m.senderId !== currentUserId">
+          <div class="bubble">
+            <span class="text">{{ m.text }}</span>
+            <span class="time">{{ m.createdAt | date:'HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="chat-input">
+        <input type="text" placeholder="Nachricht schreiben…" [(ngModel)]="messageText"
+               (keydown.enter)="sendMessage()" />
+        <button (click)="sendMessage()">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-selection" *ngIf="!selectedConversation">
+    Bitte wähle eine Unterhaltung aus.
+  </div>
+</div>

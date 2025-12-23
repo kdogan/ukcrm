@@ -6,10 +6,12 @@ const {
   sendMessage,
   markConversationAsRead,
   getUnreadCount,
-  getConversations
+  getConversations,
+  createConversation
 } = require('../controllers/messageController');
 
 const { authenticate } = require('../middleware/auth');
+const { create } = require('../models/Message');
 
 router.use(authenticate);
 
@@ -37,5 +39,7 @@ router.post('/', sendMessage);
  * 👁️ Konversation als gelesen markieren
  */
 router.patch('/read/:conversationId', markConversationAsRead);
+
+router.post('/conversations', createConversation);
 
 module.exports = router;

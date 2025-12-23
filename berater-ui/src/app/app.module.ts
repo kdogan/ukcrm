@@ -16,6 +16,7 @@ import { MetersComponent } from './components/meters/meters.component';
 import { ContractsComponent } from './components/contracts/contracts.component';
 import { RemindersComponent } from './components/reminders/reminders.component';
 import { ViewportService } from './services/viewport.service';
+import { MessagesComponent } from './messages/messages/messages.component';
 
 @NgModule({
   declarations: [],
@@ -34,7 +35,8 @@ import { ViewportService } from './services/viewport.service';
     CustomersComponent,
     MetersComponent,
     ContractsComponent,
-    RemindersComponent
+    RemindersComponent,
+    MessagesComponent
   ],
   providers: [
     {

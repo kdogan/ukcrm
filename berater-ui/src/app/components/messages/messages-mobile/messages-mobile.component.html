@@ -1,0 +1,34 @@
+<div class="chat-container">
+
+  <!-- HEADER -->
+  <div class="chat-header">
+    <strong>Chat</strong>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="chat-messages">
+    <div
+      *ngFor="let m of messages"
+      class="message"
+      [class.admin]="m.senderRole === 'admin'"
+      [class.user]="m.senderRole === 'user'"
+    >
+      <div class="bubble">
+        {{ m.text }}
+        <span class="time">{{ m.createdAt | date:'HH:mm' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="chat-input">
+    <input
+      type="text"
+      placeholder="Nachricht schreiben…"
+      [(ngModel)]="messageText"
+      (keydown.enter)="sendMessage()"
+    />
+    <button (click)="sendMessage()">➤</button>
+  </div>
+
+</div>

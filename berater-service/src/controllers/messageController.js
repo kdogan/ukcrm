@@ -1,40 +1,91 @@
 const Message = require('../models/Message');
+const Conversation = require('../models/Conversation');
+const User = require('../models/User');
 
 /**
  * 📥 Alle Konversationen
  */
-exports.getConversations = async (req, res) => {
-  const userId = req.user.id;
+const mongoose = require('mongoose');
 
-  const conversations = await Message.aggregate([
-    {
-      $match: {
-        $or: [
-          { senderId: userId },
-          { receiverId: userId }
-        ]
-      }
-    },
-    {
-      $group: {
-        _id: '$conversationId',
-        lastMessage: { $last: '$$ROOT' },
-        unreadCount: {
-          $sum: {
-            $cond: [
-              { $and: [{ $eq: ['$receiverId', userId] }, { $eq: ['$readAt', null] }] },
-              1,
+exports.getConversations = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const conversations = await Conversation.aggregate([
+      {
+        $match: {
+          participants: new mongoose.Types.ObjectId(userId)
+        }
+      },
+      {
+        $lookup: {
+          from: 'messages',
+          let: { convId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$conversationId', '$$convId'] } } },
+            { $sort: { createdAt: -1 } },
+            { $limit: 1 }
+          ],
+          as: 'lastMessage'
+        }
+      },
+      { $unwind: { path: '$lastMessage', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          otherUserId: {
+            $arrayElemAt: [
+              {
+                $filter: {
+                  input: '$participants',
+                  cond: { $ne: ['$$this', new mongoose.Types.ObjectId(userId)] }
+                }
+              },
               0
             ]
           }
         }
-      }
-    },
-    { $sort: { 'lastMessage.createdAt': -1 } }
-  ]);
+      },
+      {
+        $lookup: {
+          from: 'users',
+          let: { otherId: '$otherUserId' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$otherId'] } } },
+            {
+              $project: {
+                _id: 1,
+                name: { $concat: ['$firstName', ' ', '$lastName'] }
+              }
+            }
+          ],
+          as: 'otherUser'
+        }
+      },
+      { $unwind: { path: '$otherUser', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          otherUserId: '$otherUser._id',
+          otherUserName: '$otherUser.name',
+          unreadCount: {
+            $size: {
+              $filter: {
+                input: '$lastMessage' ? ['$lastMessage'] : [],
+                cond: { $eq: ['$$this.read', false] }
+              }
+            }
+          }
+        }
+      },
+      { $sort: { 'lastMessage.createdAt': -1 } }
+    ]);
 
-  res.json(conversations);
+    res.json(conversations);
+  } catch (err) {
+    console.error('Fehler beim Laden der Conversations:', err);
+    res.status(500).json({ message: 'Fehler beim Laden der Conversations' });
+  }
 };
+
 
 /**
  * 📥 Nachrichten einer Konversation
@@ -97,3 +148,38 @@ exports.getUnreadCount = async (req, res) => {
 
   res.json({ count });
 };
+
+exports.createConversation = async (req, res) => {
+  try {
+    const { receiverId } = req.body;
+    const senderId = req.user._id;
+
+    // Prüfen ob Conversation schon existiert
+    let conversation = await Conversation.findOne({
+      participants: { $all: [senderId, receiverId] }
+    });
+
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [senderId, receiverId],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+
+    // Optionally: populate otherUser info
+    const otherUserId = conversation.participants.find(p => p.toString() !== senderId.toString());
+    const otherUser = await User.findById(otherUserId).select('_id firstName lastName');
+    const otherUserName = `${otherUser.firstName} ${otherUser.lastName}`;
+
+    res.json({
+      _id: conversation._id,
+      otherUserId,
+      otherUserName
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Fehler beim Erstellen der Conversation' });
+  }
+};
+

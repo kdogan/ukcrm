@@ -20,7 +20,8 @@ const todoRoutes = require('./src/routes/todoRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
 const packageRoutes = require('./src/routes/packageRoutes');
 const upgradeRoutes = require('./src/routes/upgradeRoutes');
-const messageRoutes = require('./src/routes/messagesRoutee');
+const messageRoutes = require('./src/routes/messagesRoutes');
+const usersRoutes = require('./src/routes/usersRoutes');
 
 const { initializeJobs } = require('./src/jobs/todoJobs');
 const { getDashboardStats } = require('./src/controllers/reminderController');
@@ -86,6 +87,7 @@ app.use('/api/admin', apiLimiter, adminRoutes);
 app.use('/api/packages', apiLimiter, packageRoutes);
 app.use('/api/upgrade', apiLimiter, upgradeRoutes);
 app.use('/api/messages', apiLimiter, messageRoutes);
+app.use('/api/users', apiLimiter, usersRoutes);
 
 // 📊 Dashboard Route
 app.get('/api/dashboard/stats', authenticate, getDashboardStats);

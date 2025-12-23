@@ -8,6 +8,7 @@ import { CustomersComponent } from './components/customers/customers.component';
 import { MetersComponent } from './components/meters/meters.component';
 import { ContractsComponent } from './components/contracts/contracts.component';
 import { RemindersComponent } from './components/reminders/reminders.component';
+import { MessagesComponent } from './components/messages/messages.component';
 
 const routes: Routes = [
   {
@@ -39,6 +40,10 @@ const routes: Routes = [
       {
         path: 'reminders',
         component: RemindersComponent
+      },
+      {
+        path: 'messages',
+        component: MessagesComponent
       }
     ]
   },

@@ -64,13 +64,19 @@
                 </a>
             </li>
 
-            <li *ngIf="currentUser?.role === 'superadmin'">
+            <li>
                 <a routerLink="/packages" routerLinkActive="active">
                     <span class="icon">📦</span>
                     <span class="nav-text">Pakete</span>
                 </a>
             </li>
             }
+            <li>
+                <a routerLink="/messages" routerLinkActive="active">
+                    <span class="icon">💬</span>
+                    <span class="nav-text">Messages</span>
+                </a>
+            </li>
         </ul>
 
         <div class="user-section">
