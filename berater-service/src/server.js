@@ -17,6 +17,7 @@ const reminderRoutes = require('./routes/reminderRoutes');
 const supplierRoutes = require('./routes/supplierRoutes');
 const todoRoutes = require('./routes/todoRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const messageRoutes = require('./routes/messagesRoutes');
 
 // Initialize Express
 const app = express();
@@ -75,6 +76,7 @@ app.use('/api/reminders', reminderRoutes);
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/todos', todoRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/messages', messageRoutes);
 
 // Dashboard route (separate from reminders)
 const { getDashboardStats } = require('./controllers/reminderController');
