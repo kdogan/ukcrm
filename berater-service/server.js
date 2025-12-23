@@ -22,8 +22,17 @@ const packageRoutes = require('./src/routes/packageRoutes');
 const upgradeRoutes = require('./src/routes/upgradeRoutes');
 const messageRoutes = require('./src/routes/messagesRoutee');
 
+const { initializeJobs } = require('./src/jobs/todoJobs');
+const { getDashboardStats } = require('./src/controllers/reminderController');
+const { authenticate } = require('./src/middleware/auth');
+
 const app = express();
+
+// ✅ Trust Proxy (wenn hinter Nginx/Cloudflare)
 app.set('trust proxy', 1);
+
+// 🔗 Connect DB
+connectDB();
 
 // 🔐 Security
 app.use(helmet());
@@ -32,8 +41,8 @@ app.use(helmet());
 app.use(cors({
   origin: ['http://berater.eskapp.com', 'http://localhost:4200'],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
 }));
 
 // 📦 Body Parser
@@ -44,49 +53,44 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(compression());
 
 // 📝 Logging
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
-// ⛓ Rate Limits
+// ⛓ Rate Limiter
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 20, // Login-Versuche
+  windowMs: 15 * 60 * 1000, // 15 Minuten
+  max: 50, // max 50 Requests pro IP
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  message: "Zu viele Login-Versuche, bitte später erneut versuchen."
 });
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 100, // max 100 Requests pro IP
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  message: "Zu viele Anfragen, bitte später erneut versuchen."
 });
 
-// 🔓 AUTH (separat & locker)
+// 🔓 Auth Routen locker limitiert
 app.use('/api/auth', authLimiter, authRoutes);
 
-// 🔒 REST API (global)
-app.use('/api', apiLimiter);
+// 🔒 REST API Routen (alle anderen)
+app.use('/api/customers', apiLimiter, customerRoutes);
+app.use('/api/meters', apiLimiter, meterRoutes);
+app.use('/api/contracts', apiLimiter, contractRoutes);
+app.use('/api/reminders', apiLimiter, reminderRoutes);
+app.use('/api/suppliers', apiLimiter, supplierRoutes);
+app.use('/api/todos', apiLimiter, todoRoutes);
+app.use('/api/admin', apiLimiter, adminRoutes);
+app.use('/api/packages', apiLimiter, packageRoutes);
+app.use('/api/upgrade', apiLimiter, upgradeRoutes);
+app.use('/api/messages', apiLimiter, messageRoutes);
 
-// 🔗 API Routes
-app.use('/api/customers', customerRoutes);
-app.use('/api/meters', meterRoutes);
-app.use('/api/contracts', contractRoutes);
-app.use('/api/reminders', reminderRoutes);
-app.use('/api/suppliers', supplierRoutes);
-app.use('/api/todos', todoRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/packages', packageRoutes);
-app.use('/api/upgrade', upgradeRoutes);
-app.use('/api/messages', messageRoutes);
-
-// 📊 Dashboard
-const { getDashboardStats } = require('./src/controllers/reminderController');
-const { authenticate } = require('./src/middleware/auth');
+// 📊 Dashboard Route
 app.get('/api/dashboard/stats', authenticate, getDashboardStats);
 
-// ❤️ Health
+// ❤️ Health Check
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
@@ -95,18 +99,18 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ❌ 404
+// 🔄 Initialize Cron Jobs
+initializeJobs();
+
+// ❌ 404 Handler
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route nicht gefunden'
-  });
+  res.status(404).json({ success: false, message: 'Route nicht gefunden' });
 });
 
-// 💥 Error Handler
+// 💥 Global Error Handler
 app.use(errorHandler);
 
-// 🚀 Start
+// 🚀 Start Server
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
@@ -115,7 +119,7 @@ const server = app.listen(PORT, () => {
 // 🛑 Graceful Shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM empfangen – Server stoppt');
-  server.close();
+  server.close(() => console.log('HTTP Server geschlossen'));
 });
 
 module.exports = app;
