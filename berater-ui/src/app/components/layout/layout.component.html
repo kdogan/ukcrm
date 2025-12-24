@@ -146,19 +146,19 @@
     <div class="bottom-sheet" [class.open]="showMoreMenu">
         @if(currentUser?.role !== 'superadmin'){
             <div class="row">
-                <a routerLink="/meters" routerLinkActive="active">
+                <a routerLink="/meters" routerLinkActive="active" (click)="toggleMoreMenu()">
                     <i class="fas fa-bolt fa-2x"></i>
                     <span class="sheet-text">{{ settings.sidebarLabels.meters }}</span>
                 </a>
             </div>
             <div class="row">
-                <a routerLink="/suppliers" routerLinkActive="active">
+                <a routerLink="/suppliers" routerLinkActive="active" (click)="toggleMoreMenu()">
                     <i class="fas fa-truck fa-2x"></i>
                     <span class="sheet-text">{{ settings.sidebarLabels.suppliers || 'Anbieter' }}</span>
                 </a>    
             </div>
             <div class="row">
-                <a routerLink="/settings" routerLinkActive="active">
+                <a routerLink="/settings" routerLinkActive="active" (click)="toggleMoreMenu()">
                     <i class="fas fa-cog fa-2x"></i>
                     <span class="sheet-text">{{ settings.sidebarLabels.settings?? 'Einstellungen' }}</span>
                 </a>

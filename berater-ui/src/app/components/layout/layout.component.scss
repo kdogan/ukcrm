@@ -1,9 +1,12 @@
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #f5f6fa;
 }
 
+/* =========================
+   DESKTOP SIDEBAR
+========================= */
 .sidebar {
   width: 70px;
   color: white;
@@ -24,11 +27,10 @@
 
 .logo {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  white-space: nowrap;
 }
 
 .logo-icon {
@@ -37,17 +39,18 @@
 }
 
 .logo-text {
-  margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 600;
   opacity: 0;
   transition: opacity 0.3s ease;
+  white-space: nowrap;
 }
 
 .sidebar:hover .logo-text {
   opacity: 1;
 }
 
+/* 🔥 FIX: Navigation wieder vertikal */
 .nav-menu {
   flex: 1;
   list-style: none;
@@ -58,37 +61,35 @@
 }
 
 .nav-menu li {
-  margin: 0;
+  width: 100%;
 }
 
 .nav-menu a {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.65rem 1.5rem;
-  color: rgba(255, 255, 255, 0.8);
+  padding: 0.7rem 1.5rem;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  transition: all 0.2s;
   white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
 }
 
 .nav-menu a:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   color: white;
 }
 
 .nav-menu a.active {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.25);  /* etwas stärker als vorher */
+  border-left: 4px solid #6366f1;          /* farbiger Indikator */
+  box-shadow: inset 4px 0 0 #6366f1;       /* subtiler innerer Schatten */
   color: white;
-  border-left: 3px solid white;
+}
+.nav-menu a.active:hover {
+  background: rgba(255, 255, 255, 0.35);
 }
 
-.nav-menu .icon {
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  width: 1.25rem;
-  text-align: center;
-}
 
 .nav-text {
   opacity: 0;
@@ -100,15 +101,14 @@
 }
 
 .user-section {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  flex-shrink: 0;
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .user-info {
   display: flex;
-  align-items: center;
   gap: 0.75rem;
+  align-items: center;
   margin-bottom: 0.75rem;
   white-space: nowrap;
 }
@@ -117,17 +117,15 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 1rem;
   flex-shrink: 0;
 }
 
 .user-details {
-  flex: 1;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -136,76 +134,44 @@
   opacity: 1;
 }
 
-.user-name {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.user-role {
-  font-size: 0.75rem;
-  opacity: 0.8;
-  text-transform: capitalize;
-}
-
 .logout-btn {
   width: 100%;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  border: none;
+  color: white;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 8px;
-  color: white;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.9rem;
   white-space: nowrap;
 }
 
 .logout-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.logout-btn .icon {
-  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .main-content {
   flex: 1;
   margin-left: 70px;
-  padding: 0;
   overflow-y: auto;
   transition: margin-left 0.3s ease;
 }
 
-
 /* =========================
-   MOBILE APP NAVIGATION
+   MOBILE NAVIGATION
 ========================= */
-  .bottom-sheet-backdrop {
-    display: none;
-  }
-
-  .bottom-sheet {
-    display: none;
-  }
-
-  .bottom-sheet.open {
-    bottom: 0;
-  }
-.bottom-nav {
+.bottom-nav,
+.bottom-sheet,
+.bottom-sheet-backdrop {
   display: none;
 }
 
+/* =========================
+   MOBILE STYLES
+========================= */
 @media (max-width: 768px) {
-    .bottom-sheet-backdrop {
-    display: block;
-  }
-
-  .bottom-sheet {
-    display: block;
-  }
 
   .sidebar {
     display: none;
@@ -213,181 +179,123 @@
 
   .main-content {
     margin-left: 0;
-    padding-bottom: 70px;
+    padding-bottom: 80px;
   }
 
+  /* ---- Bottom Navigation ---- */
   .bottom-nav {
+    display: flex;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 70px;
-    color: white;
-    border-top: 1px solid #e0e0e0;
-    display: flex;
+    height: 72px;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), #ffffff);
+    border-top: 1px solid #e5e7eb;
     z-index: 2000;
+    backdrop-filter: blur(8px);
   }
 
   .bottom-nav a,
   .bottom-nav .more-btn {
     flex: 1;
-    border: none;
+    height: 100%;
     background: none;
+    border: none;
+    color: white;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     gap: 4px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     cursor: pointer;
   }
+.bottom-nav a.active {
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);   /* leichtes Highlight */
+  border-radius: 12px;
+  padding: 0.5rem 0.75rem;
+}
 
-  .bottom-nav .icon {
-    font-size: 1.5rem;
+
+  .bottom-nav a.active i {
+    transform: scale(1.15);
   }
 
-  .bottom-nav a.active {
-    color: #667eea;
+  .bottom-nav i {
+    transition: transform 0.2s ease;
   }
 
-  /* Backdrop */
+  /* ---- Bottom Sheet Backdrop ---- */
   .bottom-sheet-backdrop {
+    display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.45);
     z-index: 3000;
   }
 
-  /* Bottom Sheet */
+  /* ---- Bottom Sheet ---- */
   .bottom-sheet {
+    display: block;
     position: fixed;
     bottom: -100%;
     left: 0;
     right: 0;
-    background: #fff;
-    border-radius: 16px 16px 0 0;
-    padding: 1rem;
+    background: #ffffff;
+    border-radius: 20px 20px 0 0;
+    padding: 1rem 1.25rem;
     z-index: 4000;
     transition: bottom 0.3s ease;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
   }
 
   .bottom-sheet.open {
     bottom: 0;
   }
 
-  .bottom-sheet a,
-  .bottom-sheet .logout {
+  .bottom-sheet::before {
+    content: '';
+    width: 36px;
+    height: 4px;
+    background: #d1d5db;
+    border-radius: 2px;
     display: block;
-    padding: 1rem;
-    font-size: 1rem;
-    text-align: left;
-    border-radius: 10px;
-    border: none;
-    background: none;
-    width: 100%;
+    margin: 0 auto 1rem;
   }
 
-  .bottom-sheet a:hover,
-  .bottom-sheet .logout:hover {
-    background: #f5f5f5;
-  }
-
-  .bottom-sheet .logout {
-    color: #c62828;
-    font-weight: 600;
-  }
-
-  .btn-primary,
-  .btn-secondary,
-  .btn-danger {
-    padding: 0.625rem 1.25rem;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-  .btn-primary {
-    background: #667eea;
-    color: white;
-  }
-
-  .btn-primary:hover {
-    background: #5568d3;
-  }
-
-  .btn-secondary {
-    background: #e0e0e0;
-    color: #555;
-  }
-
-  .btn-danger {
-    background: #ef5350;
-    color: white;
-  }
-
-  .btn-danger:hover {
-    background: #e53935;
-  }
-
-  .nav-text {
-    opacity: 0;
-  }
-
-  @media (max-width: 768px) {
-
-    .bottom-sheet .sheet-text {
-      opacity: 1;
-      color: #333;
-      font-size: 1rem;
-      white-space: nowrap;
-    }
-
-    .bottom-sheet .icon {
-      margin-right: 0.75rem;
-    }
-
-    .bottom-sheet a {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    /* User info im Bottom Sheet sichtbar machen */
-  .bottom-sheet .user-details {
-    opacity: 1;
-  }
-
-  .bottom-sheet .user-info {
+  .bottom-sheet .row a,
+  .bottom-sheet .logout-btn {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 0;
+    gap: 1rem;
+    padding: 0.9rem;
+    border-radius: 12px;
+    color: #111827;
+    font-size: 1rem;
+  }
+
+  .bottom-sheet .row a:hover {
+    background: #f3f4f6;
+  }
+
+  .bottom-sheet .user-section {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 1rem;
+    padding-top: 1rem;
   }
 
   .bottom-sheet .user-avatar {
-    background: #e0e0e0;
-    color: #333;
-  }
-
-  .bottom-sheet .sheet-text {
-    opacity: 1;
-    color: #333;
-    font-size: 0.95rem;
+    background: #6366f1;
+    color: white;
   }
 
   .bottom-sheet .logout-btn {
-    background: #f5f5f5;
-    color: #333;
-    justify-content: flex-start;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-weight: 600;
   }
-
-  .bottom-sheet .logout-btn .icon {
-    margin-right: 0.75rem;
-  }
-  }
-
-
-
 }
