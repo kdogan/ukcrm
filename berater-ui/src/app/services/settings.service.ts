@@ -17,6 +17,7 @@ export interface UserSettings {
     contracts: string;
     todos: string;
     suppliers: string;
+    settings?: string;
   };
   notifications: {
     email: boolean;

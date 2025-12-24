@@ -3,7 +3,9 @@
   <!-- HEADER -->
   <div class="mobile-header">
     <h1>Kunden</h1>
-    <button class="fab" (click)="create.emit()">➕</button>
+    <button class="fab" (click)="create.emit()">
+      <i class="fas fa-plus"></i>
+    </button>
   </div>
 
   <!-- FILTER BAR -->
@@ -33,7 +35,7 @@
       <div class="status-icon"
            [class.active]="c.isActive"
            [class.inactive]="!c.isActive">
-        {{ c.isActive ? '✔️' : '⛔' }}
+          <i class="fas" [ngClass]="c.isActive ? 'fa-check' : 'fa-times'"></i>
       </div>
 
       <strong>{{ c.firstName }} {{ c.lastName }}</strong>
@@ -41,12 +43,12 @@
 
       <div class="phone" *ngIf="c.phone">
         {{ c.phone }}
-        <a [href]="'tel:' + c.phone">📞</a>
+        <a [href]="'tel:' + c.phone"><i class="fas fa-phone"></i></a>
       </div>
 
       <div class="actions">
-        <button (click)="edit.emit(c)">✏️</button>
-        <button *ngIf="c.isActive" class="danger" (click)="deactivate.emit(c._id)">🚫</button>
+        <button (click)="edit.emit(c)"><i class="fas fa-edit"></i></button>
+        <button *ngIf="c.isActive" class="danger" (click)="deactivate.emit(c._id)"><i class="fas fa-times"></i></button>
       </div>
 
     </div>

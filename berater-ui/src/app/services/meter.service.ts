@@ -6,14 +6,32 @@ import { environment } from '../../environments/environment';
 export interface Meter {
   _id: string;
   meterNumber: string;
-  type: 'electricity' | 'gas' | 'water';
+  type: MeterType;
+  beraterId:string;
   currentCustomerId?: any;
-  location?: string;
+  currentReading:number;
+  lastReadingDate:Date;
+  manufacturer:string;
+  location: Address;
+  isFree:boolean;
   installationDate?: Date;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
+export interface Address {
+  street: string;
+  zip: string;
+  city: string;
+  country?: string;
+}
+
+export enum MeterType {
+  Electricity = 'electricity',
+  Gas = 'gas',
+  Water = 'water',
+  Heat = 'heat'
+} 
 
 @Injectable({
   providedIn: 'root'
