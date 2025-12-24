@@ -1,3 +1,21 @@
+@if(isMobile){
+  <app-messages-mobile
+    [messages]="messages"
+    [conversations]="conversations"
+    [selectedConversation]="selectedConversation"
+    [users]="users"
+    [currentUserId]="currentUserId"
+    [(messageText)]="messageText"
+    [showUserPicker]="showUserPicker"
+    (sendMessageEvent)="sendMessage()"
+    (selectConversationEvent)="selectConversation($event)"
+    (startConversationEvent)="startConversation($event)"
+    (messageTextChange)="messageText = $event"
+    (toggleUserPickerEvent)="showUserPicker = !showUserPicker">
+  </app-messages-mobile>
+
+}@else {
+
 <div class="chat-page">
 
   <!-- SIDEBAR / KONVERSATIONEN -->
@@ -58,3 +76,4 @@
     Bitte wähle eine Unterhaltung aus.
   </div>
 </div>
+}

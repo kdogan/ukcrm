@@ -173,67 +173,50 @@
     }
 }
 
-/* Modal */
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+/* Modal inhalt */
 
-    .modal-content {
-        background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        width: 90%;
-        max-width: 600px;
-        max-height: 90vh;
-        overflow-y: auto;
 
-        h2 {
-            margin-top: 0;
-        }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
+h2 {
+    margin-top: 0;
+}
 
-            @media (max-width: 600px) {
-                grid-template-columns: 1fr;
-            }
-        }
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-
-            label {
-                margin-bottom: 0.5rem;
-                font-weight: 500;
-                color: #555;
-            }
-
-            input,
-            textarea {
-                width: 100%;
-                padding: 0.75rem;
-                border: 2px solid #e0e0e0;
-                border-radius: 8px;
-                font-size: 1rem;
-            }
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
     }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #555;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
 }
 
 /* =========================
@@ -285,6 +268,7 @@
         border: 1px solid #515151;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     }
+
     .table-container {
         background-color: transparent !important;
     }

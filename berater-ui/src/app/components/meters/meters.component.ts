@@ -8,11 +8,12 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { MetersMobileComponent } from './mobile/meters-mobile.component';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { Util } from '../util/util';
+import { OverlayModalComponent } from '../shared/overlay-modal/overlay-modal.component';
 
 @Component({
   selector: 'app-meters',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent, MetersMobileComponent],
+  imports: [CommonModule, FormsModule, TableContainerComponent, MetersMobileComponent, OverlayModalComponent],
   styleUrls: ['./meters.component.scss'],
   templateUrl: './meters.component.html',
 })

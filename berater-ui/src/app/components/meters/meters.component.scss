@@ -351,29 +351,6 @@ button:disabled {
 
 @media (max-width: 768px) {
 
-  .modal-overlay {
-    align-items: flex-end;
-  }
-
-  .modal-content {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    max-height: 92vh;
-    border-radius: 20px 20px 0 0;
-    animation: slideUp 0.25s ease;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-    }
-
-    to {
-      transform: translateY(0);
-    }
-  }
-
   .modal-header {
     display: flex;
     align-items: center;
@@ -420,23 +397,6 @@ button:disabled {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
-  }
-
-  .modal-content::before {
-    content: "";
-    width: 36px;
-    height: 4px;
-    background: #d1d5db;
-    border-radius: 2px;
-    margin: 8px auto 0;
-  }
-
-  .modal-overlay {
-    padding-bottom: calc(var(--mobile-bottom-bar-height) + env(safe-area-inset-bottom));
-  }
-
-  .modal-content {
-    max-height: calc(100vh - var(--mobile-bottom-bar-height) - env(safe-area-inset-bottom));
   }
 
   .modal-body,

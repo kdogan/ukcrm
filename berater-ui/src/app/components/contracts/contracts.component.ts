@@ -13,6 +13,7 @@ import { ViewportService, ViewportType } from 'src/app/services/viewport.service
 import { Subscription } from 'rxjs';
 import { ContractsMobileComponent } from './mobile/contracts-mobile/contracts-mobile.component';
 import { ContractsDesktopComponent } from './desktop/contracts-desktop/contracts-desktop.component';
+import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.component";
 
 // CONTRACTS COMPONENT
 @Component({
@@ -20,10 +21,11 @@ import { ContractsDesktopComponent } from './desktop/contracts-desktop/contracts
   styleUrls: ['./contracts.component.scss'],
   templateUrl: './contracts.component.html',
   standalone: true,
-  imports: [CommonModule, 
-    FormsModule, 
+  imports: [CommonModule,
+    FormsModule,
     ContractsDesktopComponent,
-    ContractsMobileComponent],
+    ContractsMobileComponent, 
+    OverlayModalComponent],
 })
 export class ContractsComponent implements OnInit {
 

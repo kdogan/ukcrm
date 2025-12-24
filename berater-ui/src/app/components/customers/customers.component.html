@@ -79,8 +79,7 @@
 }
 
   <!-- Modal -->
-  <div class="modal" *ngIf="showModal" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
+   <app-overlay-modal *ngIf="showModal"(close)="closeModal()">
       <h2>{{ editMode ? 'Kunde bearbeiten' : 'Neuer Kunde' }}</h2>
       <form (ngSubmit)="saveCustomer()">
         <div class="form-row">
@@ -138,5 +137,5 @@
           <button type="submit" class="btn-primary">Speichern</button>
         </div>
       </form>
-    </div>
-  </div>
+   </app-overlay-modal>
+

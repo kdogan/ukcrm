@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Message } from 'src/app/models/message.model';
-import { MessagesService } from 'src/app/services/messages.service';
 
 @Component({
   selector: 'app-messages-mobile',
@@ -11,57 +10,33 @@ import { MessagesService } from 'src/app/services/messages.service';
   templateUrl: './messages-mobile.component.html',
   styleUrl: './messages-mobile.component.scss'
 })
-export class MessagesMobileComponent implements OnInit {
+export class MessagesMobileComponent {
 
-  @Input() conversationId!: string;
+  @Input() messages: Message[] = [];
+  @Input() conversations: any[] = [];
+  @Input() selectedConversation: any;
+  @Input() users: { _id: string; name: string; address?: string }[] = [];
   @Input() currentUserId!: string;
-  @Input() currentRole: string = 'admin';
-  @Input() receiverId!: string;
+  @Input() messageText = '';
+  @Input() showUserPicker = false;
 
-  messages: Message[] = [];
-  messageText = '';
+  @Output() sendMessageEvent = new EventEmitter<string>();
+  @Output() selectConversationEvent = new EventEmitter<any>();
+  @Output() startConversationEvent = new EventEmitter<string>();
+  @Output() messageTextChange = new EventEmitter<string>();
+  @Output() toggleUserPickerEvent = new EventEmitter<void>();
 
-  constructor(private messagesService: MessagesService) {}
-
-  ngOnInit(): void {
-    if (!this.conversationId) {
-      console.warn('conversationId fehlt');
-      return;
+  onSendMessage() {
+    if (this.messageText.trim()) {
+      this.sendMessageEvent.emit(this.messageText);
+      this.messageText = '';
+      this.messageTextChange.emit(this.messageText);
     }
-    this.loadMessages();
   }
 
-  loadMessages(): void {
-    this.messagesService.getMessages(this.conversationId).subscribe({
-      next: (msgs) => {
-        this.messages = msgs;
-        this.scrollToBottom();
-      },
-      error: (err) => console.error(err)
-    });
+  onMessageTextChange(value: string) {
+    this.messageText = value;
+    this.messageTextChange.emit(value);
   }
 
-  sendMessage(): void {
-    if (!this.messageText.trim()) return;
-
-    this.messagesService.sendMessage(
-      this.conversationId,
-      this.receiverId,
-      this.messageText
-    ).subscribe({
-      next: (msg) => {
-        this.messages.push(msg);
-        this.messageText = '';
-        this.scrollToBottom();
-      },
-      error: (err) => console.error(err)
-    });
-  }
-
-  private scrollToBottom(): void {
-    setTimeout(() => {
-      const el = document.querySelector('.chat-messages');
-      el?.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-    });
-  }
 }

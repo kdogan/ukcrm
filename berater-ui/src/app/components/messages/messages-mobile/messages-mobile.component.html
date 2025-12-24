@@ -1,34 +1,54 @@
-<div class="chat-container">
+<div class="mobile-chat">
 
   <!-- HEADER -->
-  <div class="chat-header">
-    <strong>Chat</strong>
+  <div class="mobile-header">
+    <button *ngIf="!selectedConversation" (click)="toggleUserPickerEvent.emit()">≡</button>
+    <strong>{{ selectedConversation?.otherUserName || 'Chats' }}</strong>
   </div>
 
+  <!-- USER PICKER -->
+  <div *ngIf="showUserPicker" class="user-picker-popup">
+    <h4>Wähle einen Nutzer</h4>
+    <ul>
+      <li *ngFor="let u of users" (click)="startConversationEvent.emit(u._id)">
+        {{ u.name }} <span *ngIf="u.address">({{ u.address }})</span>
+      </li>
+    </ul>
+    <button (click)="toggleUserPickerEvent.emit()">Abbrechen</button>
+  </div>
+
+  <!-- CONVERSATIONS LIST -->
+  <ul *ngIf="!selectedConversation && !showUserPicker" class="conv-list">
+    <li *ngFor="let c of conversations" (click)="selectConversationEvent.emit(c)">
+      {{ c.otherUserName }}
+      <span *ngIf="c.unreadCount > 0" class="badge">{{ c.unreadCount }}</span>
+    </li>
+  </ul>
+
   <!-- MESSAGES -->
-  <div class="chat-messages">
-    <div
-      *ngFor="let m of messages"
-      class="message"
-      [class.admin]="m.senderRole === 'admin'"
-      [class.user]="m.senderRole === 'user'"
-    >
+  <div *ngIf="selectedConversation" class="mobile-messages">
+    <div *ngFor="let m of messages" class="message" 
+         [class.me]="m.senderId === currentUserId"
+         [class.other]="m.senderId !== currentUserId">
       <div class="bubble">
-        {{ m.text }}
+        <span>{{ m.text }}</span>
         <span class="time">{{ m.createdAt | date:'HH:mm' }}</span>
       </div>
     </div>
   </div>
 
   <!-- INPUT -->
-  <div class="chat-input">
-    <input
-      type="text"
-      placeholder="Nachricht schreiben…"
-      [(ngModel)]="messageText"
-      (keydown.enter)="sendMessage()"
-    />
-    <button (click)="sendMessage()">➤</button>
+  <div *ngIf="selectedConversation" class="mobile-input">
+    <input type="text"
+           [ngModel]="messageText"
+           (ngModelChange)="onMessageTextChange($event)"
+           (keydown.enter)="onSendMessage()"
+           placeholder="Nachricht schreiben…">
+    <button (click)="onSendMessage()"><i class="fas fa-arrow-up"></i></button>
   </div>
 
+  <!-- NO SELECTION -->
+  <div *ngIf="!selectedConversation && !showUserPicker" class="no-selection">
+    Bitte wähle eine Unterhaltung aus.
+  </div>
 </div>

@@ -1,75 +1,176 @@
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: #f4f6f8;
-
-  .chat-header {
-    padding: 1rem;
-    background: #0d6efd;
-    color: white;
-    text-align: center;
-  }
-
-  .chat-messages {
-    flex: 1;
-    padding: 1rem;
-    overflow-y: auto;
-  }
-
-  .message {
-    margin-bottom: 0.5rem;
+.mobile-chat {
     display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #f4f6f8;
 
-    &.admin {
-      justify-content: flex-end;
-      .bubble { background: #0d6efd; color: white; }
+    .mobile-header {
+        padding: 1rem;
+        background: #0d6efd;
+        color: white;
+        text-align: center;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        button {
+            position: absolute;
+            left: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
     }
 
-    &.user {
-      justify-content: flex-start;
-      .bubble { background: #e0e0e0; }
+    .mobile-messages {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+
+        .message {
+            display: flex;
+            margin-bottom: 0.5rem;
+
+            &.me {
+                justify-content: flex-end;
+
+                .bubble {
+                    background: #0d6efd;
+                    color: white;
+                    border-radius: 18px 18px 0 18px;
+                }
+            }
+
+            &.other {
+                justify-content: flex-start;
+
+                .bubble {
+                    background: #e0e0e0;
+                    color: black;
+                    border-radius: 18px 18px 18px 0;
+                }
+            }
+
+            .bubble {
+                max-width: 70%;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+                position: relative;
+                word-wrap: break-word;
+
+                .time {
+                    display: block;
+                    font-size: 0.65rem;
+                    opacity: 0.6;
+                    text-align: right;
+                    margin-top: 2px;
+                }
+            }
+        }
     }
-  }
 
-  .bubble {
-    max-width: 70%;
-    padding: 0.5rem 0.8rem;
-    border-radius: 14px;
-    font-size: 0.9rem;
-    position: relative;
-  }
+    .user-picker-popup {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: #fff;
+        padding: 1rem;
+        z-index: 1000;
+        border-top: 1px solid #ccc;
 
-  .time {
-    display: block;
-    font-size: 0.65rem;
-    opacity: 0.6;
-    text-align: right;
-  }
+        h4 {
+            margin-top: 0;
+        }
 
-  .chat-input {
-    display: flex;
-    padding: 0.5rem;
-    border-top: 1px solid #ddd;
-    background: #fff;
+        ul {
+            list-style: none;
+            padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
 
-    input {
-      flex: 1;
-      padding: 0.6rem 0.8rem;
-      border-radius: 14px;
-      border: 1px solid #ccc;
-      margin-right: 0.5rem;
+            li {
+                padding: 0.5rem;
+                cursor: pointer;
+                border-radius: 4px;
+
+                &:hover {
+                    background: #f0f0f0;
+                }
+            }
+        }
+
+        button {
+            margin-top: 1rem;
+            background: #ccc;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     }
 
-    button {
-      background: #0d6efd;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 1rem;
-      cursor: pointer;
+    .conv-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+
+            .badge {
+                background: red;
+                color: white;
+                border-radius: 50%;
+                padding: 0 6px;
+                font-size: 0.75rem;
+            }
+
+            &:hover {
+                background: #f0f0f0;
+            }
+        }
     }
-  }
+
+    .mobile-input {
+        display: flex;
+        padding: 0.5rem;
+        border-top: 1px solid #ccc;
+
+        input {
+            flex: 1;
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            margin-right: 0.5rem;
+        }
+
+        button {
+            padding: 0 1rem;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    }
+
+    .no-selection {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #666;
+        font-size: 1.1rem;
+    }
+
 }

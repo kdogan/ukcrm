@@ -6,11 +6,12 @@ import { CustomerService, Customer } from '../../services/customer.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService, ViewportType } from 'src/app/services/viewport.service';
 import { CustomersMobileComponent } from "./mobile/customers-mobile/customers-mobile.component";
+import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.component";
 
 @Component({
   selector: 'app-customers',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent],
+  imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent],
   templateUrl: './customers.component.html',
   styleUrls: ['./customers.component.scss']
 })
