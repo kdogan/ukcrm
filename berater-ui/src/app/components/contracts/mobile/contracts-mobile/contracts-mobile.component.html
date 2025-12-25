@@ -12,9 +12,9 @@
             <div class="status-icon" [ngClass]="c.status" [title]="c.status">
                 <span *ngIf="c.status === 'active'"><i class="fas fa-truck"></i></span>
                 <span *ngIf="c.status === 'ended'"><i class="fas fa-stop"></i></span>
-                <span *ngIf="c.status === 'archived'"><i class="fas fa-archived"></i></span>
-                <span *ngIf="c.status === 'draft'"><i class="fa-solid fa-pen-ruler"></i></span>
-                <span *ngIf="c.status === 'ended'"><i class="fas fa-cancel"></i></span>
+                <span *ngIf="c.status === 'archived'"><i class="fas fa-archive"></i></span>
+                <span *ngIf="c.status === 'draft'"><i class="fas fa-pencel"></i></span>
+                <span *ngIf="c.status === 'ended'"><i class="fas fa-times"></i></span>
             </div>
             <div class="card-header">
                 <strong>{{ c.contractNumber }}</strong>
@@ -43,8 +43,8 @@
                 </div>
 
                 <div class="actions">
-                    <button (click)="edit.emit(c)">✏️</button>
-                    <button class="danger" (click)="delete.emit(c._id)">🗑️</button>
+                    <button (click)="edit.emit(c)"><i class="fas fa-pencil"></i></button>
+                    <button class="danger" (click)="delete.emit(c._id)"><i class="fas fa-trash"></i></button>
                 </div>
 
             </div>

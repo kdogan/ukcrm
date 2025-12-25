@@ -49,7 +49,10 @@ return;
         billingPeriod: 'monthly',
         isActive: true,
         isFree: true,
-        order: 1
+        order: 1,
+        features: [
+          { name: 'file_upload', enabled: false }
+        ]
       },
       {
         name: 'basic',
@@ -62,7 +65,10 @@ return;
         billingPeriod: 'monthly',
         isActive: true,
         isFree: false,
-        order: 2
+        order: 2,
+        features: [
+          { name: 'file_upload', enabled: true }
+        ]
       },
       {
         name: 'professional',
@@ -75,7 +81,10 @@ return;
         billingPeriod: 'monthly',
         isActive: true,
         isFree: false,
-        order: 3
+        order: 3,
+        features: [
+          { name: 'file_upload', enabled: true }
+        ]
       },
       {
         name: 'enterprise',
@@ -88,7 +97,10 @@ return;
         billingPeriod: 'monthly',
         isActive: true,
         isFree: false,
-        order: 4
+        order: 4,
+        features: [
+          { name: 'file_upload', enabled: true }
+        ]
       }
     ]);
 

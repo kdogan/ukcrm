@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const Todo = require('../models/Todo');
 const Contract = require('../models/Contract');
+const { cleanupOldAttachments } = require('./attachmentCleanup');
 
 /**
  * Generiert automatisch TODOs für ablaufende Verträge
@@ -65,11 +66,15 @@ const generateExpiringContractTodos = async () => {
  * Initialisiert alle Cron-Jobs
  */
 const initializeJobs = () => {
-  // Täglich um 2:00 Uhr morgens
+  // Täglich um 2:00 Uhr morgens - TODO-Generierung
   cron.schedule('0 2 * * *', generateExpiringContractTodos);
 
-  console.log('Cron-Jobs für TODO-Generierung initialisiert');
+  // Täglich um 2:00 Uhr morgens - Anhänge-Cleanup
+  cron.schedule('0 2 * * *', cleanupOldAttachments);
+
+  console.log('Cron-Jobs initialisiert:');
   console.log('- Ablaufende Verträge: Täglich um 2:00 Uhr');
+  console.log('- Anhänge-Cleanup (>3 Jahre): Täglich um 2:00 Uhr');
 };
 
 module.exports = {

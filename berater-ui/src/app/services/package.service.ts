@@ -16,6 +16,7 @@ export interface Package {
   isActive: boolean;
   isFree: boolean;
   order: number;
+  features?: { name: string; enabled: boolean }[];
 }
 
 export interface UserLimits {

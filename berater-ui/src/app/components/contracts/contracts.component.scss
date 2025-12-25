@@ -161,6 +161,118 @@
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
     }
+    // File Upload Styles
+    .file-upload-section {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+    .file-info {
+      color: #666;
+      font-size: 0.75rem;
+    }
+    .attachments-list {
+      margin-top: 1rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .attachment-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: #f9f9f9;
+      }
+    }
+    .attachment-icon {
+      font-size: 1.5rem;
+      margin-right: 0.75rem;
+      color: #667eea;
+      min-width: 30px;
+      text-align: center;
+    }
+    .attachment-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .attachment-name {
+      font-weight: 600;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .attachment-meta {
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 0.25rem;
+    }
+    .attachment-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-icon {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: all 0.2s;
+      color: #666;
+
+      &:hover {
+        background: #e0e0e0;
+        color: #333;
+      }
+
+      &.btn-danger:hover {
+        background: #ffebee;
+        color: #c62828;
+      }
+    }
+
+    // Feature not available message
+    .feature-not-available {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+      color: #856404;
+
+      i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #ffc107;
+        display: block;
+      }
+
+      p {
+        margin: 0.5rem 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+
+        &:first-of-type {
+          font-weight: 600;
+        }
+      }
+    }
+
     .modal-footer {
       display: flex;
       justify-content: flex-end;

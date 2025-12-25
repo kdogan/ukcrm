@@ -130,6 +130,54 @@
       </select>
     </div>
 
+    <!-- Datei-Uploads (nur im Edit-Modus und wenn Feature verfügbar) -->
+    <div class="form-group" *ngIf="isEditMode && currentContract._id && packageFeatureService.hasFileUpload()">
+      <label>Anhänge</label>
+
+      <!-- Upload-Button -->
+      <div class="file-upload-section">
+        <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none"
+               accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" />
+        <button type="button" class="btn-secondary btn-sm" (click)="fileInput.click()" [disabled]="uploadingFile">
+          <i class="fas fa-upload"></i>
+          {{ uploadingFile ? 'Uploading...' : 'Datei hochladen' }}
+        </button>
+        <small class="file-info">Max. 10MB | JPG, PNG, PDF, Word, Excel, TXT, CSV</small>
+      </div>
+
+      <!-- Liste der hochgeladenen Dateien -->
+      <div class="attachments-list" *ngIf="currentContract.attachments && currentContract.attachments.length > 0">
+        <div class="attachment-item" *ngFor="let attachment of currentContract.attachments">
+          <div class="attachment-icon">
+            <i [class]="getFileIcon(attachment.mimetype)"></i>
+          </div>
+          <div class="attachment-info">
+            <div class="attachment-name">{{ attachment.originalName }}</div>
+            <div class="attachment-meta">
+              {{ formatFileSize(attachment.size) }} • {{ formatDate(attachment.uploadedAt) }}
+            </div>
+          </div>
+          <div class="attachment-actions">
+            <button type="button" class="btn-icon" (click)="downloadAttachment(attachment)" title="Herunterladen">
+              <i class="fas fa-download"></i>
+            </button>
+            <button type="button" class="btn-icon btn-danger" (click)="deleteAttachment(attachment)" title="Löschen">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info-Meldung wenn Feature nicht verfügbar -->
+    <div class="form-group" *ngIf="isEditMode && currentContract._id && !packageFeatureService.hasFileUpload()">
+      <div class="feature-not-available">
+        <i class="fas fa-lock"></i>
+        <p>Datei-Upload ist in Ihrem aktuellen Paket ({{ packageFeatureService.getCurrentPackage() }}) nicht verfügbar.</p>
+        <p>Upgraden Sie auf ein höheres Paket, um Dateien hochzuladen.</p>
+      </div>
+    </div>
+
     <div class="form-group">
       <label for="notes">Notizen</label>
       <textarea id="notes" name="notes" [(ngModel)]="currentContract.notes" rows="3"

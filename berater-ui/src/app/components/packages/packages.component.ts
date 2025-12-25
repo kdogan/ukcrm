@@ -132,6 +132,21 @@ import { AuthService } from '../../services/auth.service';
             </div>
           </div>
 
+          <div class="form-section">
+            <h3>Features</h3>
+            <div class="features-list">
+              <div class="feature-item">
+                <label>
+                  <input type="checkbox" [(ngModel)]="fileUploadEnabled"
+                         (change)="updateFileUploadFeature()"
+                         name="fileUpload">
+                  Datei-Upload
+                </label>
+                <small>Erlaubt Benutzern, Dateien zu Verträgen hochzuladen</small>
+              </div>
+            </div>
+          </div>
+
           <div class="form-actions">
             <button type="submit" class="btn-primary">Speichern</button>
             <button type="button" class="btn-secondary" (click)="cancelEdit()">Abbrechen</button>
@@ -167,6 +182,15 @@ import { AuthService } from '../../services/auth.service';
             <div class="limit-item">
               <span class="label">Zähler:</span>
               <span class="value">{{ package.maxMeters === -1 ? 'Unbegrenzt' : package.maxMeters }}</span>
+            </div>
+          </div>
+
+          <div class="package-features" *ngIf="package.features && package.features.length > 0">
+            <div class="feature-badge" *ngFor="let feature of package.features"
+                 [class.enabled]="feature.enabled"
+                 [class.disabled]="!feature.enabled">
+              <i [class]="feature.enabled ? 'fas fa-check' : 'fas fa-times'"></i>
+              {{ getFeatureName(feature.name) }}
             </div>
           </div>
 
@@ -338,6 +362,54 @@ import { AuthService } from '../../services/auth.service';
       margin: 0;
     }
 
+    .form-section {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid #e0e0e0;
+    }
+
+    .form-section h3 {
+      margin: 0 0 1rem 0;
+      color: #555;
+      font-size: 1.25rem;
+    }
+
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .feature-item {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .feature-item label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.25rem;
+      cursor: pointer;
+    }
+
+    .feature-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .feature-item small {
+      display: block;
+      color: #666;
+      font-size: 0.875rem;
+      margin-left: 26px;
+    }
+
     .form-actions {
       display: flex;
       gap: 1rem;
@@ -438,6 +510,43 @@ import { AuthService } from '../../services/auth.service';
     .limit-item .value {
       color: #333;
       font-weight: 600;
+    }
+
+    .package-features {
+      margin-bottom: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .feature-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      margin: 0.25rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .feature-badge.enabled {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+
+    .feature-badge.enabled i {
+      color: #2e7d32;
+    }
+
+    .feature-badge.disabled {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+    }
+
+    .feature-badge.disabled i {
+      color: #c62828;
     }
 
     .package-actions {
@@ -548,6 +657,7 @@ export class PackagesComponent implements OnInit {
   editingPackage: Package | null = null;
   isSuperAdmin = false;
   userLimits: UserLimits | null = null;
+  fileUploadEnabled = false;
 
   formData: Partial<Package> = {
     name: '',
@@ -560,7 +670,8 @@ export class PackagesComponent implements OnInit {
     billingPeriod: 'monthly',
     isActive: true,
     isFree: false,
-    order: 1
+    order: 1,
+    features: []
   };
 
   constructor(
@@ -614,15 +725,44 @@ export class PackagesComponent implements OnInit {
       billingPeriod: 'monthly',
       isActive: true,
       isFree: false,
-      order: this.packages.length + 1
+      order: this.packages.length + 1,
+      features: [{ name: 'file_upload', enabled: false }]
     };
+    this.fileUploadEnabled = false;
     this.showForm = true;
+
+    // Nach oben scrollen
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   editPackage(pkg: Package): void {
     this.editingPackage = pkg;
     this.formData = { ...pkg };
+
+    // Prüfe ob file_upload Feature vorhanden ist
+    const fileUploadFeature = pkg.features?.find(f => f.name === 'file_upload');
+    this.fileUploadEnabled = fileUploadFeature ? fileUploadFeature.enabled : false;
+
     this.showForm = true;
+
+    // Nach oben scrollen
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  updateFileUploadFeature(): void {
+    if (!this.formData.features) {
+      this.formData.features = [];
+    }
+
+    const featureIndex = this.formData.features.findIndex(f => f.name === 'file_upload');
+
+    if (featureIndex >= 0) {
+      // Feature existiert bereits, aktualisiere es
+      this.formData.features[featureIndex].enabled = this.fileUploadEnabled;
+    } else {
+      // Feature existiert nicht, füge es hinzu
+      this.formData.features.push({ name: 'file_upload', enabled: this.fileUploadEnabled });
+    }
   }
 
   savePackage(): void {
@@ -684,6 +824,13 @@ export class PackagesComponent implements OnInit {
 
     if (limit === -1) return 0; // Unlimited
     return (usage / limit) * 100;
+  }
+
+  getFeatureName(featureName: string): string {
+    const featureNames: { [key: string]: string } = {
+      'file_upload': 'Datei-Upload'
+    };
+    return featureNames[featureName] || featureName;
   }
 
   changePackage(packageName: string, packageOrder: number): void {

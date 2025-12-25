@@ -8,6 +8,7 @@ import { SupplierService } from '../../services/supplier.service';
 import { MeterService } from '../../services/meter.service';
 import { ReminderService } from '../../services/reminder.service';
 import { PackageService } from '../../services/package.service';
+import { PackageFeatureService } from '../../services/package-feature.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService, ViewportType } from 'src/app/services/viewport.service';
 import { Subscription } from 'rxjs';
@@ -25,7 +26,7 @@ import { ContractState, stateToLabel } from 'src/app/models/contract.model';
   imports: [CommonModule,
     FormsModule,
     ContractsDesktopComponent,
-    ContractsMobileComponent, 
+    ContractsMobileComponent,
     OverlayModalComponent],
 })
 export class ContractsComponent implements OnInit {
@@ -57,24 +58,24 @@ export class ContractsComponent implements OnInit {
   viewport: ViewportType = ViewportType.Desktop;
   private sub!: Subscription;
 
-contractState = [
-  {
-  key:ContractState.ACTIVE,
-  value: stateToLabel[ContractState.ACTIVE]
-  },
-  {
-  key:ContractState.ARCHIVED,
-  value: stateToLabel[ContractState.ARCHIVED]
-},
-{
-  key:ContractState.DRAFT,
-  value: stateToLabel[ContractState.DRAFT]
-},
-{
-  key:ContractState.ENDET,
-  value: stateToLabel[ContractState.ENDET]
-}
-]
+  contractState = [
+    {
+      key: ContractState.ACTIVE,
+      value: stateToLabel[ContractState.ACTIVE]
+    },
+    {
+      key: ContractState.ARCHIVED,
+      value: stateToLabel[ContractState.ARCHIVED]
+    },
+    {
+      key: ContractState.DRAFT,
+      value: stateToLabel[ContractState.DRAFT]
+    },
+    {
+      key: ContractState.ENDET,
+      value: stateToLabel[ContractState.ENDET]
+    }
+  ]
 
   constructor(
     private contractService: ContractService,
@@ -84,8 +85,9 @@ contractState = [
     private route: ActivatedRoute,
     private router: Router,
     private packageService: PackageService,
-    public viewportService: ViewportService
-  ) {}
+    public viewportService: ViewportService,
+    public packageFeatureService: PackageFeatureService
+  ) { }
 
   ngOnInit(): void {
     this.sub = this.viewportService.viewportType$
@@ -119,7 +121,7 @@ contractState = [
     this.statusFilter = $event;
     this.loadContracts();
   }
-  onDaysChange($event: string) { 
+  onDaysChange($event: string) {
     this.daysFilter = $event;
     this.loadContracts();
   }
@@ -522,5 +524,102 @@ contractState = [
   closeMeterDetails(): void {
     this.showMeterDetailsModal = false;
     this.selectedMeterDetails = null;
+  }
+
+  // File Upload Methods
+  uploadingFile = false;
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Dateigrößenprüfung (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Datei ist zu groß! Maximale Größe: 10MB');
+      return;
+    }
+
+    this.uploadingFile = true;
+    this.contractService.uploadAttachment(this.currentContract._id, file).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Attachment zur Liste hinzufügen
+          if (!this.currentContract.attachments) {
+            this.currentContract.attachments = [];
+          }
+          this.currentContract.attachments.push(response.data);
+          this.uploadingFile = false;
+          // Input zurücksetzen
+          event.target.value = '';
+        }
+      },
+      error: (error) => {
+        this.uploadingFile = false;
+        alert('Fehler beim Hochladen: ' + (error.error?.message || 'Unbekannter Fehler'));
+        event.target.value = '';
+      }
+    });
+  }
+
+  downloadAttachment(attachment: any): void {
+    this.contractService.downloadAttachment(this.currentContract._id, attachment._id).subscribe({
+      next: (blob) => {
+        // Blob als Download auslösen
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = attachment.originalName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (error) => {
+        alert('Fehler beim Herunterladen: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  deleteAttachment(attachment: any): void {
+    if (confirm(`Datei "${attachment.originalName}" wirklich löschen?`)) {
+      this.contractService.deleteAttachment(this.currentContract._id, attachment._id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Attachment aus Liste entfernen
+            const index = this.currentContract.attachments.findIndex((a: any) => a._id === attachment._id);
+            if (index > -1) {
+              this.currentContract.attachments.splice(index, 1);
+            }
+          }
+        },
+        error: (error) => {
+          alert('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
+        }
+      });
+    }
+  }
+
+  getFileIcon(mimetype: string): string {
+    if (mimetype.startsWith('image/')) return 'fas fa-file-image';
+    if (mimetype === 'application/pdf') return 'fas fa-file-pdf';
+    if (mimetype.includes('word')) return 'fas fa-file-word';
+    if (mimetype.includes('excel') || mimetype.includes('spreadsheet')) return 'fas fa-file-excel';
+    if (mimetype === 'text/plain') return 'fas fa-file-alt';
+    if (mimetype === 'text/csv') return 'fas fa-file-csv';
+    return 'fas fa-file';
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  formatDate(date: Date): string {
+    return new Date(date).toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   }
 }

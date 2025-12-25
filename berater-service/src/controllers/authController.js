@@ -159,6 +159,10 @@ exports.login = async (req, res, next) => {
     const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
+    // Package-Features laden
+    const userPackage = await Package.findOne({ name: user.package, isActive: true });
+    const packageFeatures = userPackage ? userPackage.features : [];
+
     // User ohne Passwort zurückgeben, inkl. Settings
     const userObj = user.toJSON();
 
@@ -167,6 +171,7 @@ exports.login = async (req, res, next) => {
       data: {
         user: {
           ...userObj,
+          packageFeatures,
           settings: user.settings || {
             reminderDays: {
               days90: true,
@@ -317,9 +322,16 @@ exports.logout = async (req, res, next) => {
 // @access  Private
 exports.getMe = async (req, res, next) => {
   try {
+    // Package-Features laden
+    const userPackage = await Package.findOne({ name: req.user.package, isActive: true });
+    const packageFeatures = userPackage ? userPackage.features : [];
+
     res.status(200).json({
       success: true,
-      data: req.user
+      data: {
+        ...req.user.toJSON(),
+        packageFeatures
+      }
     });
   } catch (error) {
     next(error);

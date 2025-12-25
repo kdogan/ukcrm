@@ -3,6 +3,17 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export interface Attachment {
+  _id: string;
+  filename: string;
+  originalName: string;
+  mimetype: string;
+  size: number;
+  path: string;
+  uploadedAt: Date;
+  uploadedBy: string;
+}
+
 export interface Contract {
   _id: string;
   contractNumber: string;
@@ -12,8 +23,9 @@ export interface Contract {
   startDate: Date;
   endDate: Date;
   durationMonths: number;
-  status: 'active' | 'ended' | 'archived';
+  status: 'draft' | 'active' | 'ended' | 'archived';
   notes?: string;
+  attachments?: Attachment[];
   daysRemaining?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -64,5 +76,26 @@ export class ContractService {
 
   deleteContract(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  // File Upload Methods
+  uploadAttachment(contractId: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.apiUrl}/${contractId}/attachments`, formData);
+  }
+
+  deleteAttachment(contractId: string, attachmentId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${contractId}/attachments/${attachmentId}`);
+  }
+
+  downloadAttachment(contractId: string, attachmentId: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${contractId}/attachments/${attachmentId}`, {
+      responseType: 'blob'
+    });
+  }
+
+  getAttachmentUrl(contractId: string, attachmentId: string): string {
+    return `${this.apiUrl}/${contractId}/attachments/${attachmentId}`;
   }
 }

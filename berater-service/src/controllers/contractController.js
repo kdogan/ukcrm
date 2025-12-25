@@ -264,6 +264,152 @@ exports.updateContractStatus = async (req, res, next) => {
   }
 };
 
+// @desc    Upload attachment to contract
+// @route   POST /api/contracts/:id/attachments
+// @access  Private
+exports.uploadAttachment = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Keine Datei hochgeladen'
+      });
+    }
+
+    const contract = await Contract.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!contract) {
+      // Datei löschen wenn Vertrag nicht gefunden
+      const fs = require('fs');
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      return res.status(404).json({
+        success: false,
+        message: 'Vertrag nicht gefunden'
+      });
+    }
+
+    // Attachment zum Contract hinzufügen
+    const attachment = {
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      path: req.file.path,
+      uploadedAt: new Date(),
+      uploadedBy: req.user._id
+    };
+
+    contract.attachments.push(attachment);
+    await contract.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Datei erfolgreich hochgeladen',
+      data: attachment
+    });
+  } catch (error) {
+    // Datei löschen bei Fehler
+    if (req.file && req.file.path) {
+      const fs = require('fs');
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+    }
+    next(error);
+  }
+};
+
+// @desc    Delete attachment from contract
+// @route   DELETE /api/contracts/:id/attachments/:attachmentId
+// @access  Private
+exports.deleteAttachment = async (req, res, next) => {
+  try {
+    const contract = await Contract.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!contract) {
+      return res.status(404).json({
+        success: false,
+        message: 'Vertrag nicht gefunden'
+      });
+    }
+
+    const attachment = contract.attachments.id(req.params.attachmentId);
+
+    if (!attachment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Datei nicht gefunden'
+      });
+    }
+
+    // Datei vom Dateisystem löschen
+    const fs = require('fs');
+    if (fs.existsSync(attachment.path)) {
+      fs.unlinkSync(attachment.path);
+    }
+
+    // Attachment aus Array entfernen
+    attachment.deleteOne();
+    await contract.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Datei erfolgreich gelöscht'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Download attachment
+// @route   GET /api/contracts/:id/attachments/:attachmentId
+// @access  Private
+exports.downloadAttachment = async (req, res, next) => {
+  try {
+    const contract = await Contract.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!contract) {
+      return res.status(404).json({
+        success: false,
+        message: 'Vertrag nicht gefunden'
+      });
+    }
+
+    const attachment = contract.attachments.id(req.params.attachmentId);
+
+    if (!attachment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Datei nicht gefunden'
+      });
+    }
+
+    const fs = require('fs');
+    if (!fs.existsSync(attachment.path)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Datei existiert nicht mehr auf dem Server'
+      });
+    }
+
+    // Datei zum Download senden
+    res.download(attachment.path, attachment.originalName);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Hilfsfunktion: Erinnerungen erstellen
 async function createReminders(contract) {
   const reminders = [

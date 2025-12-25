@@ -13,6 +13,8 @@ export interface User {
   role: string;
   phone?: string;
   emailNotifications: boolean;
+  package?: string;
+  packageFeatures?: { name: string; enabled: boolean }[];
   settings?: UserSettings;
 }
 
