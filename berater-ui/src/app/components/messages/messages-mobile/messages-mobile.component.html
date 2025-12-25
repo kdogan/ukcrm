@@ -39,11 +39,14 @@
 
   <!-- INPUT -->
   <div *ngIf="selectedConversation" class="mobile-input">
-    <input type="text"
+    <textarea
+           #messageTextarea
            [ngModel]="messageText"
            (ngModelChange)="onMessageTextChange($event)"
-           (keydown.enter)="onSendMessage()"
-           placeholder="Nachricht schreiben…">
+           (keydown)="onEnterPress($event)"
+           (input)="autoResize($event)"
+           placeholder="Nachricht schreiben… (Shift+Enter für neue Zeile)"
+           rows="1"></textarea>
     <button (click)="onSendMessage()"><i class="fas fa-arrow-up"></i></button>
   </div>
 
