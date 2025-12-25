@@ -21,8 +21,11 @@ exports.checkContractLimit = async (req, res, next) => {
       });
     }
 
-    // Count current contracts
-    const contractCount = await Contract.countDocuments({ beraterId: user._id });
+    // Count current contracts (only active and draft contracts)
+    const contractCount = await Contract.countDocuments({
+      beraterId: user._id,
+      status: { $in: ['active', 'draft'] }
+    });
 
     // Check if limit is reached
     if (contractCount >= userPackage.maxContracts) {

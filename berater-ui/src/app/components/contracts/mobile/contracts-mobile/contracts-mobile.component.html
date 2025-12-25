@@ -3,18 +3,18 @@
     <!-- HEADER -->
     <div class="mobile-header">
         <h1>Verträge</h1>
-        <button class="fab" (click)="create.emit()">➕</button>
+        <button class="fab" (click)="create.emit()"><i class="fas fa-plus"></i></button>
     </div>
 
     <!-- LIST -->
     <div class="contract-list">
         <div class="contract-card" *ngFor="let c of contracts">
             <div class="status-icon" [ngClass]="c.status" [title]="c.status">
-                <span *ngIf="c.status === 'active'">✔️</span>
-                <span *ngIf="c.status === 'ended'">⏸️</span>
-                <span *ngIf="c.status === 'archived'">📦</span>
-                <span *ngIf="c.status === 'pending'">⏳</span>
-                <span *ngIf="c.status === 'canceled'">❌</span>
+                <span *ngIf="c.status === 'active'"><i class="fas fa-truck"></i></span>
+                <span *ngIf="c.status === 'ended'"><i class="fas fa-stop"></i></span>
+                <span *ngIf="c.status === 'archived'"><i class="fas fa-archived"></i></span>
+                <span *ngIf="c.status === 'draft'"><i class="fa-solid fa-pen-ruler"></i></span>
+                <span *ngIf="c.status === 'ended'"><i class="fas fa-cancel"></i></span>
             </div>
             <div class="card-header">
                 <strong>{{ c.contractNumber }}</strong>

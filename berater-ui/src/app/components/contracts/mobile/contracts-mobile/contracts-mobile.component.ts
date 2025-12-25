@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Contract } from 'src/app/services/contract.service';
+import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 
 @Component({
   selector: 'app-contracts-mobile',
@@ -33,12 +34,26 @@ export class ContractsMobileComponent {
     this.toggleActionMenu.emit(id);
   }
 
+    contractState = [
+      {
+        key: ContractState.ACTIVE,
+        value: stateToLabel[ContractState.ACTIVE]
+      },
+      {
+        key: ContractState.ARCHIVED,
+        value: stateToLabel[ContractState.ARCHIVED]
+      },
+      {
+        key: ContractState.DRAFT,
+        value: stateToLabel[ContractState.DRAFT]
+      },
+      {
+        key: ContractState.ENDET,
+        value: stateToLabel[ContractState.ENDET]
+      }
+    ]
+
     getStatusLabel(status: string): string {
-    const labels: any = {
-      active: 'Aktiv',
-      ended: 'Beendet',
-      archived: 'Archiviert'
-    };
-    return labels[status] || status;
+    return this.contractState.find(cs => cs.key == status)?.value || status;
   }
 }

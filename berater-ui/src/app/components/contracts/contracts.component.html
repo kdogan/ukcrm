@@ -1,16 +1,28 @@
 @if(viewportService.isDesktop()){
-<app-contracts-desktop [contracts]="contracts" (create)="showCreateModal()" (edit)="editContract($event)"
-  (delete)="deleteContract($event)" (statusFilterChange)="onStatusChange($event)"
-  (daysFilterChange)="onDaysChange($event)" (showCustomer)="showCustomerDetails($event)"
-  (showMeter)="showMeterDetails($event)" (showSupplier)="showSupplierDetails($event)"
+<app-contracts-desktop 
+  [contracts]="contracts" 
+  (create)="showCreateModal()" 
+  (edit)="editContract($event)"
+  (delete)="deleteContract($event)" 
+  (statusFilterChange)="onStatusChange($event)"
+  (daysFilterChange)="onDaysChange($event)" 
+  (showCustomer)="showCustomerDetails($event)"
+  (showMeter)="showMeterDetails($event)" 
+  (showSupplier)="showSupplierDetails($event)"
   (toggleActionMenu)="activeMenuId = $event" />
 }
 
 @if(viewportService.isMobile()){
-<app-contracts-mobile [contracts]="contracts" (create)="showCreateModal()" (edit)="editContract($event)"
-  (delete)="deleteContract($event)" (statusFilterChange)="onStatusChange($event)"
-  (daysFilterChange)="onDaysChange($event)" (showCustomer)="showCustomerDetails($event)"
-  (showMeter)="showMeterDetails($event)" (showSupplier)="showSupplierDetails($event)"
+<app-contracts-mobile 
+  [contracts]="contracts" 
+  (create)="showCreateModal()" 
+  (edit)="editContract($event)"
+  (delete)="deleteContract($event)" 
+  (statusFilterChange)="onStatusChange($event)"
+  (daysFilterChange)="onDaysChange($event)" 
+  (showCustomer)="showCustomerDetails($event)"
+  (showMeter)="showMeterDetails($event)" 
+  (showSupplier)="showSupplierDetails($event)"
   (toggleActionMenu)="activeMenuId = $event" />
 }
 
@@ -28,29 +40,46 @@
 
     <div class="form-group">
       <label for="customerId">Kunde *</label>
-      <input type="text" placeholder="Suche nach Kunden..." [(ngModel)]="customerSearch"
-        (ngModelChange)="filterCustomers()" (focus)="showCustomerDropdown = true" class="form-control search-input"
-        [ngModelOptions]="{standalone: true}" autocomplete="off" />
-      <div class="dropdown-list" *ngIf="showCustomerDropdown && filteredCustomers.length > 0">
-        <div *ngFor="let customer of filteredCustomers" class="dropdown-item"
-          [class.selected]="currentContract.customerId === customer._id" (click)="selectCustomer(customer)">
-          {{ customer.firstName }} {{ customer.lastName }} ({{ customer.customerNumber }})
-        </div>
-      </div>
-      <input type="hidden" id="customerId" name="customerId" [(ngModel)]="currentContract.customerId" required />
-      <div class="selected-item" *ngIf="selectedCustomer">
+      <input type="text" 
+             placeholder="Suche nach Kunden..." 
+             [(ngModel)]="customerSearch"
+             (ngModelChange)="filterCustomers()" 
+             (focus)="showCustomerDropdown = true" 
+             class="form-control search-input"
+             [ngModelOptions]="{standalone: true}" 
+             autocomplete="off" />
+             @if(showCustomerDropdown && filteredCustomers.length > 0) {
+              <div class="dropdown-list">
+              <div *ngFor="let customer of filteredCustomers" class="dropdown-item"
+                [class.selected]="currentContract.customerId === customer._id" (click)="selectCustomer(customer)">
+                {{ customer.firstName }} {{ customer.lastName }} ({{ customer.customerNumber }})
+              </div>
+              </div>
+            }
+      <input type="hidden" 
+             id="customerId" 
+             name="customerId" 
+             [(ngModel)]="currentContract.customerId" required />
+      @if(selectedCustomer){
+      <div class="selected-item">
         Ausgewählt: <strong>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</strong> ({{
         selectedCustomer.customerNumber }})
         <button type="button" class="btn-clear" (click)="clearCustomer()">&times;</button>
       </div>
+    }
     </div>
 
     <div class="form-group">
       <label for="meterId">Zähler *</label>
-      <input type="text" placeholder="Suche nach Zählernummer..." [(ngModel)]="meterSearch"
-        (ngModelChange)="filterMeters()" (focus)="showMeterDropdown = true" class="form-control search-input"
-        [ngModelOptions]="{standalone: true}" autocomplete="off" />
-      <div class="dropdown-list" *ngIf="showMeterDropdown && filteredFreeMeters.length > 0">
+      <input type="text" placeholder="Suche nach Zählernummer..." 
+        [(ngModel)]="meterSearch"
+        (ngModelChange)="filterMeters()" 
+        (focus)="showMeterDropdown = true" 
+        class="form-control search-input"
+        [ngModelOptions]="{standalone: true}" 
+        autocomplete="off" />
+      @if(showMeterDropdown && filteredFreeMeters.length > 0){  
+      <div class="dropdown-list">
         <div *ngFor="let meter of filteredFreeMeters" class="dropdown-item"
           [class.selected]="currentContract.meterId === meter._id" [class.occupied]="!isMeterFree(meter)"
           [class.disabled]="!isMeterFree(meter)" (click)="isMeterFree(meter) && selectMeter(meter)"
@@ -60,6 +89,7 @@
             Belegt</span>
         </div>
       </div>
+      }
       <input type="hidden" id="meterId" name="meterId" [(ngModel)]="currentContract.meterId" required />
       <div class="selected-item" *ngIf="selectedMeter">
         Ausgewählt: <strong>{{ selectedMeter.meterNumber }}</strong> ({{ getTypeLabel(selectedMeter.type) }})
@@ -94,9 +124,9 @@
     <div class="form-group">
       <label for="status">Status</label>
       <select id="status" name="status" [(ngModel)]="currentContract.status" class="form-control">
-        <option value="active">Aktiv</option>
-        <option value="ended">Beendet</option>
-        <option value="archived">Archiviert</option>
+        @for(state of contractState; track state){
+          <option [value]="state.key">{{state.value}}</option>
+        }
       </select>
     </div>
 

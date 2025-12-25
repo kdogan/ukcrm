@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 import { ContractsMobileComponent } from './mobile/contracts-mobile/contracts-mobile.component';
 import { ContractsDesktopComponent } from './desktop/contracts-desktop/contracts-desktop.component';
 import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.component";
+import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -55,6 +56,25 @@ export class ContractsComponent implements OnInit {
   selectedMeterDetails: any = null;
   viewport: ViewportType = ViewportType.Desktop;
   private sub!: Subscription;
+
+contractState = [
+  {
+  key:ContractState.ACTIVE,
+  value: stateToLabel[ContractState.ACTIVE]
+  },
+  {
+  key:ContractState.ARCHIVED,
+  value: stateToLabel[ContractState.ARCHIVED]
+},
+{
+  key:ContractState.DRAFT,
+  value: stateToLabel[ContractState.DRAFT]
+},
+{
+  key:ContractState.ENDET,
+  value: stateToLabel[ContractState.ENDET]
+}
+]
 
   constructor(
     private contractService: ContractService,

@@ -64,7 +64,7 @@ const contractSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'ended', 'archived'],
+    enum: ['draft', 'active', 'ended', 'archived'],
     default: 'active',
     index: true
   },
