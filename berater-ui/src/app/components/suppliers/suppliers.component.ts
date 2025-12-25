@@ -3,12 +3,25 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupplierService, Supplier } from '../../services/supplier.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
+import { ViewportService } from '../../services/viewport.service';
+import { SuppliersMobileComponent } from './mobile/suppliers-mobile.component';
+import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.component";
 
 @Component({
   selector: 'app-suppliers',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent],
+  imports: [CommonModule, FormsModule, TableContainerComponent, SuppliersMobileComponent, OverlayModalComponent],
   template: `
+    @if(isMobile){
+      <app-suppliers-mobile
+        [suppliers]="suppliers"
+        (create)="showCreateModal()"
+        (edit)="editSupplier($event)"
+        (delete)="deleteSupplier($event)"
+        (filterActiveChange)="filterActive = $event; loadSuppliers()"
+        [filterActive]="filterActive"
+      />
+    } @else {
     <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
         <h1>Anbieter</h1>
@@ -85,63 +98,64 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
           </tbody>
         </table>
       </app-table-container>
-
-      <!-- Create/Edit Modal -->
-      <div class="modal" *ngIf="showModal" (click)="closeModal()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
-          <h2>{{ editMode ? 'Anbieter bearbeiten' : 'Neuer Anbieter' }}</h2>
-          <form (ngSubmit)="saveSupplier()">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Name*</label>
-                <input type="text" [(ngModel)]="currentSupplier.name" name="name" required />
-              </div>
-              <div class="form-group">
-                <label>Kurzbezeichnung*</label>
-                <input type="text" [(ngModel)]="currentSupplier.shortName" name="shortName" required />
-              </div>
-            </div>
-
-            <h3 class="section-title">Adresse</h3>
-            <div class="form-group">
-              <label>Straße</label>
-              <input type="text" [(ngModel)]="currentSupplier.address!.street" name="street" />
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>PLZ</label>
-                <input type="text" [(ngModel)]="currentSupplier.address!.zipCode" name="zipCode" />
-              </div>
-              <div class="form-group">
-                <label>Stadt</label>
-                <input type="text" [(ngModel)]="currentSupplier.address!.city" name="city" />
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Land</label>
-              <input type="text" [(ngModel)]="currentSupplier.address!.country" name="country" />
-            </div>
-
-            <h3 class="section-title">Kontakt</h3>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Telefon</label>
-                <input type="tel" [(ngModel)]="currentSupplier.contactPhone" name="contactPhone" />
-              </div>
-              <div class="form-group">
-                <label>E-Mail</label>
-                <input type="email" [(ngModel)]="currentSupplier.contactEmail" name="contactEmail" />
-              </div>
-            </div>
-
-            <div class="modal-actions">
-              <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
-              <button type="submit" class="btn-primary">Speichern</button>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
+    }
+
+          <!-- Create/Edit Modal -->
+    @if(showModal){
+    <app-overlay-modal (close)="closeModal()">
+        <h2>{{ editMode ? 'Anbieter bearbeiten' : 'Neuer Anbieter' }}</h2>
+        <form (ngSubmit)="saveSupplier()">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Name*</label>
+              <input type="text" [(ngModel)]="currentSupplier.name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label>Kurzbezeichnung*</label>
+              <input type="text" [(ngModel)]="currentSupplier.shortName" name="shortName" required />
+            </div>
+          </div>
+
+          <h3 class="section-title">Adresse</h3>
+          <div class="form-group">
+            <label>Straße</label>
+            <input type="text" [(ngModel)]="currentSupplier.address!.street" name="street" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>PLZ</label>
+              <input type="text" [(ngModel)]="currentSupplier.address!.zipCode" name="zipCode" />
+            </div>
+            <div class="form-group">
+              <label>Stadt</label>
+              <input type="text" [(ngModel)]="currentSupplier.address!.city" name="city" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Land</label>
+            <input type="text" [(ngModel)]="currentSupplier.address!.country" name="country" />
+          </div>
+
+          <h3 class="section-title">Kontakt</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Telefon</label>
+              <input type="tel" [(ngModel)]="currentSupplier.contactPhone" name="contactPhone" />
+            </div>
+            <div class="form-group">
+              <label>E-Mail</label>
+              <input type="email" [(ngModel)]="currentSupplier.contactEmail" name="contactEmail" />
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
+            <button type="submit" class="btn-primary">Speichern</button>
+          </div>
+        </form>
+    </app-overlay-modal>
+  }
   `,
   styles: [`
     .page-container { padding: 2rem; }
@@ -221,28 +235,7 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
       background: #e0e0e0;
       color: #555;
     }
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .modal-content h2 { margin-top: 0; }
+    
     .section-title {
       font-size: 1.2rem;
       color: #555;
@@ -344,7 +337,14 @@ export class SuppliersComponent implements OnInit {
   currentSupplier: Partial<Supplier> = { address: {} };
   activeMenuId: string | null = null;
 
-  constructor(private supplierService: SupplierService) {}
+  constructor(
+    private supplierService: SupplierService,
+    private viewport: ViewportService
+  ) {}
+
+  get isMobile() {
+    return this.viewport.isMobile();
+  }
 
   ngOnInit(): void {
     this.loadSuppliers();
@@ -394,7 +394,15 @@ export class SuppliersComponent implements OnInit {
         },
         error: (error) => {
           console.error('Fehler beim Aktualisieren des Anbieters:', error);
-          alert('Fehler beim Aktualisieren des Anbieters');
+          let errorMessage = 'Fehler beim Aktualisieren des Anbieters';
+          if (error.status === 403) {
+            errorMessage = 'Keine Berechtigung zum Aktualisieren des Anbieters';
+          } else if (error.status === 401) {
+            errorMessage = 'Bitte melden Sie sich erneut an';
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          }
+          alert(errorMessage);
         }
       });
     } else {
@@ -405,7 +413,15 @@ export class SuppliersComponent implements OnInit {
         },
         error: (error) => {
           console.error('Fehler beim Erstellen des Anbieters:', error);
-          alert('Fehler beim Erstellen des Anbieters');
+          let errorMessage = 'Fehler beim Erstellen des Anbieters';
+          if (error.status === 403) {
+            errorMessage = 'Keine Berechtigung zum Erstellen eines Anbieters';
+          } else if (error.status === 401) {
+            errorMessage = 'Bitte melden Sie sich erneut an';
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          }
+          alert(errorMessage);
         }
       });
     }

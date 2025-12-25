@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Meter, MeterService, MeterType } from '../../services/meter.service';
+import { MeterService } from '../../services/meter.service';
 import { MeterReadingService } from '../../services/meter-reading.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { MetersMobileComponent } from './mobile/meters-mobile.component';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { Util } from '../util/util';
 import { OverlayModalComponent } from '../shared/overlay-modal/overlay-modal.component';
+import { MeterType, Meter } from 'src/app/models/meter.model';
 
 @Component({
   selector: 'app-meters',

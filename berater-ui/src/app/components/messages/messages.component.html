@@ -65,9 +65,12 @@
 
       <!-- INPUT -->
       <div class="chat-input">
-        <input type="text" placeholder="Nachricht schreiben…" [(ngModel)]="messageText"
-               (keydown.enter)="sendMessage()" />
-        <button (click)="sendMessage()">➤</button>
+        <textarea
+           #messageTextarea
+           [ngModel]="messageText"
+           placeholder="Nachricht schreiben… (Shift+Enter für neue Zeile)"
+           rows="1"></textarea>
+    <button (click)="sendMessage()"><i class="fas fa-arrow-up"></i></button>
       </div>
     </div>
   </div>

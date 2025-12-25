@@ -1,0 +1,55 @@
+<div class="mobile-page">
+
+  <!-- HEADER -->
+  <div class="mobile-header">
+    <h1>Anbieter</h1>
+    <button class="fab" (click)="create.emit()">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+
+  <!-- FILTER BAR -->
+  <!-- <div class="mobile-filters">
+    <select
+      [ngModel]="filterActive"
+      (ngModelChange)="filterActiveChange.emit($event)"
+    >
+      <option [ngValue]="undefined">Alle</option>
+      <option [ngValue]="true">Aktiv</option>
+      <option [ngValue]="false">Inaktiv</option>
+    </select>
+  </div> -->
+
+  <!-- LIST -->
+  <div class="supplier-list">
+    <div class="supplier-card" *ngFor="let s of suppliers">
+
+      <strong>{{ s.name }}</strong>
+      <div class="short-name">{{ s.shortName }}</div>
+
+      <div class="address" *ngIf="s.address?.street || s.address?.city">
+        <i class="fas fa-map-marker-alt"></i>
+        <span *ngIf="s.address?.street">{{ s.address?.street }}<br></span>
+        <span *ngIf="s.address?.zipCode || s.address?.city">
+          {{ s.address?.zipCode }} {{ s.address?.city }}
+        </span>
+      </div>
+
+      <div class="phone" *ngIf="s.contactPhone">
+        {{ s.contactPhone }}
+        <a [href]="'tel:' + s.contactPhone"><i class="fas fa-phone"></i></a>
+      </div>
+
+      <div class="email" *ngIf="s.contactEmail">
+        <i class="fas fa-envelope"></i> {{ s.contactEmail }}
+      </div>
+
+      <div class="actions">
+        <button (click)="edit.emit(s)"><i class="fas fa-edit"></i></button>
+        <button *ngIf="s.isActive" class="danger" (click)="delete.emit(s._id)"><i class="fas fa-trash"></i></button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

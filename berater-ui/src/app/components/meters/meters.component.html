@@ -117,7 +117,11 @@
         <option value="heat">Wärme</option>
       </select>
     </div>
-
+    <div class="form-group">
+      <label for="manloId">Malo Id</label>
+      <input type="text" id="maloId" name="maloId" [(ngModel)]="currentMeter.maloId"
+        placeholder="" class="form-control" />
+    </div>
     <div class="form-group">
       <label for="manufacturer">Hersteller</label>
       <input type="text" id="manufacturer" name="manufacturer" [(ngModel)]="currentMeter.manufacturer"
@@ -165,11 +169,17 @@
       <span class="label">Zählernummer</span>
       <span class="value">{{ selectedMeterForDetails?.meterNumber }}</span>
     </div>
+    <div class="info-row" *ngIf="selectedMeterForDetails.maloId">
+      <span class="label">Malo Id</span>
+      <span class="value">
+        {{ selectedMeterForDetails?.maloId }}
+      </span>
+    </div>
 
     <div class="info-row">
       <span class="label">Typ</span>
       <span class="value badge">
-        {{ selectedMeterForDetails?.type }}
+        {{ getTypeLabel(selectedMeterForDetails?.type) }}
       </span>
     </div>
 

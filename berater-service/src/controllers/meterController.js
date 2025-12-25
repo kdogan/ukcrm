@@ -225,7 +225,7 @@ exports.updateMeter = async (req, res, next) => {
     }
 
     // Erlaubte Felder
-    const allowedFields = ['type', 'location', 'manufacturer', 'yearBuilt'];
+    const allowedFields = ['type', 'location', 'manufacturer', 'yearBuilt', 'maloId'];
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {
         meter[field] = req.body[field];

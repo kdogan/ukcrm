@@ -15,7 +15,7 @@ const meterSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['electricity', 'gas', 'water'],
+    enum: ['electricity', 'gas', 'water', 'heat'],
     required: [true, 'Zählertyp ist erforderlich']
   },
   location: {
@@ -36,6 +36,10 @@ const meterSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer',
     default: null
+  },
+  maloId: {
+    type: String,
+    trim: true
   }
 }, {
   timestamps: true

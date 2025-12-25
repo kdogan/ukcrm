@@ -2,36 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface Meter {
-  _id: string;
-  meterNumber: string;
-  type: MeterType;
-  beraterId:string;
-  currentCustomerId?: any;
-  currentReading:number;
-  lastReadingDate:Date;
-  manufacturer:string;
-  location: Address;
-  isFree:boolean;
-  installationDate?: Date;
-  notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-export interface Address {
-  street: string;
-  zip: string;
-  city: string;
-  country?: string;
-}
-
-export enum MeterType {
-  Electricity = 'electricity',
-  Gas = 'gas',
-  Water = 'water',
-  Heat = 'heat'
-} 
+import { Meter } from '../models/meter.model';
 
 @Injectable({
   providedIn: 'root'
