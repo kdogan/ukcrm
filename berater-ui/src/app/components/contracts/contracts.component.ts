@@ -55,6 +55,9 @@ export class ContractsComponent implements OnInit {
   selectedCustomerDetails: any = null;
   selectedSupplierDetails: any = null;
   selectedMeterDetails: any = null;
+  showImageViewer = false;
+  viewingImage: any = null;
+  imageViewerUrl: string = '';
   viewport: ViewportType = ViewportType.Desktop;
   private sub!: Subscription;
 
@@ -621,5 +624,37 @@ export class ContractsComponent implements OnInit {
       month: '2-digit',
       year: 'numeric'
     });
+  }
+
+  isImage(mimetype: string): boolean {
+    return mimetype.startsWith('image/');
+  }
+
+  viewImage(attachment: any): void {
+    this.viewingImage = attachment;
+    this.showImageViewer = true;
+
+    // Bild vom Server laden
+    this.contractService.downloadAttachment(this.currentContract._id, attachment._id).subscribe({
+      next: (blob) => {
+        // Erstelle eine URL für das Blob
+        this.imageViewerUrl = window.URL.createObjectURL(blob);
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden des Bildes:', error);
+        alert('Fehler beim Laden des Bildes');
+        this.closeImageViewer();
+      }
+    });
+  }
+
+  closeImageViewer(): void {
+    // Räume die Blob-URL auf
+    if (this.imageViewerUrl) {
+      window.URL.revokeObjectURL(this.imageViewerUrl);
+      this.imageViewerUrl = '';
+    }
+    this.showImageViewer = false;
+    this.viewingImage = null;
   }
 }

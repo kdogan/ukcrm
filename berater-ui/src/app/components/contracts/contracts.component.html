@@ -148,16 +148,23 @@
       <!-- Liste der hochgeladenen Dateien -->
       <div class="attachments-list" *ngIf="currentContract.attachments && currentContract.attachments.length > 0">
         <div class="attachment-item" *ngFor="let attachment of currentContract.attachments">
-          <div class="attachment-icon">
+          <div class="attachment-icon" (click)="isImage(attachment.mimetype) ? viewImage(attachment) : null"
+               [style.cursor]="isImage(attachment.mimetype) ? 'pointer' : 'default'"
+               [title]="isImage(attachment.mimetype) ? 'Klicken zum Anzeigen' : ''">
             <i [class]="getFileIcon(attachment.mimetype)"></i>
           </div>
-          <div class="attachment-info">
+          <div class="attachment-info" (click)="isImage(attachment.mimetype) ? viewImage(attachment) : null"
+               [style.cursor]="isImage(attachment.mimetype) ? 'pointer' : 'default'">
             <div class="attachment-name">{{ attachment.originalName }}</div>
             <div class="attachment-meta">
               {{ formatFileSize(attachment.size) }} • {{ formatDate(attachment.uploadedAt) }}
             </div>
           </div>
           <div class="attachment-actions">
+            <button type="button" class="btn-icon" (click)="viewImage(attachment)" title="Vorschau"
+                    *ngIf="isImage(attachment.mimetype)">
+              <i class="fas fa-eye"></i>
+            </button>
             <button type="button" class="btn-icon" (click)="downloadAttachment(attachment)" title="Herunterladen">
               <i class="fas fa-download"></i>
             </button>
@@ -301,6 +308,28 @@
       <span class="detail-value">
         {{ selectedMeterDetails.currentCustomerId.firstName }} {{ selectedMeterDetails.currentCustomerId.lastName }}
       </span>
+    </div>
+  </div>
+</app-overlay-modal>
+
+<!-- Image Viewer Modal -->
+<app-overlay-modal *ngIf="showImageViewer" (close)="closeImageViewer()">
+  <div class="image-viewer-modal">
+    <div class="image-viewer-header">
+      <h2>{{ viewingImage?.originalName }}</h2>
+      <button class="btn-close" (click)="closeImageViewer()">&times;</button>
+    </div>
+    <div class="image-viewer-body">
+      <img [src]="imageViewerUrl" [alt]="viewingImage?.originalName" />
+    </div>
+    <div class="image-viewer-footer">
+      <span class="image-meta">{{ formatFileSize(viewingImage?.size || 0) }} • {{ formatDate(viewingImage?.uploadedAt) }}</span>
+      <div class="image-actions">
+        <button type="button" class="btn-secondary" (click)="downloadAttachment(viewingImage!)">
+          <i class="fas fa-download"></i> Herunterladen
+        </button>
+        <button type="button" class="btn-secondary" (click)="closeImageViewer()">Schließen</button>
+      </div>
     </div>
   </div>
 </app-overlay-modal>

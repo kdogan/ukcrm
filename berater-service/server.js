@@ -67,7 +67,7 @@ const authLimiter = rateLimit({
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100, // max 100 Requests pro IP
+  max: 200, // max 200 Requests pro IP
   standardHeaders: true,
   legacyHeaders: false,
   message: "Zu viele Anfragen, bitte später erneut versuchen."
