@@ -10,7 +10,9 @@ const {
   getSettings,
   updateSettings,
   verifyEmail,
-  resendVerificationEmail
+  resendVerificationEmail,
+  forgotPassword,
+  resetPassword
 } = require('../controllers/authController');
 const { authenticate } = require('../middleware/auth');
 
@@ -18,6 +20,8 @@ router.post('/register', register);
 router.post('/login', login);
 router.get('/verify-email/:token', verifyEmail);
 router.post('/resend-verification', resendVerificationEmail);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
 router.post('/logout', authenticate, logout);
 router.get('/me', authenticate, getMe);
 router.put('/profile', authenticate, updateProfile);

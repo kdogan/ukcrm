@@ -22,11 +22,11 @@ const createTransporter = () => {
         console.log('\n=== EMAIL SENT (Development Mode - No SMTP) ===');
         console.log('To:', mailOptions.to);
         console.log('Subject:', mailOptions.subject);
-        console.log('\n--- Verification Link ---');
+        console.log('\n--- Link ---');
         // Extrahiere den Link aus der HTML
         const linkMatch = mailOptions.html.match(/href="([^"]+)"/);
         if (linkMatch) {
-          console.log('Verification URL:', linkMatch[1]);
+          console.log('URL:', linkMatch[1]);
         }
         console.log('=====================================\n');
         return { messageId: 'dev-' + Date.now() };

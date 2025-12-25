@@ -447,3 +447,110 @@ exports.updateSettings = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Request password reset
+// @route   POST /api/auth/forgot-password
+// @access  Public
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'E-Mail-Adresse ist erforderlich'
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      // Aus Sicherheitsgründen geben wir nicht preis, ob die E-Mail existiert
+      return res.status(200).json({
+        success: true,
+        message: 'Wenn ein Konto mit dieser E-Mail-Adresse existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet.'
+      });
+    }
+
+    // Reset-Token generieren
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 Stunde
+
+    user.passwordResetToken = resetToken;
+    user.passwordResetExpires = resetExpires;
+    await user.save();
+
+    // E-Mail mit Reset-Link senden
+    try {
+      await emailService.sendPasswordResetEmail(email, user.firstName, resetToken);
+    } catch (emailError) {
+      console.error('Fehler beim Senden der Password-Reset-Email:', emailError);
+      // Token zurücksetzen bei E-Mail-Fehler
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save();
+
+      return res.status(500).json({
+        success: false,
+        message: 'Fehler beim Senden der E-Mail. Bitte versuchen Sie es später erneut.'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Wenn ein Konto mit dieser E-Mail-Adresse existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Reset password with token
+// @route   POST /api/auth/reset-password/:token
+// @access  Public
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Neues Passwort ist erforderlich'
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Passwort muss mindestens 8 Zeichen lang sein'
+      });
+    }
+
+    // User mit gültigem Token finden
+    const user = await User.findOne({
+      passwordResetToken: token,
+      passwordResetExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ungültiger oder abgelaufener Reset-Link'
+      });
+    }
+
+    // Neues Passwort setzen
+    user.passwordHash = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Passwort erfolgreich zurückgesetzt. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};

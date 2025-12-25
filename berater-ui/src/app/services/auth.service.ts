@@ -101,6 +101,14 @@ export class AuthService {
     return this.http.put(`${this.apiUrl}/password`, { currentPassword, newPassword });
   }
 
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password/${token}`, { password });
+  }
+
   isAuthenticated(): boolean {
     const token = this.getToken();
     return !!token;
