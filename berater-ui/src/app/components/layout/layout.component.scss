@@ -160,11 +160,21 @@
 }
 
 /* =========================
-   MOBILE NAVIGATION
+   MOBILE HEADER & BURGER MENU
 ========================= */
-.bottom-nav,
-.bottom-sheet,
-.bottom-sheet-backdrop {
+.mobile-header {
+  display: none;
+}
+
+.burger-menu {
+  background: none;
+  border: none;
+  color: #111827;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.sidebar-overlay {
   display: none;
 }
 
@@ -173,129 +183,67 @@
 ========================= */
 @media (max-width: 768px) {
 
+  /* Mobile Header anzeigen */
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    height: 60px;
+  }
+
+  .mobile-logo {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  /* Sidebar für Mobile */
   .sidebar {
-    display: none;
+    display: flex;
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 260px;
+    height: 100vh;
+    transition: left 0.3s ease;
+    z-index: 3000;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  /* Sidebar immer volle Breite auf Mobile, kein Hover-Effekt */
+  .sidebar:hover {
+    width: 260px;
+  }
+
+  /* Text immer sichtbar auf Mobile */
+  .sidebar .logo-text,
+  .sidebar .nav-text,
+  .sidebar .user-details {
+    opacity: 1;
+  }
+
+  /* Overlay anzeigen wenn Sidebar offen */
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2500;
   }
 
   .main-content {
     margin-left: 0;
-    padding-bottom: 80px;
-  }
-
-  /* ---- Bottom Navigation ---- */
-  .bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 72px;
-    justify-content: space-around;
-    align-items: center;
-    background: linear-gradient(180deg, rgba(255,255,255,0.9), #ffffff);
-    border-top: 1px solid #e5e7eb;
-    z-index: 2000;
-    backdrop-filter: blur(8px);
-  }
-
-  .bottom-nav a,
-  .bottom-nav .more-btn {
-    flex: 1;
-    height: 100%;
-    background: none;
-    border: none;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.7rem;
-    cursor: pointer;
-  }
-.bottom-nav a.active {
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);   /* leichtes Highlight */
-  border-radius: 12px;
-  padding: 0.5rem 0.75rem;
-}
-
-
-  .bottom-nav a.active i {
-    transform: scale(1.15);
-  }
-
-  .bottom-nav i {
-    transition: transform 0.2s ease;
-  }
-
-  /* ---- Bottom Sheet Backdrop ---- */
-  .bottom-sheet-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 3000;
-  }
-
-  /* ---- Bottom Sheet ---- */
-  .bottom-sheet {
-    display: block;
-    position: fixed;
-    bottom: -100%;
-    left: 0;
-    right: 0;
-    background: #ffffff;
-    border-radius: 20px 20px 0 0;
-    padding: 1rem 1.25rem;
-    z-index: 4000;
-    transition: bottom 0.3s ease;
-    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
-  }
-
-  .bottom-sheet.open {
-    bottom: 0;
-  }
-
-  .bottom-sheet::before {
-    content: '';
-    width: 36px;
-    height: 4px;
-    background: #d1d5db;
-    border-radius: 2px;
-    display: block;
-    margin: 0 auto 1rem;
-  }
-
-  .bottom-sheet .row a,
-  .bottom-sheet .logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.9rem;
-    border-radius: 12px;
-    color: #111827;
-    font-size: 1rem;
-  }
-
-  .bottom-sheet .row a:hover {
-    background: #f3f4f6;
-  }
-
-  .bottom-sheet .user-section {
-    border-top: 1px solid #e5e7eb;
-    margin-top: 1rem;
-    padding-top: 1rem;
-  }
-
-  .bottom-sheet .user-avatar {
-    background: #6366f1;
-    color: white;
-  }
-
-  .bottom-sheet .logout-btn {
-    background: #fee2e2;
-    color: #b91c1c;
-    font-weight: 600;
+    padding-top: 60px;
   }
 }

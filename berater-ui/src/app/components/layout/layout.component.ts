@@ -15,7 +15,7 @@ export class LayoutComponent implements OnInit {
   currentUser: any = null;
   settings!: UserSettings;
   sidebarColor: string = '';
-  showMoreMenu = false;
+  sidebarOpen = false;
 
   constructor(
     private authService: AuthService,
@@ -48,7 +48,13 @@ export class LayoutComponent implements OnInit {
     this.authService.logout();
   }
 
-  toggleMoreMenu(): void {
-    this.showMoreMenu = !this.showMoreMenu;
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebarOnMobile(): void {
+    if (window.innerWidth <= 768) {
+      this.sidebarOpen = false;
+    }
   }
 }

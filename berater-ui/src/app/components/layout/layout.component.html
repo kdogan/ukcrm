@@ -1,6 +1,19 @@
 <div class="app-layout">
+    <!-- Mobile Header with Burger Menu -->
+    <header class="mobile-header">
+        <button class="burger-menu" (click)="toggleSidebar()">
+            <i class="fas fa-bars fa-lg"></i>
+        </button>
+        <span class="mobile-logo">Berater App</span>
+    </header>
+
+    <!-- Sidebar Overlay for Mobile -->
+    @if(sidebarOpen){
+        <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
+    }
+
     <!-- Navigation -->
-    <nav class="sidebar" [style.background]="sidebarColor">
+    <nav class="sidebar" [class.open]="sidebarOpen" [style.background]="sidebarColor">
         <div class="logo">
             <span class="logo-icon">🏢</span>
             <h2 class="logo-text">Berater App</h2>
@@ -8,74 +21,75 @@
 
         <ul class="nav-menu">
             <li>
-                <a routerLink="/dashboard" routerLinkActive="active">
+                <a routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebarOnMobile()">
                     <i class="fas fa-dashboard fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.dashboard }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
             <li>
-                <a routerLink="/contracts" routerLinkActive="active">
+                <a routerLink="/contracts" routerLinkActive="active" (click)="closeSidebarOnMobile()">
                     <i class="fas fa-file-contract fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.contracts }}</span>
                 </a>
             </li>
             <li>
-                <a routerLink="/customers" routerLinkActive="active">
+                <a routerLink="/customers" routerLinkActive="active" (click)="closeSidebarOnMobile()">
                     <i class="fas fa-users fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.customers }}</span>
                 </a>
             </li>
 
             <li>
-                <a routerLink="/meters" routerLinkActive="active">
+                <a routerLink="/meters" routerLinkActive="active" (click)="closeSidebarOnMobile()">
                     <i class="fas fa-bolt fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.meters }}</span>
                 </a>
             </li>
             }
             <li>
-                <a routerLink="/todos" routerLinkActive="active">
+                <a routerLink="/todos" routerLinkActive="active" (click)="closeSidebarOnMobile()">
                     <i class="fas fa-check fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.todos }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
             <li>
-                <a routerLink="/suppliers" routerLinkActive="active">
+                <a routerLink="/suppliers" routerLinkActive="active" (click)="closeSidebarOnMobile()">
                     <i class="fas fa-truck fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.suppliers || 'Anbieter' }}</span>
                 </a>
             </li>
 
             <li>
-                <a routerLink="/settings" routerLinkActive="active">
+                <a routerLink="/settings" routerLinkActive="active" (click)="closeSidebarOnMobile()">
                     <i class="fas fa-cog fa-lg"></i>
                     <span class="nav-text">Einstellungen</span>
                 </a>
             </li>
             }
+            <li>
+                <a routerLink="/messages" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                    <i class="fas fa-comments fa-lg"></i>
+                    <span class="nav-text">Messages</span>
+                </a>
+            </li>
             @if(currentUser?.role === 'superadmin'){
             <li>
-                <a routerLink="/admin" routerLinkActive="active">
+                <a routerLink="/admin" routerLinkActive="active" (click)="closeSidebarOnMobile()">
                     <i class="fas fa-users fa-lg"></i>
                     <span class="nav-text">Benutzer</span>
                 </a>
             </li>
 
             <li>
-                <a routerLink="/packages" routerLinkActive="active">
+                <a routerLink="/packages" routerLinkActive="active" (click)="closeSidebarOnMobile()">
                     <i class="fas fa-box fa-lg"></i>
                     <span class="nav-text">Pakete</span>
                 </a>
             </li>
             }
-            <li>
-                <a routerLink="/messages" routerLinkActive="active">
-                    <i class="fas fa-comments fa-lg"></i>
-                    <span class="nav-text">Messages</span>
-                </a>
-            </li>
+
         </ul>
 
         <div class="user-section">
@@ -97,94 +111,4 @@
     <main class="main-content">
         <router-outlet></router-outlet>
     </main>
-
-    <!-- Mobile Bottom Navigation -->
-    <nav class="bottom-nav" [style.background]="sidebarColor">
-        <a routerLink="/dashboard" routerLinkActive="active">
-            <i class="fas fa-dashboard fa-2x"></i>
-            <span class="label">{{ settings.sidebarLabels.dashboard }}</span>
-        </a>
-        <a routerLink="/todos" routerLinkActive="active">
-            <i class="fas fa-tasks fa-2x"></i>
-            <span class="label">{{ settings.sidebarLabels.todos }}</span>
-        </a>
-        @if(currentUser?.role !== 'superadmin'){
-        <a routerLink="/customers" routerLinkActive="active">
-            <i class="fas fa-users fa-2x"></i>
-            <span class="label">{{ settings.sidebarLabels.customers }}</span>
-        </a>
-        }
-        @if(currentUser?.role !== 'superadmin'){
-        <a routerLink="/contracts" routerLinkActive="active">
-            <i class="fas fa-file-contract fa-2x"></i>
-            <span class="label">{{ settings.sidebarLabels.contracts }}</span>
-        </a>
-
-        }
-        <a routerLink="/messages" routerLinkActive="active">
-            <i class="fas fa-comments fa-2x"></i>
-            <span class="label">Messages</span>
-        </a>
-        @if(currentUser?.role === 'superadmin'){
-        <a routerLink="/admin" routerLinkActive="active">
-            <i class="fas fa-users fa-2x"></i>
-            <span class="label">Benutzer</span>
-        </a>
-        }
-
-        <!-- MEHR -->
-        <button class="more-btn" (click)="toggleMoreMenu()">
-            <i class="fas fa-ellipsis-h fa-2x"></i>
-            <span class="label">Mehr</span>
-        </button>
-    </nav>
-
-    <!-- Bottom Sheet -->
-     @if(showMoreMenu){
-        <div class="bottom-sheet-backdrop" (click)="toggleMoreMenu()"></div>
-     }
-    <div class="bottom-sheet" [class.open]="showMoreMenu">
-        @if(currentUser?.role !== 'superadmin'){
-            <div class="row">
-                <a routerLink="/meters" routerLinkActive="active" (click)="toggleMoreMenu()">
-                    <i class="fas fa-bolt fa-2x"></i>
-                    <span class="sheet-text">{{ settings.sidebarLabels.meters }}</span>
-                </a>
-            </div>
-            <div class="row">
-                <a routerLink="/suppliers" routerLinkActive="active" (click)="toggleMoreMenu()">
-                    <i class="fas fa-truck fa-2x"></i>
-                    <span class="sheet-text">{{ settings.sidebarLabels.suppliers || 'Anbieter' }}</span>
-                </a>    
-            </div>
-            <div class="row">
-                <a routerLink="/settings" routerLinkActive="active" (click)="toggleMoreMenu()">
-                    <i class="fas fa-cog fa-2x"></i>
-                    <span class="sheet-text">{{ settings.sidebarLabels.settings?? 'Einstellungen' }}</span>
-                </a>
-            </div>
-        }
-        @if(currentUser?.role === 'superadmin'){
-        <li>
-            <a routerLink="/packages" routerLinkActive="active">
-                <i class="fas fa-box-open fa-2x"></i>
-                <span class="label">Pakete</span>
-            </a>
-        </li>
-        }
-       
-        <div class="user-section">
-            <div class="user-info" *ngIf="currentUser">
-                <div class="user-avatar">{{ getUserInitials() }}</div>
-                <div class="user-details">
-                    <div class="sheet-text">{{ currentUser.firstName }} {{ currentUser.lastName }}</div>
-                    <div class="sheet-text">{{ currentUser.role }}</div>
-                </div>
-            </div>
-            <button class="logout-btn" (click)="logout()">
-                <i class="fas fa-sign-out-alt fa-2x"></i>
-                <span class="sheet-text">Abmelden</span>
-            </button>
-        </div>
-    </div>
 </div>

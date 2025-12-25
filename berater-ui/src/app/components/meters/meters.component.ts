@@ -131,7 +131,6 @@ export class MetersComponent implements OnInit {
     this.meterService.getMeters({}).subscribe({
       next: (response) => {
         if (response.success) this.meters = response.data;
-        console.log('Filtere Zähler mit Status:', this.meters);
         this.filteredMeters = this.meters;
       }
     });
