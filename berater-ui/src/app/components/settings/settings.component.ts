@@ -5,11 +5,25 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
 import { PackageService, Package, UserLimits } from '../../services/package.service';
 import { UpgradeService } from '../../services/upgrade.service';
 import { AuthService } from '../../services/auth.service';
+import { ViewportService } from 'src/app/services/viewport.service';
+import { SettingsMobileComponent } from './mobile/settings-mobile.component';
 
 @Component({
     selector: 'app-settings',
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, SettingsMobileComponent],
+    standalone: true,
     template: `
+    @if(isMobile){
+      <app-settings-mobile
+        [settings]="settings"
+        [userLimits]="userLimits"
+        [packages]="packages"
+        [pendingUpgradeRequest]="pendingUpgradeRequest"
+        (saveSettingsEvent)="saveSettings()"
+        (resetToDefaultsEvent)="resetToDefaults()"
+        (changePackageEvent)="changePackage($event.packageName, $event.order)"
+      ></app-settings-mobile>
+    } @else {
     <div class="page-container">
       <div class="page-header">
         <h1>Einstellungen</h1>
@@ -323,6 +337,7 @@ import { AuthService } from '../../services/auth.service';
         </div>
       </div>
     </div>
+    }
   `,
     styles: [`
     .page-container {
@@ -802,8 +817,13 @@ export class SettingsComponent implements OnInit {
     private settingsService: SettingsService,
     private packageService: PackageService,
     private upgradeService: UpgradeService,
-    private authService: AuthService
+    private authService: AuthService,
+    private viewport: ViewportService
   ) {}
+
+  get isMobile() {
+    return this.viewport.isMobile();
+  }
 
   ngOnInit(): void {
     this.settings = this.settingsService.getSettings();

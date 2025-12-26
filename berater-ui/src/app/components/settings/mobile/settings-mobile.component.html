@@ -1,0 +1,309 @@
+<div class="mobile-page">
+
+  <!-- HEADER -->
+  <div class="mobile-header">
+    <h1>Einstellungen</h1>
+  </div>
+
+  <div class="mobile-content">
+
+    <!-- Erinnerungen für Vertragsablauf -->
+    <div class="section-card">
+      <h2>📅 Erinnerungen</h2>
+      <p class="section-description">
+        Wann Sie vor Vertragsablauf benachrichtigt werden möchten
+      </p>
+
+      <div class="checkbox-list">
+        <label class="checkbox-item">
+          <input
+            type="checkbox"
+            [(ngModel)]="settings.reminderDays.days90"
+            (change)="onSaveSettings()"
+          />
+          <span>90 Tage vor Ablauf</span>
+        </label>
+
+        <label class="checkbox-item">
+          <input
+            type="checkbox"
+            [(ngModel)]="settings.reminderDays.days60"
+            (change)="onSaveSettings()"
+          />
+          <span>60 Tage vor Ablauf</span>
+        </label>
+
+        <label class="checkbox-item">
+          <input
+            type="checkbox"
+            [(ngModel)]="settings.reminderDays.days30"
+            (change)="onSaveSettings()"
+          />
+          <span>30 Tage vor Ablauf</span>
+        </label>
+      </div>
+
+      <div class="custom-input">
+        <label>Benutzerdefiniert (Tage):</label>
+        <input
+          type="number"
+          [(ngModel)]="settings.reminderDays.custom"
+          (change)="onSaveSettings()"
+          min="1"
+          max="365"
+          placeholder="z.B. 45"
+        />
+      </div>
+    </div>
+
+    <!-- Sidebar-Bezeichnungen -->
+    <div class="section-card">
+      <h2>🎨 Sidebar-Bezeichnungen</h2>
+      <p class="section-description">
+        Passen Sie die Bezeichnungen nach Ihren Wünschen an
+      </p>
+
+      <div class="input-list">
+        <div class="input-item">
+          <label>Dashboard:</label>
+          <input
+            type="text"
+            [(ngModel)]="settings.sidebarLabels.dashboard"
+            (blur)="onSaveSettings()"
+            placeholder="Dashboard"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>Kunden:</label>
+          <input
+            type="text"
+            [(ngModel)]="settings.sidebarLabels.customers"
+            (blur)="onSaveSettings()"
+            placeholder="Kunden"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>Zähler:</label>
+          <input
+            type="text"
+            [(ngModel)]="settings.sidebarLabels.meters"
+            (blur)="onSaveSettings()"
+            placeholder="Zähler"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>Verträge:</label>
+          <input
+            type="text"
+            [(ngModel)]="settings.sidebarLabels.contracts"
+            (blur)="onSaveSettings()"
+            placeholder="Verträge"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>TODOs:</label>
+          <input
+            type="text"
+            [(ngModel)]="settings.sidebarLabels.todos"
+            (blur)="onSaveSettings()"
+            placeholder="TODOs"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>Anbieter:</label>
+          <input
+            type="text"
+            [(ngModel)]="settings.sidebarLabels.suppliers"
+            (blur)="onSaveSettings()"
+            placeholder="Anbieter"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Benachrichtigungseinstellungen -->
+    <div class="section-card">
+      <h2>🔔 Benachrichtigungen</h2>
+      <p class="section-description">
+        Wie Sie benachrichtigt werden möchten
+      </p>
+
+      <div class="checkbox-list">
+        <label class="checkbox-item">
+          <input
+            type="checkbox"
+            [(ngModel)]="settings.notifications.email"
+            (change)="onSaveSettings()"
+          />
+          <span>E-Mail-Benachrichtigungen</span>
+        </label>
+
+        <label class="checkbox-item">
+          <input
+            type="checkbox"
+            [(ngModel)]="settings.notifications.browser"
+            (change)="onSaveSettings()"
+          />
+          <span>Browser-Benachrichtigungen</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Theme/Farben -->
+    <div class="section-card">
+      <h2>🎨 Erscheinungsbild</h2>
+      <p class="section-description">
+        Passen Sie das Aussehen der Anwendung an
+      </p>
+
+      <div class="input-list">
+        <div class="input-item">
+          <label>Sidebar-Farbe:</label>
+          <select
+            [(ngModel)]="settings.theme.sidebarColor"
+            (change)="onSaveSettings()"
+          >
+            <option value="mint">Mintgrün (Standard)</option>
+            <option value="blue">Blau</option>
+            <option value="purple">Lila</option>
+            <option value="orange">Orange</option>
+            <option value="red">Rot</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paket-Verwaltung -->
+    <div class="section-card" *ngIf="userLimits">
+      <h2>📦 Ihr Paket</h2>
+      <p class="section-description">
+        Verwalten Sie Ihr aktuelles Paket
+      </p>
+
+      <!-- Current Package Card -->
+      <div class="current-package-card">
+        <div class="package-name">{{ userLimits.package.displayName }}</div>
+        <div class="package-price">
+          {{ userLimits.package.price | number:'1.2-2' }} {{ userLimits.package.currency }} /
+          {{ userLimits.package.billingPeriod === 'monthly' ? 'Monat' : 'Jahr' }}
+        </div>
+
+        <!-- Usage Bars -->
+        <div class="usage-list">
+          <div class="usage-item">
+            <div class="usage-header">
+              <span class="usage-label">Verträge</span>
+              <span class="usage-value">{{ userLimits.usage.contracts }} / {{ userLimits.limits.maxContracts === -1 ? '∞' : userLimits.limits.maxContracts }}</span>
+            </div>
+            <div class="usage-bar-bg">
+              <div class="usage-bar-fill"
+                   [style.width.%]="getUsagePercentage('contracts')"
+                   [class.warning]="getUsagePercentage('contracts') >= 80"
+                   [class.danger]="getUsagePercentage('contracts') >= 100"></div>
+            </div>
+          </div>
+
+          <div class="usage-item">
+            <div class="usage-header">
+              <span class="usage-label">Kunden</span>
+              <span class="usage-value">{{ userLimits.usage.customers }} / {{ userLimits.limits.maxCustomers === -1 ? '∞' : userLimits.limits.maxCustomers }}</span>
+            </div>
+            <div class="usage-bar-bg">
+              <div class="usage-bar-fill"
+                   [style.width.%]="getUsagePercentage('customers')"
+                   [class.warning]="getUsagePercentage('customers') >= 80"
+                   [class.danger]="getUsagePercentage('customers') >= 100"></div>
+            </div>
+          </div>
+
+          <div class="usage-item">
+            <div class="usage-header">
+              <span class="usage-label">Zähler</span>
+              <span class="usage-value">{{ userLimits.usage.meters }} / {{ userLimits.limits.maxMeters === -1 ? '∞' : userLimits.limits.maxMeters }}</span>
+            </div>
+            <div class="usage-bar-bg">
+              <div class="usage-bar-fill"
+                   [style.width.%]="getUsagePercentage('meters')"
+                   [class.warning]="getUsagePercentage('meters') >= 80"
+                   [class.danger]="getUsagePercentage('meters') >= 100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Upgrade Request Banner -->
+      <div *ngIf="pendingUpgradeRequest" class="upgrade-pending-banner">
+        <div class="banner-icon">⏳</div>
+        <div class="banner-content">
+          <div class="banner-title">Upgrade wird bearbeitet</div>
+          <div class="banner-message">
+            Upgrade auf <strong>{{ pendingUpgradeRequest.packageDetails.displayName }}</strong>
+            <span *ngIf="pendingUpgradeRequest.status === 'pending'">wartet auf Zahlung.</span>
+            <span *ngIf="pendingUpgradeRequest.status === 'payment_received'">wird geprüft.</span>
+          </div>
+          <div class="banner-details">
+            <div>Preis: {{ pendingUpgradeRequest.packageDetails.price }} {{ pendingUpgradeRequest.packageDetails.currency }}</div>
+            <div>Status: {{ getStatusLabel(pendingUpgradeRequest.status) }}</div>
+            <div>Erstellt: {{ formatDate(pendingUpgradeRequest.createdAt) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Available Packages -->
+      <div class="packages-section">
+        <h3>Verfügbare Pakete</h3>
+        <div class="packages-list">
+          <div *ngFor="let pkg of packages"
+               class="package-card"
+               [class.current]="pkg.name === userLimits.package.name"
+               [class.pending-upgrade]="pendingUpgradeRequest && pkg.name === pendingUpgradeRequest.requestedPackage">
+
+            <div class="package-card-header">
+              <div class="package-card-title">{{ pkg.displayName }}</div>
+              <span class="current-badge" *ngIf="pkg.name === userLimits.package.name">Aktuell</span>
+              <span class="pending-badge" *ngIf="pendingUpgradeRequest && pkg.name === pendingUpgradeRequest.requestedPackage">Beantragt</span>
+            </div>
+
+            <div class="package-card-price">
+              {{ pkg.price | number:'1.2-2' }} {{ pkg.currency }}/{{ pkg.billingPeriod === 'monthly' ? 'Monat' : 'Jahr' }}
+            </div>
+
+            <div class="package-features">
+              <div class="feature">✓ {{ pkg.maxContracts === -1 ? 'Unbegrenzt' : pkg.maxContracts }} Verträge</div>
+              <div class="feature">✓ {{ pkg.maxCustomers === -1 ? 'Unbegrenzt' : pkg.maxCustomers }} Kunden</div>
+              <div class="feature">✓ {{ pkg.maxMeters === -1 ? 'Unbegrenzt' : pkg.maxMeters }} Zähler</div>
+            </div>
+
+            <button *ngIf="pkg.name !== userLimits.package.name && !pendingUpgradeRequest"
+                    [class]="pkg.order < userLimits.package.order ? 'btn-downgrade' : 'btn-upgrade'"
+                    (click)="onChangePackage(pkg.name, pkg.order)">
+              {{ pkg.order < userLimits.package.order ? 'Downgraden' : 'Upgraden' }}
+            </button>
+            <button *ngIf="pendingUpgradeRequest && pkg.name !== userLimits.package.name"
+                    class="btn-disabled"
+                    disabled>
+              {{ pkg.name === pendingUpgradeRequest.requestedPackage ? 'In Bearbeitung...' : 'Nicht verfügbar' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn-secondary" (click)="onResetToDefaults()">
+        Zurücksetzen
+      </button>
+      <button class="btn-primary" (click)="onSaveSettings()">
+        Speichern
+      </button>
+    </div>
+
+  </div>
+
+</div>
