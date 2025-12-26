@@ -103,17 +103,36 @@ exports.getMessagesByConversation = async (req, res) => {
  * 📤 Nachricht senden
  */
 exports.sendMessage = async (req, res) => {
-  const senderId = req.user.id;
-  const { conversationId, receiverId, text } = req.body;
+  try {
+    const senderId = req.user.id;
+    const { conversationId, receiverId, text } = req.body;
 
-  const message = await Message.create({
-    conversationId,
-    senderId,
-    receiverId,
-    text
-  });
+    // Prepare message data
+    const messageData = {
+      conversationId,
+      senderId,
+      receiverId,
+      text: text || ''
+    };
 
-  res.status(201).json(message);
+    // Falls ein Bild hochgeladen wurde
+    if (req.file) {
+      messageData.imageUrl = `/uploads/messages/${req.file.filename}`;
+      messageData.imageName = req.file.originalname;
+    }
+
+    // Text oder Bild muss vorhanden sein
+    if (!messageData.text && !messageData.imageUrl) {
+      return res.status(400).json({ message: 'Text oder Bild ist erforderlich' });
+    }
+
+    const message = await Message.create(messageData);
+
+    res.status(201).json(message);
+  } catch (err) {
+    console.error('Fehler beim Senden der Nachricht:', err);
+    res.status(500).json({ message: 'Fehler beim Senden der Nachricht', error: err.message });
+  }
 };
 
 /**

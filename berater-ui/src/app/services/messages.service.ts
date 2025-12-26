@@ -14,8 +14,15 @@ export class MessagesService {
     return this.http.get<Message[]>(`${environment.apiUrl}/messages/${conversationId}`);
   }
 
-  sendMessage(conversationId: string, receiverId: string, text: string): Observable<Message> {
-    return this.http.post<Message>(`${environment.apiUrl}/messages`, { conversationId, receiverId, text });
+  sendMessage(conversationId: string, receiverId: string, text: string, image?: File): Observable<Message> {
+    const formData = new FormData();
+    formData.append('conversationId', conversationId);
+    formData.append('receiverId', receiverId);
+    formData.append('text', text);
+    if (image) {
+      formData.append('image', image);
+    }
+    return this.http.post<Message>(`${environment.apiUrl}/messages`, formData);
   }
 
   markAsRead(conversationId: string): Observable<void> {

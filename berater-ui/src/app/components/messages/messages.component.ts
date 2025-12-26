@@ -29,6 +29,10 @@ export class MessagesComponent implements OnInit {
   users: { _id: string, name: string, address?: string }[] = [];
   selectedUserId = '';
   showUserPicker = false;
+  selectedImage: File | null = null;
+  imagePreview: string | null = null;
+  showImageViewer = false;
+  viewingImageUrl = '';
 
   constructor(private messagesService: MessagesService, private viewportService: ViewportService) { }
 
@@ -60,18 +64,56 @@ export class MessagesComponent implements OnInit {
   }
 
   sendMessage(): void {
-    if (!this.messageText.trim()) return;
+    if (!this.messageText.trim() && !this.selectedImage) return;
     if (!this.conversationId || !this.receiverId) return;
 
     this.messagesService
-      .sendMessage(this.conversationId, this.receiverId, this.messageText)
+      .sendMessage(this.conversationId, this.receiverId, this.messageText, this.selectedImage || undefined)
       .subscribe({
         next: msg => {
           this.messages.push(msg);
           this.messageText = '';
+          this.selectedImage = null;
+          this.imagePreview = null;
           this.scrollToBottom();
         }
       });
+  }
+
+  onImageSelect(event: any): void {
+    const file = event.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      this.selectedImage = file;
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage(): void {
+    this.selectedImage = null;
+    this.imagePreview = null;
+  }
+
+  openImageViewer(imageUrl: string): void {
+    this.viewingImageUrl = imageUrl;
+    this.showImageViewer = true;
+  }
+
+  closeImageViewer(): void {
+    this.showImageViewer = false;
+    this.viewingImageUrl = '';
+  }
+
+  getFullImageUrl(imageUrl: string): string {
+    if (!imageUrl) return '';
+    // Wenn die URL schon vollständig ist, zurückgeben
+    if (imageUrl.startsWith('http')) return imageUrl;
+    // Ansonsten Backend-URL hinzufügen
+    return `http://localhost:3000${imageUrl}`;
   }
 
   onKeyDown(event: any): void {

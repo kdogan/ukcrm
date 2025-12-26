@@ -32,6 +32,9 @@ const app = express();
 // ✅ Trust Proxy (wenn hinter Nginx/Cloudflare)
 app.set('trust proxy', 1);
 
+// 📁 Static File Serving for Uploads
+app.use('/uploads', express.static('uploads'));
+
 // 🔗 Connect DB
 connectDB();
 

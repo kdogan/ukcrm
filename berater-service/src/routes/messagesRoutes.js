@@ -11,7 +11,7 @@ const {
 } = require('../controllers/messageController');
 
 const { authenticate } = require('../middleware/auth');
-const { create } = require('../models/Message');
+const { uploadMessageImage } = require('../middleware/upload');
 
 router.use(authenticate);
 
@@ -33,7 +33,7 @@ router.get('/:conversationId', getMessagesByConversation);
 /**
  * 📤 Nachricht senden
  */
-router.post('/', sendMessage);
+router.post('/', uploadMessageImage.single('image'), sendMessage);
 
 /**
  * 👁️ Konversation als gelesen markieren

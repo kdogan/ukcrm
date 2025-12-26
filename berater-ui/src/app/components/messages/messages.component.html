@@ -57,27 +57,64 @@
         <div *ngFor="let m of messages" class="message" [class.me]="m.senderId === currentUserId"
             [class.other]="m.senderId !== currentUserId">
           <div class="bubble">
-            <span class="text">{{ m.text }}</span>
+            <span class="text" *ngIf="m.text">{{ m.text }}</span>
+            <div class="message-image" *ngIf="m.imageUrl" (click)="openImageViewer(getFullImageUrl(m.imageUrl))">
+              <img [src]="getFullImageUrl(m.imageUrl)" [alt]="m.imageName || 'Bild'">
+            </div>
             <span class="time">{{ m.createdAt | date:'HH:mm' }}</span>
           </div>
         </div>
       </div>
 
       <!-- INPUT -->
-      <div class="chat-input">
-        <textarea
-           #messageTextarea
-           [(ngModel)]="messageText"
-           (keydown)="onKeyDown($event)"
-           placeholder="Nachricht schreiben… (Shift+Enter für neue Zeile)"
-           rows="1"></textarea>
-        <button (click)="sendMessage()"><i class="fas fa-arrow-up"></i></button>
+      <div class="chat-input-container">
+        <!-- Image Preview -->
+        <div class="image-preview" *ngIf="imagePreview">
+          <img [src]="imagePreview" alt="Vorschau">
+          <button class="remove-image-btn" (click)="removeImage()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="chat-input">
+          <input
+            type="file"
+            #fileInput
+            accept="image/*"
+            (change)="onImageSelect($event)"
+            style="display: none">
+
+          <button class="attach-btn" (click)="fileInput.click()" type="button">
+            <i class="fas fa-paperclip"></i>
+          </button>
+
+          <textarea
+             #messageTextarea
+             [(ngModel)]="messageText"
+             (keydown)="onKeyDown($event)"
+             placeholder="Nachricht schreiben… (Shift+Enter für neue Zeile)"
+             rows="1"></textarea>
+
+          <button (click)="sendMessage()" [disabled]="!messageText.trim() && !selectedImage">
+            <i class="fas fa-arrow-up"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="no-selection" *ngIf="!selectedConversation">
     Bitte wähle eine Unterhaltung aus.
+  </div>
+</div>
+
+<!-- Image Viewer Modal -->
+<div class="image-viewer-overlay" *ngIf="showImageViewer" (click)="closeImageViewer()">
+  <div class="image-viewer-content" (click)="$event.stopPropagation()">
+    <button class="close-viewer-btn" (click)="closeImageViewer()">
+      <i class="fas fa-times"></i>
+    </button>
+    <img [src]="viewingImageUrl" alt="Vollbild">
   </div>
 </div>
 }

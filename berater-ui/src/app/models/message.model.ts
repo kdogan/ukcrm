@@ -5,6 +5,8 @@ export interface Message {
   senderRole: 'admin' | 'user';
   receiverId: string;
   text: string;
+  imageUrl?: string;
+  imageName?: string;
   createdAt: string;
   readAt?: string | null;
 }
