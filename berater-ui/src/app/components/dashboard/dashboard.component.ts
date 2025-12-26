@@ -6,12 +6,14 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
+import { ViewportService } from 'src/app/services/viewport.service';
+import { DashboardMobileComponent } from './mobile/dashboard-mobile.component';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
-    imports: [CommonModule, FormsModule, TableContainerComponent],
+    imports: [CommonModule, FormsModule, TableContainerComponent, DashboardMobileComponent],
     standalone: true
 })
 export class DashboardComponent implements OnInit, OnDestroy {
@@ -23,10 +25,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   currentUser: any = null;
   private subscription: Subscription = new Subscription();
 
+  get isMobile() {
+    return this.viewport.isMobile();
+  }
+
   constructor(
     private dashboardService: DashboardService,
     private authService: AuthService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private viewport: ViewportService
   ) {}
 
   ngOnInit(): void {
