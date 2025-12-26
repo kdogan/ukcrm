@@ -28,3 +28,9 @@ export enum MeterType {
   Water = 'water',
   Heat = 'heat'
 } 
+export const meterTypes: MeterType[] = [
+  MeterType.Electricity,
+  MeterType.Gas,
+  MeterType.Water,
+  MeterType.Heat
+];

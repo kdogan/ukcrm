@@ -7,7 +7,7 @@ import { ContractService, Contract } from '../../services/contract.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService, ViewportType } from 'src/app/services/viewport.service';
 import { CustomersMobileComponent } from "./mobile/customers-mobile/customers-mobile.component";
-import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.component";
+import { OverlayModalComponent } from "../shared/overlay-modal.component";
 
 @Component({
     selector: 'app-customers',

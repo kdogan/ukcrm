@@ -48,12 +48,17 @@
              class="form-control search-input"
              [ngModelOptions]="{standalone: true}" 
              autocomplete="off" />
-             @if(showCustomerDropdown && filteredCustomers.length > 0) {
+             @if(showCustomerDropdown) {
               <div class="dropdown-list">
               <div *ngFor="let customer of filteredCustomers" class="dropdown-item"
                 [class.selected]="currentContract.customerId === customer._id" (click)="selectCustomer(customer)">
                 {{ customer.firstName }} {{ customer.lastName }} ({{ customer.customerNumber }})
               </div>
+              @if(filteredCustomers.length === 0 && customerSearch.trim()) {
+                <div class="dropdown-item create-new" (click)="openCustomerCreationModal()">
+                  <i class="fas fa-plus-circle"></i> Neuen Kunden erstellen
+                </div>
+              }
               </div>
             }
       <input type="hidden" 
@@ -78,7 +83,7 @@
         class="form-control search-input"
         [ngModelOptions]="{standalone: true}" 
         autocomplete="off" />
-      @if(showMeterDropdown && filteredFreeMeters.length > 0){  
+      @if(showMeterDropdown){
       <div class="dropdown-list">
         <div *ngFor="let meter of filteredFreeMeters" class="dropdown-item"
           [class.selected]="currentContract.meterId === meter._id" [class.occupied]="!isMeterFree(meter)"
@@ -88,6 +93,11 @@
           <span *ngIf="!isMeterFree(meter)" style="color: #c62828; font-weight: bold; margin-left: 0.5rem;">-
             Belegt</span>
         </div>
+        @if(filteredFreeMeters.length === 0 && meterSearch.trim()) {
+          <div class="dropdown-item create-new" (click)="openMeterCreationModal()">
+            <i class="fas fa-plus-circle"></i> Neuen Zähler erstellen
+          </div>
+        }
       </div>
       }
       <input type="hidden" id="meterId" name="meterId" [(ngModel)]="currentContract.meterId" required />
@@ -130,8 +140,8 @@
       </select>
     </div>
 
-    <!-- Datei-Uploads (nur im Edit-Modus und wenn Feature verfügbar) -->
-    <div class="form-group" *ngIf="isEditMode && currentContract._id && packageFeatureService.hasFileUpload()">
+    <!-- Datei-Uploads -->
+    <div class="form-group" *ngIf="packageFeatureService.hasFileUpload() && (isEditMode || !isEditMode)">
       <label>Anhänge</label>
 
       <!-- Upload-Button -->
@@ -145,8 +155,8 @@
         <small class="file-info">Max. 10MB | JPG, PNG, PDF, Word, Excel, TXT, CSV</small>
       </div>
 
-      <!-- Liste der hochgeladenen Dateien -->
-      <div class="attachments-list" *ngIf="currentContract.attachments && currentContract.attachments.length > 0">
+      <!-- Liste der hochgeladenen Dateien (Edit-Modus) -->
+      <div class="attachments-list" *ngIf="isEditMode && currentContract.attachments && currentContract.attachments.length > 0">
         <div class="attachment-item" *ngFor="let attachment of currentContract.attachments">
           <div class="attachment-icon" (click)="isImage(attachment.mimetype) ? viewImage(attachment) : null"
                [style.cursor]="isImage(attachment.mimetype) ? 'pointer' : 'default'"
@@ -169,6 +179,26 @@
               <i class="fas fa-download"></i>
             </button>
             <button type="button" class="btn-icon btn-danger" (click)="deleteAttachment(attachment)" title="Löschen">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liste der noch nicht hochgeladenen Dateien (Create-Modus) -->
+      <div class="attachments-list" *ngIf="!isEditMode && pendingFiles.length > 0">
+        <div class="attachment-item" *ngFor="let file of pendingFiles">
+          <div class="attachment-icon">
+            <i [class]="getFileIcon(file.type)"></i>
+          </div>
+          <div class="attachment-info">
+            <div class="attachment-name">{{ file.name }}</div>
+            <div class="attachment-meta">
+              {{ formatFileSize(file.size) }} • Wird beim Speichern hochgeladen
+            </div>
+          </div>
+          <div class="attachment-actions">
+            <button type="button" class="btn-icon btn-danger" (click)="deleteAttachment(file)" title="Löschen">
               <i class="fas fa-trash"></i>
             </button>
           </div>
@@ -332,4 +362,60 @@
       </div>
     </div>
   </div>
+</app-overlay-modal>
+
+<!-- Customer Creation Modal -->
+<app-overlay-modal *ngIf="showCustomerCreationModal" (close)="closeCustomerCreationModal()">
+  <div class="modal-header">
+    <h2>Neuen Kunden erstellen</h2>
+    <button class="btn-close" (click)="closeCustomerCreationModal()">&times;</button>
+  </div>
+  <form (ngSubmit)="saveNewCustomer()" #customerForm="ngForm">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Vorname *</label>
+        <input type="text" [(ngModel)]="newCustomer.firstName" name="firstName" required class="form-control" />
+      </div>
+      <div class="form-group">
+        <label>Nachname *</label>
+        <input type="text" [(ngModel)]="newCustomer.lastName" name="lastName" required class="form-control" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>E-Mail</label>
+        <input type="email" [(ngModel)]="newCustomer.email" name="email" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label>Telefon</label>
+        <input type="tel" [(ngModel)]="newCustomer.phone" name="phone" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Adresse</label>
+      <input type="text" name="street" [(ngModel)]="newCustomer.address.street" placeholder="Straße" class="form-control" />
+      <div class="form-row">
+        <input type="text" name="zip" [(ngModel)]="newCustomer.address.zip" placeholder="PLZ" class="form-control" />
+        <input type="text" name="city" [(ngModel)]="newCustomer.address.city" placeholder="Ort" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Notizen</label>
+      <textarea [(ngModel)]="newCustomer.notes" name="notes" rows="3" class="form-control"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeCustomerCreationModal()">Abbrechen</button>
+      <button type="submit" class="btn-primary" [disabled]="!customerForm.form.valid">Erstellen</button>
+    </div>
+  </form>
+</app-overlay-modal>
+
+<!-- Meter Creation Modal -->
+<app-overlay-modal *ngIf="showMeterCreationModal" (close)="closeMeterCreationModal()">
+  <app-meter-create 
+    [meter] = "newMeter",
+    [isEditMode]="isEditMode",
+    (close)="closeMeterCreationModal()",
+    (save)="saveNewMeter()"
+  />
 </app-overlay-modal>

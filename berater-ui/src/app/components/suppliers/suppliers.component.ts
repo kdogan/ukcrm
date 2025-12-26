@@ -5,7 +5,7 @@ import { SupplierService, Supplier } from '../../services/supplier.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService } from '../../services/viewport.service';
 import { SuppliersMobileComponent } from './mobile/suppliers-mobile.component';
-import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.component";
+import { OverlayModalComponent } from "../shared/overlay-modal.component";
 
 @Component({
     selector: 'app-suppliers',

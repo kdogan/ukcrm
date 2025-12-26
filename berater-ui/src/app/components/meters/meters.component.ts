@@ -8,12 +8,16 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { MetersMobileComponent } from './mobile/meters-mobile.component';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { Util } from '../util/util';
-import { OverlayModalComponent } from '../shared/overlay-modal/overlay-modal.component';
-import { MeterType, Meter } from 'src/app/models/meter.model';
+import { OverlayModalComponent } from '../shared/overlay-modal.component';
+import { Meter } from 'src/app/models/meter.model';
+import { MeterCreateComponent } from '../shared/meter-create.component';
 
 @Component({
     selector: 'app-meters',
-    imports: [CommonModule, FormsModule, TableContainerComponent, MetersMobileComponent, OverlayModalComponent],
+    imports: [CommonModule, FormsModule, 
+      TableContainerComponent, 
+      MetersMobileComponent, 
+      OverlayModalComponent, MeterCreateComponent],
     styleUrls: ['./meters.component.scss'],
     templateUrl: './meters.component.html'
 })
@@ -42,13 +46,7 @@ export class MetersComponent implements OnInit {
     notes: ''
   };
   meterReadings: any[] = [];
-  meterTypes: MeterType[] = [
-    MeterType.Electricity,
-    MeterType.Gas,
-    MeterType.Water,
-    MeterType.Heat
-  ];
-
+meterTypes: any;
 
   constructor(
     private meterService: MeterService,

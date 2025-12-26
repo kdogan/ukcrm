@@ -96,61 +96,12 @@
 
 <!-- Modal for Create/Edit Meter -->
 <app-overlay-modal *ngIf="showModal" (close)="closeModal()">
-  <div class="modal-header">
-    <h2>{{ isEditMode ? 'Zähler bearbeiten' : 'Neuer Zähler' }}</h2>
-    <button class="btn-close" (click)="closeModal()">&times;</button>
-  </div>
-  <form (ngSubmit)="saveMeter()" #meterForm="ngForm">
-    <div class="form-group">
-      <label for="meterNumber">Zählernummer *</label>
-      <input type="text" id="meterNumber" name="meterNumber" [(ngModel)]="currentMeter.meterNumber" required
-        placeholder="z.B. Z-2024-001" class="form-control" />
-    </div>
-
-    <div class="form-group">
-      <label for="type">Typ *</label>
-      <select id="type" name="type" [(ngModel)]="currentMeter.type" required class="form-control">
-        <option value="">Bitte wählen</option>
-        @for(type of meterTypes; track type) {
-          <option [value]="type">{{getTypeLabel(type)}}</option>
-        }
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="manloId">Malo Id</label>
-      <input type="text" id="maloId" name="maloId" [(ngModel)]="currentMeter.maloId"
-        placeholder="" class="form-control" />
-    </div>
-    <div class="form-group">
-      <label for="manufacturer">Hersteller</label>
-      <input type="text" id="manufacturer" name="manufacturer" [(ngModel)]="currentMeter.manufacturer"
-        placeholder="z.B. Siemens" class="form-control" />
-    </div>
-
-    <div class="form-group">
-      <label for="yearBuilt">Baujahr</label>
-      <input type="number" id="yearBuilt" name="yearBuilt" [(ngModel)]="currentMeter.yearBuilt" [min]="1950"
-        [max]="currentYear" placeholder="z.B. 2020" class="form-control" />
-    </div>
-
-    <div class="form-group">
-      <label>Standort</label>
-      <input type="text" name="street" [(ngModel)]="currentMeter.location.street" placeholder="Straße"
-        class="form-control" />
-      <div class="form-row">
-        <input type="text" name="zip" [(ngModel)]="currentMeter.location.zip" placeholder="PLZ" class="form-control" />
-        <input type="text" name="city" [(ngModel)]="currentMeter.location.city" placeholder="Stadt"
-          class="form-control" />
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
-      <button type="submit" class="btn-primary" [disabled]="!meterForm.form.valid">
-        {{ isEditMode ? 'Speichern' : 'Erstellen' }}
-      </button>
-    </div>
-  </form>
+  <app-meter-create 
+    [meter] = "currentMeter",
+    [isEditMode]="isEditMode",
+    (close)="closeModal()",
+    (save)="saveMeter()"
+  />
 </app-overlay-modal>
 
 <!-- Modal for showing Zähler-->

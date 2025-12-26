@@ -6,16 +6,16 @@ import { ContractService } from '../../services/contract.service';
 import { CustomerService } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
 import { MeterService } from '../../services/meter.service';
-import { ReminderService } from '../../services/reminder.service';
 import { PackageService } from '../../services/package.service';
 import { PackageFeatureService } from '../../services/package-feature.service';
-import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService, ViewportType } from 'src/app/services/viewport.service';
-import { Subscription } from 'rxjs';
 import { ContractsMobileComponent } from './mobile/contracts-mobile/contracts-mobile.component';
 import { ContractsDesktopComponent } from './desktop/contracts-desktop/contracts-desktop.component';
-import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.component";
+import { OverlayModalComponent } from "../shared/overlay-modal.component";
 import { ContractState, stateToLabel } from 'src/app/models/contract.model';
+import { Util } from '../util/util';
+import { MeterType, meterTypes } from 'src/app/models/meter.model';
+import { MeterCreateComponent } from '../shared/meter-create.component';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -26,7 +26,9 @@ import { ContractState, stateToLabel } from 'src/app/models/contract.model';
         FormsModule,
         ContractsDesktopComponent,
         ContractsMobileComponent,
-        OverlayModalComponent]
+        OverlayModalComponent,
+        MeterCreateComponent
+      ]
 })
 export class ContractsComponent implements OnInit {
 
@@ -58,6 +60,13 @@ export class ContractsComponent implements OnInit {
   viewingImage: any = null;
   imageViewerUrl: string = '';
   viewport: ViewportType = ViewportType.Desktop;
+
+  // Customer/Meter creation modals
+  showCustomerCreationModal = false;
+  showMeterCreationModal = false;
+  newCustomer: any = this.getEmptyCustomer();
+  newMeter: any = this.getEmptyMeter();
+  meterTypes = meterTypes;
 
   contractState = [
     {
@@ -381,6 +390,7 @@ export class ContractsComponent implements OnInit {
       this.selectedMeter = null;
       this.customerSearch = '';
       this.meterSearch = '';
+      this.pendingFiles = []; // Pending Files zurücksetzen
     }
   }
 
@@ -401,9 +411,16 @@ export class ContractsComponent implements OnInit {
       this.contractService.createContract(this.currentContract).subscribe({
         next: (response) => {
           if (response.success) {
-            this.closeModal();
-            this.loadContracts();
-            this.loadFreeMeters();
+            const newContractId = response.data._id;
+
+            // Wenn es pending Files gibt, diese jetzt hochladen
+            if (this.pendingFiles.length > 0) {
+              this.uploadPendingFiles(newContractId);
+            } else {
+              this.closeModal();
+              this.loadContracts();
+              this.loadFreeMeters();
+            }
           }
         },
         error: (error) => {
@@ -421,6 +438,38 @@ export class ContractsComponent implements OnInit {
     }
   }
 
+  uploadPendingFiles(contractId: string): void {
+    let uploadedCount = 0;
+    const totalFiles = this.pendingFiles.length;
+
+    this.pendingFiles.forEach(file => {
+      this.contractService.uploadAttachment(contractId, file).subscribe({
+        next: (response) => {
+          uploadedCount++;
+          if (uploadedCount === totalFiles) {
+            // Alle Dateien hochgeladen
+            this.pendingFiles = [];
+            this.closeModal();
+            this.loadContracts();
+            this.loadFreeMeters();
+          }
+        },
+        error: (error) => {
+          uploadedCount++;
+          console.error('Fehler beim Hochladen von', file.name, error);
+          if (uploadedCount === totalFiles) {
+            // Auch bei Fehlern weitermachen
+            this.pendingFiles = [];
+            this.closeModal();
+            this.loadContracts();
+            this.loadFreeMeters();
+            alert('Einige Dateien konnten nicht hochgeladen werden.');
+          }
+        }
+      });
+    });
+  }
+
   getStatusLabel(status: string): string {
     const labels: any = {
       active: 'Aktiv',
@@ -431,8 +480,7 @@ export class ContractsComponent implements OnInit {
   }
 
   getTypeLabel(type: string): string {
-    const labels: any = { electricity: 'Strom', gas: 'Gas', water: 'Wasser' };
-    return labels[type] || type;
+    return Util.getMeterTypeLabel(type)
   }
 
   isMeterFree(meter: any): boolean {
@@ -546,6 +594,7 @@ export class ContractsComponent implements OnInit {
 
   // File Upload Methods
   uploadingFile = false;
+  pendingFiles: File[] = []; // Dateien die noch nicht hochgeladen wurden (nur beim Erstellen)
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
@@ -557,26 +606,34 @@ export class ContractsComponent implements OnInit {
       return;
     }
 
-    this.uploadingFile = true;
-    this.contractService.uploadAttachment(this.currentContract._id, file).subscribe({
-      next: (response) => {
-        if (response.success) {
-          // Attachment zur Liste hinzufügen
-          if (!this.currentContract.attachments) {
-            this.currentContract.attachments = [];
+    // Wenn Vertrag schon existiert (Edit-Modus), direkt hochladen
+    if (this.isEditMode && this.currentContract._id) {
+      this.uploadingFile = true;
+      this.contractService.uploadAttachment(this.currentContract._id, file).subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Attachment zur Liste hinzufügen
+            if (!this.currentContract.attachments) {
+              this.currentContract.attachments = [];
+            }
+            this.currentContract.attachments.push(response.data);
+            this.uploadingFile = false;
+            // Input zurücksetzen
+            event.target.value = '';
           }
-          this.currentContract.attachments.push(response.data);
+        },
+        error: (error) => {
           this.uploadingFile = false;
-          // Input zurücksetzen
+          alert('Fehler beim Hochladen: ' + (error.error?.message || 'Unbekannter Fehler'));
           event.target.value = '';
         }
-      },
-      error: (error) => {
-        this.uploadingFile = false;
-        alert('Fehler beim Hochladen: ' + (error.error?.message || 'Unbekannter Fehler'));
-        event.target.value = '';
-      }
-    });
+      });
+    } else {
+      // Im Create-Modus: Datei nur zwischenspeichern
+      this.pendingFiles.push(file);
+      // Input zurücksetzen
+      event.target.value = '';
+    }
   }
 
   downloadAttachment(attachment: any): void {
@@ -597,21 +654,38 @@ export class ContractsComponent implements OnInit {
   }
 
   deleteAttachment(attachment: any): void {
-    if (confirm(`Datei "${attachment.originalName}" wirklich löschen?`)) {
-      this.contractService.deleteAttachment(this.currentContract._id, attachment._id).subscribe({
-        next: (response) => {
-          if (response.success) {
-            // Attachment aus Liste entfernen
-            const index = this.currentContract.attachments.findIndex((a: any) => a._id === attachment._id);
-            if (index > -1) {
-              this.currentContract.attachments.splice(index, 1);
-            }
-          }
-        },
-        error: (error) => {
-          alert('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
+    const fileName = attachment.originalName || attachment.name;
+    if (confirm(`Datei "${fileName}" wirklich löschen?`)) {
+      // Wenn attachment eine File-Instanz ist (pending), nur aus pendingFiles entfernen
+      if (attachment instanceof File) {
+        const index = this.pendingFiles.indexOf(attachment);
+        if (index > -1) {
+          this.pendingFiles.splice(index, 1);
         }
-      });
+      } else {
+        // Ansonsten ist es ein bereits hochgeladenes Attachment - Backend-Call
+        this.contractService.deleteAttachment(this.currentContract._id, attachment._id).subscribe({
+          next: (response) => {
+            if (response.success) {
+              // Attachment aus Liste entfernen
+              const index = this.currentContract.attachments.findIndex((a: any) => a._id === attachment._id);
+              if (index > -1) {
+                this.currentContract.attachments.splice(index, 1);
+              }
+            }
+          },
+          error: (error) => {
+            alert('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
+          }
+        });
+      }
+    }
+  }
+
+  removePendingFile(file: File): void {
+    const index = this.pendingFiles.indexOf(file);
+    if (index > -1) {
+      this.pendingFiles.splice(index, 1);
     }
   }
 
@@ -671,5 +745,108 @@ export class ContractsComponent implements OnInit {
     }
     this.showImageViewer = false;
     this.viewingImage = null;
+  }
+
+  // Customer/Meter Creation Methods
+  getEmptyCustomer(): any {
+    return {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: {
+        street: '',
+        zip: '',
+        city: ''
+      },
+      notes: ''
+    };
+  }
+
+  getEmptyMeter(): any {
+    return {
+      meterNumber: '',
+      type: '',
+      maloId: '',
+      manufacturer: '',
+      yearBuilt: null,
+      location: {
+        street: '',
+        zip: '',
+        city: ''
+      }
+    };
+  }
+
+  openCustomerCreationModal(): void {
+    this.newCustomer = this.getEmptyCustomer();
+    this.showCustomerCreationModal = true;
+    this.showCustomerDropdown = false;
+  }
+
+  openMeterCreationModal(): void {
+    this.newMeter = this.getEmptyMeter();
+    this.showMeterCreationModal = true;
+    this.showMeterDropdown = false;
+  }
+
+  closeCustomerCreationModal(): void {
+    this.showCustomerCreationModal = false;
+    this.newCustomer = this.getEmptyCustomer();
+  }
+
+  closeMeterCreationModal(): void {
+    this.showMeterCreationModal = false;
+    this.newMeter = this.getEmptyMeter();
+  }
+
+  saveNewCustomer(): void {
+    this.customerService.createCustomer(this.newCustomer).subscribe({
+      next: (response) => {
+        if (response.success) {
+          const createdCustomer = response.data;
+
+          // Füge den neuen Kunden zur Liste hinzu
+          this.customers.push(createdCustomer);
+          this.filteredCustomers = this.customers;
+
+          // Wähle den neu erstellten Kunden automatisch aus
+          this.selectCustomer(createdCustomer);
+
+          // Schließe das Modal
+          this.closeCustomerCreationModal();
+
+          alert('Kunde erfolgreich erstellt!');
+        }
+      },
+      error: (error) => {
+        alert('Fehler beim Erstellen des Kunden: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  saveNewMeter(): void {
+    this.meterService.createMeter(this.newMeter).subscribe({
+      next: (response) => {
+        if (response.success) {
+          const createdMeter = response.data;
+
+          // Füge den neuen Zähler zur Liste hinzu
+          this.freeMeters.push(createdMeter);
+          this.filteredFreeMeters = this.freeMeters;
+
+          // Wähle den neu erstellten Zähler automatisch aus
+          this.selectMeter(createdMeter);
+
+          // Schließe das Modal
+          this.closeMeterCreationModal();
+
+          alert('Zähler erfolgreich erstellt!');
+        }
+      },
+      error: (error) => {
+        alert('Fehler beim Erstellen des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
   }
 }

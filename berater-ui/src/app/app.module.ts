@@ -33,7 +33,7 @@ import { ContractsMobileComponent } from './components/contracts/mobile/contract
 import { CustomersMobileComponent } from './components/customers/mobile/customers-mobile/customers-mobile.component';
 import { MetersMobileComponent } from './components/meters/mobile/meters-mobile.component';
 import { SuppliersMobileComponent } from './components/suppliers/mobile/suppliers-mobile.component';
-import { OverlayModalComponent } from './components/shared/overlay-modal/overlay-modal.component';
+import { OverlayModalComponent } from './components/shared/overlay-modal.component';
 
 @NgModule({
   declarations: [

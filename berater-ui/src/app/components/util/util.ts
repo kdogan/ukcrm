@@ -1,3 +1,5 @@
+import { MeterType, meterTypes } from "src/app/models/meter.model";
+
 export class Util {
   static isEmptyObject(obj: any): boolean {
     return obj && Object.keys(obj).length === 0 && obj.constructor === Object;
@@ -7,18 +9,17 @@ export class Util {
     return date.toLocaleDateString();
   }
 
-  static getMeterTypeWithLabel() {
+  static getMeterTypeWithLabel():{key:MeterType, value:string}[] {
     return [
-      {key:'electricity', value:'Strom'},
-      {key:'gas', value:'Gas'},
-      {key:'water', value:'Wasser'},
-      {key:'heat', value:'Wärme'},
+      {key:MeterType.Electricity, value:'Strom'},
+      {key:MeterType.Gas, value:'Gas'},
+      {key:MeterType.Water, value:'Wasser'},
+      {key:MeterType.Heat, value:'Wärme'},
     ]
   }
 
   static getMeterTypeLabel(type: string): string {
-    const labels: any = { electricity: 'Strom', gas: 'Gas', water: 'Wasser', heat: 'Wärme' };
-    return labels[type] || type;
+    return this.getMeterTypeWithLabel().find(t => t.key == (type as MeterType))?.value??type;
   }
   static getMeterStatusLabel(isActive: boolean): string {
     return isActive ? 'Frei' : 'Belegt';
