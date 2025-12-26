@@ -181,6 +181,7 @@ exports.updateContract = async (req, res, next) => {
     });
 
     await contract.save();
+    await updateMeterStatus(contract);
 
     // Erinnerungen aktualisieren wenn Laufzeit geändert
     if (changes.durationMonths) {
@@ -197,6 +198,31 @@ exports.updateContract = async (req, res, next) => {
   }
 };
 
+async function updateMeterStatus(contract) {
+  const Meter = require('../models/Meter');
+  const MeterHistory = require('../models/MeterHistory');
+
+  // Wenn Vertrag beendet oder archiviert wird, Zähler freigeben
+  const isFree = contract.status === 'ended' || contract.status === 'archived';
+
+  await Meter.findByIdAndUpdate(contract.meterId, {
+    currentCustomerId: isFree ? null : contract.customerId
+  });
+
+  // Schließe offene Historie für diesen Vertrag wenn beendet/archiviert
+  if (isFree) {
+    await MeterHistory.findOneAndUpdate(
+      {
+        contractId: contract._id,
+        endDate: null
+      },
+      {
+        endDate: contract.endDate || new Date()
+      }
+    );
+  }
+}
+
 // @desc    Update contract status
 // @route   PATCH /api/contracts/:id/status
 // @access  Private
@@ -204,7 +230,7 @@ exports.updateContractStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
 
-    if (!['active', 'ended', 'archived'].includes(status)) {
+    if (!['active', 'ended', 'archived', 'draft'].includes(status)) {
       return res.status(400).json({
         success: false,
         message: 'Ungültiger Status'
@@ -233,9 +259,36 @@ exports.updateContractStatus = async (req, res, next) => {
     });
 
     await contract.save();
+    await updateMeterStatus(contract);
 
-    // Zähler freigeben wenn Vertrag beendet oder archiviert wird
-    if ((status === 'ended' || status === 'archived') && oldStatus === 'active') {
+    res.status(200).json({
+      success: true,
+      data: contract
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete contract
+// @route   DELETE /api/contracts/:id
+// @access  Private
+exports.deleteContract = async (req, res, next) => {
+  try {
+    const contract = await Contract.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!contract) {
+      return res.status(404).json({
+        success: false,
+        message: 'Vertrag nicht gefunden'
+      });
+    }
+
+    // Zähler freigeben wenn Vertrag aktiv war
+    if (contract.status === 'active' || contract.status === 'draft') {
       const Meter = require('../models/Meter');
       const MeterHistory = require('../models/MeterHistory');
 
@@ -250,14 +303,30 @@ exports.updateContractStatus = async (req, res, next) => {
           endDate: null
         },
         {
-          endDate: contract.endDate || new Date()
+          endDate: new Date()
         }
       );
     }
 
+    // Lösche alle Erinnerungen für diesen Vertrag
+    await Reminder.deleteMany({ contractId: contract._id });
+
+    // Lösche alle Attachments
+    if (contract.attachments && contract.attachments.length > 0) {
+      const fs = require('fs');
+      contract.attachments.forEach(attachment => {
+        if (fs.existsSync(attachment.path)) {
+          fs.unlinkSync(attachment.path);
+        }
+      });
+    }
+
+    // Vertrag löschen
+    await contract.deleteOne();
+
     res.status(200).json({
       success: true,
-      data: contract
+      message: 'Vertrag erfolgreich gelöscht'
     });
   } catch (error) {
     next(error);

@@ -6,6 +6,7 @@ const {
   createContract,
   updateContract,
   updateContractStatus,
+  deleteContract,
   uploadAttachment,
   deleteAttachment,
   downloadAttachment
@@ -23,7 +24,8 @@ router.route('/')
 
 router.route('/:id')
   .get(getContract)
-  .put(updateContract);
+  .put(updateContract)
+  .delete(deleteContract);
 
 router.patch('/:id/status', updateContractStatus);
 
