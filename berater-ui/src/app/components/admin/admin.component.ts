@@ -5,10 +5,9 @@ import { AdminService, AppUser, UserStats } from '../../services/admin.service';
 import { TableContainerComponent } from "../shared/tablecontainer.component";
 
 @Component({
-  selector: 'app-admin',
-  standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent],
-  template: `
+    selector: 'app-admin',
+    imports: [CommonModule, FormsModule, TableContainerComponent],
+    template: `
     <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
         <h1>Superadmin Dashboard</h1>
@@ -255,7 +254,7 @@ import { TableContainerComponent } from "../shared/tablecontainer.component";
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .page-container { padding: 2rem; }
     .page-header {
       display: flex;

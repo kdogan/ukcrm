@@ -6,7 +6,6 @@ import { Todo } from "src/app/services/todo.service";
 
 @Component({
     selector: 'app-todo',
-    standalone: true,
     imports: [CommonModule, FormsModule],
     template: `
   @if(todo) {

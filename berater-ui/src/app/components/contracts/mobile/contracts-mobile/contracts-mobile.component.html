@@ -7,8 +7,8 @@
     </div>
 
     <!-- LIST -->
-    <div class="contract-list">
-        <div class="contract-card" *ngFor="let c of contracts">
+    <div class="card-list">
+        <div class="eskapp-card" *ngFor="let c of contracts">
             <div class="status-icon" [ngClass]="c.status" [title]="c.status">
                 <span *ngIf="c.status === 'active'"><i class="fas fa-truck"></i></span>
                 <span *ngIf="c.status === 'ended'"><i class="fas fa-stop"></i></span>

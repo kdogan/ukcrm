@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Customer } from 'src/app/services/customer.service';
 
 @Component({
-  selector: 'app-customers-mobile',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './customers-mobile.component.html',
-  styleUrl: './customers-mobile.component.scss'
+    selector: 'app-customers-mobile',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './customers-mobile.component.html',
+    styleUrl: './customers-mobile.component.scss',
+    standalone:true
 })
 export class CustomersMobileComponent {
 

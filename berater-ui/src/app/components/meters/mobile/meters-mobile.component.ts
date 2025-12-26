@@ -5,11 +5,10 @@ import { Util } from '../../util/util';
 import { Meter } from 'src/app/models/meter.model';
 
 @Component({
-  selector: 'app-meters-mobile',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './meters-mobile.component.html',
-  styleUrl: './meters-mobile.component.scss'
+    selector: 'app-meters-mobile',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './meters-mobile.component.html',
+    styleUrl: './meters-mobile.component.scss'
 })
 export class MetersMobileComponent {
 

@@ -5,11 +5,10 @@ import { AuthService } from '../../services/auth.service';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 
 @Component({
-  selector: 'app-layout',
-  standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet, RouterModule ],
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.scss']
+    selector: 'app-layout',
+    imports: [CommonModule, RouterLink, RouterOutlet, RouterModule],
+    templateUrl: './layout.component.html',
+    styleUrls: ['./layout.component.scss']
 })
 export class LayoutComponent implements OnInit {
   currentUser: any = null;

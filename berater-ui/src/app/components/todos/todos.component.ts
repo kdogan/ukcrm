@@ -9,11 +9,10 @@ import { MeterService } from '../../services/meter.service';
 import { TodoComponent } from "./todo.component";
 
 @Component({
-  selector: 'app-todos',
-  standalone: true,
-  imports: [CommonModule, FormsModule, TodoComponent],
-  templateUrl: './todos.component.html',
-  styleUrls: ['./todos.component.scss']
+    selector: 'app-todos',
+    imports: [CommonModule, FormsModule, TodoComponent],
+    templateUrl: './todos.component.html',
+    styleUrls: ['./todos.component.scss']
 })
 export class TodosComponent implements OnInit {
 

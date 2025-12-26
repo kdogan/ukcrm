@@ -6,10 +6,9 @@ import { UpgradeService } from '../../services/upgrade.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-packages',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-packages',
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="packages-container">
       <div class="header">
         <h1>{{ isSuperAdmin ? 'Pakete-Verwaltung' : 'Paket upgraden' }}</h1>
@@ -214,7 +213,7 @@ import { AuthService } from '../../services/auth.service';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .packages-container {
       padding: 2rem;
       max-width: 1400px;

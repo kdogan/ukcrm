@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-overlay-modal',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'app-overlay-modal',
+    imports: [],
+    template: `
     <div class="modal-overlay" (click)="close.emit()">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <ng-content/>
@@ -12,7 +11,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
     </div>
 
   `,
-  styles: `
+    styles: `
   .modal-overlay {
       position: fixed;
       inset: 0;

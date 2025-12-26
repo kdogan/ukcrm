@@ -4,11 +4,10 @@ import { Contract } from 'src/app/services/contract.service';
 import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 
 @Component({
-  selector: 'app-contracts-mobile',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './contracts-mobile.component.html',
-  styleUrls: ['./contracts-mobile.component.scss']
+    selector: 'app-contracts-mobile',
+    imports: [CommonModule],
+    templateUrl: './contracts-mobile.component.html',
+    styleUrls: ['./contracts-mobile.component.scss']
 })
 export class ContractsMobileComponent {
 

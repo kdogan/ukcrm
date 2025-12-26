@@ -7,10 +7,9 @@ import { UpgradeService } from '../../services/upgrade.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-settings',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-settings',
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="page-container">
       <div class="page-header">
         <h1>Einstellungen</h1>
@@ -325,7 +324,7 @@ import { AuthService } from '../../services/auth.service';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .page-container {
       padding: 2rem;
       max-width: 1200px;

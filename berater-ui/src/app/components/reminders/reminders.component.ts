@@ -8,10 +8,9 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
 
 // CONTRACTS COMPONENT
 @Component({
-  selector: 'app-contracts',
-  standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent],
-  template: `
+    selector: 'app-contracts',
+    imports: [CommonModule, FormsModule, TableContainerComponent],
+    template: `
     <div class="page-container">
       <h1>Verträge</h1>
       <div class="filters">
@@ -54,7 +53,7 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
       </app-table-container>
     </div>
   `,
-  styles: [`
+    styles: [`
     .page-container { padding: 2rem; }
     h1 { font-size: 2rem; margin-bottom: 1.5rem; }
     .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
@@ -91,10 +90,9 @@ export class ContractsComponent implements OnInit {
 
 // METERS COMPONENT
 @Component({
-  selector: 'app-meters',
-  standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent],
-  template: `
+    selector: 'app-meters',
+    imports: [CommonModule, FormsModule, TableContainerComponent],
+    template: `
     <div class="page-container">
       <h1>Zähler</h1>
       <div class="filters">
@@ -137,7 +135,7 @@ export class ContractsComponent implements OnInit {
       </app-table-container>
     </div>
   `,
-  styles: [`
+    styles: [`
     .page-container { padding: 2rem; }
     h1 { font-size: 2rem; margin-bottom: 1.5rem; }
     .filters { margin-bottom: 1.5rem; }
@@ -181,10 +179,9 @@ export class MetersComponent implements OnInit {
 
 // REMINDERS COMPONENT
 @Component({
-  selector: 'app-reminders',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-reminders',
+    imports: [CommonModule],
+    template: `
     <div class="page-container">
       <h1>Erinnerungen</h1>
       <div class="reminders-grid">
@@ -203,7 +200,7 @@ export class MetersComponent implements OnInit {
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .page-container { padding: 2rem; }
     h1 { font-size: 2rem; margin-bottom: 1.5rem; }
     .reminders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }

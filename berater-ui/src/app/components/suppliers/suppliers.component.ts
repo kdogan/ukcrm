@@ -8,10 +8,9 @@ import { SuppliersMobileComponent } from './mobile/suppliers-mobile.component';
 import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.component";
 
 @Component({
-  selector: 'app-suppliers',
-  standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent, SuppliersMobileComponent, OverlayModalComponent],
-  template: `
+    selector: 'app-suppliers',
+    imports: [CommonModule, FormsModule, TableContainerComponent, SuppliersMobileComponent, OverlayModalComponent],
+    template: `
     @if(isMobile){
       <app-suppliers-mobile
         [suppliers]="suppliers"
@@ -157,7 +156,7 @@ import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.com
     </app-overlay-modal>
   }
   `,
-  styles: [`
+    styles: [`
     .page-container { padding: 2rem; }
     .page-header {
       display: flex;

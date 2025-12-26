@@ -12,11 +12,10 @@ import { OverlayModalComponent } from '../shared/overlay-modal/overlay-modal.com
 import { MeterType, Meter } from 'src/app/models/meter.model';
 
 @Component({
-  selector: 'app-meters',
-  standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent, MetersMobileComponent, OverlayModalComponent],
-  styleUrls: ['./meters.component.scss'],
-  templateUrl: './meters.component.html',
+    selector: 'app-meters',
+    imports: [CommonModule, FormsModule, TableContainerComponent, MetersMobileComponent, OverlayModalComponent],
+    styleUrls: ['./meters.component.scss'],
+    templateUrl: './meters.component.html'
 })
 export class MetersComponent implements OnInit {
   meters: any[] = [];

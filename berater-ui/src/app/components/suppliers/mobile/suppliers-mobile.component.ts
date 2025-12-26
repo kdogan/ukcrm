@@ -4,11 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Supplier } from '../../../services/supplier.service';
 
 @Component({
-  selector: 'app-suppliers-mobile',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './suppliers-mobile.component.html',
-  styleUrl: './suppliers-mobile.component.scss'
+    selector: 'app-suppliers-mobile',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './suppliers-mobile.component.html',
+    styleUrl: './suppliers-mobile.component.scss'
 })
 export class SuppliersMobileComponent {
   @Input() suppliers: Supplier[] = [];

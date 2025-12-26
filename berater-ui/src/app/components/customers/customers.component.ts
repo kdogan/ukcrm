@@ -9,11 +9,10 @@ import { CustomersMobileComponent } from "./mobile/customers-mobile/customers-mo
 import { OverlayModalComponent } from "../shared/overlay-modal/overlay-modal.component";
 
 @Component({
-  selector: 'app-customers',
-  standalone: true,
-  imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent],
-  templateUrl: './customers.component.html',
-  styleUrls: ['./customers.component.scss']
+    selector: 'app-customers',
+    imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent],
+    templateUrl: './customers.component.html',
+    styleUrls: ['./customers.component.scss']
 })
 export class CustomersComponent implements OnInit {
   customers: Customer[] = [];

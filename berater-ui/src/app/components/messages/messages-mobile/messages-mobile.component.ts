@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Message } from 'src/app/models/message.model';
 
 @Component({
-  selector: 'app-messages-mobile',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './messages-mobile.component.html',
-  styleUrl: './messages-mobile.component.scss'
+    selector: 'app-messages-mobile',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './messages-mobile.component.html',
+    styleUrl: './messages-mobile.component.scss',
+    standalone:true
 })
 export class MessagesMobileComponent {
 

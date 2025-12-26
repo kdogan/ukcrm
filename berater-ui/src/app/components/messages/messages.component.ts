@@ -1,18 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MessagesService } from 'src/app/services/messages.service';
 import { Message } from 'src/app/models/message.model';
+import { ViewportService } from 'src/app/services/viewport.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { ViewportService } from 'src/app/services/viewport.service';
 import { MessagesMobileComponent } from './messages-mobile/messages-mobile.component';
 
 @Component({
-  selector: 'app-messages',
-  standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, MessagesMobileComponent],
-  templateUrl: './messages.component.html',
-  styleUrls: ['./messages.component.scss']
+    selector: 'app-messages',
+    templateUrl: './messages.component.html',
+    styleUrls: ['./messages.component.scss'],
+    imports:[CommonModule, FormsModule, MessagesMobileComponent],
+    standalone: true
 })
 export class MessagesComponent implements OnInit {
 

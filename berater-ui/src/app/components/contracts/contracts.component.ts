@@ -19,15 +19,14 @@ import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 
 // CONTRACTS COMPONENT
 @Component({
-  selector: 'app-contracts',
-  styleUrls: ['./contracts.component.scss'],
-  templateUrl: './contracts.component.html',
-  standalone: true,
-  imports: [CommonModule,
-    FormsModule,
-    ContractsDesktopComponent,
-    ContractsMobileComponent,
-    OverlayModalComponent],
+    selector: 'app-contracts',
+    styleUrls: ['./contracts.component.scss'],
+    templateUrl: './contracts.component.html',
+    imports: [CommonModule,
+        FormsModule,
+        ContractsDesktopComponent,
+        ContractsMobileComponent,
+        OverlayModalComponent]
 })
 export class ContractsComponent implements OnInit {
 

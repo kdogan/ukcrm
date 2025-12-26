@@ -6,11 +6,10 @@ import { FormsModule, NgModel } from '@angular/forms';
 import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 
 @Component({
-  selector: 'app-contracts-desktop',
-  standalone: true,
-  imports: [CommonModule, TableContainerComponent, FormsModule],
-  templateUrl: './contracts-desktop.component.html',
-  styleUrls: ['./contracts-desktop.component.scss']
+    selector: 'app-contracts-desktop',
+    imports: [CommonModule, TableContainerComponent, FormsModule],
+    templateUrl: './contracts-desktop.component.html',
+    styleUrls: ['./contracts-desktop.component.scss']
 })
 export class ContractsDesktopComponent {
 
