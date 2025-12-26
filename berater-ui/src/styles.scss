@@ -183,3 +183,509 @@ body {
   }
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+
+/* ACTIONS */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.4rem 0.75rem;
+    border: none;
+    border-radius: 6px;
+    background: #f0f0f0;
+    color: #555;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    i {
+      font-size: 0.9rem;
+    }
+
+    &:hover {
+      background: #e0e0e0;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .danger {
+    background: #ffebee;
+    color: #c62828;
+
+    &:hover {
+      background: #ffcdd2;
+    }
+  }
+}
+
+/* STATUS ICON */
+.status-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1rem;
+}
+
+.status-icon.active {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-icon.inactive {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* PHONE */
+.phone {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  a {
+    text-decoration: none;
+    font-size: 1.2rem;
+  }
+}
+
+/* =========================
+   FORM STYLES
+========================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #555;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    &:disabled {
+      background-color: #f5f5f5;
+      cursor: not-allowed;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  select {
+    cursor: pointer;
+    background-color: white;
+  }
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   GLOBAL BUTTON STYLES
+========================= */
+
+.btn-primary,
+.btn-secondary,
+.btn-small,
+.btn-danger {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+
+  &:hover {
+    background: #5568d3;
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.btn-secondary {
+  padding: 0.625rem 1.25rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  color: #555;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+  }
+}
+
+.btn-small {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.875rem;
+  background: #f0f0f0;
+  color: #555;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+}
+
+.btn-danger {
+  background: #ffebee;
+  color: #c62828;
+
+  &:hover {
+    background: #ffcdd2;
+  }
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  color: #666;
+  border-radius: 4px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f0f0f0;
+    color: #333;
+  }
+}
+
+/* =========================
+   MODAL STYLES
+========================= */
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+  }
+}
+
+.modal-body {
+  margin-bottom: 1.5rem;
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-weight: 600;
+      color: #555;
+      min-width: 140px;
+    }
+
+    .value {
+      text-align: right;
+      color: #333;
+      flex: 1;
+    }
+
+    &.address .value {
+      text-align: right;
+    }
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #999;
+    font-style: italic;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* =========================
+   BADGE STYLES
+========================= */
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &.badge-active {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.badge-inactive {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+/* =========================
+   TABLE STYLES
+========================= */
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    background: #f8f9fa;
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.875rem;
+  }
+
+  td {
+    padding: 0.75rem;
+    border-top: 1px solid #eee;
+  }
+
+  .clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+}
+
+/* =========================
+   ICON STYLES
+========================= */
+
+.fas, .fa {
+  &.fa-lg {
+    font-size: 1.25rem;
+  }
+
+  &.fa-ellipsis-v,
+  &.fa-info-circle,
+  &.fa-edit,
+  &.fa-trash,
+  &.fa-ban,
+  &.fa-eye,
+  &.fa-plus-circle,
+  &.fa-times {
+    transition: color 0.2s;
+  }
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .modal-header {
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 1.2rem;
+    }
+
+    .btn-close {
+      font-size: 1.25rem;
+      padding: 0.25rem;
+    }
+  }
+
+  .modal-body {
+    .info-row {
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.5rem 0;
+
+      .label {
+        font-size: 0.875rem;
+        min-width: auto;
+      }
+
+      .value {
+        text-align: left;
+        font-size: 0.875rem;
+        margin-left: 0;
+      }
+
+      &.address .value {
+        text-align: left;
+      }
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .no-data {
+      padding: 1.5rem 1rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+
+    .btn-secondary,
+    .btn-primary {
+      width: 100%;
+      padding: 0.75rem;
+      text-align: center;
+    }
+  }
+
+  .data-table {
+    font-size: 0.875rem;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      tr {
+        display: block;
+        margin-bottom: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 0.75rem;
+        background: #fafafa;
+
+        &.clickable-row:hover {
+          background-color: #f0f0f0;
+        }
+      }
+
+      td {
+        display: block;
+        padding: 0.25rem 0;
+        border: none;
+
+        &:first-child {
+          font-weight: 600;
+          color: #333;
+          margin-bottom: 0.25rem;
+        }
+      }
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+    }
+  }
+}
+

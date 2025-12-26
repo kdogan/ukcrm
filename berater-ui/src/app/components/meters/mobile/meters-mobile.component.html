@@ -24,10 +24,9 @@
         </select>
         <select [ngModel]="typeFilterTerm" (ngModelChange)="filterTypeChange.emit($event)">
             <option value="">Alle Typen</option>
-            <option value="electricity">Strom</option>
-            <option value="gas">Gas</option>
-            <option value="water">Wasser</option>
-            <option value="heat">Wärme</option>
+            @for(type of getMeterTypeWithLabel(); track type){
+            <option [value]=type.key>{{type.value}}</option>
+          }
         </select>
     </div>
   </div>
@@ -38,9 +37,9 @@
         <div class="meter-card-header">
             <h2>Zählernummer: {{ meter?.meterNumber }}</h2>
             <div class="status-icon"
-                [class.active]="meter.currentCustomerId == null"
-                [class.inactive]="meter.currentCustomerId != null">
-                <i class="fas" [ngClass]="meter.currentCustomerId == null ? 'fa-unlink' : 'fa-link'"></i>
+                [class.active]="!meter.isFree"
+                [class.inactive]="meter.isFree">
+                <i class="fas" [ngClass]="meter.isFree ? 'fa-unlink' : 'fa-link'"></i>
             </div>
         </div>
 
@@ -48,16 +47,15 @@
             <div class="content-row">Type: {{getTypeLabel(meter.type)}}</div>
             <div class="content-row">letzte Ablesung: {{ meter.currentReading || '-' }}</div>
             @if(!meter.isFree){
-                <div class="content-row">Besitzer: {{ meter.currentCustomerId.firstName + ' ' + meter.currentCustomerId.lastName || '-' }}</div>
+              <div class="content-row">Besitzer: {{ meter.currentCustomerId.firstName + ' ' + meter.currentCustomerId.lastName || '-' }}</div>
             }
         </div>
 
       <div class="actions">
-        <button (click)="showDetails.emit(meter)"><i class="fas fa-info-circle"></i></button>
-        <button (click)="edit.emit(meter)"><i class="fas fa-edit"></i></button>
-        <button (click)="addReading.emit(meter)"><i class="fas fa-plus"></i>Ablesung</button>
-        <button (click)="viewReadings.emit(meter)"><i class="fas fa-eye"></i>Ablesung</button>
-    
+        <button (click)="showDetails.emit(meter)"><i class="fas fa-info-circle"></i>Details</button>
+        <button (click)="edit.emit(meter)"><i class="fas fa-edit"></i>Bearbeiten</button>
+        <button (click)="addReading.emit(meter)"><i class="fas fa-plus-circle"></i>Ablesung</button>
+        <button (click)="viewReadings.emit(meter)"><i class="fas fa-eye"></i>Ablesungen</button>
       </div>
 
     </div>

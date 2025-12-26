@@ -74,6 +74,13 @@ export class MessagesComponent implements OnInit {
       });
   }
 
+  onKeyDown(event: any): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
+  }
+
   markAsRead(): void {
     this.messagesService.markAsRead(this.conversationId).subscribe();
   }

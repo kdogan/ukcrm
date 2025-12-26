@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CustomerService, Customer } from '../../services/customer.service';
+import { ContractService, Contract } from '../../services/contract.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService, ViewportType } from 'src/app/services/viewport.service';
 import { CustomersMobileComponent } from "./mobile/customers-mobile/customers-mobile.component";
@@ -22,11 +23,17 @@ export class CustomersComponent implements OnInit {
   editMode = false;
   currentCustomer: Partial<Customer> = {};
   activeMenuId: string | null = null;
-  
+
+  // Customer Details Modal
+  showCustomerDetailsModal = false;
+  selectedCustomer: Customer | null = null;
+  customerContracts: Contract[] = [];
 
   constructor(
     private customerService: CustomerService,
+    private contractService: ContractService,
     private route: ActivatedRoute,
+    private router: Router,
     private viewport: ViewportService
   ) {}
 
@@ -86,7 +93,14 @@ export class CustomersComponent implements OnInit {
 
   showCreateModal(): void {
     this.editMode = false;
-    this.currentCustomer = {};
+    this.currentCustomer = {
+      address: {
+        street: '',
+        zip: '',
+        city: '',
+        country: ''
+      }
+    };
     this.showModal = true;
   }
 
@@ -140,5 +154,49 @@ export class CustomersComponent implements OnInit {
 
   closeActionMenu(): void {
     this.activeMenuId = null;
+  }
+
+  showCustomerDetails(customer: Customer): void {
+    this.selectedCustomer = customer;
+    this.showCustomerDetailsModal = true;
+    this.loadCustomerContracts(customer._id);
+  }
+
+  closeCustomerDetailsModal(): void {
+    this.showCustomerDetailsModal = false;
+    this.selectedCustomer = null;
+    this.customerContracts = [];
+  }
+
+  loadCustomerContracts(customerId: string): void {
+    this.contractService.getContracts().subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Filter contracts by customerId
+          this.customerContracts = response.data.filter(
+            (contract: Contract) => contract.customerId?._id === customerId || contract.customerId === customerId
+          );
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden der Verträge:', error);
+        this.customerContracts = [];
+      }
+    });
+  }
+
+  navigateToContract(contractId: string): void {
+    this.closeCustomerDetailsModal();
+    this.router.navigate(['/contracts', contractId]);
+  }
+
+  getContractStatusLabel(status: string): string {
+    const statusLabels: { [key: string]: string } = {
+      'draft': 'Entwurf',
+      'active': 'Aktiv',
+      'ended': 'Beendet',
+      'archived': 'Archiviert'
+    };
+    return statusLabels[status] || status;
   }
 }

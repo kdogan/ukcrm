@@ -30,7 +30,6 @@
   <!-- LIST -->
   <div class="card-list">
     <div class="eskapp-card" *ngFor="let c of customers">
-
       <!-- STATUS -->
       <div class="status-icon"
            [class.active]="c.isActive"
@@ -47,8 +46,9 @@
       </div>
 
       <div class="actions">
-        <button (click)="edit.emit(c)"><i class="fas fa-edit"></i></button>
-        <button *ngIf="c.isActive" class="danger" (click)="deactivate.emit(c._id)"><i class="fas fa-times"></i></button>
+        <button (click)="showDetails.emit(c)"><i class="fas fa-info-circle"></i>Details</button>
+        <button (click)="edit.emit(c)"><i class="fas fa-edit"></i>Bearbeiten</button>
+        <button *ngIf="c.isActive" class="danger" (click)="deactivate.emit(c._id)"><i class="fas fa-ban"></i>Deaktivieren</button>
       </div>
 
     </div>

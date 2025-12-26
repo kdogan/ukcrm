@@ -111,10 +111,9 @@
       <label for="type">Typ *</label>
       <select id="type" name="type" [(ngModel)]="currentMeter.type" required class="form-control">
         <option value="">Bitte wählen</option>
-        <option value="electricity">Strom</option>
-        <option value="gas">Gas</option>
-        <option value="water">Wasser</option>
-        <option value="heat">Wärme</option>
+        @for(type of meterTypes; track type) {
+          <option [value]="type">{{getTypeLabel(type)}}</option>
+        }
       </select>
     </div>
     <div class="form-group">

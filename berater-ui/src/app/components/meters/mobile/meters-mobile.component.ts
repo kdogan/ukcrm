@@ -34,6 +34,8 @@ export class MetersMobileComponent {
   getTypeLabel(type: string): string {
     return Util.getMeterTypeLabel(type);
   }
-
+  getMeterTypeWithLabel(){
+    return Util.getMeterTypeWithLabel();
+  }
 }
 

@@ -60,32 +60,11 @@
       height: 30px;
     }
     .btn-close:hover { color: #333; }
+
+    /* Form styles moved to global styles.scss */
+    /* Contract-specific form-group override */
     .form-group {
-      margin-bottom: 1.5rem;
       position: relative;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #555;
-    }
-    .form-control {
-      width: 100%;
-      padding: 0.75rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-      box-sizing: border-box;
-    }
-    .form-control:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    textarea.form-control {
-      resize: vertical;
-      font-family: inherit;
     }
     .search-input {
       margin-bottom: 0.5rem;

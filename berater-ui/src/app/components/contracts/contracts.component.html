@@ -1,16 +1,3 @@
-@if(viewportService.isDesktop()){
-<app-contracts-desktop 
-  [contracts]="contracts" 
-  (create)="showCreateModal()" 
-  (edit)="editContract($event)"
-  (delete)="deleteContract($event)" 
-  (statusFilterChange)="onStatusChange($event)"
-  (daysFilterChange)="onDaysChange($event)" 
-  (showCustomer)="showCustomerDetails($event)"
-  (showMeter)="showMeterDetails($event)" 
-  (showSupplier)="showSupplierDetails($event)"
-  (toggleActionMenu)="activeMenuId = $event" />
-}
 
 @if(viewportService.isMobile()){
 <app-contracts-mobile 
@@ -24,7 +11,20 @@
   (showMeter)="showMeterDetails($event)" 
   (showSupplier)="showSupplierDetails($event)"
   (toggleActionMenu)="activeMenuId = $event" />
+}@else{
+<app-contracts-desktop 
+  [contracts]="contracts" 
+  (create)="showCreateModal()" 
+  (edit)="editContract($event)"
+  (delete)="deleteContract($event)" 
+  (statusFilterChange)="onStatusChange($event)"
+  (daysFilterChange)="onDaysChange($event)" 
+  (showCustomer)="showCustomerDetails($event)"
+  (showMeter)="showMeterDetails($event)" 
+  (showSupplier)="showSupplierDetails($event)"
+  (toggleActionMenu)="activeMenuId = $event" />
 }
+
 
 <!-- Modal for Create/Edit Contract -->
 <app-overlay-modal *ngIf="showModal" (close)="closeModal()">

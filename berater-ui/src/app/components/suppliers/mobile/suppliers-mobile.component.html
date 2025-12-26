@@ -45,8 +45,8 @@
       </div>
 
       <div class="actions">
-        <button (click)="edit.emit(s)"><i class="fas fa-edit"></i></button>
-        <button *ngIf="s.isActive" class="danger" (click)="delete.emit(s._id)"><i class="fas fa-trash"></i></button>
+        <button (click)="edit.emit(s)"><i class="fas fa-edit"></i>Bearbeiten</button>
+        <button *ngIf="s.isActive" class="danger" (click)="delete.emit(s._id)"><i class="fas fa-trash"></i>Löschen</button>
       </div>
 
     </div>

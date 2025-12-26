@@ -11,17 +11,19 @@ export interface Customer {
   fullName?: string;
   email?: string;
   phone?: string;
-  address?: {
-    street?: string;
-    zip?: string;
-    city?: string;
-    country?: string;
-  };
+  address: Address;
   dateOfBirth?: Date;
   notes?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface Address {
+  street: string;
+  zip: string;
+  city: string;
+  country?: string;
 }
 
 export interface CustomerListResponse {

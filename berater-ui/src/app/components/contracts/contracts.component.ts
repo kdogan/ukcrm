@@ -58,7 +58,6 @@ export class ContractsComponent implements OnInit {
   viewingImage: any = null;
   imageViewerUrl: string = '';
   viewport: ViewportType = ViewportType.Desktop;
-  private sub!: Subscription;
 
   contractState = [
     {
@@ -92,28 +91,34 @@ export class ContractsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.sub = this.viewportService.viewportType$
-      .subscribe(v => this.viewport = v);
+
     // Lade immer Kunden, Lieferanten und freie Zähler
     this.loadCustomers();
     this.loadSuppliers();
     this.loadFreeMeters();
 
-    // Prüfe ob eine ID in der Route vorhanden ist
+    // Reaktiv auf Route-Parameter-Änderungen reagieren
     this.route.params.subscribe(params => {
       const contractId = params['id'];
+
+      // Schließe zuerst das Modal, falls es offen ist
+      if (this.showModal && !contractId) {
+        this.showModal = false;
+        this.currentContract = this.getEmptyContract();
+        this.selectedCustomer = null;
+        this.selectedMeter = null;
+        this.customerSearch = '';
+        this.meterSearch = '';
+      }
 
       if (contractId) {
         // Zeige Vertrag bearbeiten Modal
         this.loadContractById(contractId);
       } else {
+        // Lade normale Vertragsliste
         this.loadContracts();
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
   }
 
   get isMobile() {
@@ -364,8 +369,19 @@ export class ContractsComponent implements OnInit {
   }
 
   closeModal(): void {
-    this.showModal = false;
-    this.currentContract = this.getEmptyContract();
+    // Wenn wir eine ID in der Route haben, navigiere zurück zur Übersicht
+    // Das route.params subscribe in ngOnInit wird dann automatisch reagieren
+    if (this.route.snapshot.params['id']) {
+      this.router.navigate(['/contracts']);
+    } else {
+      // Wenn keine ID in der Route, schließe einfach das Modal
+      this.showModal = false;
+      this.currentContract = this.getEmptyContract();
+      this.selectedCustomer = null;
+      this.selectedMeter = null;
+      this.customerSearch = '';
+      this.meterSearch = '';
+    }
   }
 
   saveContract(): void {

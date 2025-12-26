@@ -6,6 +6,16 @@ export class Util {
     const date = new Date(dateStr);
     return date.toLocaleDateString();
   }
+
+  static getMeterTypeWithLabel() {
+    return [
+      {key:'electricity', value:'Strom'},
+      {key:'gas', value:'Gas'},
+      {key:'water', value:'Wasser'},
+      {key:'heat', value:'Wärme'},
+    ]
+  }
+
   static getMeterTypeLabel(type: string): string {
     const labels: any = { electricity: 'Strom', gas: 'Gas', water: 'Wasser', heat: 'Wärme' };
     return labels[type] || type;
