@@ -1,3 +1,6 @@
+// Dashboard-specific mobile styles
+// Global styles (mobile-page, mobile-header, mobile-content, no-data) sind in styles.scss definiert
+
 .mobile-content {
   padding-top: 1rem;
 }
@@ -371,10 +374,4 @@
   color: #c62828;
 }
 
-/* NO DATA */
-.no-data {
-  text-align: center;
-  color: #888;
-  padding: 1.5rem;
-  font-size: 0.9rem;
-}
+// no-data ist jetzt global in styles.scss definiert

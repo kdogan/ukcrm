@@ -104,6 +104,7 @@ meterTypes: any;
       type: '',
       manufacturer: '',
       yearBuilt: null,
+      isTwoTariff: false,
       location: {
         street: '',
         zip: '',

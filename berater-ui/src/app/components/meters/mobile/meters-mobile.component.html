@@ -1,5 +1,4 @@
 <div class="mobile-page">
-
   <!-- HEADER -->
   <div class="mobile-header">
     <h1>Zähler</h1>
@@ -17,17 +16,17 @@
       (ngModelChange)="searchTermChange.emit($event)"
     />
     <div class="filter-row">
-        <select [ngModel]="statusFilterTerm" (ngModelChange)="filterStatusChange.emit($event)">
-            <option value="">Alle Zustände</option>
-            <option value="free">Frei</option>
-            <option value="occupied">Belegt</option>
-        </select>
-        <select [ngModel]="typeFilterTerm" (ngModelChange)="filterTypeChange.emit($event)">
-            <option value="">Alle Typen</option>
-            @for(type of getMeterTypeWithLabel(); track type){
-            <option [value]=type.key>{{type.value}}</option>
-          }
-        </select>
+      <select [ngModel]="statusFilterTerm" (ngModelChange)="filterStatusChange.emit($event)">
+        <option value="">Alle Zustände</option>
+        <option value="free">Frei</option>
+        <option value="occupied">Belegt</option>
+      </select>
+      <select [ngModel]="typeFilterTerm" (ngModelChange)="filterTypeChange.emit($event)">
+        <option value="">Alle Typen</option>
+        @for(type of getMeterTypeWithLabel(); track type){
+          <option [value]=type.key>{{type.value}}</option>
+        }
+      </select>
     </div>
   </div>
 
@@ -53,7 +52,7 @@
 
       <div class="actions">
         <button (click)="showDetails.emit(meter)"><i class="fas fa-info-circle"></i>Details</button>
-        <button (click)="edit.emit(meter)"><i class="fas fa-edit"></i>Bearbeiten</button>
+        <button class="update" (click)="edit.emit(meter)"><i class="fas fa-edit"></i>Bearbeiten</button>
         <button (click)="addReading.emit(meter)"><i class="fas fa-plus-circle"></i>Ablesung</button>
         <button (click)="viewReadings.emit(meter)"><i class="fas fa-eye"></i>Ablesungen</button>
       </div>

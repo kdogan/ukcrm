@@ -65,18 +65,24 @@ meterReadingSchema.index({ meterId: 1, readingDate: -1 });
 meterReadingSchema.index({ beraterId: 1, readingDate: -1 });
 meterReadingSchema.index({ customerId: 1, readingDate: -1 });
 
-// Validierung: Entweder readingValue ODER beide HT/NT-Werte müssen vorhanden sein
+// Validierung: Entweder readingValue ODER HT-Wert (NT ist optional) müssen vorhanden sein
 meterReadingSchema.pre('save', async function(next) {
-  // Prüfe ob entweder readingValue oder beide HT/NT-Werte vorhanden sind
+  // Prüfe ob entweder readingValue oder HT-Wert vorhanden ist
   const hasReadingValue = this.readingValue != null;
-  const hasHTNT = this.readingValueHT != null && this.readingValueNT != null;
+  const hasHT = this.readingValueHT != null;
+  const hasNT = this.readingValueNT != null;
 
-  if (!hasReadingValue && !hasHTNT) {
-    return next(new Error('Entweder Ablesewert oder HT/NT-Werte müssen angegeben werden'));
+  if (!hasReadingValue && !hasHT) {
+    return next(new Error('Entweder Ablesewert oder HT-Wert muss angegeben werden'));
   }
 
-  if (hasReadingValue && hasHTNT) {
+  if (hasReadingValue && hasHT) {
     return next(new Error('Bitte nur entweder Ablesewert ODER HT/NT-Werte angeben, nicht beides'));
+  }
+
+  // NT darf nicht ohne HT angegeben werden
+  if (hasNT && !hasHT) {
+    return next(new Error('NT-Wert kann nicht ohne HT-Wert angegeben werden'));
   }
 
   if (!this.isNew) return next();
@@ -96,12 +102,15 @@ meterReadingSchema.pre('save', async function(next) {
     }
 
     // Prüfe Zwei-Tarif-Zähler (HT/NT)
-    if (hasHTNT && lastReading.readingValueHT != null && lastReading.readingValueNT != null) {
+    if (hasHT && lastReading.readingValueHT != null) {
       if (this.readingValueHT < lastReading.readingValueHT) {
         return next(new Error(`HT-Wert (${this.readingValueHT}) darf nicht kleiner als der letzte HT-Wert (${lastReading.readingValueHT}) sein`));
       }
-      if (this.readingValueNT < lastReading.readingValueNT) {
-        return next(new Error(`NT-Wert (${this.readingValueNT}) darf nicht kleiner als der letzte NT-Wert (${lastReading.readingValueNT}) sein`));
+      // Prüfe NT nur wenn beide Werte (aktuell und vorherig) vorhanden sind
+      if (hasNT && lastReading.readingValueNT != null) {
+        if (this.readingValueNT < lastReading.readingValueNT) {
+          return next(new Error(`NT-Wert (${this.readingValueNT}) darf nicht kleiner als der letzte NT-Wert (${lastReading.readingValueNT}) sein`));
+        }
       }
     }
   }

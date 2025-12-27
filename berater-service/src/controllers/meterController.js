@@ -235,7 +235,7 @@ exports.updateMeter = async (req, res, next) => {
     }
 
     // Erlaubte Felder
-    const allowedFields = ['type', 'location', 'manufacturer', 'yearBuilt', 'maloId'];
+    const allowedFields = ['type', 'location', 'manufacturer', 'yearBuilt', 'maloId', 'isTwoTariff'];
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {
         meter[field] = req.body[field];
@@ -287,11 +287,18 @@ exports.getMeterReadings = async (req, res, next) => {
         }
 
         // Berechne Verbrauch für Zwei-Tarif-Zähler (HT/NT)
-        if (reading.readingValueHT != null && reading.readingValueNT != null &&
-            previousReading.readingValueHT != null && previousReading.readingValueNT != null) {
+        // HT ist erforderlich, NT ist optional
+        if (reading.readingValueHT != null && previousReading.readingValueHT != null) {
           readingObj.consumptionHT = reading.readingValueHT - previousReading.readingValueHT;
-          readingObj.consumptionNT = reading.readingValueNT - previousReading.readingValueNT;
-          readingObj.consumptionTotal = readingObj.consumptionHT + readingObj.consumptionNT;
+
+          // NT-Verbrauch nur berechnen wenn beide Werte vorhanden sind
+          if (reading.readingValueNT != null && previousReading.readingValueNT != null) {
+            readingObj.consumptionNT = reading.readingValueNT - previousReading.readingValueNT;
+            readingObj.consumptionTotal = readingObj.consumptionHT + readingObj.consumptionNT;
+          } else {
+            // Wenn NT nicht vorhanden, ist HT-Verbrauch der Gesamtverbrauch
+            readingObj.consumptionTotal = readingObj.consumptionHT;
+          }
         }
 
         const daysDiff = Math.ceil((reading.readingDate - previousReading.readingDate) / (1000 * 60 * 60 * 24));
