@@ -26,7 +26,7 @@ export class TodosComponent implements OnInit {
   todos: Todo[] = [];
   filteredTodos: Todo[] = [];
   searchTerm = '';
-  statusFilter = '';
+  statusFilter = 'open';
   priorityFilter = '';
   showModal = false;
   isEditMode = false;

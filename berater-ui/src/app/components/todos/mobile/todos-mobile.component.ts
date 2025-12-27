@@ -33,7 +33,7 @@ export class TodosMobileComponent {
   @Output() openDayEvent = new EventEmitter<Date>();
   @Output() backToMonthEvent = new EventEmitter<void>();
 
-  statusFilter = '';
+  statusFilter = 'open';
   priorityFilter = '';
   searchTerm = '';
 

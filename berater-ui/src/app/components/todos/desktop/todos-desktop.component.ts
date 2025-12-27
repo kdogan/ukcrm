@@ -34,7 +34,7 @@ export class TodosDesktopComponent {
   @Output() openDayEvent = new EventEmitter<Date>();
   @Output() backToMonthEvent = new EventEmitter<void>();
 
-  statusFilter = '';
+  statusFilter = 'open';
   priorityFilter = '';
   searchTerm = '';
 
