@@ -25,8 +25,16 @@ const meterReadingSchema = new mongoose.Schema({
   },
   readingValue: {
     type: Number,
-    required: [true, 'Ablesewert ist erforderlich'],
     min: [0, 'Ablesewert muss positiv sein']
+  },
+  // HT (Hochtarif) und NT (Niedrigtarif) für Zwei-Tarif-Zähler
+  readingValueHT: {
+    type: Number,
+    min: [0, 'HT-Wert muss positiv sein']
+  },
+  readingValueNT: {
+    type: Number,
+    min: [0, 'NT-Wert muss positiv sein']
   },
   readingDate: {
     type: Date,
@@ -57,17 +65,45 @@ meterReadingSchema.index({ meterId: 1, readingDate: -1 });
 meterReadingSchema.index({ beraterId: 1, readingDate: -1 });
 meterReadingSchema.index({ customerId: 1, readingDate: -1 });
 
-// Validierung: Ablesewert darf nicht kleiner als vorheriger Wert sein
+// Validierung: Entweder readingValue ODER beide HT/NT-Werte müssen vorhanden sein
 meterReadingSchema.pre('save', async function(next) {
+  // Prüfe ob entweder readingValue oder beide HT/NT-Werte vorhanden sind
+  const hasReadingValue = this.readingValue != null;
+  const hasHTNT = this.readingValueHT != null && this.readingValueNT != null;
+
+  if (!hasReadingValue && !hasHTNT) {
+    return next(new Error('Entweder Ablesewert oder HT/NT-Werte müssen angegeben werden'));
+  }
+
+  if (hasReadingValue && hasHTNT) {
+    return next(new Error('Bitte nur entweder Ablesewert ODER HT/NT-Werte angeben, nicht beides'));
+  }
+
   if (!this.isNew) return next();
 
+  // Validierung: Ablesewert darf nicht kleiner als vorheriger Wert sein
   const lastReading = await mongoose.model('MeterReading').findOne({
     meterId: this.meterId,
     readingDate: { $lt: this.readingDate }
   }).sort({ readingDate: -1 });
 
-  if (lastReading && this.readingValue < lastReading.readingValue) {
-    return next(new Error(`Ablesewert (${this.readingValue}) darf nicht kleiner als der letzte Ablesewert (${lastReading.readingValue}) sein`));
+  if (lastReading) {
+    // Prüfe Ein-Tarif-Zähler
+    if (hasReadingValue && lastReading.readingValue != null) {
+      if (this.readingValue < lastReading.readingValue) {
+        return next(new Error(`Ablesewert (${this.readingValue}) darf nicht kleiner als der letzte Ablesewert (${lastReading.readingValue}) sein`));
+      }
+    }
+
+    // Prüfe Zwei-Tarif-Zähler (HT/NT)
+    if (hasHTNT && lastReading.readingValueHT != null && lastReading.readingValueNT != null) {
+      if (this.readingValueHT < lastReading.readingValueHT) {
+        return next(new Error(`HT-Wert (${this.readingValueHT}) darf nicht kleiner als der letzte HT-Wert (${lastReading.readingValueHT}) sein`));
+      }
+      if (this.readingValueNT < lastReading.readingValueNT) {
+        return next(new Error(`NT-Wert (${this.readingValueNT}) darf nicht kleiner als der letzte NT-Wert (${lastReading.readingValueNT}) sein`));
+      }
+    }
   }
 
   next();

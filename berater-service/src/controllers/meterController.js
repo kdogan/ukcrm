@@ -38,7 +38,15 @@ exports.getMeters = async (req, res, next) => {
 
         const meterObj = meter.toObject();
         if (latestReading) {
-          meterObj.currentReading = latestReading.readingValue;
+          // Ein-Tarif-Zähler
+          if (latestReading.readingValue != null) {
+            meterObj.currentReading = latestReading.readingValue;
+          }
+          // Zwei-Tarif-Zähler (HT/NT)
+          if (latestReading.readingValueHT != null && latestReading.readingValueNT != null) {
+            meterObj.currentReadingHT = latestReading.readingValueHT;
+            meterObj.currentReadingNT = latestReading.readingValueNT;
+          }
           meterObj.lastReadingDate = latestReading.readingDate;
         }
         return meterObj;
@@ -272,7 +280,20 @@ exports.getMeterReadings = async (req, res, next) => {
       const readingObj = reading.toJSON();
       if (index < readings.length - 1) {
         const previousReading = readings[index + 1];
-        readingObj.consumption = reading.readingValue - previousReading.readingValue;
+
+        // Berechne Verbrauch für Ein-Tarif-Zähler
+        if (reading.readingValue != null && previousReading.readingValue != null) {
+          readingObj.consumption = reading.readingValue - previousReading.readingValue;
+        }
+
+        // Berechne Verbrauch für Zwei-Tarif-Zähler (HT/NT)
+        if (reading.readingValueHT != null && reading.readingValueNT != null &&
+            previousReading.readingValueHT != null && previousReading.readingValueNT != null) {
+          readingObj.consumptionHT = reading.readingValueHT - previousReading.readingValueHT;
+          readingObj.consumptionNT = reading.readingValueNT - previousReading.readingValueNT;
+          readingObj.consumptionTotal = readingObj.consumptionHT + readingObj.consumptionNT;
+        }
+
         const daysDiff = Math.ceil((reading.readingDate - previousReading.readingDate) / (1000 * 60 * 60 * 24));
         readingObj.daysSinceLastReading = daysDiff;
       }
@@ -310,12 +331,24 @@ exports.createMeterReading = async (req, res, next) => {
       beraterId: req.user._id,
       customerId: meter.currentCustomerId || null,
       contractId: req.body.contractId || null,
-      readingValue: req.body.readingValue,
       readingDate: req.body.readingDate || new Date(),
       readingType: req.body.readingType || 'regular',
       notes: req.body.notes || '',
       imageUrl: req.body.imageUrl || null
     };
+
+    // Ein-Tarif-Zähler
+    if (req.body.readingValue != null) {
+      readingData.readingValue = req.body.readingValue;
+    }
+
+    // Zwei-Tarif-Zähler (HT/NT)
+    if (req.body.readingValueHT != null) {
+      readingData.readingValueHT = req.body.readingValueHT;
+    }
+    if (req.body.readingValueNT != null) {
+      readingData.readingValueNT = req.body.readingValueNT;
+    }
 
     const reading = await MeterReading.create(readingData);
 
@@ -399,6 +432,49 @@ exports.deleteMeterReading = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Ablesung gelöscht'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete meter
+// @route   DELETE /api/meters/:id
+// @access  Private
+exports.deleteMeter = async (req, res, next) => {
+  try {
+    const meter = await Meter.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!meter) {
+      return res.status(404).json({
+        success: false,
+        message: 'Zähler nicht gefunden'
+      });
+    }
+
+    // Prüfe ob Zähler aktuell einem Kunden zugeordnet ist
+    if (meter.currentCustomerId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Zähler kann nicht gelöscht werden, da er aktuell einem Kunden zugeordnet ist'
+      });
+    }
+
+    // Lösche alle zugehörigen Ablesungen
+    await MeterReading.deleteMany({ meterId: req.params.id });
+
+    // Lösche alle zugehörigen Historie-Einträge
+    await MeterHistory.deleteMany({ meterId: req.params.id });
+
+    // Lösche den Zähler
+    await Meter.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Zähler erfolgreich gelöscht'
     });
   } catch (error) {
     next(error);

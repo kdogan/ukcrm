@@ -10,7 +10,8 @@ const {
   getMeterReadings,
   createMeterReading,
   getLatestMeterReading,
-  deleteMeterReading
+  deleteMeterReading,
+  deleteMeter
 } = require('../controllers/meterController');
 const { authenticate } = require('../middleware/auth');
 
@@ -22,7 +23,8 @@ router.route('/')
 
 router.route('/:id')
   .get(getMeter)
-  .put(updateMeter);
+  .put(updateMeter)
+  .delete(deleteMeter);
 
 router.get('/:id/history', getMeterHistory);
 router.post('/:id/assign', assignMeter);

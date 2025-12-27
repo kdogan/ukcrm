@@ -44,6 +44,8 @@ export class MetersComponent implements OnInit {
   selectedMeterForDetails: any = null;
   currentReading: any = {
     readingValue: null,
+    readingValueHT: null,
+    readingValueNT: null,
     readingDate: new Date().toISOString().split('T')[0],
     readingType: 'regular',
     notes: ''
@@ -190,6 +192,8 @@ meterTypes: any;
     this.selectedMeterForReading = meter;
     this.currentReading = {
       readingValue: null,
+      readingValueHT: null,
+      readingValueNT: null,
       readingDate: new Date().toISOString().split('T')[0],
       readingType: 'regular',
       notes: ''

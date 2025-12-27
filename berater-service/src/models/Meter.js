@@ -40,6 +40,11 @@ const meterSchema = new mongoose.Schema({
   maloId: {
     type: String,
     trim: true
+  },
+  isTwoTariff: {
+    type: Boolean,
+    default: false,
+    comment: 'Zwei-Tarif-Zähler (HT/NT) - z.B. für Tag/Nacht-Stromzähler'
   }
 }, {
   timestamps: true

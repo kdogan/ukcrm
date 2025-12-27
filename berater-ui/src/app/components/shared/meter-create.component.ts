@@ -43,15 +43,28 @@ import { Util } from "../util/util";
 
             <div class="form-group">
             <label for="yearBuilt">Baujahr</label>
-            <input type="number" 
-                    id="yearBuilt" 
-                    name="yearBuilt" 
-                    [(ngModel)]="meter.yearBuilt" 
+            <input type="number"
+                    id="yearBuilt"
+                    name="yearBuilt"
+                    [(ngModel)]="meter.yearBuilt"
                     [min]="1950"
-                    [max]="currentYear" 
-                    placeholder="z.B. 2020" 
-                    class="form-control" 
+                    [max]="currentYear"
+                    placeholder="z.B. 2020"
+                    class="form-control"
             />
+            </div>
+
+            <div class="form-group">
+            <label>
+                <input type="checkbox"
+                       name="isTwoTariff"
+                       [(ngModel)]="meter.isTwoTariff"
+                       style="margin-right: 0.5rem;" />
+                Zwei-Tarif-Zähler (HT/NT)
+            </label>
+            <small style="display: block; color: #666; margin-top: 0.25rem;">
+                Für Stromzähler mit Tag/Nacht-Tarif
+            </small>
             </div>
 
             <div class="form-group">

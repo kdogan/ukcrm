@@ -4,11 +4,14 @@ export interface Meter {
   type: MeterType;
   beraterId:string;
   currentCustomerId?: any;
-  currentReading:number;
+  currentReading?:number;
+  currentReadingHT?:number;
+  currentReadingNT?:number;
   lastReadingDate:Date;
   manufacturer:string;
   location: Address;
   isFree:boolean;
+  isTwoTariff?: boolean;
   installationDate?: Date;
   notes?: string;
   createdAt: Date;

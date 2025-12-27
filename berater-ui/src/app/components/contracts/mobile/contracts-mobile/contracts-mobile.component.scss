@@ -10,6 +10,23 @@
     border: none;
 }
 
+.filter-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.filter-row select {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 0.95rem;
+    color: #333;
+    cursor: pointer;
+}
+
 
 .actions {
     display: flex;
