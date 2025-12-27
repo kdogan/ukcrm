@@ -7,10 +7,17 @@ import { CustomerService } from '../../services/customer.service';
 import { ContractService } from '../../services/contract.service';
 import { MeterService } from '../../services/meter.service';
 import { TodoComponent } from "./todo.component";
+import { ViewportService } from 'src/app/services/viewport.service';
+import { TodosDesktopComponent } from './desktop/todos-desktop.component';
+import { TodosMobileComponent } from './mobile/todos-mobile.component';
+import { OverlayModalComponent } from '../shared/overlay-modal.component';
+import { Util } from '../util/util';
 
 @Component({
     selector: 'app-todos',
-    imports: [CommonModule, FormsModule, TodoComponent],
+    standalone: true,
+    imports: [CommonModule, FormsModule, TodoComponent,
+      TodosDesktopComponent, TodosMobileComponent, OverlayModalComponent],
     templateUrl: './todos.component.html',
     styleUrls: ['./todos.component.scss']
 })
@@ -41,7 +48,8 @@ export class TodosComponent implements OnInit {
     private customerService: CustomerService,
     private contractService: ContractService,
     private meterService: MeterService,
-    private router: Router
+    private router: Router,
+    public viewportService: ViewportService
   ) { }
 
   ngOnInit(): void {
@@ -102,6 +110,13 @@ export class TodosComponent implements OnInit {
 
       return matchesSearch && matchesStatus && matchesPriority;
     });
+  }
+
+  onFilterChange(filters: { status: string; priority: string; search: string }): void {
+    this.searchTerm = filters.search;
+    this.statusFilter = filters.status;
+    this.priorityFilter = filters.priority;
+    this.filterTodos();
   }
 
   getEmptyTodo(): CreateTodoDto {
@@ -252,13 +267,7 @@ export class TodosComponent implements OnInit {
   }
 
   getTypeLabel(type: string): string {
-    const labels: any = {
-      electricity: 'Strom',
-      gas: 'Gas',
-      water: 'Wasser',
-      heat: 'Wärme'
-    };
-    return labels[type] || type;
+    return Util.getMeterTypeLabel(type);
   }
   // Kalender-Ansicht Methoden
   get monthDays(): Date[] {

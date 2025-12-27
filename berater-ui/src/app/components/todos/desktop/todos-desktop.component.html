@@ -1,0 +1,116 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>TODOs</h1>
+    <div class="header-actions">
+      <button class="btn-secondary" (click)="generateAuto.emit()">
+        <i class="fas fa-magic"></i> Automatische TODOs generieren
+      </button>
+      <button class="btn-primary" (click)="create.emit()">+ Neues TODO</button>
+    </div>
+  </div>
+
+  <!-- View Switcher -->
+  <div class="main-switch">
+    <button
+      class="btn-small"
+      [class.active]="mainView === 'list'"
+      (click)="mainViewChange.emit('list')">
+      Liste
+    </button>
+    <button
+      class="btn-small"
+      [class.active]="mainView === 'calendar'"
+      (click)="mainViewChange.emit('calendar')">
+      Kalender
+    </button>
+  </div>
+
+  <!-- LIST VIEW -->
+  @if(mainView === 'list') {
+    <div class="filters">
+      <app-search-input
+        [value]="searchTerm"
+        (valueChange)="searchTerm = $event; onFilterChange()"
+        placeholder="Suchen...">
+      </app-search-input>
+      <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()" class="filter-select">
+        <option value="">Alle Status</option>
+        <option value="open">Offen</option>
+        <option value="in_progress">In Bearbeitung</option>
+        <option value="completed">Erledigt</option>
+      </select>
+      <select [(ngModel)]="priorityFilter" (ngModelChange)="onFilterChange()" class="filter-select">
+        <option value="">Alle Prioritäten</option>
+        <option value="high">Hoch</option>
+        <option value="medium">Mittel</option>
+        <option value="low">Niedrig</option>
+      </select>
+    </div>
+
+    <div class="todos-grid">
+      <app-todo
+        *ngFor="let todo of filteredTodos"
+        [todo]="todo"
+        (deleteTodoEmiter)="delete.emit($event)"
+        (completeTodoEmiter)="complete.emit($event)"
+        (editTodoEmiter)="edit.emit($event)"
+        (navigateToCustomerEmiter)="navigateToCustomer.emit($event)"
+        (navigateToContractEmiter)="navigateToContract.emit($event)"
+        (navigateToMeterEmiter)="navigateToMeter.emit($event)" />
+
+      <div *ngIf="filteredTodos.length === 0" class="no-data">
+        <p>Keine TODOs gefunden</p>
+      </div>
+    </div>
+  }
+
+  <!-- CALENDAR VIEW -->
+  @if(mainView === 'calendar') {
+    @if(calendarView === 'month') {
+      <div class="calendar-header">
+        <button (click)="changeMonthEvent.emit(-1)">‹</button>
+        <h2>{{ calendarDate | date:'MMMM yyyy' }}</h2>
+        <button (click)="changeMonthEvent.emit(1)">›</button>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="weekday" *ngFor="let d of ['Mo','Di','Mi','Do','Fr','Sa','So']">{{ d }}</div>
+
+        <div
+          class="day-cell"
+          *ngFor="let day of monthDays"
+          [class.other-month]="!isSameMonth(day)"
+          [class.today]="isToday(day)"
+          (click)="openDayEvent.emit(day)">
+
+          <div class="date">{{ day.getDate() }}</div>
+
+          <div class="todo-dot" *ngFor="let todo of todosForDate(day)">
+            {{ todo.title }}
+          </div>
+        </div>
+      </div>
+    }
+
+    @if(calendarView === 'day') {
+      <button class="btn-small" (click)="backToMonthEvent.emit()">← Zurück</button>
+      <h2>{{ selectedDay | date:'fullDate' }}</h2>
+
+      <div class="todos-grid">
+        <app-todo
+          *ngFor="let todo of todosForDate(selectedDay!)"
+          [todo]="todo"
+          (deleteTodoEmiter)="delete.emit($event)"
+          (completeTodoEmiter)="complete.emit($event)"
+          (editTodoEmiter)="edit.emit($event)"
+          (navigateToCustomerEmiter)="navigateToCustomer.emit($event)"
+          (navigateToContractEmiter)="navigateToContract.emit($event)"
+          (navigateToMeterEmiter)="navigateToMeter.emit($event)" />
+
+        <div *ngIf="todosForDate(selectedDay!).length === 0" class="no-data">
+          Keine TODOs
+        </div>
+      </div>
+    }
+  }
+</div>

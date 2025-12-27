@@ -37,8 +37,8 @@
         <div class="meter-card-header">
             <h2>Zählernummer: {{ meter?.meterNumber }}</h2>
             <div class="status-icon"
-                [class.active]="meter.isFree"
-                [class.inactive]="!meter.isFree">
+                [class.active]="!meter.isFree"
+                [class.inactive]="meter.isFree">
                 <i class="fas" [ngClass]="meter.isFree ? 'fa-unlink' : 'fa-link'"></i>
             </div>
         </div>
