@@ -879,8 +879,18 @@ export class PackagesComponent implements OnInit {
   }
 
   savePackage(): void {
+    // Sicherstellen, dass numerische Felder korrekt formatiert sind
+    const packageData = {
+      ...this.formData,
+      monthlyPrice: Number(this.formData.monthlyPrice) || 0,
+      maxContracts: Number(this.formData.maxContracts) || 0,
+      maxCustomers: Number(this.formData.maxCustomers) || 0,
+      maxMeters: Number(this.formData.maxMeters) || 0,
+      order: Number(this.formData.order) || 0
+    };
+
     if (this.editingPackage) {
-      this.packageService.updatePackage(this.editingPackage._id, this.formData).subscribe({
+      this.packageService.updatePackage(this.editingPackage._id, packageData).subscribe({
         next: (response: any) => {
           if (response.success) {
             this.loadPackages();
@@ -893,7 +903,7 @@ export class PackagesComponent implements OnInit {
         }
       });
     } else {
-      this.packageService.createPackage(this.formData).subscribe({
+      this.packageService.createPackage(packageData).subscribe({
         next: (response: any) => {
           if (response.success) {
             this.loadPackages();

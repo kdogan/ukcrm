@@ -34,7 +34,7 @@ export class WebsocketService {
       return;
     }
 
-    const socketUrl = environment.apiUrl.replace('/api', '');
+    const socketUrl = environment.wsUrl;
 
     this.socket = io(socketUrl, {
       auth: {

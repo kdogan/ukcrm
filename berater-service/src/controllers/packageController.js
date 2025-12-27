@@ -55,7 +55,25 @@ exports.getPackage = async (req, res) => {
 // Create package (Superadmin only)
 exports.createPackage = async (req, res) => {
   try {
-    const package = await Package.create(req.body);
+    // Sicherstellen, dass numerische Felder korrekt gespeichert werden
+    const packageData = { ...req.body };
+    if (packageData.monthlyPrice !== undefined) {
+      packageData.monthlyPrice = parseFloat(packageData.monthlyPrice) || 0;
+    }
+    if (packageData.maxContracts !== undefined) {
+      packageData.maxContracts = parseInt(packageData.maxContracts) || 0;
+    }
+    if (packageData.maxCustomers !== undefined) {
+      packageData.maxCustomers = parseInt(packageData.maxCustomers) || 0;
+    }
+    if (packageData.maxMeters !== undefined) {
+      packageData.maxMeters = parseInt(packageData.maxMeters) || 0;
+    }
+    if (packageData.order !== undefined) {
+      packageData.order = parseInt(packageData.order) || 0;
+    }
+
+    const package = await Package.create(packageData);
 
     res.status(201).json({
       success: true,
@@ -81,9 +99,27 @@ exports.createPackage = async (req, res) => {
 // Update package (Superadmin only)
 exports.updatePackage = async (req, res) => {
   try {
+    // Sicherstellen, dass monthlyPrice als Number gespeichert wird
+    const updateData = { ...req.body };
+    if (updateData.monthlyPrice !== undefined) {
+      updateData.monthlyPrice = parseFloat(updateData.monthlyPrice) || 0;
+    }
+    if (updateData.maxContracts !== undefined) {
+      updateData.maxContracts = parseInt(updateData.maxContracts) || 0;
+    }
+    if (updateData.maxCustomers !== undefined) {
+      updateData.maxCustomers = parseInt(updateData.maxCustomers) || 0;
+    }
+    if (updateData.maxMeters !== undefined) {
+      updateData.maxMeters = parseInt(updateData.maxMeters) || 0;
+    }
+    if (updateData.order !== undefined) {
+      updateData.order = parseInt(updateData.order) || 0;
+    }
+
     const package = await Package.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       { new: true, runValidators: true }
     );
 
