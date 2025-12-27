@@ -107,7 +107,7 @@
 
 <!-- Modal for Create/Edit Meter -->
 <app-overlay-modal *ngIf="showModal" (close)="closeModal()">
-  <app-meter-create [meter]="currentMeter" , [isEditMode]="isEditMode" , (close)="closeModal()" ,
+  <app-meter-create [meter]="currentMeter" [isEditMode]="isEditMode" (close)="closeModal()"
     (save)="saveMeter()" />
 </app-overlay-modal>
 
