@@ -1,5 +1,7 @@
 require('dotenv').config();
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -8,6 +10,7 @@ const rateLimit = require('express-rate-limit');
 
 const connectDB = require('./src/config/database');
 const errorHandler = require('./src/middleware/errorHandler');
+const socketHandler = require('./src/socket/socketHandler');
 
 // Routes
 const authRoutes = require('./src/routes/authRoutes');
@@ -28,6 +31,21 @@ const { getDashboardStats } = require('./src/controllers/reminderController');
 const { authenticate } = require('./src/middleware/auth');
 
 const app = express();
+
+// 🔌 Create HTTP Server for Socket.io
+const httpServer = http.createServer(app);
+
+// 🌐 Initialize Socket.io
+const io = new Server(httpServer, {
+  cors: {
+    origin: ['http://berater.eskapp.com', 'http://localhost:4200'],
+    credentials: true,
+    methods: ['GET', 'POST']
+  }
+});
+
+// 📡 Initialize Socket.io Handler
+socketHandler(io);
 
 // ✅ Trust Proxy (wenn hinter Nginx/Cloudflare)
 app.set('trust proxy', 1);
@@ -117,14 +135,18 @@ app.use(errorHandler);
 
 // 🚀 Start Server
 const PORT = process.env.PORT || 3001;
-const server = app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Server läuft auf Port ${PORT}`);
+  console.log(`📡 WebSocket Server aktiv`);
 });
 
 // 🛑 Graceful Shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM empfangen – Server stoppt');
-  server.close(() => console.log('HTTP Server geschlossen'));
+  httpServer.close(() => {
+    console.log('HTTP Server geschlossen');
+    io.close(() => console.log('WebSocket Server geschlossen'));
+  });
 });
 
 module.exports = app;

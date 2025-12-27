@@ -28,7 +28,8 @@
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
-    "nodemailer": "^7.0.11"
+    "nodemailer": "^7.0.11",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "jest": "^29.7.0",

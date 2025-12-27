@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessagesService } from 'src/app/services/messages.service';
+import { WebsocketService } from 'src/app/services/websocket.service';
 import { Message } from 'src/app/models/message.model';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessagesMobileComponent } from './messages-mobile/messages-mobile.component';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-messages',
@@ -13,7 +15,7 @@ import { MessagesMobileComponent } from './messages-mobile/messages-mobile.compo
     imports:[CommonModule, FormsModule, MessagesMobileComponent],
     standalone: true
 })
-export class MessagesComponent implements OnInit {
+export class MessagesComponent implements OnInit, OnDestroy {
 
   conversationId!: string;
   currentUserId!: string;
@@ -34,7 +36,14 @@ export class MessagesComponent implements OnInit {
   showImageViewer = false;
   viewingImageUrl = '';
 
-  constructor(private messagesService: MessagesService, private viewportService: ViewportService) { }
+  // WebSocket Subscriptions
+  private subscriptions: Subscription[] = [];
+
+  constructor(
+    private messagesService: MessagesService,
+    private viewportService: ViewportService,
+    private wsService: WebsocketService
+  ) { }
 
   ngOnInit(): void {
     this.loadUsers()
@@ -43,6 +52,64 @@ export class MessagesComponent implements OnInit {
       this.currentUserId = this.currentUser._id;
     }
     this.loadConversations();
+    this.initializeWebSocket();
+  }
+
+  ngOnDestroy(): void {
+    // Alle Subscriptions beenden
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    // WebSocket Verbindung trennen
+    this.wsService.disconnect();
+  }
+
+  /**
+   * WebSocket initialisieren und Event-Listener einrichten
+   */
+  private initializeWebSocket(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.warn('No token found, cannot connect to WebSocket');
+      return;
+    }
+
+    // WebSocket Verbindung herstellen
+    this.wsService.connect(token);
+
+    // Neue Nachrichten empfangen
+    const newMessageSub = this.wsService.newMessage$.subscribe((message: Message) => {
+      // Nur Nachrichten der aktuellen Conversation hinzufügen
+      if (message.conversationId === this.conversationId) {
+        // Duplikate vermeiden
+        const exists = this.messages.find(m => m._id === message._id);
+        if (!exists) {
+          this.messages.push(message);
+          this.scrollToBottom();
+        }
+      }
+      // Conversation-Liste aktualisieren
+      this.loadConversations();
+    });
+
+    // Nachrichtenbenachrichtigung
+    const notificationSub = this.wsService.messageNotification$.subscribe((data: any) => {
+      console.log('Neue Nachricht erhalten:', data);
+      // Conversation-Liste aktualisieren für Badge-Anzahl
+      this.loadConversations();
+    });
+
+    // Nachrichten als gelesen markiert
+    const readSub = this.wsService.messagesRead$.subscribe((data: any) => {
+      if (data.conversationId === this.conversationId) {
+        // Nachrichten als gelesen markieren
+        this.messages.forEach(msg => {
+          if (data.messageIds.includes(msg._id)) {
+            msg.readAt = data.readAt;
+          }
+        });
+      }
+    });
+
+    this.subscriptions.push(newMessageSub, notificationSub, readSub);
   }
 
   get isMobile(): boolean {
@@ -67,17 +134,27 @@ export class MessagesComponent implements OnInit {
     if (!this.messageText.trim() && !this.selectedImage) return;
     if (!this.conversationId || !this.receiverId) return;
 
-    this.messagesService
-      .sendMessage(this.conversationId, this.receiverId, this.messageText, this.selectedImage || undefined)
-      .subscribe({
-        next: msg => {
-          this.messages.push(msg);
-          this.messageText = '';
-          this.selectedImage = null;
-          this.imagePreview = null;
-          this.scrollToBottom();
-        }
+    // Wenn WebSocket verbunden ist, über WebSocket senden
+    if (this.wsService.isConnected() && !this.selectedImage) {
+      this.wsService.sendMessage({
+        conversationId: this.conversationId,
+        receiverId: this.receiverId,
+        text: this.messageText
       });
+      this.messageText = '';
+    } else {
+      // Fallback auf HTTP (z.B. für Bilder oder wenn WebSocket nicht verbunden)
+      this.messagesService
+        .sendMessage(this.conversationId, this.receiverId, this.messageText, this.selectedImage || undefined)
+        .subscribe({
+          next: msg => {
+            // Nachricht wird über WebSocket-Event empfangen
+            this.messageText = '';
+            this.selectedImage = null;
+            this.imagePreview = null;
+          }
+        });
+    }
   }
 
   onImageSelect(event: any): void {
@@ -155,6 +232,11 @@ export class MessagesComponent implements OnInit {
     this.conversationId = conv._id;
     this.receiverId = conv.otherUserId; // 🔥 wichtig
     this.loadMessages();
+
+    // WebSocket: Conversation beitreten
+    if (this.wsService.isConnected()) {
+      this.wsService.joinConversations([this.conversationId]);
+    }
   }
 
 startConversation(receiverId: string) {
