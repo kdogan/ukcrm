@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessagesService } from 'src/app/services/messages.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
+import { UnreadMessagesService } from 'src/app/services/unread-messages.service';
 import { Message } from 'src/app/models/message.model';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { CommonModule } from '@angular/common';
@@ -42,7 +43,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
   constructor(
     private messagesService: MessagesService,
     private viewportService: ViewportService,
-    private wsService: WebsocketService
+    private wsService: WebsocketService,
+    private unreadMessagesService: UnreadMessagesService
   ) { }
 
   ngOnInit(): void {
@@ -84,6 +86,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
         if (!exists) {
           this.messages.push(message);
           this.scrollToBottom();
+
+          // Automatisch als gelesen markieren wenn User im Chat ist
+          if (message.receiverId === this.currentUserId) {
+            this.markAsRead();
+          }
         }
       }
       // Conversation-Liste aktualisieren
@@ -95,6 +102,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
       console.log('Neue Nachricht erhalten:', data);
       // Conversation-Liste aktualisieren für Badge-Anzahl
       this.loadConversations();
+      // Unread count aktualisieren
+      this.unreadMessagesService.updateUnreadCount();
     });
 
     // Nachrichten als gelesen markiert
@@ -201,7 +210,26 @@ export class MessagesComponent implements OnInit, OnDestroy {
   }
 
   markAsRead(): void {
-    this.messagesService.markAsRead(this.conversationId).subscribe();
+    if (!this.conversationId) return;
+
+    // Ungelesene Nachrichten finden
+    const unreadMessages = this.messages.filter(
+      msg => msg.receiverId === this.currentUserId && !msg.readAt
+    );
+
+    if (unreadMessages.length === 0) return;
+
+    // Über HTTP API als gelesen markieren
+    this.messagesService.markAsRead(this.conversationId).subscribe(() => {
+      // Unread count aktualisieren nach als gelesen markieren
+      this.unreadMessagesService.updateUnreadCount();
+    });
+
+    // Zusätzlich über WebSocket informieren (für Echtzeit-Updates beim Sender)
+    if (this.wsService.isConnected()) {
+      const messageIds = unreadMessages.map(msg => msg._id);
+      this.wsService.markAsRead(this.conversationId, messageIds);
+    }
   }
 
   private getReceiverId(): string {

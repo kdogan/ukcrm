@@ -100,6 +100,41 @@
   opacity: 1;
 }
 
+/* Unread Messages Badge */
+.messages-link {
+  position: relative;
+}
+
+.unread-badge {
+  position: absolute;
+  top: 8px;
+  left: 25px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0 0.3rem;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.6);
+  }
+}
+
 .user-section {
   padding: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
