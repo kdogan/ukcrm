@@ -16,10 +16,12 @@ export class SettingsMobileComponent {
   @Input() userLimits: UserLimits | null = null;
   @Input() packages: Package[] = [];
   @Input() pendingUpgradeRequest: any = null;
+  @Input() selectedBillingInterval: { [packageName: string]: 'monthly' | 'yearly' } = {};
 
   @Output() saveSettingsEvent = new EventEmitter<void>();
   @Output() resetToDefaultsEvent = new EventEmitter<void>();
   @Output() changePackageEvent = new EventEmitter<{ packageName: string; order: number }>();
+  @Output() selectBillingIntervalEvent = new EventEmitter<{ packageName: string; interval: 'monthly' | 'yearly' }>();
 
   getUsagePercentage(type: 'contracts' | 'customers' | 'meters'): number {
     if (!this.userLimits) return 0;
@@ -61,5 +63,9 @@ export class SettingsMobileComponent {
 
   onChangePackage(packageName: string, order: number): void {
     this.changePackageEvent.emit({ packageName, order });
+  }
+
+  onSelectBillingInterval(packageName: string, interval: 'monthly' | 'yearly'): void {
+    this.selectBillingIntervalEvent.emit({ packageName, interval });
   }
 }

@@ -79,6 +79,34 @@ const userSchema = new mongoose.Schema({
     maxContracts: { type: Number, default: 100 },
     maxMeters: { type: Number, default: 50 }
   },
+  subscription: {
+    billingInterval: {
+      type: String,
+      enum: ['monthly', 'yearly'],
+      default: 'monthly'
+    },
+    startDate: {
+      type: Date
+    },
+    endDate: {
+      type: Date
+    },
+    lastPaymentDate: {
+      type: Date
+    },
+    nextPaymentDate: {
+      type: Date
+    },
+    autoRenew: {
+      type: Boolean,
+      default: true
+    },
+    status: {
+      type: String,
+      enum: ['active', 'cancelled', 'expired', 'pending'],
+      default: 'active'
+    }
+  },
   lastLogin: {
     type: Date
   },

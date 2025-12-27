@@ -4,8 +4,13 @@
     <button class="btn-primary" (click)="create.emit()">+ Neuer Vertrag</button>
   </div>
   <div class="filters">
+    <app-search-input
+      [value]="searchTerm"
+      (valueChange)="searchTerm = $event; searchChange.emit($event)"
+      placeholder="Suche nach Vertragsnr., Kunde oder Zähler...">
+    </app-search-input>
     <select [ngModel]="statusFilter" (ngModelChange)="statusFilterChange.emit($event)">
-      <option value="">Alle</option>
+      <option value="">Alle Status</option>
       @for(state of contractState; track state){
         <option [value]="state.key">{{state.value}}</option>
       }

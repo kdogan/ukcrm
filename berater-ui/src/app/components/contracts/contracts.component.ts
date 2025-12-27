@@ -33,6 +33,7 @@ import { MeterCreateComponent } from '../shared/meter-create.component';
 export class ContractsComponent implements OnInit {
 
   contracts: any[] = [];
+  filteredContracts: any[] = [];
   customers: any[] = [];
   suppliers: any[] = [];
   freeMeters: any[] = [];
@@ -40,6 +41,7 @@ export class ContractsComponent implements OnInit {
   filteredFreeMeters: any[] = [];
   statusFilter = '';
   daysFilter = '';
+  contractSearchTerm = '';
   showModal = false;
   isEditMode = false;
   currentContract: any = this.getEmptyContract();
@@ -210,8 +212,49 @@ export class ContractsComponent implements OnInit {
 
     this.contractService.getContracts(params).subscribe({
       next: (response: any) => {
-        if (response.success) this.contracts = response.data;
+        if (response.success) {
+          this.contracts = response.data;
+          this.applySearchFilter();
+        }
       }
+    });
+  }
+
+  onContractSearchChange(searchTerm: string): void {
+    this.contractSearchTerm = searchTerm;
+    this.applySearchFilter();
+  }
+
+  applySearchFilter(): void {
+    if (!this.contractSearchTerm || this.contractSearchTerm.trim() === '') {
+      this.filteredContracts = this.contracts;
+      return;
+    }
+
+    const searchLower = this.contractSearchTerm.toLowerCase().trim();
+
+    this.filteredContracts = this.contracts.filter(contract => {
+      // Suche in Vertragsnummer
+      if (contract.contractNumber?.toLowerCase().includes(searchLower)) {
+        return true;
+      }
+
+      // Suche in Kunde (firstName, lastName, customerNumber)
+      if (contract.customerId) {
+        const customer = contract.customerId;
+        if (customer.firstName?.toLowerCase().includes(searchLower) ||
+            customer.lastName?.toLowerCase().includes(searchLower) ||
+            customer.customerNumber?.toLowerCase().includes(searchLower)) {
+          return true;
+        }
+      }
+
+      // Suche in Zählernummer
+      if (contract.meterId?.meterNumber?.toLowerCase().includes(searchLower)) {
+        return true;
+      }
+
+      return false;
     });
   }
 

@@ -1,26 +1,28 @@
 
 @if(viewportService.isMobile()){
-<app-contracts-mobile 
-  [contracts]="contracts" 
-  (create)="showCreateModal()" 
+<app-contracts-mobile
+  [contracts]="filteredContracts"
+  (create)="showCreateModal()"
   (edit)="editContract($event)"
-  (delete)="deleteContract($event)" 
+  (delete)="deleteContract($event)"
   (statusFilterChange)="onStatusChange($event)"
-  (daysFilterChange)="onDaysChange($event)" 
+  (daysFilterChange)="onDaysChange($event)"
+  (searchChange)="onContractSearchChange($event)"
   (showCustomer)="showCustomerDetails($event)"
-  (showMeter)="showMeterDetails($event)" 
+  (showMeter)="showMeterDetails($event)"
   (showSupplier)="showSupplierDetails($event)"
   (toggleActionMenu)="activeMenuId = $event" />
 }@else{
-<app-contracts-desktop 
-  [contracts]="contracts" 
-  (create)="showCreateModal()" 
+<app-contracts-desktop
+  [contracts]="filteredContracts"
+  (create)="showCreateModal()"
   (edit)="editContract($event)"
-  (delete)="deleteContract($event)" 
+  (delete)="deleteContract($event)"
   (statusFilterChange)="onStatusChange($event)"
-  (daysFilterChange)="onDaysChange($event)" 
+  (daysFilterChange)="onDaysChange($event)"
+  (searchChange)="onContractSearchChange($event)"
   (showCustomer)="showCustomerDetails($event)"
-  (showMeter)="showMeterDetails($event)" 
+  (showMeter)="showMeterDetails($event)"
   (showSupplier)="showSupplierDetails($event)"
   (toggleActionMenu)="activeMenuId = $event" />
 }

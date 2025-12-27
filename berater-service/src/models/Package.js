@@ -31,19 +31,15 @@ const packageSchema = new mongoose.Schema({
     required: true,
     default: 10
   },
-  price: {
+  monthlyPrice: {
     type: Number,
     required: true,
-    default: 0
+    default: 0,
+    comment: 'Monatlicher Preis - wird vom Superadmin definiert'
   },
   currency: {
     type: String,
     default: 'EUR'
-  },
-  billingPeriod: {
-    type: String,
-    enum: ['monthly', 'yearly'],
-    default: 'monthly'
   },
   isActive: {
     type: Boolean,
@@ -64,6 +60,29 @@ const packageSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// Virtuelle Felder für Preisberechnung
+packageSchema.virtual('yearlyPrice').get(function() {
+  // Jährlicher Preis: 10 Monate bezahlen statt 12 (2 Monate gratis)
+  return this.monthlyPrice * 10;
+});
+
+packageSchema.virtual('yearlySavings').get(function() {
+  // Ersparnis bei jährlicher Zahlung
+  return this.monthlyPrice * 2;
+});
+
+// Methode zum Berechnen des Preises basierend auf Zahlungsintervall
+packageSchema.methods.calculatePrice = function(billingInterval) {
+  if (billingInterval === 'yearly') {
+    return this.monthlyPrice * 10; // 2 Monate gratis
+  }
+  return this.monthlyPrice; // monatlich
+};
+
+// JSON-Ausgabe mit virtuellen Feldern
+packageSchema.set('toJSON', { virtuals: true });
+packageSchema.set('toObject', { virtuals: true });
 
 // Index für schnellere Abfragen
 packageSchema.index({ name: 1 });

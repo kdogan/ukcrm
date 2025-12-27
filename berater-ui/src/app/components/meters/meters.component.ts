@@ -11,13 +11,16 @@ import { Util } from '../util/util';
 import { OverlayModalComponent } from '../shared/overlay-modal.component';
 import { Meter } from 'src/app/models/meter.model';
 import { MeterCreateComponent } from '../shared/meter-create.component';
+import { SearchInputComponent } from '../shared/search-input.component';
 
 @Component({
     selector: 'app-meters',
-    imports: [CommonModule, FormsModule, 
-      TableContainerComponent, 
-      MetersMobileComponent, 
-      OverlayModalComponent, MeterCreateComponent],
+    standalone: true,
+    imports: [CommonModule, FormsModule,
+      TableContainerComponent,
+      MetersMobileComponent,
+      OverlayModalComponent, MeterCreateComponent,
+      SearchInputComponent],
     styleUrls: ['./meters.component.scss'],
     templateUrl: './meters.component.html'
 })
@@ -107,29 +110,21 @@ meterTypes: any;
     };
   }
   filterMeters(): void {
-    
-    this.filteredMeters = this.meters;
-    if (this.searchTerm) {
-      this.filteredMeters = this.filteredMeters.filter(meter =>
-        meter.meterNumber?.toLowerCase().includes(this.searchTerm.toLowerCase())
-      );
-    }
-    if (this.statusFilter) {
-      this.filteredMeters = this.filteredMeters.filter(meter => {
-        const isFree = !meter.currentCustomerId;
-        return this.statusFilter === 'free' ? isFree : !isFree;
-      });
-    }
-    if (this.typeFilter) {
-      this.filteredMeters = this.filteredMeters.filter(meter => meter.type === this.typeFilter);
-    }
+    this.loadMeters();
   }
 
   loadMeters(): void {
-    this.meterService.getMeters({}).subscribe({
+    const params: any = {};
+    if (this.searchTerm) params.search = this.searchTerm;
+    if (this.statusFilter) params.isFree = this.statusFilter === 'free' ? 'true' : 'false';
+    if (this.typeFilter) params.type = this.typeFilter;
+
+    this.meterService.getMeters(params).subscribe({
       next: (response) => {
-        if (response.success) this.meters = response.data;
-        this.filteredMeters = this.meters;
+        if (response.success) {
+          this.meters = response.data;
+          this.filteredMeters = response.data;
+        }
       }
     });
   }

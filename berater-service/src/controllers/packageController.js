@@ -212,8 +212,15 @@ exports.checkUserLimits = async (req, res) => {
 // Upgrade/Downgrade user package
 exports.upgradeUserPackage = async (req, res) => {
   try {
-    const { packageName } = req.body;
+    const { packageName, billingInterval } = req.body;
     const userId = req.user._id;
+
+    if (!billingInterval || !['monthly', 'yearly'].includes(billingInterval)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bitte wählen Sie ein Zahlungsintervall (monthly oder yearly)'
+      });
+    }
 
     const targetPackage = await Package.findOne({ name: packageName });
 
@@ -235,6 +242,27 @@ exports.upgradeUserPackage = async (req, res) => {
     const user = await User.findById(userId);
     const currentPackage = await Package.findOne({ name: user.package });
 
+    // Berechne Preis basierend auf Zahlungsintervall
+    const price = targetPackage.calculatePrice(billingInterval);
+    const savings = billingInterval === 'yearly' ? targetPackage.yearlySavings : 0;
+
+    // Bei Upgrade: Neues Paket muss gekauft werden
+    if (currentPackage && user.subscription && user.subscription.status === 'active') {
+      // Wenn aktive Subscription besteht und Upgrade, muss neues Paket gekauft werden
+      if (targetPackage.order > currentPackage.order) {
+        return res.status(400).json({
+          success: false,
+          message: 'Für ein Upgrade muss ein neues Paket gekauft werden. Ihre aktuelle Subscription läuft weiter.',
+          requiresNewPurchase: true,
+          currentPackage: currentPackage.displayName,
+          targetPackage: targetPackage.displayName,
+          price: price,
+          savings: savings,
+          billingInterval: billingInterval
+        });
+      }
+    }
+
     // Check if downgrading and validate usage doesn't exceed new limits
     if (currentPackage && targetPackage.order < currentPackage.order) {
       // Count current usage
@@ -251,7 +279,16 @@ exports.upgradeUserPackage = async (req, res) => {
       }
     }
 
-    // Update user's package
+    // Berechne Subscription-Daten
+    const now = new Date();
+    const endDate = new Date(now);
+    if (billingInterval === 'yearly') {
+      endDate.setFullYear(endDate.getFullYear() + 1);
+    } else {
+      endDate.setMonth(endDate.getMonth() + 1);
+    }
+
+    // Update user's package with subscription details
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
@@ -260,6 +297,15 @@ exports.upgradeUserPackage = async (req, res) => {
           maxCustomers: targetPackage.maxCustomers,
           maxContracts: targetPackage.maxContracts,
           maxMeters: targetPackage.maxMeters
+        },
+        subscription: {
+          billingInterval: billingInterval,
+          startDate: now,
+          endDate: endDate,
+          lastPaymentDate: now,
+          nextPaymentDate: endDate,
+          autoRenew: true,
+          status: 'active'
         }
       },
       { new: true }
@@ -270,12 +316,181 @@ exports.upgradeUserPackage = async (req, res) => {
     res.json({
       success: true,
       data: updatedUser,
-      message: `Erfolgreich auf ${targetPackage.displayName} ${action}`
+      message: `Erfolgreich auf ${targetPackage.displayName} ${action}`,
+      subscription: {
+        package: targetPackage.displayName,
+        billingInterval: billingInterval,
+        price: price,
+        savings: savings,
+        startDate: now,
+        endDate: endDate
+      }
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Fehler beim Paket-Wechsel',
+      error: error.message
+    });
+  }
+};
+
+// Purchase package with billing interval
+exports.purchasePackage = async (req, res) => {
+  try {
+    const { packageName, billingInterval } = req.body;
+    const userId = req.user._id;
+
+    if (!billingInterval || !['monthly', 'yearly'].includes(billingInterval)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bitte wählen Sie ein Zahlungsintervall (monthly oder yearly)'
+      });
+    }
+
+    const targetPackage = await Package.findOne({ name: packageName });
+
+    if (!targetPackage) {
+      return res.status(404).json({
+        success: false,
+        message: 'Paket nicht gefunden'
+      });
+    }
+
+    if (!targetPackage.isActive) {
+      return res.status(400).json({
+        success: false,
+        message: 'Dieses Paket ist nicht verfügbar'
+      });
+    }
+
+    const user = await User.findById(userId);
+
+    // Berechne Preis basierend auf Zahlungsintervall
+    const price = targetPackage.calculatePrice(billingInterval);
+    const savings = billingInterval === 'yearly' ? targetPackage.yearlySavings : 0;
+
+    // Berechne Subscription-Daten
+    const now = new Date();
+    const endDate = new Date(now);
+    if (billingInterval === 'yearly') {
+      endDate.setFullYear(endDate.getFullYear() + 1);
+    } else {
+      endDate.setMonth(endDate.getMonth() + 1);
+    }
+
+    // Update user's package with subscription details
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        package: targetPackage.name,
+        packageLimits: {
+          maxCustomers: targetPackage.maxCustomers,
+          maxContracts: targetPackage.maxContracts,
+          maxMeters: targetPackage.maxMeters
+        },
+        subscription: {
+          billingInterval: billingInterval,
+          startDate: now,
+          endDate: endDate,
+          lastPaymentDate: now,
+          nextPaymentDate: endDate,
+          autoRenew: true,
+          status: 'active'
+        }
+      },
+      { new: true }
+    ).select('-passwordHash');
+
+    res.json({
+      success: true,
+      data: updatedUser,
+      message: `${targetPackage.displayName} erfolgreich gekauft`,
+      subscription: {
+        package: targetPackage.displayName,
+        billingInterval: billingInterval,
+        billingIntervalText: billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich',
+        price: price,
+        savings: savings,
+        startDate: now,
+        endDate: endDate,
+        priceDetails: {
+          monthlyPrice: targetPackage.monthlyPrice,
+          yearlyPrice: targetPackage.yearlyPrice,
+          totalPaid: price,
+          currency: targetPackage.currency
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Paket-Kauf',
+      error: error.message
+    });
+  }
+};
+
+// Get subscription info
+exports.getSubscriptionInfo = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Benutzer nicht gefunden'
+      });
+    }
+
+    const userPackage = await Package.findOne({ name: user.package });
+
+    if (!userPackage) {
+      return res.status(404).json({
+        success: false,
+        message: 'Paket nicht gefunden'
+      });
+    }
+
+    const subscription = user.subscription || {};
+    const billingInterval = subscription.billingInterval || 'monthly';
+    const currentPrice = userPackage.calculatePrice(billingInterval);
+    const savings = billingInterval === 'yearly' ? userPackage.yearlySavings : 0;
+
+    res.json({
+      success: true,
+      data: {
+        package: {
+          name: userPackage.name,
+          displayName: userPackage.displayName,
+          description: userPackage.description,
+          monthlyPrice: userPackage.monthlyPrice,
+          yearlyPrice: userPackage.yearlyPrice,
+          currency: userPackage.currency
+        },
+        subscription: {
+          billingInterval: billingInterval,
+          billingIntervalText: billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich',
+          currentPrice: currentPrice,
+          savings: savings,
+          startDate: subscription.startDate,
+          endDate: subscription.endDate,
+          nextPaymentDate: subscription.nextPaymentDate,
+          autoRenew: subscription.autoRenew !== undefined ? subscription.autoRenew : true,
+          status: subscription.status || 'active'
+        },
+        limits: {
+          maxCustomers: userPackage.maxCustomers,
+          maxContracts: userPackage.maxContracts,
+          maxMeters: userPackage.maxMeters
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Laden der Subscription-Informationen',
       error: error.message
     });
   }

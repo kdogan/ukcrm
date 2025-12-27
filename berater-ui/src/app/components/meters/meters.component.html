@@ -13,8 +13,11 @@
   </div>
 
   <div class="filters">
-    <input type="search" placeholder="Suche nach Zählernummer..." [(ngModel)]="searchTerm"
-      (ngModelChange)="onSearchChange()" class="search-input" />
+    <app-search-input
+      [value]="searchTerm"
+      (valueChange)="searchTerm = $event; onSearchChange()"
+      placeholder="Suche nach Zählernummer...">
+    </app-search-input>
     <select [(ngModel)]="statusFilter" (ngModelChange)="filterMeters()" class="filter-select">
       <option value="">Alle Status</option>
       <option value="free">Frei</option>

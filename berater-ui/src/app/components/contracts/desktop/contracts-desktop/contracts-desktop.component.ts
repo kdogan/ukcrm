@@ -4,10 +4,12 @@ import { Contract } from 'src/app/services/contract.service';
 import { TableContainerComponent } from "src/app/components/shared/tablecontainer.component";
 import { FormsModule, NgModel } from '@angular/forms';
 import { ContractState, stateToLabel } from 'src/app/models/contract.model';
+import { SearchInputComponent } from 'src/app/components/shared/search-input.component';
 
 @Component({
     selector: 'app-contracts-desktop',
-    imports: [CommonModule, TableContainerComponent, FormsModule],
+    standalone: true,
+    imports: [CommonModule, TableContainerComponent, FormsModule, SearchInputComponent],
     templateUrl: './contracts-desktop.component.html',
     styleUrls: ['./contracts-desktop.component.scss']
 })
@@ -23,6 +25,7 @@ export class ContractsDesktopComponent {
   @Output() closeActionMenu = new EventEmitter<void>();
   @Output() statusFilterChange = new EventEmitter<string>();
   @Output() daysFilterChange = new EventEmitter<string>();
+  @Output() searchChange = new EventEmitter<string>();
 
   @Output() showCustomer = new EventEmitter<string>();
   @Output() showMeter = new EventEmitter<string>();
@@ -33,6 +36,7 @@ export class ContractsDesktopComponent {
   activeMenuId: string | null = null;
   statusFilter = '';
   daysFilter = '';
+  searchTerm = '';
   emitActionMenuId(id: any) {
     this.activeMenuId = id;
     this.toggleActionMenu.emit(id);

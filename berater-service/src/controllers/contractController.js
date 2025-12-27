@@ -10,16 +10,16 @@ exports.getContracts = async (req, res, next) => {
     const { status, supplierId, daysRemaining, page = 1, limit = 20 } = req.query;
 
     const filter = { beraterId: req.user._id };
-    
+
     if (status) filter.status = status;
     if (supplierId) filter.supplierId = supplierId;
-    
+
     // Filter für auslaufende Verträge
     if (daysRemaining) {
       const today = new Date();
       const futureDate = new Date();
       futureDate.setDate(today.getDate() + parseInt(daysRemaining));
-      
+
       filter.endDate = {
         $gte: today,
         $lte: futureDate

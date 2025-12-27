@@ -189,8 +189,7 @@
       <div class="current-package-card">
         <div class="package-name">{{ userLimits.package.displayName }}</div>
         <div class="package-price">
-          {{ userLimits.package.price | number:'1.2-2' }} {{ userLimits.package.currency }} /
-          {{ userLimits.package.billingPeriod === 'monthly' ? 'Monat' : 'Jahr' }}
+          {{ userLimits.package.monthlyPrice | number:'1.2-2' }} {{ userLimits.package.currency }} / Monat
         </div>
 
         <!-- Usage Bars -->
@@ -269,8 +268,38 @@
               <span class="pending-badge" *ngIf="pendingUpgradeRequest && pkg.name === pendingUpgradeRequest.requestedPackage">Beantragt</span>
             </div>
 
+            <!-- Billing interval toggle -->
+            <div class="billing-toggle" *ngIf="pkg.name !== userLimits.package.name">
+              <button
+                class="toggle-btn"
+                [class.active]="selectedBillingInterval[pkg.name] === 'monthly'"
+                (click)="onSelectBillingInterval(pkg.name, 'monthly')">
+                Monatlich
+              </button>
+              <button
+                class="toggle-btn"
+                [class.active]="selectedBillingInterval[pkg.name] === 'yearly'"
+                (click)="onSelectBillingInterval(pkg.name, 'yearly')">
+                Jährlich <span class="badge-save">2 Monate sparen</span>
+              </button>
+            </div>
+
             <div class="package-card-price">
-              {{ pkg.price | number:'1.2-2' }} {{ pkg.currency }}/{{ pkg.billingPeriod === 'monthly' ? 'Monat' : 'Jahr' }}
+              <!-- For current package: Always show monthly price -->
+              <span *ngIf="pkg.name === userLimits.package.name">
+                {{ pkg.monthlyPrice | number:'1.2-2' }} {{ pkg.currency }} / Monat
+              </span>
+              <!-- For other packages: Show based on selection -->
+              <span *ngIf="pkg.name !== userLimits.package.name && selectedBillingInterval[pkg.name] === 'monthly'">
+                {{ pkg.monthlyPrice | number:'1.2-2' }} {{ pkg.currency }} / Monat
+              </span>
+              <span *ngIf="pkg.name !== userLimits.package.name && selectedBillingInterval[pkg.name] === 'yearly'">
+                {{ pkg.yearlyPrice | number:'1.2-2' }} {{ pkg.currency }} / Jahr
+              </span>
+            </div>
+
+            <div class="savings-info" *ngIf="selectedBillingInterval[pkg.name] === 'yearly' && pkg.yearlySavings && pkg.name !== userLimits.package.name">
+              Sie sparen {{ pkg.yearlySavings | number:'1.2-2' }} {{ pkg.currency }}
             </div>
 
             <div class="package-features">

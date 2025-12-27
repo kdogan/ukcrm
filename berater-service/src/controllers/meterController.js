@@ -10,11 +10,13 @@ exports.getMeters = async (req, res, next) => {
     const { type, isFree, search, page = 1, limit = 20 } = req.query;
 
     const filter = { beraterId: req.user._id };
-    
+
     if (type) filter.type = type;
     if (isFree !== undefined) {
       filter.currentCustomerId = isFree === 'true' ? null : { $ne: null };
     }
+
+    // Einfache Suche: Nur Zählernummer
     if (search) {
       filter.meterNumber = { $regex: search, $options: 'i' };
     }

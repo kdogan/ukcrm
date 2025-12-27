@@ -19,9 +19,11 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
         [userLimits]="userLimits"
         [packages]="packages"
         [pendingUpgradeRequest]="pendingUpgradeRequest"
+        [selectedBillingInterval]="selectedBillingInterval"
         (saveSettingsEvent)="saveSettings()"
         (resetToDefaultsEvent)="resetToDefaults()"
         (changePackageEvent)="changePackage($event.packageName, $event.order)"
+        (selectBillingIntervalEvent)="selectBillingInterval($any($event).packageName, $any($event).interval)"
       ></app-settings-mobile>
     } @else {
     <div class="page-container">
@@ -220,7 +222,7 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
             <div class="current-package">
               <div class="package-header">
                 <h3>{{ userLimits.package.displayName }}</h3>
-                <span class="package-price">{{ userLimits.package.price | number:'1.2-2' }} {{ userLimits.package.currency }} / {{ userLimits.package.billingPeriod === 'monthly' ? 'Monat' : 'Jahr' }}</span>
+                <span class="package-price">{{ userLimits.package.monthlyPrice | number:'1.2-2' }} {{ userLimits.package.currency }} / Monat</span>
               </div>
 
               <div class="usage-section">
@@ -300,7 +302,41 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
                     <span class="current-badge" *ngIf="pkg.name === userLimits.package.name">Aktuell</span>
                     <span class="pending-badge" *ngIf="pendingUpgradeRequest && pkg.name === pendingUpgradeRequest.requestedPackage">Beantragt</span>
                   </div>
-                  <div class="package-price-tag">{{ pkg.price | number:'1.2-2' }} {{ pkg.currency }}/{{ pkg.billingPeriod === 'monthly' ? 'Monat' : 'Jahr' }}</div>
+
+                  <!-- Billing interval toggle -->
+                  <div class="billing-toggle" *ngIf="pkg.name !== userLimits.package.name">
+                    <button
+                      class="toggle-btn"
+                      [class.active]="selectedBillingInterval[pkg.name] === 'monthly'"
+                      (click)="selectBillingInterval(pkg.name, 'monthly')">
+                      Monatlich
+                    </button>
+                    <button
+                      class="toggle-btn"
+                      [class.active]="selectedBillingInterval[pkg.name] === 'yearly'"
+                      (click)="selectBillingInterval(pkg.name, 'yearly')">
+                      Jährlich <span class="badge-save">2 Monate sparen</span>
+                    </button>
+                  </div>
+
+                  <div class="package-price-tag">
+                    <!-- For current package: Always show monthly price -->
+                    <span *ngIf="pkg.name === userLimits.package.name">
+                      {{ pkg.monthlyPrice | number:'1.2-2' }} {{ pkg.currency }} / Monat
+                    </span>
+                    <!-- For other packages: Show based on selection -->
+                    <span *ngIf="pkg.name !== userLimits.package.name && selectedBillingInterval[pkg.name] === 'monthly'">
+                      {{ pkg.monthlyPrice | number:'1.2-2' }} {{ pkg.currency }} / Monat
+                    </span>
+                    <span *ngIf="pkg.name !== userLimits.package.name && selectedBillingInterval[pkg.name] === 'yearly'">
+                      {{ pkg.yearlyPrice | number:'1.2-2' }} {{ pkg.currency }} / Jahr
+                    </span>
+                  </div>
+
+                  <div class="savings-info" *ngIf="selectedBillingInterval[pkg.name] === 'yearly' && pkg.yearlySavings && pkg.name !== userLimits.package.name">
+                    Sie sparen {{ pkg.yearlySavings | number:'1.2-2' }} {{ pkg.currency }}
+                  </div>
+
                   <div class="package-features">
                     <div class="feature">✓ {{ pkg.maxContracts === -1 ? 'Unbegrenzt' : pkg.maxContracts }} Verträge</div>
                     <div class="feature">✓ {{ pkg.maxCustomers === -1 ? 'Unbegrenzt' : pkg.maxCustomers }} Kunden</div>
@@ -687,10 +723,62 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
       background: #fffbeb;
     }
 
+    .billing-toggle {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      background: #f5f5f5;
+      padding: 0.25rem;
+      border-radius: 8px;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: #666;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.85rem;
+    }
+
+    .toggle-btn.active {
+      background: white;
+      color: #34d399;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .toggle-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .badge-save {
+      display: inline-block;
+      background: #34d399;
+      color: white;
+      padding: 0.125rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      margin-left: 0.25rem;
+    }
+
     .package-price-tag {
       font-size: 1.5rem;
       font-weight: 700;
       color: #34d399;
+      margin-bottom: 0.5rem;
+    }
+
+    .savings-info {
+      text-align: center;
+      color: #34d399;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
     }
 
     .package-features {
@@ -812,6 +900,7 @@ export class SettingsComponent implements OnInit {
   userLimits: UserLimits | null = null;
   packages: Package[] = [];
   pendingUpgradeRequest: any = null;
+  selectedBillingInterval: { [packageName: string]: 'monthly' | 'yearly' } = {};
 
   constructor(
     private settingsService: SettingsService,
@@ -868,12 +957,22 @@ export class SettingsComponent implements OnInit {
     this.packageService.getAllPackages().subscribe({
       next: (response) => {
         this.packages = response.data.filter((pkg: Package) => pkg.isActive);
+        // Initialize billing interval selection to monthly for all packages
+        this.packages.forEach(pkg => {
+          if (!this.selectedBillingInterval[pkg.name]) {
+            this.selectedBillingInterval[pkg.name] = 'monthly';
+          }
+        });
       },
       error: (err) => {
         console.error('Error loading packages:', err);
         // Bei 401-Fehler wird der Interceptor den Benutzer ausloggen
       }
     });
+  }
+
+  selectBillingInterval(packageName: string, interval: 'monthly' | 'yearly'): void {
+    this.selectedBillingInterval[packageName] = interval;
   }
 
   getUsagePercentage(type: 'contracts' | 'customers' | 'meters'): number {
@@ -886,20 +985,63 @@ export class SettingsComponent implements OnInit {
     return Math.min(100, (usage / (limit as number)) * 100);
   }
 
-  changePackage(packageName: string, order: number): void {
-    const currentOrder = this.userLimits?.package.order || 0;
-    const action = order < currentOrder ? 'Downgrade' : 'Upgrade';
+  changePackage(packageName: string, packageOrder: number): void {
+    const isDowngrade = this.userLimits && packageOrder < this.userLimits.package.order;
+    const isUpgrade = this.userLimits && packageOrder > this.userLimits.package.order;
+    const action = isDowngrade ? 'Downgrade' : 'Upgrade';
+    const billingInterval = this.selectedBillingInterval[packageName] || 'monthly';
 
-    if (confirm(`Möchten Sie wirklich eine ${action === 'Upgrade' ? 'Upgrade' : 'Downgrade'}-Anfrage für dieses Paket erstellen?\n\nHinweis: Die Anfrage muss vom Administrator genehmigt werden, nachdem die Zahlung eingegangen ist.`)) {
-      this.upgradeService.createUpgradeRequest(packageName).subscribe({
+    const targetPackage = this.packages.find(p => p.name === packageName);
+    if (!targetPackage) return;
+
+    const price = billingInterval === 'yearly' ? targetPackage.yearlyPrice : targetPackage.monthlyPrice;
+    const intervalText = billingInterval === 'yearly' ? 'jährlich' : 'monatlich';
+    const savingsText = billingInterval === 'yearly' && targetPackage.yearlySavings
+      ? `\n\nSie sparen ${targetPackage.yearlySavings} ${targetPackage.currency} bei jährlicher Zahlung!`
+      : '';
+
+    let confirmMessage = `Möchten Sie wirklich auf das ${targetPackage.displayName}-Paket ${action.toLowerCase()}?\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}${savingsText}`;
+
+    if (isDowngrade) {
+      confirmMessage = `ACHTUNG: Downgrade auf ${targetPackage.displayName}\n\nWenn Ihre aktuelle Nutzung die Limits des neuen Pakets überschreitet, wird der Downgrade abgelehnt.\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}\n\nMöchten Sie fortfahren?`;
+    }
+
+    if (confirm(confirmMessage)) {
+      this.packageService.upgradePackage(packageName, billingInterval).subscribe({
         next: (response: any) => {
-          alert(`Upgrade-Anfrage erfolgreich erstellt!\n\nStatus: ${response.data.status}\nGewünschtes Paket: ${response.data.packageDetails.displayName}\nPreis: ${response.data.packageDetails.price} ${response.data.packageDetails.currency}\n\nBitte überweisen Sie den Betrag und laden Sie anschließend den Zahlungsnachweis hoch.\nIhre Anfrage wird nach Zahlungseingang vom Administrator geprüft.`);
-          this.loadUserLimits();
-          this.loadPendingUpgradeRequest();
+          if (response.success) {
+            if (response.requiresNewPurchase) {
+              // User needs to purchase the upgrade
+              const purchaseConfirm = confirm(
+                `${response.message}\n\nAktuelles Paket: ${response.currentPackage}\nNeues Paket: ${response.targetPackage}\nPreis: ${response.price} ${targetPackage.currency}\nZahlungsintervall: ${response.billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich'}\n\nMöchten Sie das neue Paket jetzt kaufen?`
+              );
+
+              if (purchaseConfirm) {
+                this.packageService.purchasePackage(packageName, billingInterval).subscribe({
+                  next: (purchaseResponse: any) => {
+                    if (purchaseResponse.success) {
+                      alert(`Paket erfolgreich gekauft!\n\nNeues Paket: ${purchaseResponse.subscription.package}\nZahlungsintervall: ${purchaseResponse.subscription.billingIntervalText}\nPreis: ${purchaseResponse.subscription.price} ${targetPackage.currency}\n\nIhre Subscription ist jetzt aktiv.`);
+                      this.loadUserLimits();
+                      this.loadPackages();
+                    }
+                  },
+                  error: (error: any) => {
+                    console.error('Error purchasing package:', error);
+                    alert('Fehler beim Kauf des Pakets: ' + (error.error?.message || 'Unbekannter Fehler'));
+                  }
+                });
+              }
+            } else {
+              alert(`${action} erfolgreich!\n\nNeues Paket: ${response.subscription.package}\nZahlungsintervall: ${response.subscription.billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich'}\nPreis: ${response.subscription.price} ${targetPackage.currency}\n\n${response.message}`);
+              this.loadUserLimits();
+              this.loadPackages();
+            }
+          }
         },
-        error: (err: any) => {
-          console.error('Error creating upgrade request:', err);
-          alert(err.error?.message || 'Fehler beim Erstellen der Upgrade-Anfrage');
+        error: (error: any) => {
+          console.error('Error changing package:', error);
+          const errorMessage = error.error?.message || 'Unbekannter Fehler';
+          alert('Fehler beim Paket-Wechsel: ' + errorMessage);
         }
       });
     }

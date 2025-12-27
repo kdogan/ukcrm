@@ -6,6 +6,29 @@
         <button class="fab" (click)="create.emit()"><i class="fas fa-plus"></i></button>
     </div>
 
+    <!-- FILTERS -->
+    <div class="mobile-filters">
+        <app-search-input
+          [value]="searchTerm"
+          (valueChange)="onSearchTermChange($event)"
+          placeholder="Suche: Vertragsnr., Kunde, Zähler...">
+        </app-search-input>
+        <div class="filter-row">
+            <select [(ngModel)]="statusFilter" (ngModelChange)="statusFilterChange.emit(statusFilter)">
+                <option value="">Alle Status</option>
+                @for(state of contractState; track state){
+                    <option [value]="state.key">{{state.value}}</option>
+                }
+            </select>
+            <select [(ngModel)]="daysFilter" (ngModelChange)="daysFilterChange.emit(daysFilter)">
+                <option value="">Alle Laufzeiten</option>
+                <option value="30">30 Tage</option>
+                <option value="60">60 Tage</option>
+                <option value="90">90 Tage</option>
+            </select>
+        </div>
+    </div>
+
     <!-- LIST -->
     <div class="card-list">
         <div class="eskapp-card" *ngFor="let c of contracts">

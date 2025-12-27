@@ -1,13 +1,16 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Contract } from 'src/app/services/contract.service';
 import { ContractState, stateToLabel } from 'src/app/models/contract.model';
+import { SearchInputComponent } from 'src/app/components/shared/search-input.component';
 
 @Component({
     selector: 'app-contracts-mobile',
-    imports: [CommonModule],
+    imports: [CommonModule, FormsModule, SearchInputComponent],
     templateUrl: './contracts-mobile.component.html',
-    styleUrls: ['./contracts-mobile.component.scss']
+    styleUrls: ['./contracts-mobile.component.scss'],
+    standalone: true
 })
 export class ContractsMobileComponent {
 
@@ -19,6 +22,7 @@ export class ContractsMobileComponent {
 
   @Output() statusFilterChange = new EventEmitter<string>();
   @Output() daysFilterChange = new EventEmitter<string>();
+  @Output() searchChange = new EventEmitter<string>();
 
   @Output() showCustomer = new EventEmitter<string>();
   @Output() showMeter = new EventEmitter<string>();
@@ -26,8 +30,9 @@ export class ContractsMobileComponent {
   @Output() toggleActionMenu = new EventEmitter<string>();
 
   activeMenuId: string | null = null;
-    statusFilter = '';
+  statusFilter = '';
   daysFilter = '';
+  searchTerm = '';
   emitActionMenuId(id: any) {
     this.activeMenuId = id;
     this.toggleActionMenu.emit(id);
@@ -54,5 +59,10 @@ export class ContractsMobileComponent {
 
     getStatusLabel(status: string): string {
     return this.contractState.find(cs => cs.key == status)?.value || status;
+  }
+
+  onSearchTermChange(value: string): void {
+    this.searchTerm = value;
+    this.searchChange.emit(value);
   }
 }

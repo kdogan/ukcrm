@@ -10,9 +10,10 @@ export interface Package {
   maxContracts: number;
   maxCustomers: number;
   maxMeters: number;
-  price: number;
+  monthlyPrice: number;
+  yearlyPrice?: number;
+  yearlySavings?: number;
   currency: string;
-  billingPeriod: 'monthly' | 'yearly';
   isActive: boolean;
   isFree: boolean;
   order: number;
@@ -62,9 +63,20 @@ export class PackageService {
     return this.http.get(`${this.apiUrl}/my/limits`);
   }
 
-  // WICHTIG: Die alte upgradePackage Methode wurde entfernt!
-  // Verwenden Sie stattdessen UpgradeService.createUpgradeRequest()
-  // Berater müssen jetzt eine Upgrade-Anfrage erstellen, die vom Superadmin genehmigt werden muss
+  // Get current user's subscription info
+  getSubscriptionInfo(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/my/subscription`);
+  }
+
+  // Purchase a package with billing interval
+  purchasePackage(packageName: string, billingInterval: 'monthly' | 'yearly'): Observable<any> {
+    return this.http.post(`${this.apiUrl}/purchase`, { packageName, billingInterval });
+  }
+
+  // Upgrade/downgrade package with billing interval
+  upgradePackage(packageName: string, billingInterval: 'monthly' | 'yearly'): Observable<any> {
+    return this.http.post(`${this.apiUrl}/upgrade`, { packageName, billingInterval });
+  }
 
   // Superadmin: Create package
   createPackage(packageData: Partial<Package>): Observable<any> {
