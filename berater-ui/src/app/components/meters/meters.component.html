@@ -106,53 +106,60 @@
 }
 
 <!-- Modal for Create/Edit Meter -->
-<app-overlay-modal *ngIf="showModal" (close)="closeModal()">
-  <app-meter-create [meter]="currentMeter" [isEditMode]="isEditMode" (close)="closeModal()"
-    (save)="saveMeter()" />
-</app-overlay-modal>
+ @if(showModal){
+  <app-overlay-modal (close)="closeModal()">
+    <app-meter-create 
+      [meter]="currentMeter" 
+      [isEditMode]="isEditMode" 
+      (close)="closeModal()"
+      (save)="saveMeter()" 
+    />
+  </app-overlay-modal>
+}
 
 <!-- Modal for showing Zähler-->
-<app-overlay-modal *ngIf="showMeterModalForDetails" (close)="closeMeterModalDetails()">
-  <div class="modal-header">
-    <h2>Zähler · {{ selectedMeterForDetails?.meterNumber }}</h2>
-    <button class="btn-close" (click)="closeMeterModalDetails()">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
-
-  <div class="modal-body">
-
-    <div class="info-row">
-      <span class="label">Zählernummer</span>
-      <span class="value">{{ selectedMeterForDetails?.meterNumber }}</span>
-    </div>
-    <div class="info-row" *ngIf="selectedMeterForDetails.maloId">
-      <span class="label">Malo Id</span>
-      <span class="value">
-        {{ selectedMeterForDetails?.maloId }}
-      </span>
+ @if(showMeterModalForDetails){
+  <app-overlay-modal (close)="closeMeterModalDetails()">
+    <div class="modal-header">
+      <h2>Zähler · {{ selectedMeterForDetails?.meterNumber }}</h2>
+      <button class="btn-close" (click)="closeMeterModalDetails()">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
 
-    <div class="info-row">
-      <span class="label">Typ</span>
-      <span class="value badge">
-        {{ getTypeLabel(selectedMeterForDetails?.type) }}
-      </span>
-    </div>
+    <div class="modal-body">
 
-    <div class="info-row address">
-      <span class="label">Adresse</span>
-      <span class="value">
-        {{ selectedMeterForDetails?.location?.street }}<br />
-        {{ selectedMeterForDetails?.location?.zip }} {{ selectedMeterForDetails?.location?.city }}
-      </span>
-    </div>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn-secondary" (click)="closeMeterModalDetails()">Schließen</button>
-  </div>
-</app-overlay-modal>
+      <div class="info-row">
+        <span class="label">Zählernummer</span>
+        <span class="value">{{ selectedMeterForDetails?.meterNumber }}</span>
+      </div>
+      <div class="info-row" *ngIf="selectedMeterForDetails.maloId">
+        <span class="label">Malo Id</span>
+        <span class="value">
+          {{ selectedMeterForDetails?.maloId }}
+        </span>
+      </div>
 
+      <div class="info-row">
+        <span class="label">Typ</span>
+        <span class="value badge">
+          {{ getTypeLabel(selectedMeterForDetails?.type) }}
+        </span>
+      </div>
+
+      <div class="info-row address">
+        <span class="label">Adresse</span>
+        <span class="value">
+          {{ selectedMeterForDetails?.location?.street }}<br />
+          {{ selectedMeterForDetails?.location?.zip }} {{ selectedMeterForDetails?.location?.city }}
+        </span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeMeterModalDetails()">Schließen</button>
+    </div>
+  </app-overlay-modal>
+}
 <!-- Modal for Adding Reading -->
 @if(showReadingModal) {
 <app-overlay-modal (close)="closeReadingModal()">

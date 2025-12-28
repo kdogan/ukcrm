@@ -104,17 +104,39 @@
         <label>Telefon</label>
         <input type="tel" [(ngModel)]="currentCustomer.phone" name="phone" />
       </div>
-    <div class="form-group" *ngIf="currentCustomer.address">
-      <label>Adresse</label>
-      <input type="text" name="street" [(ngModel)]="currentCustomer.address.street" placeholder="Straße"
-        class="form-control" />
-      <div class="form-row">
-        <input type="text" name="zip" [(ngModel)]="currentCustomer.address.zip" placeholder="PLZ" class="form-control" />
-        <input type="text" name="city" [(ngModel)]="currentCustomer.address.city" placeholder="Ort"
-          class="form-control" />
-      </div>
-    </div>
-    </div>
+</div>
+    @if(currentCustomer.address){
+      <label>Adresse:</label>
+      <hr/>
+      <div class="form-group">
+          <label>Strasse</label>
+          <input type="text" 
+              name="street" 
+              [(ngModel)]="currentCustomer.address.street" 
+              placeholder="Straße und Hausnummer"
+              class="form-control" />
+          <div class="form-row">
+              <div class="form-group">
+                <label>PLZ</label>
+                <input type="text" 
+                    name="zip" 
+                    [(ngModel)]="currentCustomer.address.zip" 
+                    placeholder="PLZ" 
+                    class="form-control"
+                />
+              </div>
+              <div class="form-group">
+                <label>Ort</label>
+                  <input type="text" 
+                      name="city" 
+                      [(ngModel)]="currentCustomer.address.city" 
+                      placeholder="Ort"
+                      class="form-control"
+                  />
+              </div>
+          </div>
+        </div>
+    }
     <div class="form-group">
       <label>Notizen</label>
       <textarea [(ngModel)]="currentCustomer.notes" name="notes" rows="3"></textarea>

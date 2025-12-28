@@ -35,47 +35,48 @@ import { Util } from "../util/util";
             <input type="text" id="maloId" name="maloId" [(ngModel)]="meter.maloId"
                 placeholder="" class="form-control" />
             </div>
-            <div class="form-group">
-            <label for="manufacturer">Hersteller</label>
-            <input type="text" id="manufacturer" name="manufacturer" [(ngModel)]="meter.manufacturer"
-                placeholder="z.B. Siemens" class="form-control" />
-            </div>
-
-            <div class="form-group">
-            <label for="yearBuilt">Baujahr</label>
-            <input type="number"
-                    id="yearBuilt"
-                    name="yearBuilt"
-                    [(ngModel)]="meter.yearBuilt"
-                    [min]="1950"
-                    [max]="currentYear"
-                    placeholder="z.B. 2020"
-                    class="form-control"
-            />
-            </div>
-
-            <div class="form-group">
-            <label>
-                <input type="checkbox"
-                       name="isTwoTariff"
-                       [(ngModel)]="meter.isTwoTariff"
-                       style="margin-right: 0.5rem;" />
-                Zwei-Tarif-Zähler (HT/NT)
-            </label>
-            <small style="display: block; color: #666; margin-top: 0.25rem;">
-                Für Stromzähler mit Tag/Nacht-Tarif
-            </small>
-            </div>
-
-            <div class="form-group">
-            <label>Standort</label>
-            <input type="text" name="street" [(ngModel)]="meter.location.street" placeholder="Straße"
-                class="form-control" />
             <div class="form-row">
-                <input type="text" name="zip" [(ngModel)]="meter.location.zip" placeholder="PLZ" class="form-control" />
-                <input type="text" name="city" [(ngModel)]="meter.location.city" placeholder="Stadt"
-                class="form-control" />
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox"
+                                name="isTwoTariff"
+                                [(ngModel)]="meter.isTwoTariff"
+                        />
+                        <label style="margin: 0;">Zwei-Tarif-Zähler (HT/NT)</label>
+                    </div>
+                    <small style="display: block; color: #666; margin-top: 0.5rem; margin-left: 0;">
+                        <i class="fas fa-info-circle"></i> Für Stromzähler mit Tag/Nacht-Tarif (Hochtarif/Niedrigtarif)
+                    </small>
             </div>
+           
+            <label>Standort:</label>
+             <hr/>
+            <div class="form-group">
+                <label>Strasse</label>
+                <input type="text" 
+                    name="street" 
+                    [(ngModel)]="meter.location.street" 
+                    placeholder="Straße und Hausnummer"
+                    class="form-control" />
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>PLZ</label>
+                        <input type="text" 
+                            name="zip" 
+                            [(ngModel)]="meter.location.zip" 
+                            placeholder="PLZ" 
+                            class="form-control"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label>Ort</label>
+                        <input type="text" 
+                            name="city" 
+                            [(ngModel)]="meter.location.city" 
+                            placeholder="Ort"
+                            class="form-control"
+                        />
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">
