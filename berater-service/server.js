@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 
 const connectDB = require('./src/config/database');
 const errorHandler = require('./src/middleware/errorHandler');
@@ -62,14 +63,18 @@ app.use(helmet());
 // 🌍 CORS
 app.use(cors({
   origin: ['http://berater.eskapp.com', 'http://localhost:4200'],
-  credentials: true,
+  credentials: true, // WICHTIG: Erlaubt Cookies in Cross-Origin Requests
   methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization']
+  allowedHeaders: ['Content-Type','Authorization','Cookie'],
+  exposedHeaders: ['set-cookie'] // Erlaubt Frontend auf Set-Cookie Header zuzugreifen
 }));
 
 // 📦 Body Parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// 🍪 Cookie Parser
+app.use(cookieParser());
 
 // 🗜 Compression
 app.use(compression());

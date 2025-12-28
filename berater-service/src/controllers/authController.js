@@ -159,6 +159,14 @@ exports.login = async (req, res, next) => {
     const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
+    // Refresh Token in httpOnly Cookie speichern
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // HTTPS in Produktion
+      sameSite: 'strict', // CSRF-Schutz
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 Tage
+    });
+
     // Package-Features laden
     const userPackage = await Package.findOne({ name: user.package, isActive: true });
     const packageFeatures = userPackage ? userPackage.features : [];
@@ -194,8 +202,8 @@ exports.login = async (req, res, next) => {
             }
           }
         },
-        token,
-        refreshToken
+        token
+        // refreshToken wird nicht mehr im Response Body gesendet
       }
     });
   } catch (error) {
@@ -306,8 +314,13 @@ exports.resendVerificationEmail = async (req, res, next) => {
 // @access  Private
 exports.logout = async (req, res, next) => {
   try {
-    // In einer realen App würde man hier den Token invalidieren
-    // z.B. in einer Redis Blacklist
+    // Refresh Token Cookie löschen
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+
     res.status(200).json({
       success: true,
       message: 'Erfolgreich abgemeldet'
@@ -561,6 +574,89 @@ exports.resetPassword = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Passwort erfolgreich zurückgesetzt. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Refresh access token
+// @route   POST /api/auth/refresh
+// @access  Public (but requires valid refresh token in cookie)
+exports.refreshToken = async (req, res, next) => {
+  try {
+    // Refresh Token aus Cookie lesen
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'Kein Refresh Token vorhanden'
+      });
+    }
+
+    // Token verifizieren
+    const jwt = require('jsonwebtoken');
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    } catch (err) {
+      // Cookie löschen bei ungültigem Token
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      });
+
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({
+          success: false,
+          message: 'Refresh Token abgelaufen',
+          expired: true
+        });
+      }
+
+      return res.status(401).json({
+        success: false,
+        message: 'Ungültiger Refresh Token'
+      });
+    }
+
+    // User laden
+    const user = await User.findById(decoded.userId);
+    if (!user || !user.isActive) {
+      // Cookie löschen bei ungültigem User
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      });
+
+      return res.status(401).json({
+        success: false,
+        message: 'Benutzer nicht gefunden oder inaktiv'
+      });
+    }
+
+    // Neuen Access Token generieren
+    const newToken = generateToken(user._id);
+
+    // WICHTIG: Token Rotation - Neuen Refresh Token generieren
+    const newRefreshToken = generateRefreshToken(user._id);
+
+    // Neuen Refresh Token in Cookie speichern
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 Tage
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        token: newToken
+      }
     });
   } catch (error) {
     next(error);

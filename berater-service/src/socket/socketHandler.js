@@ -25,8 +25,17 @@ module.exports = (io) => {
 
       next();
     } catch (err) {
-      console.error('Socket auth error:', err);
-      next(new Error('Authentication error: Invalid token'));
+      // Spezifische Fehlerbehandlung für abgelaufene Tokens
+      if (err.name === 'TokenExpiredError') {
+        console.warn(`⚠️ WebSocket connection rejected: Token expired at ${err.expiredAt}`);
+        return next(new Error('Authentication error: Token expired'));
+      } else if (err.name === 'JsonWebTokenError') {
+        console.error('❌ WebSocket connection rejected: Invalid token');
+        return next(new Error('Authentication error: Invalid token'));
+      } else {
+        console.error('❌ Socket auth error:', err);
+        return next(new Error('Authentication error: ' + err.message));
+      }
     }
   });
 

@@ -111,6 +111,18 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/reset-password/${token}`, { password });
   }
 
+  refreshToken(): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/refresh`, {}, { withCredentials: true })
+      .pipe(
+        tap(response => {
+          if (response.success && response.data.token) {
+            // Nur Access Token aktualisieren, Refresh Token ist im Cookie
+            localStorage.setItem('token', response.data.token);
+          }
+        })
+      );
+  }
+
   isAuthenticated(): boolean {
     const token = this.getToken();
     return !!token;
@@ -120,16 +132,15 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  private setSession(authResult: { user: User; token: string; refreshToken: string }): void {
+  private setSession(authResult: { user: User; token: string; refreshToken?: string }): void {
     localStorage.setItem('token', authResult.token);
-    localStorage.setItem('refreshToken', authResult.refreshToken);
+    // refreshToken wird nicht mehr im localStorage gespeichert (ist im httpOnly Cookie)
     localStorage.setItem('user', JSON.stringify(authResult.user));
     this.currentUserSubject.next(authResult.user);
   }
 
   private clearSession(): void {
     localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     this.currentUserSubject.next(null);
   }

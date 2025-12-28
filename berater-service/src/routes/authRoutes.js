@@ -12,12 +12,14 @@ const {
   verifyEmail,
   resendVerificationEmail,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  refreshToken
 } = require('../controllers/authController');
 const { authenticate } = require('../middleware/auth');
 
 router.post('/register', register);
 router.post('/login', login);
+router.post('/refresh', refreshToken); // Refresh token endpoint (public)
 router.get('/verify-email/:token', verifyEmail);
 router.post('/resend-verification', resendVerificationEmail);
 router.post('/forgot-password', forgotPassword);

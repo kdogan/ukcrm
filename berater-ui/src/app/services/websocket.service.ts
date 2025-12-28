@@ -71,11 +71,16 @@ export class WebsocketService {
       console.error('WebSocket connection error:', error);
       this.connected = false;
       this.connectionStatusSubject.next(false);
+
+      // Wenn Token abgelaufen ist, WebSocket disconnecten
+      if (error.message && error.message.includes('Token expired')) {
+        console.warn('⚠️ WebSocket token expired - disconnecting');
+        this.disconnect();
+      }
     });
 
     // Neue Nachricht empfangen
     this.socket.on('new-message', (message: any) => {
-      console.log('📨 New message received:', message);
       this.newMessageSubject.next(message);
     });
 
@@ -87,7 +92,6 @@ export class WebsocketService {
 
     // Nachrichten als gelesen markiert
     this.socket.on('messages-read', (data: any) => {
-      console.log('✅ Messages read:', data);
       this.messagesReadSubject.next(data);
     });
 
@@ -170,6 +174,21 @@ export class WebsocketService {
       this.socket = null;
       this.connected = false;
       this.connectionStatusSubject.next(false);
+    }
+  }
+
+  /**
+   * Reconnect mit neuem Token (nach Token-Refresh)
+   */
+  reconnectWithNewToken(newToken: string): void {
+    if (this.socket) {
+      // Alte Verbindung trennen
+      this.disconnect();
+
+      // Neue Verbindung mit neuem Token aufbauen
+      setTimeout(() => {
+        this.connect(newToken);
+      }, 100);
     }
   }
 
