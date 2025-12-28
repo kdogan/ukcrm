@@ -463,12 +463,12 @@ exports.deleteMeter = async (req, res, next) => {
     }
 
     // Prüfe ob Zähler aktuell einem Kunden zugeordnet ist
-    if (meter.currentCustomerId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Zähler kann nicht gelöscht werden, da er aktuell einem Kunden zugeordnet ist'
-      });
-    }
+    // if (meter.currentCustomerId) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: 'Zähler kann nicht gelöscht werden, da er aktuell einem Kunden zugeordnet ist'
+    //   });
+    // }
 
     // Lösche alle zugehörigen Ablesungen
     await MeterReading.deleteMany({ meterId: req.params.id });
