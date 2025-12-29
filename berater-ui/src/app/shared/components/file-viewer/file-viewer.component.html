@@ -1,0 +1,67 @@
+@if(isOpen){
+  <div class="file-viewer-overlay" (click)="close()">
+    <div class="file-viewer-content" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="file-viewer-header">
+        <div class="file-info">
+          <i class="fas fa-file"></i>
+          <span class="file-name">{{ fileName }}</span>
+        </div>
+        <div class="file-actions">
+          <button class="action-btn" (click)="download()" title="Herunterladen">
+            <i class="fas fa-download"></i>
+          </button>
+          <button class="action-btn close-btn" (click)="close()" title="Schließen">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="file-viewer-body">
+        <!-- Image Viewer -->
+        @if(isImage()){
+          <div class="image-container">
+            <img [src]="fileUrl" [alt]="fileName">
+          </div>
+        }
+
+        <!-- PDF Viewer -->
+        @if(isPdf()){
+          <iframe [src]="fileUrl" class="pdf-viewer" title="PDF Viewer"></iframe>
+        }
+
+        <!-- Video Player -->
+        @if(isVideo()){
+          <video controls class="video-player">
+            <source [src]="fileUrl" type="video/mp4">
+            Ihr Browser unterstützt das Video-Tag nicht.
+          </video>
+        }
+
+        <!-- Audio Player -->
+        @if(isAudio()){
+          <div class="audio-container">
+            <audio controls class="audio-player">
+              <source [src]="fileUrl" type="audio/mpeg">
+              Ihr Browser unterstützt das Audio-Tag nicht.
+            </audio>
+          </div>
+        }
+
+        <!-- Unknown/Office Files -->
+        @if(isUnknown()){
+          <div class="unknown-file">
+            <i class="fas fa-file-alt fa-5x"></i>
+            <h3>{{ fileName }}</h3>
+            <p>Vorschau für diesen Dateityp nicht verfügbar</p>
+            <button class="btn-primary" (click)="download()">
+              <i class="fas fa-download"></i>
+              Datei herunterladen
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

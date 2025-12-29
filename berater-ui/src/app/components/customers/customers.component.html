@@ -30,7 +30,7 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th>Kundennr.</th>
+          <!-- <th>Kundennr.</th> -->
           <th>Name</th>
           <th>E-Mail</th>
           <th>Telefon</th>
@@ -40,7 +40,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let customer of customers">
-          <td data-label="Kundennr.">{{ customer.customerNumber }}</td>
+          <!-- <td data-label="Kundennr.">{{ customer.customerNumber }}</td> -->
           <td data-label="Name">{{ customer.firstName }} {{ customer.lastName }}</td>
           <td data-label="E-Mail">{{ customer.email || '-' }}</td>
           <td data-label="Telefon">

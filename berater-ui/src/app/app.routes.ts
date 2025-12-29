@@ -99,6 +99,10 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./components/settings/settings.component').then(m => m.SettingsComponent)
+      },
+      {
+        path: 'support',
+        loadComponent: () => import('./components/support/support.component').then(m => m.SupportComponent)
       }
       // Messages temporarily disabled for performance
       // {

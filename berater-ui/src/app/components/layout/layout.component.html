@@ -68,6 +68,12 @@
                 </a>
             </li>
             }
+            <li>
+                <a routerLink="/support" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                    <i class="fas fa-life-ring fa-lg"></i>
+                    <span class="nav-text">Support</span>
+                </a>
+            </li>
             @if(currentUser?.role === 'superadmin'){
             <li>
                 <a routerLink="/admin" routerLinkActive="active" (click)="closeSidebarOnMobile()">

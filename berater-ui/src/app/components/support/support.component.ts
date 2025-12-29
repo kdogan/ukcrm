@@ -1,0 +1,229 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TodoService, Todo } from '../../services/todo.service';
+import { AuthService } from '../../services/auth.service';
+import { FileViewerService } from '../../shared/services/file-viewer.service';
+
+@Component({
+  selector: 'app-support',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './support.component.html',
+  styleUrls: ['./support.component.scss']
+})
+export class SupportComponent implements OnInit {
+  tickets: Todo[] = [];
+  showCreateModal = false;
+  showViewModal = false;
+  selectedTicket: Todo | null = null;
+  currentUser: any = null;
+  isSuperAdmin = false;
+
+  // Create Ticket Form
+  newTicket = {
+    title: '',
+    description: '',
+    priority: 'medium' as 'low' | 'medium' | 'high'
+  };
+  selectedImages: File[] = [];
+  imagePreviews: string[] = [];
+
+  // Admin Response Form
+  adminResponse = '';
+  responseStatus: 'open' | 'in_progress' | 'completed' = 'in_progress';
+
+  constructor(
+    private todoService: TodoService,
+    private authService: AuthService,
+    private fileViewerService: FileViewerService
+  ) {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isSuperAdmin = user?.role === 'superadmin';
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadTickets();
+  }
+
+  loadTickets(): void {
+    if (this.isSuperAdmin) {
+      this.todoService.getSupportTickets().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.tickets = response.data;
+          }
+        },
+        error: (error) => console.error('Fehler beim Laden der Tickets:', error)
+      });
+    } else {
+      // Berater sees only their own support tickets
+      this.todoService.getTodos({ isSupportTicket: true }).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.tickets = response.data.filter((t: Todo) => t.isSupportTicket);
+          }
+        },
+        error: (error) => console.error('Fehler beim Laden der Tickets:', error)
+      });
+    }
+  }
+
+  onImageSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      const files = Array.from(input.files).slice(0, 5); // Max 5 images
+      this.selectedImages = files;
+
+      // Generate previews
+      this.imagePreviews = [];
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.imagePreviews.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  removeImage(index: number): void {
+    this.selectedImages.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
+
+  createTicket(): void {
+    if (!this.newTicket.title || !this.newTicket.description) {
+      alert('Bitte Titel und Beschreibung eingeben');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', this.newTicket.title);
+    formData.append('description', this.newTicket.description);
+    formData.append('priority', this.newTicket.priority);
+
+    this.selectedImages.forEach(image => {
+      formData.append('images', image);
+    });
+
+    this.todoService.createSupportTicket(formData).subscribe({
+      next: (response) => {
+        if (response.success) {
+          alert('Support-Ticket erfolgreich erstellt');
+          this.closeCreateModal();
+          this.loadTickets();
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Erstellen des Tickets:', error);
+        alert('Fehler beim Erstellen des Tickets');
+      }
+    });
+  }
+
+  viewTicket(ticket: Todo): void {
+    this.selectedTicket = ticket;
+    this.showViewModal = true;
+    this.adminResponse = '';
+    // Set current ticket status
+    this.responseStatus = ticket.status;
+  }
+
+  submitResponse(): void {
+    if (!this.selectedTicket) {
+      return;
+    }
+
+    // Check if status changed or response provided
+    const statusChanged = this.selectedTicket.status !== this.responseStatus;
+    const hasResponse = this.adminResponse && this.adminResponse.trim().length > 0;
+
+    if (!statusChanged && !hasResponse) {
+      alert('Bitte eine Antwort eingeben oder den Status ändern');
+      return;
+    }
+
+    this.todoService.respondToSupportTicket(
+      this.selectedTicket._id,
+      this.adminResponse,
+      this.responseStatus
+    ).subscribe({
+      next: (response) => {
+        if (response.success) {
+          if (hasResponse && statusChanged) {
+            alert('Antwort und Status erfolgreich aktualisiert');
+          } else if (hasResponse) {
+            alert('Antwort erfolgreich gespeichert');
+          } else if (statusChanged) {
+            alert('Status erfolgreich geändert');
+          }
+          this.closeViewModal();
+          this.loadTickets();
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Speichern:', error);
+        alert('Fehler beim Speichern');
+      }
+    });
+  }
+
+  getImageUrl(ticketId: string, filename: string): string {
+    return this.todoService.getSupportTicketImageUrl(ticketId, filename);
+  }
+
+  showCreateTicketModal(): void {
+    this.newTicket = {
+      title: '',
+      description: '',
+      priority: 'medium'
+    };
+    this.selectedImages = [];
+    this.imagePreviews = [];
+    this.showCreateModal = true;
+  }
+
+  closeCreateModal(): void {
+    this.showCreateModal = false;
+  }
+
+  closeViewModal(): void {
+    this.showViewModal = false;
+    this.selectedTicket = null;
+  }
+
+  getPriorityLabel(priority: string): string {
+    const labels: { [key: string]: string } = {
+      'low': 'Niedrig',
+      'medium': 'Mittel',
+      'high': 'Hoch'
+    };
+    return labels[priority] || priority;
+  }
+
+  getStatusLabel(status: string): string {
+    const labels: { [key: string]: string } = {
+      'open': 'Offen',
+      'in_progress': 'In Bearbeitung',
+      'completed': 'Abgeschlossen'
+    };
+    return labels[status] || status;
+  }
+
+  getBeraterName(ticket: Todo): string {
+    if (typeof ticket.beraterId === 'object') {
+      return `${ticket.beraterId.firstName} ${ticket.beraterId.lastName}`;
+    }
+    return 'Unbekannt';
+  }
+
+  openImageViewer(imageUrl: string): void {
+    // Extract filename from URL (remove query parameters)
+    const urlWithoutQuery = imageUrl.split('?')[0];
+    const filename = urlWithoutQuery.split('/').pop() || 'ticket-image.png';
+    this.fileViewerService.open(imageUrl, filename);
+  }
+}

@@ -58,6 +58,36 @@ const todoSchema = new mongoose.Schema({
   completedAt: {
     type: Date,
     default: null
+  },
+  // Support Ticket Felder
+  isSupportTicket: {
+    type: Boolean,
+    default: false
+  },
+  ticketImages: [{
+    filename: String,
+    originalName: String,
+    path: String,
+    mimeType: String,
+    size: Number,
+    uploadedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  // Für Superadmin: Antwort auf Support-Ticket
+  adminResponse: {
+    type: String,
+    default: null
+  },
+  adminResponseAt: {
+    type: Date,
+    default: null
+  },
+  respondedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   }
 }, {
   timestamps: true

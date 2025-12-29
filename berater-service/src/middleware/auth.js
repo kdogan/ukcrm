@@ -92,3 +92,39 @@ exports.requireSuperAdmin = (req, res, next) => {
   }
   next();
 };
+
+// Auth Middleware für Bild-URLs (akzeptiert Token aus Query-Parameter)
+exports.authenticateFromQuery = async (req, res, next) => {
+  try {
+    // Token aus Query-Parameter extrahieren
+    const token = req.query.token;
+
+    if (!token) {
+      return res.status(401).send('Kein Token vorhanden');
+    }
+
+    // Token verifizieren
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // User laden
+    const user = await User.findById(decoded.userId).select('-passwordHash');
+    if (!user || !user.isActive) {
+      return res.status(401).send('Ungültiger Token oder Benutzer inaktiv');
+    }
+
+    // Prüfe ob Benutzer blockiert ist
+    if (user.isBlocked) {
+      return res.status(403).send('Ihr Konto wurde blockiert');
+    }
+
+    // User an Request anhängen
+    req.user = user;
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).send('Token abgelaufen');
+    }
+
+    return res.status(401).send('Ungültiger Token');
+  }
+};

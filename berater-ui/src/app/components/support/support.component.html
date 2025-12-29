@@ -1,0 +1,258 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Support Tickets</h1>
+    @if(!isSuperAdmin){
+      <button class="btn-primary" (click)="showCreateTicketModal()">
+        <i class="fas fa-plus"></i> Neues Ticket erstellen
+      </button>
+    }
+  </div>
+
+  @if(isSuperAdmin){
+    <div class="info-box">
+      <i class="fas fa-info-circle"></i>
+      Sie sehen alle Support-Tickets von allen Beratern
+    </div>
+  }
+
+  <div class="tickets-grid">
+    @for(ticket of tickets; track ticket._id){
+      <div class="ticket-card" (click)="viewTicket(ticket)">
+        <div class="ticket-header">
+          <div class="ticket-title">
+            <i class="fas fa-ticket-alt"></i>
+            {{ ticket.title }}
+          </div>
+          <span class="badge"
+                [class.badge-high]="ticket.priority === 'high'"
+                [class.badge-medium]="ticket.priority === 'medium'"
+                [class.badge-low]="ticket.priority === 'low'">
+            {{ getPriorityLabel(ticket.priority) }}
+          </span>
+        </div>
+
+        <p class="ticket-description">{{ ticket.description }}</p>
+
+        @if(isSuperAdmin && typeof ticket.beraterId === 'object'){
+          <div class="ticket-berater">
+            <i class="fas fa-user"></i>
+            Von: {{ getBeraterName(ticket) }}
+          </div>
+        }
+
+        <div class="ticket-footer">
+          <span class="ticket-status"
+                [class.status-open]="ticket.status === 'open'"
+                [class.status-progress]="ticket.status === 'in_progress'"
+                [class.status-completed]="ticket.status === 'completed'">
+            {{ getStatusLabel(ticket.status) }}
+          </span>
+
+          @if(ticket.ticketImages && ticket.ticketImages.length > 0){
+            <span class="ticket-images-count">
+              <i class="fas fa-image"></i> {{ ticket.ticketImages.length }}
+            </span>
+          }
+
+          @if(ticket.adminResponse){
+            <span class="ticket-has-response">
+              <i class="fas fa-reply"></i> Beantwortet
+            </span>
+          }
+
+          <span class="ticket-date">{{ ticket.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+        </div>
+      </div>
+    }@empty{
+      <div class="no-data">
+        @if(isSuperAdmin){
+          Keine Support-Tickets vorhanden
+        }@else{
+          Sie haben noch keine Support-Tickets erstellt.
+          Klicken Sie auf "Neues Ticket erstellen" um ein Problem zu melden.
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Create Ticket Modal -->
+@if(showCreateModal){
+  <div class="modal-overlay" (click)="closeCreateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Neues Support-Ticket erstellen</h2>
+        <button class="btn-close" (click)="closeCreateModal()">&times;</button>
+      </div>
+
+      <form (ngSubmit)="createTicket()">
+        <div class="form-group">
+          <label>Titel*</label>
+          <input type="text" [(ngModel)]="newTicket.title" name="title" required
+                 placeholder="Kurze Beschreibung des Problems">
+        </div>
+
+        <div class="form-group">
+          <label>Beschreibung*</label>
+          <textarea [(ngModel)]="newTicket.description" name="description"
+                    rows="6" required
+                    placeholder="Detaillierte Beschreibung des Problems..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Priorität</label>
+          <select [(ngModel)]="newTicket.priority" name="priority">
+            <option value="low">Niedrig</option>
+            <option value="medium">Mittel</option>
+            <option value="high">Hoch</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Bilder hochladen (max. 5)</label>
+          <input type="file" accept="image/*" multiple (change)="onImageSelect($event)"
+                 #fileInput>
+          <small>JPEG, PNG, GIF oder WebP (max. 5MB pro Bild)</small>
+        </div>
+
+        @if(imagePreviews.length > 0){
+          <div class="image-previews">
+            @for(preview of imagePreviews; track $index){
+              <div class="image-preview">
+                <img [src]="preview" alt="Vorschau">
+                <button type="button" class="remove-image" (click)="removeImage($index)">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeCreateModal()">Abbrechen</button>
+          <button type="submit" class="btn-primary">Ticket erstellen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- View Ticket Modal -->
+@if(showViewModal && selectedTicket){
+  <div class="modal-overlay" (click)="closeViewModal()">
+    <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ selectedTicket.title }}</h2>
+        <button class="btn-close" (click)="closeViewModal()">&times;</button>
+      </div>
+
+      <div class="ticket-details">
+        <div class="detail-row">
+          <strong>Status:</strong>
+          <span class="ticket-status"
+                [class.status-open]="selectedTicket.status === 'open'"
+                [class.status-progress]="selectedTicket.status === 'in_progress'"
+                [class.status-completed]="selectedTicket.status === 'completed'">
+            {{ getStatusLabel(selectedTicket.status) }}
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <strong>Priorität:</strong>
+          <span class="badge"
+                [class.badge-high]="selectedTicket.priority === 'high'"
+                [class.badge-medium]="selectedTicket.priority === 'medium'"
+                [class.badge-low]="selectedTicket.priority === 'low'">
+            {{ getPriorityLabel(selectedTicket.priority) }}
+          </span>
+        </div>
+
+        @if(isSuperAdmin){
+          <div class="detail-row">
+            <strong>Von:</strong>
+            {{ getBeraterName(selectedTicket) }}
+          </div>
+        }
+
+        <div class="detail-row">
+          <strong>Erstellt am:</strong>
+          {{ selectedTicket.createdAt | date:'dd.MM.yyyy HH:mm' }}
+        </div>
+
+        <div class="detail-section">
+          <strong>Beschreibung:</strong>
+          <p class="ticket-description-full">{{ selectedTicket.description }}</p>
+        </div>
+
+        @if(selectedTicket.ticketImages && selectedTicket.ticketImages.length > 0){
+          <div class="detail-section">
+            <strong>Angehängte Bilder:</strong>
+            <div class="ticket-images">
+              @for(image of selectedTicket.ticketImages; track image.filename){
+                <div class="ticket-image" (click)="openImageViewer(getImageUrl(selectedTicket._id, image.filename))">
+                  <img [src]="getImageUrl(selectedTicket._id, image.filename)"
+                       [alt]="image.originalName">
+                  <span class="image-name">{{ image.originalName }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if(selectedTicket.adminResponse){
+          <div class="detail-section admin-response">
+            <strong>
+              <i class="fas fa-reply"></i> Antwort vom Support:
+            </strong>
+            <p>{{ selectedTicket.adminResponse }}</p>
+            <small>
+              Beantwortet am {{ selectedTicket.adminResponseAt | date:'dd.MM.yyyy HH:mm' }}
+              @if(selectedTicket.respondedBy){
+                von {{ selectedTicket.respondedBy.firstName }} {{ selectedTicket.respondedBy.lastName }}
+              }
+            </small>
+          </div>
+        }
+
+        @if(isSuperAdmin){
+          <div class="detail-section">
+            @if(!selectedTicket.adminResponse){
+              <strong>Antwort hinzufügen:</strong>
+              <textarea [(ngModel)]="adminResponse"
+                        rows="4"
+                        placeholder="Ihre Antwort an den Berater..."></textarea>
+            }@else{
+              <strong>Weitere Antwort hinzufügen:</strong>
+              <textarea [(ngModel)]="adminResponse"
+                        rows="4"
+                        placeholder="Weitere Antwort oder Update..."></textarea>
+            }
+
+            <div class="form-group">
+              <label>Status ändern:</label>
+              <select [(ngModel)]="responseStatus">
+                <option value="open">Offen</option>
+                <option value="in_progress">In Bearbeitung</option>
+                <option value="completed">Abgeschlossen</option>
+              </select>
+            </div>
+
+            <button class="btn-primary" (click)="submitResponse()">
+              <i class="fas fa-paper-plane"></i>
+              @if(!selectedTicket.adminResponse){
+                Antwort senden
+              }@else{
+                Update senden
+              }
+            </button>
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeViewModal()">Schließen</button>
+      </div>
+    </div>
+  </div>
+}
+

@@ -5,7 +5,12 @@ import { environment } from '../../environments/environment';
 
 export interface Todo {
   _id: string;
-  beraterId: string;
+  beraterId: string | {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
   title: string;
   description?: string;
   status: 'open' | 'in_progress' | 'completed';
@@ -33,6 +38,23 @@ export interface Todo {
   completedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  // Support Ticket Fields
+  isSupportTicket?: boolean;
+  ticketImages?: Array<{
+    filename: string;
+    originalName: string;
+    path: string;
+    mimeType: string;
+    size: number;
+    uploadedAt: Date;
+  }>;
+  adminResponse?: string;
+  adminResponseAt?: Date;
+  respondedBy?: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
 }
 
 export interface CreateTodoDto {
@@ -80,5 +102,23 @@ export class TodoService {
 
   generateExpiringContractTodos(): Observable<any> {
     return this.http.post(`${this.apiUrl}/generate-expiring`, {});
+  }
+
+  // Support Ticket Methods
+  createSupportTicket(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/support-ticket`, formData);
+  }
+
+  getSupportTickets(params?: any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/support-tickets`, { params });
+  }
+
+  respondToSupportTicket(id: string, response: string, status?: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/support-ticket/${id}/respond`, { response, status });
+  }
+
+  getSupportTicketImageUrl(ticketId: string, filename: string): string {
+    const token = localStorage.getItem('token');
+    return `${this.apiUrl}/support-ticket/image/${ticketId}/${filename}?token=${token}`;
   }
 }
