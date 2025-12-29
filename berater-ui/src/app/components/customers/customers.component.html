@@ -39,7 +39,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let customer of customers">
+        @for(customer of customers; track customer){
+        <tr>
           <!-- <td data-label="Kundennr.">{{ customer.customerNumber }}</td> -->
           <td data-label="Name">{{ customer.firstName }} {{ customer.lastName }}</td>
           <td data-label="E-Mail">{{ customer.email || '-' }}</td>
@@ -75,6 +76,7 @@
             </div>
           </td>
         </tr>
+      }
       </tbody>
     </table>
   </app-table-container>
@@ -82,7 +84,8 @@
 }
 
 <!-- Modal for Create/Edit Customer -->
-<app-overlay-modal *ngIf="showModal" (close)="closeModal()">
+ @if(showModal){
+<app-overlay-modal (close)="closeModal()">
   <h2>{{ editMode ? 'Kunde bearbeiten' : 'Neuer Kunde' }}</h2>
   <form (ngSubmit)="saveCustomer()">
     <div class="form-row">
@@ -147,9 +150,11 @@
     </div>
   </form>
 </app-overlay-modal>
+}
 
 <!-- Modal for Customer Details -->
-<app-overlay-modal *ngIf="showCustomerDetailsModal" (close)="closeCustomerDetailsModal()">
+ @if(showCustomerDetailsModal){
+<app-overlay-modal (close)="closeCustomerDetailsModal()">
   <div class="modal-header">
     <h2>{{ selectedCustomer?.fullName }}</h2>
     <button class="btn-close" (click)="closeCustomerDetailsModal()">
@@ -211,3 +216,4 @@
     <button type="button" class="btn-secondary" (click)="closeCustomerDetailsModal()">Schließen</button>
   </div>
 </app-overlay-modal>
+}
