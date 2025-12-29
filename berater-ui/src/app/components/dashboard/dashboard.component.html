@@ -5,6 +5,9 @@
     [isSuperAdmin]="isSuperAdmin"
     [maxContracts]="maxContracts"
     [maxUsers]="maxUsers"
+    [subscriptionInfo]="subscriptionInfo"
+    [subscriptionWarningMessage]="getSubscriptionWarningMessage()"
+    [subscriptionWarningLevel]="getSubscriptionWarningLevel()"
     (approveUpgradeEvent)="approveUpgrade($event)"
     (rejectUpgradeEvent)="rejectUpgrade($event)"
   ></app-dashboard-mobile>
@@ -68,6 +71,109 @@
                 <span class="bar-value">{{ item.count }}</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Ablaufende Pakete -->
+        <div class="expiring-subscriptions-section" *ngIf="expiringSubscriptions.length > 0 || expiredSubscriptions.length > 0">
+          <h2>⚠️ Ablaufende & Abgelaufene Pakete</h2>
+
+          <div class="stats-grid" style="margin-bottom: 20px;">
+            <div class="stat-card priority-high">
+              <h3>⏰ Abgelaufen</h3>
+              <div class="stat-number">{{ expiredSubscriptions.length }}</div>
+              <div class="stat-label">Pakete</div>
+            </div>
+            <div class="stat-card">
+              <h3>⚠️ Dringend (≤7 Tage)</h3>
+              <div class="stat-number">{{ getCountByWarningLevel('danger') }}</div>
+              <div class="stat-label">Pakete</div>
+            </div>
+            <div class="stat-card">
+              <h3>📅 Warnung (≤14 Tage)</h3>
+              <div class="stat-number">{{ getCountByWarningLevel('warning') }}</div>
+              <div class="stat-label">Pakete</div>
+            </div>
+            <div class="stat-card">
+              <h3>ℹ️ Info (≤30 Tage)</h3>
+              <div class="stat-number">{{ getCountByWarningLevel('info') }}</div>
+              <div class="stat-label">Pakete</div>
+            </div>
+          </div>
+
+          <!-- Action Button for Expired Packages -->
+          <div *ngIf="expiredSubscriptions.length > 0" style="margin-bottom: 1.5rem;">
+            <button class="btn-danger" (click)="downgradeExpiredPackages()">
+              🔽 Alle abgelaufenen Pakete auf "Free" herabstufen ({{ expiredSubscriptions.length }})
+            </button>
+          </div>
+
+          <!-- Expired Subscriptions Table -->
+          <div *ngIf="expiredSubscriptions.length > 0" style="margin-bottom: 2rem;">
+            <h3 style="color: #c62828; margin-bottom: 1rem;">❌ Abgelaufene Pakete</h3>
+            <app-table-container>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Benutzer</th>
+                    <th>E-Mail</th>
+                    <th>Paket</th>
+                    <th>Abgelaufen seit</th>
+                    <th>Letzter Login</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let user of expiredSubscriptions">
+                    <td>{{ user.firstName }} {{ user.lastName }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.package }}</td>
+                    <td>
+                      <span class="badge badge-expired">
+                        {{ user.daysExpired }} Tag{{ user.daysExpired === 1 ? '' : 'e' }}
+                      </span>
+                    </td>
+                    <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : 'Nie' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </app-table-container>
+          </div>
+
+          <!-- Expiring Subscriptions Table -->
+          <div *ngIf="expiringSubscriptions.length > 0">
+            <h3 style="color: #f57c00; margin-bottom: 1rem;">⏰ Bald ablaufende Pakete</h3>
+            <app-table-container>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Benutzer</th>
+                    <th>E-Mail</th>
+                    <th>Paket</th>
+                    <th>Tage bis Ablauf</th>
+                    <th>Warnstufe</th>
+                    <th>Letzter Login</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let user of expiringSubscriptions">
+                    <td>{{ user.firstName }} {{ user.lastName }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.package }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
+                        {{ user.daysUntilExpiration }} Tag{{ user.daysUntilExpiration === 1 ? '' : 'e' }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
+                        {{ getWarningLevelLabel(user.warningLevel) }}
+                      </span>
+                    </td>
+                    <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : 'Nie' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </app-table-container>
           </div>
         </div>
 
@@ -141,6 +247,32 @@
 
       <!-- Berater/Admin Dashboard -->
       <div *ngIf="!isSuperAdmin">
+        <!-- Subscription Expiration Warning -->
+        <div *ngIf="shouldShowSubscriptionWarning()"
+             class="subscription-warning-banner"
+             [class.warning-expired]="getSubscriptionWarningLevel() === 'expired'"
+             [class.warning-danger]="getSubscriptionWarningLevel() === 'danger'"
+             [class.warning-warning]="getSubscriptionWarningLevel() === 'warning'"
+             [class.warning-info]="getSubscriptionWarningLevel() === 'info'">
+          <div class="warning-icon">
+            <i class="fas"
+               [class.fa-exclamation-triangle]="getSubscriptionWarningLevel() === 'expired' || getSubscriptionWarningLevel() === 'danger'"
+               [class.fa-info-circle]="getSubscriptionWarningLevel() === 'warning' || getSubscriptionWarningLevel() === 'info'"></i>
+          </div>
+          <div class="warning-content">
+            <div class="warning-title">
+              <span *ngIf="getSubscriptionWarningLevel() === 'expired'">Paket abgelaufen</span>
+              <span *ngIf="getSubscriptionWarningLevel() === 'danger'">Paket läuft bald ab!</span>
+              <span *ngIf="getSubscriptionWarningLevel() === 'warning'">Paket-Erinnerung</span>
+              <span *ngIf="getSubscriptionWarningLevel() === 'info'">Paket-Information</span>
+            </div>
+            <div class="warning-message">{{ getSubscriptionWarningMessage() }}</div>
+          </div>
+          <div class="warning-action">
+            <a routerLink="/settings" class="btn-renew">Paket verlängern</a>
+          </div>
+        </div>
+
         <div class="stats-grid" *ngIf="stats">
           <!-- Erinnerungen -->
           <div class="stat-card priority-high" *ngIf="stats.reminders">

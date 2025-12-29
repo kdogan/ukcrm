@@ -134,6 +134,32 @@
   <!-- BERATER/ADMIN VIEW -->
   <div *ngIf="!isSuperAdmin" class="mobile-content">
 
+    <!-- Subscription Expiration Warning -->
+    <div *ngIf="shouldShowSubscriptionWarning()"
+         class="subscription-warning-banner"
+         [class.warning-expired]="subscriptionWarningLevel === 'expired'"
+         [class.warning-danger]="subscriptionWarningLevel === 'danger'"
+         [class.warning-warning]="subscriptionWarningLevel === 'warning'"
+         [class.warning-info]="subscriptionWarningLevel === 'info'">
+      <div class="warning-icon">
+        <i class="fas"
+           [class.fa-exclamation-triangle]="subscriptionWarningLevel === 'expired' || subscriptionWarningLevel === 'danger'"
+           [class.fa-info-circle]="subscriptionWarningLevel === 'warning' || subscriptionWarningLevel === 'info'"></i>
+      </div>
+      <div class="warning-content">
+        <div class="warning-title">
+          <span *ngIf="subscriptionWarningLevel === 'expired'">Paket abgelaufen</span>
+          <span *ngIf="subscriptionWarningLevel === 'danger'">Paket läuft bald ab!</span>
+          <span *ngIf="subscriptionWarningLevel === 'warning'">Paket-Erinnerung</span>
+          <span *ngIf="subscriptionWarningLevel === 'info'">Paket-Information</span>
+        </div>
+        <div class="warning-message">{{ subscriptionWarningMessage }}</div>
+        <div class="warning-action">
+          <a routerLink="/settings" class="btn-renew">Paket verlängern</a>
+        </div>
+      </div>
+    </div>
+
     <!-- Stats Cards -->
     <div class="stats-cards" *ngIf="stats">
       <!-- Erinnerungen -->

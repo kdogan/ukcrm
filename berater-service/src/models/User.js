@@ -137,9 +137,6 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index für schnelle Suche
-userSchema.index({ email: 1 });
-
 // Passwort hashen vor dem Speichern
 userSchema.pre('save', async function(next) {
   if (!this.isModified('passwordHash')) {

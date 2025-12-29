@@ -51,7 +51,7 @@ const meterSchema = new mongoose.Schema({
 });
 
 // Indizes
-meterSchema.index({ meterNumber: 1 });
+// meterNumber has unique: true, so no need for explicit index
 meterSchema.index({ beraterId: 1, currentCustomerId: 1 });
 
 // Virtuelles Feld für Status

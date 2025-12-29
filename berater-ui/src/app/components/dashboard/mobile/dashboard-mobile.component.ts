@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { SubscriptionInfo } from '../../../services/subscription.service';
 
 @Component({
   selector: 'app-dashboard-mobile',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './dashboard-mobile.component.html',
   styleUrl: './dashboard-mobile.component.scss',
   standalone: true
@@ -15,9 +17,18 @@ export class DashboardMobileComponent {
   @Input() isSuperAdmin: boolean = false;
   @Input() maxContracts: number = 0;
   @Input() maxUsers: number = 0;
+  @Input() subscriptionInfo: SubscriptionInfo | null = null;
+  @Input() subscriptionWarningMessage: string | null = null;
+  @Input() subscriptionWarningLevel: 'expired' | 'danger' | 'warning' | 'info' | null = null;
 
   @Output() approveUpgradeEvent = new EventEmitter<string>();
   @Output() rejectUpgradeEvent = new EventEmitter<string>();
+
+  shouldShowSubscriptionWarning(): boolean {
+    return this.subscriptionInfo !== null &&
+           this.subscriptionInfo.isExpiringSoon &&
+           this.subscriptionInfo.package !== 'free';
+  }
 
   getDaysRemaining(endDate: string): number {
     const end = new Date(endDate);

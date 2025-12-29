@@ -110,7 +110,7 @@ const contractSchema = new mongoose.Schema({
 
 // Compound Indizes
 contractSchema.index({ beraterId: 1, status: 1, endDate: 1 });
-contractSchema.index({ contractNumber: 1 });
+// contractNumber has unique: true, so no need for explicit index
 
 // Auto-generate contract number
 contractSchema.pre('save', async function(next) {

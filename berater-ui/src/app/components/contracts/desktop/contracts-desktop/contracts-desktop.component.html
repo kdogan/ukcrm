@@ -40,25 +40,34 @@
         <tr *ngFor="let contract of contracts">
           <td>{{ contract.contractNumber }}</td>
           <td>
-            <a *ngIf="contract.customerId" class="clickable-link"
+            @if(contract.customerId){
+            <a class="clickable-link"
               (click)="showCustomer.emit(contract.customerId._id); $event.stopPropagation()" title="Kunde anzeigen">
               {{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}
             </a>
-            <span *ngIf="!contract.customerId">-</span>
+          } @else{
+            <span>-</span>
+          }
           </td>
           <td>
-            <a *ngIf="contract.meterId" class="clickable-link"
+            @if(contract.meterId){
+            <a class="clickable-link"
               (click)="showMeter.emit(contract.meterId._id); $event.stopPropagation()" title="Zähler anzeigen">
               {{ contract.meterId?.meterNumber }}
             </a>
-            <span *ngIf="!contract.meterId">-</span>
+          } @else {
+            <span>-</span>
+          }
           </td>
           <td>
-            <a *ngIf="contract.supplierId" class="clickable-link"
+            @if(contract.supplierId){
+            <a class="clickable-link"
               (click)="showSupplier.emit(contract.supplierId._id); $event.stopPropagation()" title="Anbieter anzeigen">
               {{ contract.supplierId?.name }}
             </a>
-            <span *ngIf="!contract.supplierId">-</span>
+          }@else{
+            <span>-</span>
+          }
           </td>
           <td>{{ contract.startDate | date:'dd.MM.yyyy' }}</td>
           <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
@@ -67,9 +76,10 @@
           <td class="actions-cell">
             <div class="action-menu-container">
               <button class="action-menu-btn" (click)="emitActionMenuId(contract._id); $event.stopPropagation()">
-                ⋮
+                <i class="fas fa-ellipsis-v"></i>
               </button>
-              <div class="action-menu" *ngIf="activeMenuId === contract._id" (click)="$event.stopPropagation()">
+              @if(activeMenuId === contract._id){
+              <div class="action-menu" (click)="$event.stopPropagation()">
                 <button class="menu-item" (click)="edit.emit(contract); closeActionMenu.emit()">
                   ✏️ Bearbeiten
                 </button>
@@ -77,6 +87,7 @@
                   🗑️ Löschen
                 </button>
               </div>
+            }
             </div>
           </td>
         </tr>

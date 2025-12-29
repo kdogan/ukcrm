@@ -45,11 +45,14 @@
           <td data-label="Name">{{ customer.firstName }} {{ customer.lastName }}</td>
           <td data-label="E-Mail">{{ customer.email || '-' }}</td>
           <td data-label="Telefon">
-            <span *ngIf="customer.phone" class="phone-container">
+            @if(customer.phone){
+            <span class="phone-container">
               {{ customer.phone }}
               <a [href]="'tel:' + customer.phone" class="phone-icon" title="Anrufen">📞</a>
             </span>
-            <span *ngIf="!customer.phone">-</span>
+          }@else{
+            <span>-</span>
+          }
           </td>
           <td data-label="Status">
             <span class="badge" [class.badge-active]="customer.isActive" [class.badge-inactive]="!customer.isActive">
@@ -61,18 +64,20 @@
               <button class="action-menu-btn" (click)="toggleActionMenu(customer._id); $event.stopPropagation()">
                 <i class="fas fa-ellipsis-v"></i>
               </button>
-              <div class="action-menu" *ngIf="activeMenuId === customer._id" (click)="$event.stopPropagation()">
-                <button class="menu-item" (click)="showCustomerDetails(customer); closeActionMenu()">
-                  <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
-                </button>
-                <button class="menu-item" (click)="editCustomer(customer); closeActionMenu()">
-                  <i class="fas fa-edit fa-lg"></i> Bearbeiten
-                </button>
-                <button class="menu-item menu-item-danger"
-                  (click)="deleteCustomer(customer._id); closeActionMenu()">
-                  <i class="fas fa-trash fa-lg"></i> Löschen
-                </button>
-              </div>
+              @if(activeMenuId === customer._id){
+                <div class="action-menu" (click)="$event.stopPropagation()">
+                  <button class="menu-item" (click)="showCustomerDetails(customer); closeActionMenu()">
+                    <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
+                  </button>
+                  <button class="menu-item" (click)="editCustomer(customer); closeActionMenu()">
+                    <i class="fas fa-edit fa-lg"></i> Bearbeiten
+                  </button>
+                  <button class="menu-item menu-item-danger"
+                    (click)="deleteCustomer(customer._id); closeActionMenu()">
+                    <i class="fas fa-trash fa-lg"></i> Löschen
+                  </button>
+                </div>
+              }
             </div>
           </td>
         </tr>

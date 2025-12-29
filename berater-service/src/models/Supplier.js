@@ -53,8 +53,7 @@ const supplierSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index
-supplierSchema.index({ name: 1 });
+// Index (name has unique: true, so no need for explicit index)
 supplierSchema.index({ isActive: 1 });
 
 module.exports = mongoose.model('Supplier', supplierSchema);

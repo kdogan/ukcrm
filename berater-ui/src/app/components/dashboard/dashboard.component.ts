@@ -2,9 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
+import { SubscriptionService, SubscriptionInfo, ExpiringSubscriptionsResponse, ExpiringUser } from '../../services/subscription.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { DashboardMobileComponent } from './mobile/dashboard-mobile.component';
@@ -13,7 +15,7 @@ import { DashboardMobileComponent } from './mobile/dashboard-mobile.component';
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
-    imports: [CommonModule, FormsModule, TableContainerComponent, DashboardMobileComponent],
+    imports: [CommonModule, FormsModule, RouterLink, TableContainerComponent, DashboardMobileComponent],
     standalone: true
 })
 export class DashboardComponent implements OnInit, OnDestroy {
@@ -23,6 +25,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   maxUsers = 0;
   isSuperAdmin = false;
   currentUser: any = null;
+  subscriptionInfo: SubscriptionInfo | null = null;
+  expiringSubscriptions: ExpiringUser[] = [];
+  expiredSubscriptions: ExpiringUser[] = [];
+  expiringDaysThreshold = 30;
   private subscription: Subscription = new Subscription();
 
   get isMobile() {
@@ -33,6 +39,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private dashboardService: DashboardService,
     private authService: AuthService,
     private adminService: AdminService,
+    private subscriptionService: SubscriptionService,
     private viewport: ViewportService
   ) {}
 
@@ -46,12 +53,94 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (this.isSuperAdmin) {
         this.loadUserStats();
         this.loadStats(); // Load dashboard stats to get upgrade requests
+        this.loadExpiringSubscriptions(); // Load expiring subscriptions for Superadmin
       } else {
         this.loadStats();
+        this.loadSubscriptionInfo(); // Load subscription info for Berater
       }
     });
 
     this.subscription.add(userSub);
+  }
+
+  loadSubscriptionInfo(): void {
+    this.subscriptionService.loadMySubscription().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.subscriptionInfo = response.data;
+        }
+      },
+      error: (error) => console.error('Error loading subscription info:', error)
+    });
+  }
+
+  getSubscriptionWarningMessage(): string | null {
+    return this.subscriptionService.getWarningMessage();
+  }
+
+  getSubscriptionWarningLevel(): 'expired' | 'danger' | 'warning' | 'info' | null {
+    return this.subscriptionService.getWarningLevel();
+  }
+
+  shouldShowSubscriptionWarning(): boolean {
+    return this.subscriptionInfo !== null &&
+           this.subscriptionInfo.isExpiringSoon &&
+           this.subscriptionInfo.package !== 'free';
+  }
+
+  loadExpiringSubscriptions(): void {
+    this.subscriptionService.getExpiringSubscriptions(this.expiringDaysThreshold).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.expiringSubscriptions = response.data.expiring;
+          this.expiredSubscriptions = response.data.expired;
+        }
+      },
+      error: (error) => console.error('Error loading expiring subscriptions:', error)
+    });
+  }
+
+  getWarningLevelBadgeClass(level: string): string {
+    const classes: any = {
+      'expired': 'badge-expired',
+      'danger': 'badge-danger-warning',
+      'warning': 'badge-warning',
+      'info': 'badge-info'
+    };
+    return classes[level] || '';
+  }
+
+  getWarningLevelLabel(level: string): string {
+    const labels: any = {
+      'expired': 'Abgelaufen',
+      'danger': 'Dringend',
+      'warning': 'Warnung',
+      'info': 'Info'
+    };
+    return labels[level] || level;
+  }
+
+  getCountByWarningLevel(level: string): number {
+    return this.expiringSubscriptions.filter(sub => sub.warningLevel === level).length;
+  }
+
+  downgradeExpiredPackages(): void {
+    if (!confirm('Möchten Sie wirklich alle abgelaufenen Pakete auf "Free" herabstufen?')) {
+      return;
+    }
+
+    this.subscriptionService.downgradeExpiredSubscriptions().subscribe({
+      next: (response) => {
+        if (response.success) {
+          alert(`${response.data.length} Paket(e) wurden erfolgreich herabgestuft.`);
+          this.loadExpiringSubscriptions(); // Reload list
+        }
+      },
+      error: (error) => {
+        console.error('Error downgrading packages:', error);
+        alert(error.error?.message || 'Fehler beim Herabstufen der Pakete');
+      }
+    });
   }
 
   ngOnDestroy(): void {

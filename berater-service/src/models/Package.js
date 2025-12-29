@@ -85,7 +85,7 @@ packageSchema.set('toJSON', { virtuals: true });
 packageSchema.set('toObject', { virtuals: true });
 
 // Index für schnellere Abfragen
-packageSchema.index({ name: 1 });
+// name has unique: true, so no need for explicit index
 packageSchema.index({ isActive: 1 });
 
 module.exports = mongoose.model('Package', packageSchema);

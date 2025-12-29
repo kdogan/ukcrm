@@ -76,7 +76,7 @@ const customerSchema = new mongoose.Schema({
 
 // Compound Index für Berater und Status
 customerSchema.index({ beraterId: 1, isActive: 1 });
-customerSchema.index({ customerNumber: 1 });
+// customerNumber has unique: true, so no need for explicit index
 
 // Auto-generate customer number
 customerSchema.pre('save', async function(next) {
