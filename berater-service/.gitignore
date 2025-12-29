@@ -31,3 +31,13 @@ Thumbs.db
 # Build
 dist/
 build/
+
+# Uploads (development files)
+uploads/support-tickets/*
+uploads/contracts/*
+uploads/messages/*
+
+# Keep the upload directories but ignore their contents
+!uploads/support-tickets/.gitkeep
+!uploads/contracts/.gitkeep
+!uploads/messages/.gitkeep

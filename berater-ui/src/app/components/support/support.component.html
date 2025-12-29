@@ -8,9 +8,21 @@
     }
   </div>
 
-  @if(isSuperAdmin){
+  @if(!isSuperAdmin){
     <div class="info-box">
       <i class="fas fa-info-circle"></i>
+      <div>
+        <strong>Willkommen beim Support-System!</strong>
+        <p>Haben Sie technische Probleme, Fragen zur Anwendung oder benötigen Sie Hilfe?
+        Erstellen Sie hier ein Support-Ticket und unser Team wird sich schnellstmöglich um Ihr Anliegen kümmern.
+        Sie können Bilder anhängen, um Probleme besser zu veranschaulichen.</p>
+      </div>
+    </div>
+  }
+
+  @if(isSuperAdmin){
+    <div class="info-box admin">
+      <i class="fas fa-user-shield"></i>
       Sie sehen alle Support-Tickets von allen Beratern
     </div>
   }
