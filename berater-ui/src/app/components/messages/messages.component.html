@@ -11,7 +11,8 @@
     (selectConversationEvent)="selectConversation($event)"
     (startConversationEvent)="startConversation($event)"
     (messageTextChange)="messageText = $event"
-    (toggleUserPickerEvent)="showUserPicker = !showUserPicker">
+    (toggleUserPickerEvent)="showUserPicker = !showUserPicker"
+    (backToListEvent)="selectedConversation = null">
   </app-messages-mobile>
 
 }@else {

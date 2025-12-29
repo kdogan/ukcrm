@@ -5,8 +5,7 @@ const {
   getCustomer,
   createCustomer,
   updateCustomer,
-  deactivateCustomer,
-  reactivateCustomer
+  deleteCustomer
 } = require('../controllers/customerController');
 const { authenticate } = require('../middleware/auth');
 
@@ -18,9 +17,7 @@ router.route('/')
 
 router.route('/:id')
   .get(getCustomer)
-  .put(updateCustomer);
-
-router.patch('/:id/deactivate', deactivateCustomer);
-router.patch('/:id/reactivate', reactivateCustomer);
+  .put(updateCustomer)
+  .delete(deleteCustomer);
 
 module.exports = router;

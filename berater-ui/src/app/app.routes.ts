@@ -99,11 +99,12 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./components/settings/settings.component').then(m => m.SettingsComponent)
-      },
-      {
-        path: 'messages',
-        loadComponent: () => import('./components/messages/messages.component').then(m => m.MessagesComponent)
       }
+      // Messages temporarily disabled for performance
+      // {
+      //   path: 'messages',
+      //   loadComponent: () => import('./components/messages/messages.component').then(m => m.MessagesComponent)
+      // }
     ]
   },
   {

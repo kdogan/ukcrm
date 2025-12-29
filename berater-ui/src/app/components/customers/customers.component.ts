@@ -140,10 +140,18 @@ export class CustomersComponent implements OnInit {
     }
   }
 
-  deactivateCustomer(id: string): void {
-    if (confirm('Kunde wirklich deaktivieren?')) {
-      this.customerService.deactivateCustomer(id).subscribe({
-        next: () => this.loadCustomers()
+  deleteCustomer(id: string): void {
+    if (confirm('Kunde wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+      this.customerService.deleteCustomer(id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadCustomers();
+          }
+        },
+        error: (error) => {
+          const errorMessage = error.error?.message || 'Kunde konnte nicht gelöscht werden';
+          alert(errorMessage);
+        }
       });
     }
   }

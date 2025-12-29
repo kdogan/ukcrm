@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { SettingsService, UserSettings } from '../../services/settings.service';
-import { UnreadMessagesService } from '../../services/unread-messages.service';
 
 @Component({
     selector: 'app-layout',
@@ -16,12 +15,10 @@ export class LayoutComponent implements OnInit {
   settings!: UserSettings;
   sidebarColor: string = '';
   sidebarOpen = false;
-  unreadMessagesCount = 0;
 
   constructor(
     private authService: AuthService,
-    private settingsService: SettingsService,
-    public unreadMessagesService: UnreadMessagesService
+    private settingsService: SettingsService
   ) {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -37,14 +34,6 @@ export class LayoutComponent implements OnInit {
       this.settings = settings;
       this.sidebarColor = this.settingsService.getSidebarColor();
     });
-
-    // Subscribe to unread messages count
-    this.unreadMessagesService.unreadCount$.subscribe(count => {
-      this.unreadMessagesCount = count;
-    });
-
-    // Initial load of unread count
-    this.unreadMessagesService.updateUnreadCount();
   }
 
   getUserInitials(): string {

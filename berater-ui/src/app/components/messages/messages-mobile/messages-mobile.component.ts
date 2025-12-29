@@ -25,6 +25,7 @@ export class MessagesMobileComponent {
   @Output() startConversationEvent = new EventEmitter<string>();
   @Output() messageTextChange = new EventEmitter<string>();
   @Output() toggleUserPickerEvent = new EventEmitter<void>();
+  @Output() backToListEvent = new EventEmitter<void>();
 
   @ViewChild('messageTextarea') messageTextarea!: ElementRef<HTMLTextAreaElement>;
 

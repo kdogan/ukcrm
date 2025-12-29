@@ -48,7 +48,7 @@
       <div class="actions">
         <button (click)="showDetails.emit(c)"><i class="fas fa-info-circle"></i>Details</button>
         <button (click)="edit.emit(c)"><i class="fas fa-edit"></i>Bearbeiten</button>
-        <button *ngIf="c.isActive" class="danger" (click)="deactivate.emit(c._id)"><i class="fas fa-ban"></i>Deaktivieren</button>
+        <button class="danger" (click)="delete.emit(c._id)"><i class="fas fa-trash"></i>Löschen</button>
       </div>
 
     </div>

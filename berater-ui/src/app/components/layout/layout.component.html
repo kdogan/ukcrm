@@ -68,15 +68,6 @@
                 </a>
             </li>
             }
-            <li>
-                <a routerLink="/messages" routerLinkActive="active" (click)="closeSidebarOnMobile()" class="messages-link">
-                    <i class="fas fa-comments fa-lg"></i>
-                    <span class="nav-text">Messages</span>
-                    @if(unreadMessagesCount > 0){
-                        <span class="unread-badge">{{ unreadMessagesCount }}</span>
-                    }
-                </a>
-            </li>
             @if(currentUser?.role === 'superadmin'){
             <li>
                 <a routerLink="/admin" routerLinkActive="active" (click)="closeSidebarOnMobile()">

@@ -81,11 +81,7 @@ export class CustomerService {
     return this.http.put(`${this.apiUrl}/${id}`, customer);
   }
 
-  deactivateCustomer(id: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/deactivate`, {});
-  }
-
-  reactivateCustomer(id: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/reactivate`, {});
+  deleteCustomer(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

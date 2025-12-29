@@ -16,7 +16,6 @@ export class CustomersMobileComponent {
   @Output() create = new EventEmitter<void>();
   @Output() edit = new EventEmitter<Customer>();
   @Output() delete = new EventEmitter<string>();
-  @Output() deactivate = new EventEmitter<string>();
   @Output() showDetails = new EventEmitter<Customer>();
   @Output() filterActiveChange = new EventEmitter<boolean>();
   @Output() searchTermChange = new EventEmitter<string>();

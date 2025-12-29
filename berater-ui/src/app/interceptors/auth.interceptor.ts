@@ -1,24 +1,27 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { catchError, filter, take, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, take, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-import { WebsocketService } from '../services/websocket.service';
+// WebSocket temporarily disabled for performance
+// import { Injector } from '@angular/core';
+// import { WebsocketService } from '../services/websocket.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  private websocketService?: WebsocketService;
+  // private websocketService?: WebsocketService;
 
   constructor(
-    private authService: AuthService,
-    private injector: Injector
+    private authService: AuthService
+    // private injector: Injector // WebSocket temporarily disabled
   ) {
+    // WebSocket temporarily disabled for performance
     // Lazy load WebSocket service to avoid circular dependency
-    setTimeout(() => {
-      this.websocketService = this.injector.get(WebsocketService);
-    });
+    // setTimeout(() => {
+    //   this.websocketService = this.injector.get(WebsocketService);
+    // });
   }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
@@ -58,12 +61,13 @@ export class AuthInterceptor implements HttpInterceptor {
       this.refreshTokenSubject.next(null);
 
       return this.authService.refreshToken().pipe(
-        tap((response: any) => {
-          // WebSocket mit neuem Token reconnecten
-          if (this.websocketService && response.data?.token) {
-            this.websocketService.reconnectWithNewToken(response.data.token);
-          }
-        }),
+        // WebSocket temporarily disabled for performance
+        // tap((response: any) => {
+        //   // WebSocket mit neuem Token reconnecten
+        //   if (this.websocketService && response.data?.token) {
+        //     this.websocketService.reconnectWithNewToken(response.data.token);
+        //   }
+        // }),
         switchMap((response: any) => {
           this.isRefreshing = false;
           this.refreshTokenSubject.next(response.data.token);
