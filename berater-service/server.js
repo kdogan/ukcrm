@@ -86,7 +86,7 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 // ⛓ Rate Limiter
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 Minuten
-  max: 50, // max 50 Requests pro IP
+  max: 60, // max 60 Requests pro IP
   standardHeaders: true,
   legacyHeaders: false,
   message: "Zu viele Login-Versuche, bitte später erneut versuchen."
@@ -94,7 +94,7 @@ const authLimiter = rateLimit({
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200, // max 200 Requests pro IP
+  max: 300, // max 200 Requests pro IP
   standardHeaders: true,
   legacyHeaders: false,
   message: "Zu viele Anfragen, bitte später erneut versuchen."
