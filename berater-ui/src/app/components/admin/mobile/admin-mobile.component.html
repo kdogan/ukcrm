@@ -1,0 +1,152 @@
+<div class="mobile-page" (click)="closeActionMenu.emit()">
+
+  <!-- HEADER -->
+  <div class="mobile-header">
+    <h1>Benutzerverwaltung</h1>
+    <button class="btn-add" (click)="createUser.emit(); $event.stopPropagation()">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+
+  <div class="mobile-content">
+
+    <!-- Statistics Cards -->
+    <div class="stats-cards" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Gesamt</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">{{ stats.active }}</div>
+        <div class="stat-label">Aktiv</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🚫</div>
+        <div class="stat-value">{{ stats.blocked }}</div>
+        <div class="stat-label">Blockiert</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">💤</div>
+        <div class="stat-value">{{ stats.inactive }}</div>
+        <div class="stat-label">Inaktiv</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+      <div class="filter-row">
+        <select [(ngModel)]="filterRole" (ngModelChange)="onFilterRoleChange()" class="filter-select">
+          <option value="">Alle Rollen</option>
+          <option value="berater">Berater</option>
+          <option value="admin">Admin</option>
+          <option value="superadmin">Superadmin</option>
+        </select>
+
+        <select [(ngModel)]="filterPackage" (ngModelChange)="onFilterPackageChange()" class="filter-select">
+          <option value="">Alle Pakete</option>
+          <option value="free">Kostenlos</option>
+          <option value="basic">Basic</option>
+          <option value="professional">Professional</option>
+          <option value="enterprise">Enterprise</option>
+        </select>
+      </div>
+
+      <div class="filter-row">
+        <select [(ngModel)]="filterBlocked" (ngModelChange)="onFilterBlockedChange()" class="filter-select full-width">
+          <option [ngValue]="undefined">Alle Status</option>
+          <option [ngValue]="false">Aktiv</option>
+          <option [ngValue]="true">Blockiert</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- User List -->
+    <div class="user-list">
+      <div *ngFor="let user of users"
+           class="user-card"
+           [class.blocked]="user.isBlocked"
+           (click)="$event.stopPropagation()">
+
+        <!-- User Header -->
+        <div class="user-header">
+          <div class="user-info">
+            <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
+          <button class="action-menu-btn" (click)="toggleActionMenu.emit(user._id); $event.stopPropagation()">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+        </div>
+
+        <!-- User Details -->
+        <div class="user-details">
+          <div class="detail-item">
+            <span class="detail-label">Rolle:</span>
+            <span class="badge badge-role" [class.badge-superadmin]="user.role === 'superadmin'">
+              {{ getRoleLabel(user.role) }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Paket:</span>
+            <span class="badge badge-package" [class.badge-enterprise]="user.package === 'enterprise'">
+              {{ getPackageLabel(user.package) }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Status:</span>
+            <span class="badge"
+                  [class.badge-blocked]="user.isBlocked"
+                  [class.badge-active]="!user.isBlocked && user.isActive">
+              {{ user.isBlocked ? 'Blockiert' : (user.isActive ? 'Aktiv' : 'Inaktiv') }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Erstellt:</span>
+            <span class="detail-value">{{ formatDate(user.createdAt) }}</span>
+          </div>
+        </div>
+
+        <!-- Action Menu -->
+        <div class="action-menu" *ngIf="activeActionMenu === user._id" (click)="$event.stopPropagation()">
+          <button class="action-item" (click)="editUser.emit(user); closeActionMenu.emit()">
+            <i class="fas fa-edit"></i>
+            <span>Bearbeiten</span>
+          </button>
+
+          <button class="action-item"
+                  *ngIf="!user.isBlocked"
+                  (click)="blockUser.emit(user._id); closeActionMenu.emit()">
+            <i class="fas fa-ban"></i>
+            <span>Blockieren</span>
+          </button>
+
+          <button class="action-item"
+                  *ngIf="user.isBlocked"
+                  (click)="unblockUser.emit(user._id); closeActionMenu.emit()">
+            <i class="fas fa-check-circle"></i>
+            <span>Entsperren</span>
+          </button>
+
+          <button class="action-item delete" (click)="deleteUser.emit(user._id); closeActionMenu.emit()">
+            <i class="fas fa-trash"></i>
+            <span>Löschen</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- No Users -->
+      <div *ngIf="users.length === 0" class="no-data">
+        Keine Benutzer gefunden
+      </div>
+    </div>
+
+  </div>
+</div>

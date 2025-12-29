@@ -46,6 +46,13 @@ export class TodosDesktopComponent {
     });
   }
 
+  resetFilters(): void {
+    this.searchTerm = '';
+    this.statusFilter = '';
+    this.priorityFilter = '';
+    this.onFilterChange();
+  }
+
   todosForDate(date: Date): Todo[] {
     return this.filteredTodos.filter(t => {
       if (!t.dueDate) return false;

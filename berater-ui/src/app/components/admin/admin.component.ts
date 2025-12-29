@@ -3,11 +3,30 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService, AppUser, UserStats } from '../../services/admin.service';
 import { TableContainerComponent } from "../shared/tablecontainer.component";
+import { ViewportService } from '../../services/viewport.service';
+import { AdminMobileComponent } from './mobile/admin-mobile.component';
 
 @Component({
     selector: 'app-admin',
-    imports: [CommonModule, FormsModule, TableContainerComponent],
+    imports: [CommonModule, FormsModule, TableContainerComponent, AdminMobileComponent],
     template: `
+    @if (isMobile) {
+      <app-admin-mobile
+        [users]="users"
+        [stats]="stats"
+        [activeActionMenu]="activeMenuId"
+        (createUser)="showCreateModal()"
+        (editUser)="editUser($event)"
+        (deleteUser)="deleteUser($event)"
+        (blockUser)="showBlockModalById($event)"
+        (unblockUser)="unblockUser($event)"
+        (toggleActionMenu)="toggleActionMenuMobile($event)"
+        (closeActionMenu)="closeActionMenu()"
+        (filterRoleChange)="onFilterRoleChange($event)"
+        (filterPackageChange)="onFilterPackageChange($event)"
+        (filterBlockedChange)="onFilterBlockedChange($event)"
+      ></app-admin-mobile>
+    } @else {
     <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
         <h1>Superadmin Dashboard</h1>
@@ -253,6 +272,7 @@ import { TableContainerComponent } from "../shared/tablecontainer.component";
         </div>
       </div>
     </div>
+    }
   `,
     styles: [`
     .page-container { padding: 2rem; }
@@ -510,7 +530,14 @@ export class AdminComponent implements OnInit {
   blockReason = '';
   newPassword = '';
 
-  constructor(private adminService: AdminService) {}
+  get isMobile() {
+    return this.viewport.isMobile();
+  }
+
+  constructor(
+    private adminService: AdminService,
+    private viewport: ViewportService
+  ) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -733,5 +760,36 @@ export class AdminComponent implements OnInit {
       enterprise: 'Enterprise'
     };
     return labels[pkg] || pkg;
+  }
+
+  // Mobile-specific methods
+  showBlockModalById(userId: string): void {
+    const user = this.users.find(u => u._id === userId);
+    if (user) {
+      this.showBlockModal(user);
+    }
+  }
+
+  onFilterRoleChange(role: string): void {
+    this.filterRole = role;
+    this.loadUsers();
+  }
+
+  onFilterPackageChange(pkg: string): void {
+    this.filterPackage = pkg;
+    this.loadUsers();
+  }
+
+  onFilterBlockedChange(blocked: boolean | undefined): void {
+    this.filterBlocked = blocked;
+    this.loadUsers();
+  }
+
+  toggleActionMenuMobile(id: string): void {
+    if (this.activeMenuId === id) {
+      this.activeMenuId = null;
+    } else {
+      this.activeMenuId = id;
+    }
   }
 }

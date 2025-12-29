@@ -27,8 +27,63 @@
     </div>
   }
 
+  <!-- Search and Filter Section -->
+  <div class="filter-section">
+    <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input type="text"
+             [(ngModel)]="searchQuery"
+             (ngModelChange)="onSearchChange()"
+             placeholder="Tickets durchsuchen...">
+      @if(searchQuery){
+        <button class="clear-search" (click)="searchQuery = ''; onSearchChange()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Status</label>
+        <select [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
+          <option value="all">Alle</option>
+          <option value="open">Offen</option>
+          <option value="in_progress">In Bearbeitung</option>
+          <option value="completed">Abgeschlossen</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Priorität</label>
+        <select [(ngModel)]="filterPriority" (ngModelChange)="onFilterChange()">
+          <option value="all">Alle</option>
+          <option value="high">Hoch</option>
+          <option value="medium">Mittel</option>
+          <option value="low">Niedrig</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Antwort</label>
+        <select [(ngModel)]="filterAnswered" (ngModelChange)="onFilterChange()">
+          <option value="all">Alle</option>
+          <option value="answered">Beantwortet</option>
+          <option value="unanswered">Unbeantwortet</option>
+        </select>
+      </div>
+
+      <button class="btn-reset" (click)="resetFilters()" title="Filter zurücksetzen">
+        <i class="fas fa-redo"></i>
+      </button>
+    </div>
+
+    <div class="results-info">
+      <span>{{ filteredTickets.length }} von {{ tickets.length }} Tickets</span>
+    </div>
+  </div>
+
   <div class="tickets-grid">
-    @for(ticket of tickets; track ticket._id){
+    @for(ticket of filteredTickets; track ticket._id){
       <div class="ticket-card" (click)="viewTicket(ticket)">
         <div class="ticket-header">
           <div class="ticket-title">
@@ -77,11 +132,17 @@
       </div>
     }@empty{
       <div class="no-data">
-        @if(isSuperAdmin){
-          Keine Support-Tickets vorhanden
+        @if(searchQuery || filterStatus !== 'all' || filterPriority !== 'all' || filterAnswered !== 'all'){
+          <i class="fas fa-search"></i>
+          <p>Keine Tickets gefunden, die den Suchkriterien entsprechen.</p>
+          <button class="btn-secondary" (click)="resetFilters()">Filter zurücksetzen</button>
         }@else{
-          Sie haben noch keine Support-Tickets erstellt.
-          Klicken Sie auf "Neues Ticket erstellen" um ein Problem zu melden.
+          @if(isSuperAdmin){
+            Keine Support-Tickets vorhanden
+          }@else{
+            Sie haben noch keine Support-Tickets erstellt.
+            Klicken Sie auf "Neues Ticket erstellen" um ein Problem zu melden.
+          }
         }
       </div>
     }

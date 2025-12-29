@@ -14,11 +14,18 @@ import { FileViewerService } from '../../shared/services/file-viewer.service';
 })
 export class SupportComponent implements OnInit {
   tickets: Todo[] = [];
+  filteredTickets: Todo[] = [];
   showCreateModal = false;
   showViewModal = false;
   selectedTicket: Todo | null = null;
   currentUser: any = null;
   isSuperAdmin = false;
+
+  // Search and Filter
+  searchQuery = '';
+  filterStatus: 'all' | 'open' | 'in_progress' | 'completed' = 'all';
+  filterPriority: 'all' | 'low' | 'medium' | 'high' = 'all';
+  filterAnswered: 'all' | 'answered' | 'unanswered' = 'all';
 
   // Create Ticket Form
   newTicket = {
@@ -54,6 +61,7 @@ export class SupportComponent implements OnInit {
         next: (response) => {
           if (response.success) {
             this.tickets = response.data;
+            this.applyFilters();
           }
         },
         error: (error) => console.error('Fehler beim Laden der Tickets:', error)
@@ -64,11 +72,66 @@ export class SupportComponent implements OnInit {
         next: (response) => {
           if (response.success) {
             this.tickets = response.data.filter((t: Todo) => t.isSupportTicket);
+            this.applyFilters();
           }
         },
         error: (error) => console.error('Fehler beim Laden der Tickets:', error)
       });
     }
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.tickets];
+
+    // Search filter
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(ticket => {
+        const titleMatch = ticket.title.toLowerCase().includes(query);
+        const descMatch = ticket.description?.toLowerCase().includes(query);
+        const beraterMatch = this.isSuperAdmin && typeof ticket.beraterId === 'object' ?
+          `${ticket.beraterId.firstName} ${ticket.beraterId.lastName}`.toLowerCase().includes(query) :
+          false;
+        return titleMatch || descMatch || beraterMatch;
+      });
+    }
+
+    // Status filter
+    if (this.filterStatus !== 'all') {
+      filtered = filtered.filter(ticket => ticket.status === this.filterStatus);
+    }
+
+    // Priority filter
+    if (this.filterPriority !== 'all') {
+      filtered = filtered.filter(ticket => ticket.priority === this.filterPriority);
+    }
+
+    // Answered filter
+    if (this.filterAnswered !== 'all') {
+      if (this.filterAnswered === 'answered') {
+        filtered = filtered.filter(ticket => ticket.adminResponse);
+      } else {
+        filtered = filtered.filter(ticket => !ticket.adminResponse);
+      }
+    }
+
+    this.filteredTickets = filtered;
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  onFilterChange(): void {
+    this.applyFilters();
+  }
+
+  resetFilters(): void {
+    this.searchQuery = '';
+    this.filterStatus = 'all';
+    this.filterPriority = 'all';
+    this.filterAnswered = 'all';
+    this.applyFilters();
   }
 
   onImageSelect(event: Event): void {

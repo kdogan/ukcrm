@@ -27,24 +27,51 @@
 
   <!-- LIST VIEW -->
   @if(mainView === 'list') {
-    <div class="filters">
-      <app-search-input
-        [value]="searchTerm"
-        (valueChange)="searchTerm = $event; onFilterChange()"
-        placeholder="Suchen...">
-      </app-search-input>
-      <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()" class="filter-select">
-        <option value="">Alle Status</option>
-        <option value="open">Offen</option>
-        <option value="in_progress">In Bearbeitung</option>
-        <option value="completed">Erledigt</option>
-      </select>
-      <select [(ngModel)]="priorityFilter" (ngModelChange)="onFilterChange()" class="filter-select">
-        <option value="">Alle Prioritäten</option>
-        <option value="high">Hoch</option>
-        <option value="medium">Mittel</option>
-        <option value="low">Niedrig</option>
-      </select>
+    <!-- Search and Filter Section -->
+    <div class="filter-section">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <app-search-input
+          [value]="searchTerm"
+          (valueChange)="searchTerm = $event; onFilterChange()"
+          placeholder="TODOs durchsuchen...">
+        </app-search-input>
+        @if(searchTerm){
+          <button class="clear-search" (click)="searchTerm = ''; onFilterChange()">
+            <i class="fas fa-times"></i>
+          </button>
+        }
+      </div>
+
+      <div class="filters-row">
+        <div class="filter-group">
+          <label>Status</label>
+          <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+            <option value="">Alle</option>
+            <option value="open">Offen</option>
+            <option value="in_progress">In Bearbeitung</option>
+            <option value="completed">Erledigt</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Priorität</label>
+          <select [(ngModel)]="priorityFilter" (ngModelChange)="onFilterChange()">
+            <option value="">Alle</option>
+            <option value="high">Hoch</option>
+            <option value="medium">Mittel</option>
+            <option value="low">Niedrig</option>
+          </select>
+        </div>
+
+        <button class="btn-reset" (click)="resetFilters()" title="Filter zurücksetzen">
+          <i class="fas fa-redo"></i>
+        </button>
+      </div>
+
+      <div class="results-info">
+        <span>{{ filteredTodos.length }} TODOs</span>
+      </div>
     </div>
 
     <div class="todos-grid">
@@ -59,7 +86,13 @@
         (navigateToMeterEmiter)="navigateToMeter.emit($event)" />
 
       <div *ngIf="filteredTodos.length === 0" class="no-data">
-        <p>Keine TODOs gefunden</p>
+        @if(searchTerm || statusFilter || priorityFilter){
+          <i class="fas fa-search"></i>
+          <p>Keine TODOs gefunden, die den Suchkriterien entsprechen.</p>
+          <button class="btn-secondary" (click)="resetFilters()">Filter zurücksetzen</button>
+        }@else{
+          <p>Keine TODOs vorhanden</p>
+        }
       </div>
     </div>
   }
