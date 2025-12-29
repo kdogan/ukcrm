@@ -224,9 +224,10 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
-      <button type="submit" class="btn-primary" [disabled]="!contractForm.form.valid || !isFormValid()">
-        {{ isEditMode ? 'Speichern' : 'Erstellen' }}
+      <button type="button" class="btn-secondary" (click)="closeModal()" [disabled]="isSaving">Abbrechen</button>
+      <button type="submit" class="btn-primary" [disabled]="!contractForm.form.valid || !isFormValid() || isSaving">
+        <i class="fas" [class.fa-spinner]="isSaving" [class.fa-spin]="isSaving" [class.fa-save]="!isSaving"></i>
+        {{ isSaving ? 'Wird gespeichert...' : (isEditMode ? 'Speichern' : 'Erstellen') }}
       </button>
     </div>
   </form>

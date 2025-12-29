@@ -434,19 +434,29 @@ export class ContractsComponent implements OnInit {
       this.customerSearch = '';
       this.meterSearch = '';
       this.pendingFiles = []; // Pending Files zurücksetzen
+      this.isSaving = false; // Loading state zurücksetzen
     }
   }
 
   saveContract(): void {
+    // Verhindere mehrfaches Klicken
+    if (this.isSaving) {
+      return;
+    }
+
+    this.isSaving = true;
+
     if (this.isEditMode) {
       this.contractService.updateContract(this.currentContract._id, this.currentContract).subscribe({
         next: (response) => {
           if (response.success) {
+            this.isSaving = false;
             this.closeModal();
             this.loadContracts();
           }
         },
         error: (error) => {
+          this.isSaving = false;
           alert('Fehler beim Aktualisieren des Vertrags: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
@@ -460,6 +470,7 @@ export class ContractsComponent implements OnInit {
             if (this.pendingFiles.length > 0) {
               this.uploadPendingFiles(newContractId);
             } else {
+              this.isSaving = false;
               this.closeModal();
               this.loadContracts();
               this.loadFreeMeters();
@@ -467,6 +478,7 @@ export class ContractsComponent implements OnInit {
           }
         },
         error: (error) => {
+          this.isSaving = false;
           const errorData = error.error;
           if (errorData?.limitReached && errorData?.upgradeRequired) {
             const message = `${errorData.message}\n\nSie haben derzeit ${errorData.currentCount} von ${errorData.maxAllowed} Verträgen.\n\nMöchten Sie Ihr Paket jetzt upgraden?`;
@@ -492,6 +504,7 @@ export class ContractsComponent implements OnInit {
           if (uploadedCount === totalFiles) {
             // Alle Dateien hochgeladen
             this.pendingFiles = [];
+            this.isSaving = false;
             this.closeModal();
             this.loadContracts();
             this.loadFreeMeters();
@@ -503,6 +516,7 @@ export class ContractsComponent implements OnInit {
           if (uploadedCount === totalFiles) {
             // Auch bei Fehlern weitermachen
             this.pendingFiles = [];
+            this.isSaving = false;
             this.closeModal();
             this.loadContracts();
             this.loadFreeMeters();
@@ -638,6 +652,9 @@ export class ContractsComponent implements OnInit {
   // File Upload Methods
   uploadingFile = false;
   pendingFiles: File[] = []; // Dateien die noch nicht hochgeladen wurden (nur beim Erstellen)
+
+  // Loading state for contract creation/update
+  isSaving = false;
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
