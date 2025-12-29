@@ -304,8 +304,9 @@
 
             <div class="package-features">
               <div class="feature">✓ {{ pkg.maxContracts === -1 ? 'Unbegrenzt' : pkg.maxContracts }} Verträge</div>
-              <div class="feature">✓ {{ pkg.maxCustomers === -1 ? 'Unbegrenzt' : pkg.maxCustomers }} Kunden</div>
-              <div class="feature">✓ {{ pkg.maxMeters === -1 ? 'Unbegrenzt' : pkg.maxMeters }} Zähler</div>
+              <div class="feature" [class.feature-enabled]="isFileUploadEnabled(pkg)" [class.feature-disabled]="!isFileUploadEnabled(pkg)">
+                {{ isFileUploadEnabled(pkg) ? '✓' : '✗' }} Dateiupload {{ isFileUploadEnabled(pkg) ? 'erlaubt' : 'nicht erlaubt' }}
+              </div>
             </div>
 
             <button *ngIf="pkg.name !== userLimits.package.name && !pendingUpgradeRequest"
@@ -321,6 +322,57 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Passwort ändern -->
+    <div class="section-card">
+      <h2>🔒 Passwort ändern</h2>
+      <p class="section-description">
+        Ändern Sie Ihr Passwort für mehr Sicherheit
+      </p>
+
+      <div class="input-list">
+        <div class="input-item">
+          <label>Aktuelles Passwort *</label>
+          <input
+            type="password"
+            [ngModel]="currentPassword"
+            (ngModelChange)="currentPasswordChange.emit($event)"
+            placeholder="Aktuelles Passwort"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>Neues Passwort *</label>
+          <input
+            type="password"
+            [ngModel]="newPassword"
+            (ngModelChange)="newPasswordChange.emit($event)"
+            placeholder="Neues Passwort (min. 8 Zeichen)"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>Passwort bestätigen *</label>
+          <input
+            type="password"
+            [ngModel]="confirmPassword"
+            (ngModelChange)="confirmPasswordChange.emit($event)"
+            placeholder="Neues Passwort wiederholen"
+            autocomplete="new-password"
+          />
+        </div>
+      </div>
+
+      <button
+        class="btn-primary password-btn"
+        (click)="changePasswordEvent.emit()"
+        [disabled]="isChangingPassword || !currentPassword || !newPassword || !confirmPassword">
+        <i class="fas" [class.fa-spinner]="isChangingPassword" [class.fa-spin]="isChangingPassword" [class.fa-key]="!isChangingPassword"></i>
+        {{ isChangingPassword ? 'Wird geändert...' : 'Passwort ändern' }}
+      </button>
     </div>
 
     <!-- Action Buttons -->

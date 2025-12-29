@@ -378,6 +378,14 @@
   .feature {
     color: #555;
     font-size: 0.9rem;
+
+    &.feature-enabled {
+      color: #27ae60;
+    }
+
+    &.feature-disabled {
+      color: #e74c3c;
+    }
   }
 }
 
@@ -459,5 +467,19 @@
 
   &:active {
     background: #d0d0d0;
+  }
+}
+
+.password-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+
+  i {
+    margin-right: 0.5rem;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }

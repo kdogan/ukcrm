@@ -20,10 +20,18 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
         [packages]="packages"
         [pendingUpgradeRequest]="pendingUpgradeRequest"
         [selectedBillingInterval]="selectedBillingInterval"
+        [currentPassword]="currentPassword"
+        [newPassword]="newPassword"
+        [confirmPassword]="confirmPassword"
+        [isChangingPassword]="isChangingPassword"
         (saveSettingsEvent)="saveSettings()"
         (resetToDefaultsEvent)="resetToDefaults()"
         (changePackageEvent)="changePackage($event.packageName, $event.order)"
         (selectBillingIntervalEvent)="selectBillingInterval($any($event).packageName, $any($event).interval)"
+        (changePasswordEvent)="changePassword()"
+        (currentPasswordChange)="currentPassword = $any($event)"
+        (newPasswordChange)="newPassword = $any($event)"
+        (confirmPasswordChange)="confirmPassword = $any($event)"
       ></app-settings-mobile>
     } @else {
     <div class="page-container">
@@ -239,7 +247,7 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
                   </div>
                 </div>
 
-                <div class="usage-item">
+                <!-- <div class="usage-item">
                   <div class="usage-label">Kunden</div>
                   <div class="usage-bar-container">
                     <div class="usage-bar-bg">
@@ -250,9 +258,9 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
                     </div>
                     <span class="usage-text">{{ userLimits.usage.customers }} / {{ userLimits.limits.maxCustomers === -1 ? '∞' : userLimits.limits.maxCustomers }}</span>
                   </div>
-                </div>
+                </div> -->
 
-                <div class="usage-item">
+                <!-- <div class="usage-item">
                   <div class="usage-label">Zähler</div>
                   <div class="usage-bar-container">
                     <div class="usage-bar-bg">
@@ -263,7 +271,7 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
                     </div>
                     <span class="usage-text">{{ userLimits.usage.meters }} / {{ userLimits.limits.maxMeters === -1 ? '∞' : userLimits.limits.maxMeters }}</span>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
 
@@ -339,8 +347,9 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
 
                   <div class="package-features">
                     <div class="feature">✓ {{ pkg.maxContracts === -1 ? 'Unbegrenzt' : pkg.maxContracts }} Verträge</div>
-                    <div class="feature">✓ {{ pkg.maxCustomers === -1 ? 'Unbegrenzt' : pkg.maxCustomers }} Kunden</div>
-                    <div class="feature">✓ {{ pkg.maxMeters === -1 ? 'Unbegrenzt' : pkg.maxMeters }} Zähler</div>
+                    <div class="feature" [class.feature-enabled]="isFileUploadEnabled(pkg)" [class.feature-disabled]="!isFileUploadEnabled(pkg)">
+                      {{ isFileUploadEnabled(pkg) ? '✓' : '✗' }} Dateiupload {{ isFileUploadEnabled(pkg) ? 'erlaubt' : 'nicht erlaubt' }}
+                    </div>
                   </div>
                   <button *ngIf="pkg.name !== userLimits.package.name && !pendingUpgradeRequest"
                           [class]="pkg.order < userLimits.package.order ? 'btn-downgrade' : 'btn-upgrade'"
@@ -355,6 +364,57 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Passwort ändern -->
+        <div class="settings-section">
+          <h2>🔒 Passwort ändern</h2>
+          <p class="section-description">
+            Ändern Sie Ihr Passwort für mehr Sicherheit.
+          </p>
+
+          <div class="setting-group">
+            <div class="input-group">
+              <label>Aktuelles Passwort *</label>
+              <input
+                type="password"
+                [(ngModel)]="currentPassword"
+                placeholder="Aktuelles Passwort"
+                class="input-field"
+                autocomplete="current-password"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>Neues Passwort *</label>
+              <input
+                type="password"
+                [(ngModel)]="newPassword"
+                placeholder="Neues Passwort (min. 8 Zeichen)"
+                class="input-field"
+                autocomplete="new-password"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>Passwort bestätigen *</label>
+              <input
+                type="password"
+                [(ngModel)]="confirmPassword"
+                placeholder="Neues Passwort wiederholen"
+                class="input-field"
+                autocomplete="new-password"
+              />
+            </div>
+
+            <button
+              class="btn-primary"
+              (click)="changePassword()"
+              [disabled]="isChangingPassword || !currentPassword || !newPassword || !confirmPassword">
+              <i class="fas" [class.fa-spinner]="isChangingPassword" [class.fa-spin]="isChangingPassword" [class.fa-key]="!isChangingPassword"></i>
+              {{ isChangingPassword ? 'Wird geändert...' : 'Passwort ändern' }}
+            </button>
           </div>
         </div>
 
@@ -793,6 +853,14 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
       font-size: 0.95rem;
     }
 
+    .feature.feature-enabled {
+      color: #27ae60;
+    }
+
+    .feature.feature-disabled {
+      color: #e74c3c;
+    }
+
     .btn-upgrade, .btn-downgrade {
       padding: 0.75rem 1.5rem;
       border: none;
@@ -902,6 +970,12 @@ export class SettingsComponent implements OnInit {
   pendingUpgradeRequest: any = null;
   selectedBillingInterval: { [packageName: string]: 'monthly' | 'yearly' } = {};
 
+  // Password change properties
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+  isChangingPassword = false;
+
   constructor(
     private settingsService: SettingsService,
     private packageService: PackageService,
@@ -983,6 +1057,11 @@ export class SettingsComponent implements OnInit {
 
     if (limit === -1) return 0;
     return Math.min(100, (usage / (limit as number)) * 100);
+  }
+
+  isFileUploadEnabled(pkg: Package): boolean {
+    const fileUploadFeature = pkg.features?.find(f => f.name === 'file_upload');
+    return fileUploadFeature ? fileUploadFeature.enabled : false;
   }
 
   changePackage(packageName: string, packageOrder: number): void {
@@ -1098,5 +1177,38 @@ export class SettingsComponent implements OnInit {
         }
       });
     }
+  }
+
+  changePassword(): void {
+    // Validation
+    if (this.newPassword.length < 8) {
+      alert('Das neue Passwort muss mindestens 8 Zeichen lang sein.');
+      return;
+    }
+
+    if (this.newPassword !== this.confirmPassword) {
+      alert('Die Passwörter stimmen nicht überein.');
+      return;
+    }
+
+    this.isChangingPassword = true;
+
+    this.authService.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: (response) => {
+        this.isChangingPassword = false;
+        if (response.success) {
+          alert('Passwort erfolgreich geändert!');
+          // Reset form
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmPassword = '';
+        }
+      },
+      error: (error) => {
+        this.isChangingPassword = false;
+        const errorMessage = error.error?.message || 'Fehler beim Ändern des Passworts';
+        alert(errorMessage);
+      }
+    });
   }
 }

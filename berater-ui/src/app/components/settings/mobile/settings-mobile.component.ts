@@ -17,11 +17,19 @@ export class SettingsMobileComponent {
   @Input() packages: Package[] = [];
   @Input() pendingUpgradeRequest: any = null;
   @Input() selectedBillingInterval: { [packageName: string]: 'monthly' | 'yearly' } = {};
+  @Input() currentPassword = '';
+  @Input() newPassword = '';
+  @Input() confirmPassword = '';
+  @Input() isChangingPassword = false;
 
   @Output() saveSettingsEvent = new EventEmitter<void>();
   @Output() resetToDefaultsEvent = new EventEmitter<void>();
   @Output() changePackageEvent = new EventEmitter<{ packageName: string; order: number }>();
   @Output() selectBillingIntervalEvent = new EventEmitter<{ packageName: string; interval: 'monthly' | 'yearly' }>();
+  @Output() changePasswordEvent = new EventEmitter<void>();
+  @Output() currentPasswordChange = new EventEmitter<string>();
+  @Output() newPasswordChange = new EventEmitter<string>();
+  @Output() confirmPasswordChange = new EventEmitter<string>();
 
   getUsagePercentage(type: 'contracts' | 'customers' | 'meters'): number {
     if (!this.userLimits) return 0;
@@ -67,5 +75,10 @@ export class SettingsMobileComponent {
 
   onSelectBillingInterval(packageName: string, interval: 'monthly' | 'yearly'): void {
     this.selectBillingIntervalEvent.emit({ packageName, interval });
+  }
+
+  isFileUploadEnabled(pkg: Package): boolean {
+    const fileUploadFeature = pkg.features?.find(f => f.name === 'file_upload');
+    return fileUploadFeature ? fileUploadFeature.enabled : false;
   }
 }

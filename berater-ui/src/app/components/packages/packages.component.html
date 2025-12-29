@@ -1,1 +1,228 @@
-<p>packages works!</p>
+    <div class="packages-container">
+      <div class="header">
+        <h1>{{ isSuperAdmin ? 'Pakete-Verwaltung' : 'Paket upgraden' }}</h1>
+        <button class="btn-primary" (click)="showCreateForm()" *ngIf="isSuperAdmin">
+          + Neues Paket
+        </button>
+      </div>
+
+      <!-- Current Package Info for Berater -->
+      <div class="current-package-card" *ngIf="!isSuperAdmin && userLimits">
+        <h2>Ihr aktuelles Paket: {{ userLimits.package.displayName }}</h2>
+        <div class="limits-overview">
+          <div class="limit-overview-item">
+            <div class="label">Verträge</div>
+            <div class="usage-bar">
+              <div class="bar-bg">
+                <div class="bar-fill" [style.width.%]="getUsagePercentage('contracts')"
+                     [class.warning]="getUsagePercentage('contracts') >= 80"
+                     [class.danger]="getUsagePercentage('contracts') >= 100"></div>
+              </div>
+              <span class="usage-text">{{ userLimits.usage.contracts }} / {{ userLimits.limits.maxContracts === -1 ? '∞' : userLimits.limits.maxContracts }}</span>
+            </div>
+          </div>
+          <div class="limit-overview-item">
+            <div class="label">Kunden</div>
+            <div class="usage-bar">
+              <div class="bar-bg">
+                <div class="bar-fill" [style.width.%]="getUsagePercentage('customers')"
+                     [class.warning]="getUsagePercentage('customers') >= 80"
+                     [class.danger]="getUsagePercentage('customers') >= 100"></div>
+              </div>
+              <span class="usage-text">{{ userLimits.usage.customers }} / {{ userLimits.limits.maxCustomers === -1 ? '∞' : userLimits.limits.maxCustomers }}</span>
+            </div>
+          </div>
+          <div class="limit-overview-item">
+            <div class="label">Zähler</div>
+            <div class="usage-bar">
+              <div class="bar-bg">
+                <div class="bar-fill" [style.width.%]="getUsagePercentage('meters')"
+                     [class.warning]="getUsagePercentage('meters') >= 80"
+                     [class.danger]="getUsagePercentage('meters') >= 100"></div>
+              </div>
+              <span class="usage-text">{{ userLimits.usage.meters }} / {{ userLimits.limits.maxMeters === -1 ? '∞' : userLimits.limits.maxMeters }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create/Edit Form -->
+      <div class="form-card" *ngIf="showForm">
+        <h2>{{ editingPackage ? 'Paket bearbeiten' : 'Neues Paket erstellen' }}</h2>
+        <form (ngSubmit)="savePackage()">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Paket-Name (technisch)</label>
+              <input type="text" [(ngModel)]="formData.name" name="name"
+                     required [disabled]="!!editingPackage">
+            </div>
+            <div class="form-group">
+              <label>Anzeigename</label>
+              <input type="text" [(ngModel)]="formData.displayName" name="displayName" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Max. Verträge</label>
+              <input type="number" [(ngModel)]="formData.maxContracts" name="maxContracts" required>
+              <small>-1 für unbegrenzt</small>
+            </div>
+            <div class="form-group">
+              <label>Max. Kunden</label>
+              <input type="number" [(ngModel)]="formData.maxCustomers" name="maxCustomers" required>
+              <small>-1 für unbegrenzt</small>
+            </div>
+            <div class="form-group">
+              <label>Max. Zähler</label>
+              <input type="number" [(ngModel)]="formData.maxMeters" name="maxMeters" required>
+              <small>-1 für unbegrenzt</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Monatlicher Preis</label>
+              <input type="number" step="0.01" [(ngModel)]="formData.monthlyPrice" name="monthlyPrice" required>
+              <small>Jährlicher Preis wird automatisch berechnet (10 Monate)</small>
+            </div>
+            <div class="form-group">
+              <label>Währung</label>
+              <select [(ngModel)]="formData.currency" name="currency">
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Reihenfolge</label>
+              <input type="number" [(ngModel)]="formData.order" name="order">
+            </div>
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" [(ngModel)]="formData.isFree" name="isFree">
+                Kostenloses Paket
+              </label>
+            </div>
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" [(ngModel)]="formData.isActive" name="isActive">
+                Aktiv
+              </label>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Features</h3>
+            <div class="features-list">
+              <div class="feature-item">
+                <label>
+                  <input type="checkbox" [(ngModel)]="fileUploadEnabled"
+                         (change)="updateFileUploadFeature()"
+                         name="fileUpload">
+                  Datei-Upload
+                </label>
+                <small>Erlaubt Benutzern, Dateien zu Verträgen hochzuladen</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Speichern</button>
+            <button type="button" class="btn-secondary" (click)="cancelEdit()">Abbrechen</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Packages List -->
+      <div class="packages-grid">
+        <div class="package-card" *ngFor="let package of packages"
+             [class.inactive]="!package.isActive"
+             [class.free]="package.isFree">
+          <div class="package-header">
+            <h3>{{ package.displayName }}</h3>
+            <span class="package-badge" *ngIf="package.isFree">Kostenlos</span>
+            <span class="package-badge inactive" *ngIf="!package.isActive">Inaktiv</span>
+          </div>
+
+          <div class="package-price">
+            <!-- Billing interval toggle for Beraters -->
+            <div class="billing-toggle" *ngIf="!isSuperAdmin">
+              <button
+                class="toggle-btn"
+                [class.active]="selectedBillingInterval[package.name] === 'monthly'"
+                (click)="selectBillingInterval(package.name, 'monthly')">
+                Monatlich
+              </button>
+              <button
+                class="toggle-btn"
+                [class.active]="selectedBillingInterval[package.name] === 'yearly'"
+                (click)="selectBillingInterval(package.name, 'yearly')">
+                Jährlich <span class="badge-save">2 Monate sparen</span>
+              </button>
+            </div>
+
+            <!-- Price display -->
+            <div class="price-display">
+              <span class="price" *ngIf="!isSuperAdmin && selectedBillingInterval[package.name] === 'monthly'">
+                {{ package.monthlyPrice | number:'1.2-2' }} {{ package.currency }}
+              </span>
+              <span class="period" *ngIf="!isSuperAdmin && selectedBillingInterval[package.name] === 'monthly'">
+                / Monat
+              </span>
+
+              <span class="price" *ngIf="!isSuperAdmin && selectedBillingInterval[package.name] === 'yearly'">
+                {{ package.yearlyPrice | number:'1.2-2' }} {{ package.currency }}
+              </span>
+              <span class="period" *ngIf="!isSuperAdmin && selectedBillingInterval[package.name] === 'yearly'">
+                / Jahr
+              </span>
+
+              <!-- Superadmin view (both prices) -->
+              <div *ngIf="isSuperAdmin" class="admin-price-view">
+                <div>{{ package.monthlyPrice | number:'1.2-2' }} {{ package.currency }} / Monat</div>
+                <div class="yearly-info">{{ package.yearlyPrice | number:'1.2-2' }} {{ package.currency }} / Jahr</div>
+              </div>
+            </div>
+
+            <div class="savings-info" *ngIf="!isSuperAdmin && selectedBillingInterval[package.name] === 'yearly' && package.yearlySavings">
+              Sie sparen {{ package.yearlySavings | number:'1.2-2' }} {{ package.currency }} jährlich
+            </div>
+          </div>
+
+          <div class="package-limits">
+            <div class="limit-item">
+              <span class="label">Verträge:</span>
+              <span class="value">{{ package.maxContracts === -1 ? 'Unbegrenzt' : package.maxContracts }}</span>
+            </div>
+            <div class="limit-item">
+              <span class="label">Dateiupload:</span>
+              <span class="value" [class.feature-enabled]="isFileUploadEnabled(package)"
+                    [class.feature-disabled]="!isFileUploadEnabled(package)">
+                <i [class]="isFileUploadEnabled(package) ? 'fas fa-check' : 'fas fa-times'"></i>
+                {{ isFileUploadEnabled(package) ? 'Erlaubt' : 'Nicht erlaubt' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="package-actions" *ngIf="isSuperAdmin">
+            <button class="btn-edit" (click)="editPackage(package)">Bearbeiten</button>
+            <button class="btn-delete" (click)="deletePackage(package._id)"
+                    *ngIf="!package.isFree">Löschen</button>
+          </div>
+
+          <div class="package-actions" *ngIf="!isSuperAdmin">
+            <button [class]="package.order < userLimits.package.order ? 'btn-downgrade' : 'btn-upgrade'"
+                    (click)="changePackage(package.name, package.order)"
+                    *ngIf="userLimits && package.name !== userLimits.package.name">
+              {{ package.order < userLimits.package.order ? 'Downgraden' : 'Upgraden' }}
+            </button>
+            <span class="current-package-badge" *ngIf="userLimits && package.name === userLimits.package.name">
+              Aktuelles Paket
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
