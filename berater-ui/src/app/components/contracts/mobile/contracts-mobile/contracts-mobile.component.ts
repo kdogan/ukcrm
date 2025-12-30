@@ -15,9 +15,12 @@ import { SearchInputComponent } from 'src/app/components/shared/search-input.com
 export class ContractsMobileComponent {
 
   @Input({ required: true }) contracts!: any[];
+  @Input() activeMenuId: string | null = null;
+
   @Output() create = new EventEmitter<void>();
   @Output() edit = new EventEmitter<Contract>();
   @Output() delete = new EventEmitter<string>();
+  @Output() showDetails = new EventEmitter<Contract>();
   @Output() closeActionMenu = new EventEmitter<void>();
 
   @Output() statusFilterChange = new EventEmitter<string>();
@@ -28,13 +31,10 @@ export class ContractsMobileComponent {
   @Output() showMeter = new EventEmitter<string>();
   @Output() showSupplier = new EventEmitter<string>();
   @Output() toggleActionMenu = new EventEmitter<string>();
-
-  activeMenuId: string | null = null;
   statusFilter = '';
   daysFilter = '';
   searchTerm = '';
   emitActionMenuId(id: any) {
-    this.activeMenuId = id;
     this.toggleActionMenu.emit(id);
   }
 

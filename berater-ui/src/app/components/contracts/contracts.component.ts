@@ -55,9 +55,11 @@ export class ContractsComponent implements OnInit {
   showCustomerDetailsModal = false;
   showSupplierDetailsModal = false;
   showMeterDetailsModal = false;
+  showContractDetailsModal = false;
   selectedCustomerDetails: any = null;
   selectedSupplierDetails: any = null;
   selectedMeterDetails: any = null;
+  selectedContractDetails: any = null;
   showImageViewer = false;
   viewingImage: any = null;
   imageViewerUrl: string = '';
@@ -647,6 +649,16 @@ export class ContractsComponent implements OnInit {
   closeMeterDetails(): void {
     this.showMeterDetailsModal = false;
     this.selectedMeterDetails = null;
+  }
+
+  showContractDetails(contract: any): void {
+    this.selectedContractDetails = contract;
+    this.showContractDetailsModal = true;
+  }
+
+  closeContractDetails(): void {
+    this.showContractDetailsModal = false;
+    this.selectedContractDetails = null;
   }
 
   // File Upload Methods

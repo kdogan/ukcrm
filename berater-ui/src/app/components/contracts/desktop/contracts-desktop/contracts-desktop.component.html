@@ -1,7 +1,7 @@
 <div class="page-container" (click)="closeActionMenu.emit()">
   <div class="page-header">
     <h1>Verträge</h1>
-    <button class="btn-primary" (click)="create.emit()">+ Neuer Vertrag</button>
+    <button class="btn-primary" (click)="create.emit(); $event.stopPropagation()">+ Neuer Vertrag</button>
   </div>
   <div class="filters">
     <app-search-input
@@ -9,13 +9,13 @@
       (valueChange)="searchTerm = $event; searchChange.emit($event)"
       placeholder="Suche nach Vertragsnr., Kunde oder Zähler...">
     </app-search-input>
-    <select [ngModel]="statusFilter" (ngModelChange)="statusFilterChange.emit($event)">
+    <select [ngModel]="statusFilter" (ngModelChange)="statusFilterChange.emit($event)" (click)="$event.stopPropagation()">
       <option value="">Alle Status</option>
       @for(state of contractState; track state){
         <option [value]="state.key">{{state.value}}</option>
       }
     </select>
-    <select [ngModel]="daysFilter" (ngModelChange)="daysFilterChange.emit($event)">
+    <select [ngModel]="daysFilter" (ngModelChange)="daysFilterChange.emit($event)" (click)="$event.stopPropagation()">
       <option value="">Alle Laufzeiten</option>
       <option value="30">Nächste 30 Tage</option>
       <option value="60">Nächste 60 Tage</option>
@@ -23,7 +23,7 @@
     </select>
   </div>
   <app-table-container>
-    <table class="data-table">
+    <table class="data-table" (click)="$event.stopPropagation()">
       <thead>
         <tr>
           <th>Id</th>
@@ -42,7 +42,7 @@
           <td>
             @if(contract.customerId){
             <a class="clickable-link"
-              (click)="showCustomer.emit(contract.customerId._id); $event.stopPropagation()" title="Kunde anzeigen">
+              (click)="showCustomer.emit(contract.customerId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Kunde anzeigen">
               {{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}
             </a>
           } @else{
@@ -52,7 +52,7 @@
           <td>
             @if(contract.meterId){
             <a class="clickable-link"
-              (click)="showMeter.emit(contract.meterId._id); $event.stopPropagation()" title="Zähler anzeigen">
+              (click)="showMeter.emit(contract.meterId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Zähler anzeigen">
               {{ contract.meterId?.meterNumber }}
             </a>
           } @else {
@@ -62,7 +62,7 @@
           <td>
             @if(contract.supplierId){
             <a class="clickable-link"
-              (click)="showSupplier.emit(contract.supplierId._id); $event.stopPropagation()" title="Anbieter anzeigen">
+              (click)="showSupplier.emit(contract.supplierId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Anbieter anzeigen">
               {{ contract.supplierId?.name }}
             </a>
           }@else{
@@ -80,6 +80,9 @@
               </button>
               @if(activeMenuId === contract._id){
               <div class="action-menu" (click)="$event.stopPropagation()">
+                <button class="menu-item" (click)="showDetails.emit(contract); closeActionMenu.emit()">
+                  <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
+                </button>
                 <button class="menu-item" (click)="edit.emit(contract); closeActionMenu.emit()">
                   ✏️ Bearbeiten
                 </button>
