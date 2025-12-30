@@ -39,6 +39,16 @@ export const routes: Routes = [
     loadComponent: () => import('./components/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
   },
   {
+    path: 'payment/success',
+    loadComponent: () => import('./components/payment/payment-success.component').then(m => m.PaymentSuccessComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'payment/cancel',
+    loadComponent: () => import('./components/payment/payment-cancel.component').then(m => m.PaymentCancelComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '',
     component: LayoutComponent,
     canActivate: [authGuard],

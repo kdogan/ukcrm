@@ -7,6 +7,7 @@ import { UpgradeService } from '../../services/upgrade.service';
 import { AuthService } from '../../services/auth.service';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { SettingsMobileComponent } from './mobile/settings-mobile.component';
+import { PaypalService } from '../../services/paypal.service';
 
 @Component({
     selector: 'app-settings',
@@ -981,7 +982,8 @@ export class SettingsComponent implements OnInit {
     private packageService: PackageService,
     private upgradeService: UpgradeService,
     private authService: AuthService,
-    private viewport: ViewportService
+    private viewport: ViewportService,
+    private paypalService: PaypalService
   ) {}
 
   get isMobile() {
@@ -1065,13 +1067,19 @@ export class SettingsComponent implements OnInit {
   }
 
   changePackage(packageName: string, packageOrder: number): void {
+    console.log('🔵 [Settings] changePackage called:', { packageName, packageOrder });
     const isDowngrade = this.userLimits && packageOrder < this.userLimits.package.order;
     const isUpgrade = this.userLimits && packageOrder > this.userLimits.package.order;
     const action = isDowngrade ? 'Downgrade' : 'Upgrade';
     const billingInterval = this.selectedBillingInterval[packageName] || 'monthly';
+    console.log('🔵 [Settings] Action type:', { isDowngrade, isUpgrade, action, billingInterval });
 
     const targetPackage = this.packages.find(p => p.name === packageName);
-    if (!targetPackage) return;
+    if (!targetPackage) {
+      console.error('❌ [Settings] Target package not found:', packageName);
+      return;
+    }
+    console.log('🔵 [Settings] Target package:', targetPackage);
 
     const price = billingInterval === 'yearly' ? targetPackage.yearlyPrice : targetPackage.monthlyPrice;
     const intervalText = billingInterval === 'yearly' ? 'jährlich' : 'monatlich';
@@ -1079,51 +1087,65 @@ export class SettingsComponent implements OnInit {
       ? `\n\nSie sparen ${targetPackage.yearlySavings} ${targetPackage.currency} bei jährlicher Zahlung!`
       : '';
 
-    let confirmMessage = `Möchten Sie wirklich auf das ${targetPackage.displayName}-Paket ${action.toLowerCase()}?\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}${savingsText}`;
+    let confirmMessage = `Möchten Sie wirklich auf das ${targetPackage.displayName}-Paket ${action.toLowerCase()}?\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}${savingsText}\n\nSie werden zu PayPal weitergeleitet, um die Zahlung abzuschließen.`;
 
     if (isDowngrade) {
       confirmMessage = `ACHTUNG: Downgrade auf ${targetPackage.displayName}\n\nWenn Ihre aktuelle Nutzung die Limits des neuen Pakets überschreitet, wird der Downgrade abgelehnt.\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}\n\nMöchten Sie fortfahren?`;
     }
 
     if (confirm(confirmMessage)) {
-      this.packageService.upgradePackage(packageName, billingInterval).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            if (response.requiresNewPurchase) {
-              // User needs to purchase the upgrade
-              const purchaseConfirm = confirm(
-                `${response.message}\n\nAktuelles Paket: ${response.currentPackage}\nNeues Paket: ${response.targetPackage}\nPreis: ${response.price} ${targetPackage.currency}\nZahlungsintervall: ${response.billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich'}\n\nMöchten Sie das neue Paket jetzt kaufen?`
-              );
-
-              if (purchaseConfirm) {
-                this.packageService.purchasePackage(packageName, billingInterval).subscribe({
-                  next: (purchaseResponse: any) => {
-                    if (purchaseResponse.success) {
-                      alert(`Paket erfolgreich gekauft!\n\nNeues Paket: ${purchaseResponse.subscription.package}\nZahlungsintervall: ${purchaseResponse.subscription.billingIntervalText}\nPreis: ${purchaseResponse.subscription.price} ${targetPackage.currency}\n\nIhre Subscription ist jetzt aktiv.`);
-                      this.loadUserLimits();
-                      this.loadPackages();
-                    }
-                  },
-                  error: (error: any) => {
-                    console.error('Error purchasing package:', error);
-                    alert('Fehler beim Kauf des Pakets: ' + (error.error?.message || 'Unbekannter Fehler'));
-                  }
-                });
-              }
-            } else {
+      console.log('🟢 [Settings] User confirmed the action');
+      // For downgrades and free packages, use the old method (no payment needed)
+      if (isDowngrade || targetPackage.isFree) {
+        console.log('🔵 [Settings] Using direct upgrade (downgrade or free package)');
+        this.packageService.upgradePackage(packageName, billingInterval).subscribe({
+          next: (response: any) => {
+            if (response.success) {
               alert(`${action} erfolgreich!\n\nNeues Paket: ${response.subscription.package}\nZahlungsintervall: ${response.subscription.billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich'}\nPreis: ${response.subscription.price} ${targetPackage.currency}\n\n${response.message}`);
               this.loadUserLimits();
               this.loadPackages();
             }
+          },
+          error: (error: any) => {
+            console.error('Error changing package:', error);
+            const errorMessage = error.error?.message || 'Unbekannter Fehler';
+            alert('Fehler beim Paket-Wechsel: ' + errorMessage);
           }
-        },
-        error: (error: any) => {
-          console.error('Error changing package:', error);
-          const errorMessage = error.error?.message || 'Unbekannter Fehler';
-          alert('Fehler beim Paket-Wechsel: ' + errorMessage);
-        }
-      });
+        });
+      } else {
+        // For upgrades and paid packages, redirect to PayPal
+        console.log('🟡 [Settings] Using PayPal for upgrade (paid package)');
+        this.purchaseWithPayPal(packageName, billingInterval);
+      }
+    } else {
+      console.log('🔴 [Settings] User cancelled the action');
     }
+  }
+
+  purchaseWithPayPal(packageName: string, billingInterval: 'monthly' | 'yearly'): void {
+    console.log('🟡 [Settings] purchaseWithPayPal called:', { packageName, billingInterval });
+    this.paypalService.createOrder(packageName, billingInterval).subscribe({
+      next: (response) => {
+        console.log('✅ [Settings] PayPal createOrder response:', response);
+        if (response.success && response.approvalUrl) {
+          // Store order ID in sessionStorage for later capture
+          sessionStorage.setItem('paypalOrderId', response.orderId);
+          sessionStorage.setItem('paypalPackageName', packageName);
+          sessionStorage.setItem('paypalBillingInterval', billingInterval);
+          console.log('🟢 [Settings] Redirecting to PayPal:', response.approvalUrl);
+
+          // Redirect to PayPal
+          window.location.href = response.approvalUrl;
+        } else {
+          console.error('❌ [Settings] Invalid PayPal response:', response);
+          alert('Fehler beim Erstellen der PayPal-Bestellung');
+        }
+      },
+      error: (error) => {
+        console.error('❌ [Settings] Error creating PayPal order:', error);
+        alert('Fehler beim Erstellen der PayPal-Bestellung: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
   }
 
   getStatusLabel(status: string): string {
