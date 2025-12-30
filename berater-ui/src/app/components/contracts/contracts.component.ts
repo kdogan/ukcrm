@@ -14,7 +14,7 @@ import { ContractsDesktopComponent } from './desktop/contracts-desktop/contracts
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
 import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 import { Util } from '../util/util';
-import { MeterType, meterTypes } from 'src/app/models/meter.model';
+import { Address, MeterType, meterTypes } from 'src/app/models/meter.model';
 import { MeterCreateComponent } from '../shared/meter-create.component';
 
 // CONTRACTS COMPONENT
@@ -909,4 +909,22 @@ export class ContractsComponent implements OnInit {
       }
     });
   }
+
+
+  formatAddress(address: Address): string {
+    let adresse = '';
+    if(address.street){
+      adresse = adresse +address.street;
+    }
+    if(address.zip){
+      adresse = adresse +', '+address.zip;
+    }
+    if(address.city){
+      adresse = adresse +' '+ address.city;
+    }
+    if(address.country){
+      adresse = adresse +', '+ address.country;
+    }
+  return adresse;
+}
 }

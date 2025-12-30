@@ -54,7 +54,10 @@
               <div class="dropdown-list">
               <div *ngFor="let customer of filteredCustomers" class="dropdown-item"
                 [class.selected]="currentContract.customerId === customer._id" (click)="selectCustomer(customer)">
-                {{ customer.firstName }} {{ customer.lastName }} ({{ customer.customerNumber }})
+                {{ customer.fullName }}
+                @if(customer.address){
+                  <span style="font-size: 12px;"> {{'('+formatAddress(customer.address)+')'}}</span>
+                }
               </div>
               @if(filteredCustomers.length === 0 && customerSearch.trim()) {
                 <div class="dropdown-item create-new" (click)="openCustomerCreationModal()">
