@@ -42,10 +42,10 @@ exports.getMeters = async (req, res, next) => {
           if (latestReading.readingValue != null) {
             meterObj.currentReading = latestReading.readingValue;
           }
-          // Zwei-Tarif-Zähler (HT/NT)
-          if (latestReading.readingValueHT != null && latestReading.readingValueNT != null) {
+          // Zwei-Tarif-Zähler (HT/NT) - HT ist erforderlich, NT ist optional
+          if (latestReading.readingValueHT != null) {
             meterObj.currentReadingHT = latestReading.readingValueHT;
-            meterObj.currentReadingNT = latestReading.readingValueNT;
+            meterObj.currentReadingNT = latestReading.readingValueNT; // Kann null sein
           }
           meterObj.lastReadingDate = latestReading.readingDate;
         }

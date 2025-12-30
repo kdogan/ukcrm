@@ -54,17 +54,17 @@
             </span>
           </td>
           <td>
-            <!-- Ein-Tarif-Zähler -->
-            <strong *ngIf="meter.currentReading != null">{{ meter.currentReading }}</strong>
-
+            
             <!-- Zwei-Tarif-Zähler (HT/NT) -->
-            <div *ngIf="meter.currentReadingHT != null && meter.currentReadingNT != null" style="font-size: 0.9rem;">
-              <strong>HT:</strong> {{ meter.currentReadingHT }}<br>
-              <strong>NT:</strong> {{ meter.currentReadingNT }}
+            @if(meter.isTwoTariff){
+            <div style="font-size: 0.9rem;">
+              <strong>HT:</strong> {{ meter.currentReadingHT || '-' }}<br>
+              <strong>NT:</strong> {{ meter.currentReadingNT || '-'  }}
             </div>
-
-            <!-- Kein Wert -->
-            <span *ngIf="meter.currentReading == null && meter.currentReadingHT == null">-</span>
+            }@else {
+              <!-- Ein-Tarif-Zähler -->
+              <strong>{{ meter.currentReading  || '-'}}</strong>
+            }
           </td>
           <td>
             {{ meter.lastReadingDate ? (meter.lastReadingDate | date:'dd.MM.yyyy') : '-' }}
@@ -277,9 +277,9 @@
             <strong *ngIf="reading.readingValue != null">{{ reading.readingValue }}</strong>
 
             <!-- Zwei-Tarif-Zähler (HT/NT) -->
-            <div *ngIf="reading.readingValueHT != null && reading.readingValueNT != null">
+            <div *ngIf="reading.readingValueHT != null">
               <strong>HT:</strong> {{ reading.readingValueHT }}<br>
-              <strong>NT:</strong> {{ reading.readingValueNT }}
+              <strong>NT:</strong> {{ reading.readingValueNT || '-' }}
             </div>
           </td>
           <td>

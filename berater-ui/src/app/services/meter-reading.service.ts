@@ -9,7 +9,9 @@ export interface MeterReading {
   beraterId: string;
   customerId?: string;
   contractId?: string;
-  readingValue: number;
+  readingValue?: number; // Für Ein-Tarif-Zähler
+  readingValueHT?: number; // Hochtarif (für Zwei-Tarif-Zähler)
+  readingValueNT?: number; // Niedrigtarif (für Zwei-Tarif-Zähler)
   readingDate: Date;
   readingType: 'initial' | 'regular' | 'final' | 'special';
   notes?: string;
@@ -21,7 +23,9 @@ export interface MeterReading {
 }
 
 export interface CreateReadingDto {
-  readingValue: number;
+  readingValue?: number; // Für Ein-Tarif-Zähler
+  readingValueHT?: number; // Hochtarif (für Zwei-Tarif-Zähler)
+  readingValueNT?: number; // Niedrigtarif (für Zwei-Tarif-Zähler)
   readingDate?: Date;
   readingType?: 'initial' | 'regular' | 'final' | 'special';
   notes?: string;

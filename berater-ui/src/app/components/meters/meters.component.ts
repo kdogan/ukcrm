@@ -213,11 +213,13 @@ meterTypes: any;
   }
 
   saveReading(): void {
-    if (!this.selectedMeterForReading || !this.currentReading.readingValue) {
+
+    if (!this.selectedMeterForReading || (this.selectedMeterForReading.isTwoTariff && !this.currentReading.readingValueHT) || 
+       (!this.selectedMeterForReading.isTwoTariff && !this.currentReading.readingValue)) {
       alert('Bitte geben Sie einen Zählerstand ein');
       return;
     }
-
+    
     this.meterReadingService.createReading(this.selectedMeterForReading._id, this.currentReading).subscribe({
       next: (response) => {
         if (response.success) {

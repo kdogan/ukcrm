@@ -72,11 +72,14 @@ exports.createPayPalOrder = async (req, res) => {
       message: 'PayPal-Bestellung erfolgreich erstellt'
     });
   } catch (error) {
-    console.error('Error creating PayPal order:', error);
+    console.error('❌ Error creating PayPal order:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     res.status(500).json({
       success: false,
       message: 'Fehler beim Erstellen der PayPal-Bestellung',
-      error: error.message
+      error: error.message,
+      details: error.stack
     });
   }
 };
