@@ -16,7 +16,6 @@ import { SearchInputComponent } from 'src/app/components/shared/search-input.com
 export class ContractsDesktopComponent {
 
 
-
   @Input({ required: true }) contracts!: any[];
   @Input() activeMenuId: string | null = null;
 

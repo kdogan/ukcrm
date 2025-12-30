@@ -43,36 +43,41 @@
             <div class="card-header">
                 <strong>{{ c.contractNumber }}</strong>
             </div>
-
+            @if(c.customerId){
             <div class="row">
-                Kunde: <a *ngIf="c.customerId" class="clickable-link"
+                Kunde: <a class="clickable-link"
                     (click)="showCustomer.emit(c.customerId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Kunde anzeigen">
                     {{ c.customerId?.firstName }} {{ c.customerId?.lastName }}
                 </a>
             </div>
-            <div class="row">
-                Zähler: <a *ngIf="c.meterId" class="clickable-link"
-                    (click)="showMeter.emit(c.meterId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Zähler anzeigen">
-                    {{ c.meterId?.meterNumber }}
-                </a>
-            </div>
-            <div class="row">
-                Anbieter: <a *ngIf="c.supplierId" class="clickable-link"
-                    (click)="showSupplier.emit(c.supplierId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Anbieter anzeigen">
-                    {{ c.supplierId?.name }}
-                </a>
+            }
+            @if(c.meterId){
+              <div class="row">
+                  Zähler: <a class="clickable-link"
+                      (click)="showMeter.emit(c.meterId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Zähler anzeigen">
+                      {{ c.meterId?.meterNumber }}
+                  </a>
+              </div>
+            }
+            @if(c.supplierId){
+              <div class="row">
+                  Anbieter: <a class="clickable-link"
+                      (click)="showSupplier.emit(c.supplierId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Anbieter anzeigen">
+                      {{ c.supplierId?.name }}
+                  </a>
 
-                <div class="row">
-                    {{ c.startDate | date:'dd.MM.yyyy' }} – {{ c.endDate | date:'dd.MM.yyyy' }}
-                </div>
+                  <div class="row">
+                      {{ c.startDate | date:'dd.MM.yyyy' }} – {{ c.endDate | date:'dd.MM.yyyy' }}
+                  </div>
 
-                <div class="actions">
-                    <button (click)="showDetails.emit(c)"><i class="fas fa-info-circle"></i>Details</button>
-                    <button (click)="edit.emit(c)"><i class="fas fa-edit"></i>Bearbeiten</button>
-                    <button class="danger" (click)="delete.emit(c._id)"><i class="fas fa-trash"></i>Löschen</button>
-                </div>
+                  <div class="actions">
+                      <button (click)="showDetails.emit(c)"><i class="fas fa-info-circle"></i>Details</button>
+                      <button (click)="edit.emit(c)"><i class="fas fa-edit"></i>Bearbeiten</button>
+                      <button class="danger" (click)="delete.emit(c._id)"><i class="fas fa-trash"></i>Löschen</button>
+                  </div>
 
-            </div>
+              </div>
+            }
         </div>
 
     </div>

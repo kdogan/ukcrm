@@ -22,6 +22,7 @@ import { MeterCreateComponent } from '../shared/meter-create.component';
     selector: 'app-contracts',
     styleUrls: ['./contracts.component.scss'],
     templateUrl: './contracts.component.html',
+    standalone:true,
     imports: [CommonModule,
         FormsModule,
         ContractsDesktopComponent,
