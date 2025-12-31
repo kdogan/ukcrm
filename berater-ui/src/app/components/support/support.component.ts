@@ -23,7 +23,7 @@ export class SupportComponent implements OnInit {
 
   // Search and Filter
   searchQuery = '';
-  filterStatus: 'all' | 'open' | 'in_progress' | 'completed' = 'all';
+  filterStatus: 'all' | 'open' | 'in_progress' | 'completed' = 'open'; // Default: show open tickets
   filterPriority: 'all' | 'low' | 'medium' | 'high' = 'all';
   filterAnswered: 'all' | 'answered' | 'unanswered' = 'all';
 
