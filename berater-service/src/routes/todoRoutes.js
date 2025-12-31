@@ -11,6 +11,7 @@ const {
   completeTodo,
   generateExpiringContractTodos,
   createSupportTicket,
+  getMySupportTickets,
   getSupportTickets,
   respondToSupportTicket,
   getSupportTicketImage
@@ -61,6 +62,7 @@ router.post('/generate-expiring', generateExpiringContractTodos);
 
 // Support Ticket Routes
 router.post('/support-ticket', upload.array('images', 5), createSupportTicket);
+router.get('/my-support-tickets', getMySupportTickets);
 router.get('/support-tickets', requireSuperAdmin, getSupportTickets);
 router.put('/support-ticket/:id/respond', requireSuperAdmin, respondToSupportTicket);
 

@@ -109,6 +109,10 @@ export class TodoService {
     return this.http.post(`${this.apiUrl}/support-ticket`, formData);
   }
 
+  getMySupportTickets(params?: any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/my-support-tickets`, { params });
+  }
+
   getSupportTickets(params?: any): Observable<any> {
     return this.http.get(`${this.apiUrl}/support-tickets`, { params });
   }

@@ -10,7 +10,7 @@ exports.getTodos = async (req, res, next) => {
   try {
     const { status, priority, search, page = 1, limit = 50 } = req.query;
 
-    const filter = { beraterId: req.user._id };
+    const filter = { beraterId: req.user._id, isSupportTicket: { $ne: true } };
 
     if (status) filter.status = status;
     if (priority) filter.priority = priority;
@@ -320,6 +320,45 @@ exports.createSupportTicket = async (req, res, next) => {
       success: true,
       data: populatedTicket,
       message: 'Support-Ticket erfolgreich erstellt'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get my support tickets (for Berater - own tickets only)
+// @route   GET /api/todos/my-support-tickets
+// @access  Private (Berater)
+exports.getMySupportTickets = async (req, res, next) => {
+  try {
+    const { status, priority, page = 1, limit = 50 } = req.query;
+
+    const filter = {
+      beraterId: req.user._id,
+      isSupportTicket: true
+    };
+
+    if (status) filter.status = status;
+    if (priority) filter.priority = priority;
+
+    const skip = (page - 1) * limit;
+    const total = await Todo.countDocuments(filter);
+
+    const tickets = await Todo.find(filter)
+      .populate('respondedBy', 'firstName lastName')
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip(skip);
+
+    res.status(200).json({
+      success: true,
+      data: tickets,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
     });
   } catch (error) {
     next(error);

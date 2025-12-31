@@ -68,10 +68,10 @@ export class SupportComponent implements OnInit {
       });
     } else {
       // Berater sees only their own support tickets
-      this.todoService.getTodos({ isSupportTicket: true }).subscribe({
+      this.todoService.getMySupportTickets().subscribe({
         next: (response) => {
           if (response.success) {
-            this.tickets = response.data.filter((t: Todo) => t.isSupportTicket);
+            this.tickets = response.data;
             this.applyFilters();
           }
         },
