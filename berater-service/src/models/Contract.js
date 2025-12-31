@@ -32,6 +32,9 @@ const contractSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  supplierContractNumber: {
+    type: String
+  },
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer',

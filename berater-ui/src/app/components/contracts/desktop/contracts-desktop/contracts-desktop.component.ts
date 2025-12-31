@@ -1,9 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Contract } from 'src/app/services/contract.service';
 import { TableContainerComponent } from "src/app/components/shared/tablecontainer.component";
 import { FormsModule, NgModel } from '@angular/forms';
-import { ContractState, stateToLabel } from 'src/app/models/contract.model';
+import { Contract, ContractState, stateToLabel } from 'src/app/models/contract.model';
 import { SearchInputComponent } from 'src/app/components/shared/search-input.component';
 
 @Component({

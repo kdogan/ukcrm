@@ -204,7 +204,8 @@ export class ContractsComponent implements OnInit {
       startDate: '',
       durationMonths: 24,
       status: 'active',
-      notes: ''
+      notes: '',
+      supplierContractNumber:''
     };
   }
 

@@ -26,7 +26,7 @@
     <table class="data-table" (click)="$event.stopPropagation()">
       <thead>
         <tr>
-          <th>Id</th>
+          <th>Vertragsnummer</th>
           <th>Kunde</th>
           <th>Zähler</th>
           <th>Anbieter</th>
@@ -38,7 +38,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let contract of contracts">
-          <td>{{ contract.contractNumber }}</td>
+          <td>{{ contract.supplierContractNumber || '-' }}</td>
           <td>
             @if(contract.customerId){
             <a class="clickable-link"

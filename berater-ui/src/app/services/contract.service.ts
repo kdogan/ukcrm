@@ -2,34 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface Attachment {
-  _id: string;
-  filename: string;
-  originalName: string;
-  mimetype: string;
-  size: number;
-  path: string;
-  uploadedAt: Date;
-  uploadedBy: string;
-}
-
-export interface Contract {
-  _id: string;
-  contractNumber: string;
-  customerId: any;
-  meterId: any;
-  supplierId: any;
-  startDate: Date;
-  endDate: Date;
-  durationMonths: number;
-  status: 'draft' | 'active' | 'ended' | 'archived';
-  notes?: string;
-  attachments?: Attachment[];
-  daysRemaining?: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Contract } from '../models/contract.model';
 
 @Injectable({
   providedIn: 'root'
