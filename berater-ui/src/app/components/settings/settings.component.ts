@@ -220,8 +220,17 @@ import { PaypalService } from '../../services/paypal.service';
           </div>
         </div>
 
+
         <!-- Paket-Verwaltung -->
         <div class="settings-section">
+                      <div class="info-box">
+      <i class="fas fa-info-circle"></i>
+      <div>
+        <p>Sie können das kostenlose Paket mit vollem Funktionsumfang bis <strong>31. März 2026 </strong> nutzen.
+Danach wird das Paket automatisch auf 30 Verträge und ohne Dateiupload umgestellt.
+Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst zu wählen.</p>
+      </div>
+    </div>
           <h2>📦 Ihr Paket</h2>
           <p class="section-description">
             Verwalten Sie Ihr aktuelles Paket und sehen Sie Ihre Nutzung.
@@ -961,6 +970,53 @@ import { PaypalService } from '../../services/paypal.service';
       color: #d97706;
       font-weight: 700;
     }
+
+    .info-box {
+  background: linear-gradient(135deg, var(--info-bg) 0%, #f0f7ff 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  color: var(--info-color);
+  border-left: 4px solid var(--info-color);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.1);
+
+  i {
+    font-size: 1.5rem;
+    margin-top: 0.2rem;
+  }
+
+  div {
+    flex: 1;
+
+    strong {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: #0d47a1;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.6;
+      color: #1565c0;
+    }
+  }
+
+  &.admin {
+    background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+    color: #856404;
+    border-left-color: #ffc107;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.1);
+    align-items: center;
+
+    i {
+      margin-top: 0;
+    }
+  }
+}
   `]
 })
 export class SettingsComponent implements OnInit {
