@@ -287,8 +287,16 @@ exports.deleteContract = async (req, res, next) => {
       });
     }
 
-    // Zähler freigeben wenn Vertrag aktiv war
-    if (contract.status === 'active' || contract.status === 'draft') {
+    // Prüfe ob Vertrag aktiv ist (aktiv oder in Belieferung)
+    if (contract.status === 'active') {
+      return res.status(400).json({
+        success: false,
+        message: 'Aktive Verträge können nicht gelöscht werden. Bitte beenden Sie den Vertrag zuerst.'
+      });
+    }
+
+    // Zähler freigeben wenn Vertrag draft war
+    if (contract.status === 'draft') {
       const Meter = require('../models/Meter');
       const MeterHistory = require('../models/MeterHistory');
 
