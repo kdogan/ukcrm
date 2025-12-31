@@ -514,7 +514,8 @@ form {
 }
 
 .btn-primary,
-.btn-secondary {
+.btn-secondary,
+.btn-success {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 6px;
@@ -545,6 +546,15 @@ form {
 
   &:hover {
     background: #5c636a;
+  }
+}
+
+.btn-success {
+  background: var(--success-green);
+  color: var(--white);
+
+  &:hover {
+    background: var(--success-color);
   }
 }
 

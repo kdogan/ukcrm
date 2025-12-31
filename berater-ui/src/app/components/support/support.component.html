@@ -323,6 +323,11 @@
       </div>
 
       <div class="modal-footer">
+        @if(!isSuperAdmin && selectedTicket.status !== 'completed'){
+          <button type="button" class="btn-success" (click)="closeTicket()">
+            <i class="fas fa-check-circle"></i> Ticket abschließen
+          </button>
+        }
         <button type="button" class="btn-secondary" (click)="closeViewModal()">Schließen</button>
       </div>
     </div>

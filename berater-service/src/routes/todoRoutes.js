@@ -64,7 +64,8 @@ router.post('/generate-expiring', generateExpiringContractTodos);
 router.post('/support-ticket', upload.array('images', 5), createSupportTicket);
 router.get('/my-support-tickets', getMySupportTickets);
 router.get('/support-tickets', requireSuperAdmin, getSupportTickets);
-router.put('/support-ticket/:id/respond', requireSuperAdmin, respondToSupportTicket);
+// Berater can close their own tickets, Superadmin can respond and change any status
+router.put('/support-ticket/:id/respond', respondToSupportTicket);
 
 router.route('/:id')
   .get(getTodo)

@@ -403,9 +403,9 @@ exports.getSupportTickets = async (req, res, next) => {
   }
 };
 
-// @desc    Respond to support ticket (for Superadmin)
+// @desc    Respond to support ticket / Close ticket
 // @route   PUT /api/todos/support-ticket/:id/respond
-// @access  Private (Superadmin only)
+// @access  Private (Berater can close own tickets, Superadmin can respond and change all statuses)
 exports.respondToSupportTicket = async (req, res, next) => {
   try {
     const { response, status } = req.body;
@@ -430,7 +430,36 @@ exports.respondToSupportTicket = async (req, res, next) => {
       });
     }
 
-    // Update response if provided
+    const isSuperAdmin = req.user.role === 'superadmin';
+    const isTicketOwner = ticket.beraterId.toString() === req.user._id.toString();
+
+    // Berater can only close their own tickets (change status to 'completed')
+    // They cannot add responses or change to other statuses
+    if (!isSuperAdmin) {
+      if (!isTicketOwner) {
+        return res.status(403).json({
+          success: false,
+          message: 'Sie können nur Ihre eigenen Tickets verwalten'
+        });
+      }
+
+      // Berater can only change status to 'completed', not add responses
+      if (response && response.trim().length > 0) {
+        return res.status(403).json({
+          success: false,
+          message: 'Nur Administratoren können Antworten hinzufügen'
+        });
+      }
+
+      if (status && status !== 'completed') {
+        return res.status(403).json({
+          success: false,
+          message: 'Sie können Tickets nur als abgeschlossen markieren'
+        });
+      }
+    }
+
+    // Update response if provided (only superadmin can do this)
     if (response && response.trim().length > 0) {
       ticket.adminResponse = response;
       ticket.adminResponseAt = new Date();

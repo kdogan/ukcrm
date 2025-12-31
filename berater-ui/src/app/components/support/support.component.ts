@@ -234,6 +234,34 @@ export class SupportComponent implements OnInit {
     });
   }
 
+  closeTicket(): void {
+    if (!this.selectedTicket) {
+      return;
+    }
+
+    if (!confirm('Möchten Sie dieses Ticket wirklich als abgeschlossen markieren?')) {
+      return;
+    }
+
+    this.todoService.respondToSupportTicket(
+      this.selectedTicket._id,
+      '', // No response text needed
+      'completed'
+    ).subscribe({
+      next: (response) => {
+        if (response.success) {
+          alert('Ticket erfolgreich abgeschlossen');
+          this.closeViewModal();
+          this.loadTickets();
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Abschließen des Tickets:', error);
+        alert('Fehler beim Abschließen des Tickets');
+      }
+    });
+  }
+
   getImageUrl(ticketId: string, filename: string): string {
     return this.todoService.getSupportTicketImageUrl(ticketId, filename);
   }
