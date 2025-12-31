@@ -1102,6 +1102,10 @@ export class SettingsComponent implements OnInit {
           next: (response: any) => {
             if (response.success) {
               alert(`${action} erfolgreich!\n\nNeues Paket: ${response.subscription.package}\nZahlungsintervall: ${response.subscription.billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich'}\nPreis: ${response.subscription.price} ${targetPackage.currency}\n\n${response.message}`);
+              // Aktualisiere User-Daten im AuthService (inkl. packageFeatures)
+              if (response.data) {
+                this.authService.updateCurrentUser(response.data);
+              }
               this.loadUserLimits();
               this.loadPackages();
             }

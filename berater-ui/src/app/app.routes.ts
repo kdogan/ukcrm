@@ -17,6 +17,20 @@ export const authGuard = () => {
   return false;
 };
 
+// Superadmin Guard
+export const superadminGuard = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isAuthenticated() && authService.currentUser?.role === 'superadmin') {
+    return true;
+  }
+
+  // Nicht Superadmin - redirect zu Dashboard
+  router.navigate(['/dashboard']);
+  return false;
+};
+
 export const routes: Routes = [
   {
     path: 'login',
@@ -104,7 +118,8 @@ export const routes: Routes = [
       },
       {
         path: 'packages',
-        loadComponent: () => import('./components/packages/packages.component').then(m => m.PackagesComponent)
+        loadComponent: () => import('./components/packages/packages.component').then(m => m.PackagesComponent),
+        canActivate: [superadminGuard]
       },
       {
         path: 'settings',

@@ -12,13 +12,13 @@
 
   h1 {
     margin: 0;
-    color: #333;
+    color: var(--text-primary);
   }
 }
 
 // Filter Section
 .filter-section {
-  background: white;
+  background: var(--white);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -34,14 +34,14 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #999;
+    color: var(--text-light);
     font-size: 1rem;
   }
 
   input {
     width: 100%;
     padding: 0.875rem 1rem 0.875rem 3rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-light);
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.2s;
@@ -60,7 +60,7 @@
     transform: translateY(-50%);
     background: transparent;
     border: none;
-    color: #999;
+    color: var(--text-light);
     cursor: pointer;
     padding: 0.5rem;
     display: flex;
@@ -70,8 +70,8 @@
     transition: all 0.2s;
 
     &:hover {
-      background: #f0f0f0;
-      color: #333;
+      background: var(--btn-bg-light);
+      color: var(--text-primary);
     }
   }
 }
@@ -89,16 +89,16 @@
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #666;
+    color: var(--text-tertiary);
   }
 
   select {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-light);
     border-radius: 8px;
     font-size: 0.95rem;
-    background: white;
+    background: var(--white);
     cursor: pointer;
     transition: all 0.2s;
 
@@ -113,10 +113,10 @@
 .btn-reset {
   align-self: flex-end;
   padding: 0.75rem 1rem;
-  background: #f8f9fa;
-  border: 2px solid #e0e0e0;
+  background: var(--bg-table-header);
+  border: 2px solid var(--border-light);
   border-radius: 8px;
-  color: #666;
+  color: var(--text-tertiary);
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -134,23 +134,23 @@
 .results-info {
   text-align: center;
   padding: 0.75rem;
-  background: #f8f9fa;
+  background: var(--bg-table-header);
   border-radius: 8px;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-tertiary);
   font-weight: 500;
 }
 
 .info-box {
-  background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+  background: linear-gradient(135deg, var(--info-bg) 0%, #f0f7ff 100%);
   padding: 1.5rem;
   border-radius: 12px;
   margin-bottom: 2rem;
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  color: #1976d2;
-  border-left: 4px solid #1976d2;
+  color: var(--info-color);
+  border-left: 4px solid var(--info-color);
   box-shadow: 0 2px 8px rgba(25, 118, 210, 0.1);
 
   i {
@@ -195,8 +195,8 @@
 }
 
 .ticket-card {
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: var(--white);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   padding: 1.5rem;
   cursor: pointer;
@@ -221,7 +221,7 @@
 .ticket-title {
   font-weight: 600;
   font-size: 1.1rem;
-  color: #333;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -232,7 +232,7 @@
 }
 
 .ticket-description {
-  color: #666;
+  color: var(--text-tertiary);
   margin: 1rem 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -241,7 +241,7 @@
 }
 
 .ticket-berater {
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 0.9rem;
   margin-bottom: 1rem;
   display: flex;
@@ -260,7 +260,7 @@
   flex-wrap: wrap;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border-subtle);
   font-size: 0.9rem;
 }
 
@@ -291,14 +291,14 @@
 
 .ticket-images-count,
 .ticket-has-response {
-  color: #666;
+  color: var(--text-tertiary);
   display: flex;
   align-items: center;
   gap: 0.3rem;
 }
 
 .ticket-date {
-  color: #999;
+  color: var(--text-light);
   margin-left: auto;
 }
 
@@ -312,8 +312,8 @@
   letter-spacing: 0.3px;
 
   &.badge-high {
-    background: linear-gradient(135deg, #ff6b6b 0%, #dc3545 100%);
-    color: white;
+    background: linear-gradient(135deg, #ff6b6b 0%, var(--danger-red) 100%);
+    color: var(--white);
     box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
   }
 
@@ -325,7 +325,7 @@
 
   &.badge-low {
     background: linear-gradient(135deg, #6dd5ed 0%, #0d6efd 100%);
-    color: white;
+    color: var(--white);
     box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
   }
 }
@@ -334,7 +334,7 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
-  color: #999;
+  color: var(--text-light);
   font-size: 1.1rem;
 
   i {
@@ -370,7 +370,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: var(--white);
   border-radius: 12px;
   width: 100%;
   max-width: 600px;
@@ -404,7 +404,7 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #666;
+  color: var(--text-tertiary);
   padding: 0;
   width: 30px;
   height: 30px;
@@ -414,8 +414,8 @@
   border-radius: 4px;
 
   &:hover {
-    background: #f0f0f0;
-    color: #333;
+    background: var(--btn-bg-light);
+    color: var(--text-primary);
   }
 }
 
@@ -430,7 +430,7 @@ form {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: #333;
+    color: var(--text-primary);
   }
 
   input[type="text"],
@@ -439,7 +439,7 @@ form {
   textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-medium);
     border-radius: 6px;
     font-size: 1rem;
     font-family: inherit;
@@ -458,7 +458,7 @@ form {
   small {
     display: block;
     margin-top: 0.5rem;
-    color: #666;
+    color: var(--text-tertiary);
     font-size: 0.85rem;
   }
 }
@@ -475,7 +475,7 @@ form {
   aspect-ratio: 1;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-medium);
 
   img {
     width: 100%;
@@ -488,7 +488,7 @@ form {
     top: 0.5rem;
     right: 0.5rem;
     background: rgba(220, 53, 69, 0.9);
-    color: white;
+    color: var(--white);
     border: none;
     border-radius: 50%;
     width: 30px;
@@ -499,7 +499,7 @@ form {
     justify-content: center;
 
     &:hover {
-      background: #dc3545;
+      background: var(--danger-red);
     }
   }
 }
@@ -510,7 +510,7 @@ form {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  background: #f8f9fa;
+  background: var(--bg-table-header);
 }
 
 .btn-primary,
@@ -532,7 +532,7 @@ form {
 
 .btn-primary {
   background: #0d6efd;
-  color: white;
+  color: var(--white);
 
   &:hover {
     background: #0b5ed7;
@@ -541,7 +541,7 @@ form {
 
 .btn-secondary {
   background: #6c757d;
-  color: white;
+  color: var(--white);
 
   &:hover {
     background: #5c636a;
@@ -559,7 +559,7 @@ form {
   gap: 1rem;
   margin-bottom: 1rem;
   padding: 0.75rem;
-  background: #f8f9fa;
+  background: var(--bg-table-header);
   border-radius: 8px;
 
   strong {
@@ -576,7 +576,7 @@ form {
 .detail-section {
   margin: 1.5rem 0;
   padding: 1.25rem;
-  background: #f8f9fa;
+  background: var(--bg-table-header);
   border-radius: 12px;
   border: 1px solid #e9ecef;
 
@@ -644,7 +644,7 @@ form {
     border: 2px solid #dee2e6;
     border-radius: 8px;
     font-size: 1rem;
-    background: white;
+    background: var(--white);
     cursor: pointer;
     transition: all 0.2s;
 
@@ -669,7 +669,7 @@ form {
   line-height: 1.8;
   white-space: pre-wrap;
   font-size: 1rem;
-  background: white;
+  background: var(--white);
   padding: 1rem;
   border-radius: 8px;
   border: 1px solid #e9ecef;

@@ -164,4 +164,10 @@ export class AuthService {
   get currentUser(): User | null {
     return this.currentUserSubject.value;
   }
+
+  // Aktualisiere den aktuellen User (z.B. nach Paket-Wechsel)
+  updateCurrentUser(user: User): void {
+    localStorage.setItem('user', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
 }

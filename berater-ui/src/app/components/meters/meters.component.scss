@@ -11,7 +11,7 @@
 
 h1 {
   font-size: 2rem;
-  color: #333;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -24,7 +24,7 @@ h1 {
 .search-input,
 .filter-select {
   padding: 0.75rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-light);
   border-radius: 8px;
   font-size: 1rem;
 }
@@ -40,30 +40,30 @@ h1 {
 }
 
 .data-table th {
-  background: #f8f9fa;
+  background: var(--bg-table-header);
   padding: 1rem;
   text-align: left;
   font-weight: 600;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .data-table td {
   padding: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
-  background: #ffebee;
-  color: #c62828;
+  background: var(--danger-bg);
+  color: var(--danger-color);
   font-size: 0.875rem;
 }
 
 .badge-active {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--success-bg);
+  color: var(--success-color);
 }
 
 
@@ -72,7 +72,7 @@ h1 {
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  color: #888;
+  color: var(--text-muted);
   line-height: 1;
   padding: 0;
   width: 30px;
@@ -80,7 +80,7 @@ h1 {
 }
 
 .btn-close:hover {
-  color: #333;
+  color: var(--text-primary);
 }
 
 /* Form styles moved to global styles.scss */
@@ -104,7 +104,7 @@ button:disabled {
 .no-data {
   text-align: center;
   padding: 3rem 2rem;
-  color: #888;
+  color: var(--text-muted);
   font-size: 1.1rem;
 }
 
@@ -124,22 +124,22 @@ button:disabled {
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
-  color: #666;
+  color: var(--text-tertiary);
   line-height: 1;
   transition: all 0.2s;
   border-radius: 4px;
 }
 
 .action-menu-btn:hover {
-  background: #f0f0f0;
-  color: #333;
+  background: var(--btn-bg-light);
+  color: var(--text-primary);
 }
 
 .action-menu {
   position: absolute;
   right: 0;
   top: 100%;
-  background: white;
+  background: var(--white);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 200px;
@@ -153,24 +153,24 @@ button:disabled {
   width: 100%;
   padding: 0.75rem 1rem;
   border: none;
-  background: white;
+  background: var(--white);
   text-align: left;
   cursor: pointer;
   font-size: 0.9rem;
   transition: background 0.2s;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .menu-item:hover {
-  background: #f5f5f5;
+  background: var(--bg-gray);
 }
 
 .menu-item-danger {
-  color: #c62828;
+  color: var(--danger-color);
 }
 
 .menu-item-danger:hover {
-  background: #ffebee;
+  background: var(--danger-bg);
 }
 
 .modal-header {
@@ -194,7 +194,7 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   padding: 0.6rem 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-subtle);
 
   &:last-child {
     border-bottom: none;
@@ -230,7 +230,7 @@ button:disabled {
     align-items: center;
     justify-content: space-between;
     padding: 14px 16px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border-light);
   }
 
   .modal-header h2 {
@@ -248,8 +248,8 @@ button:disabled {
     display: flex;
     gap: 10px;
     padding: 12px 16px;
-    border-top: 1px solid #e5e7eb;
-    background: white;
+    border-top: 1px solid var(--border-light);
+    background: var(--white);
   }
 
   .modal-footer {

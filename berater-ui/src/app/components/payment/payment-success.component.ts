@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PaypalService } from '../../services/paypal.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-payment-success',
@@ -241,7 +242,8 @@ export class PaymentSuccessComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private paypalService: PaypalService
+    private paypalService: PaypalService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -269,6 +271,10 @@ export class PaymentSuccessComponent implements OnInit {
         this.loading = false;
         if (response.success) {
           this.subscriptionDetails = response.subscription;
+          // Aktualisiere User-Daten im AuthService (inkl. packageFeatures)
+          if (response.data) {
+            this.authService.updateCurrentUser(response.data);
+          }
           // Clear session storage
           sessionStorage.removeItem('paypalOrderId');
           sessionStorage.removeItem('paypalPackageName');

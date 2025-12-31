@@ -147,9 +147,19 @@ exports.updatePackage = async (req, res) => {
 // Delete package (Superadmin only)
 exports.deletePackage = async (req, res) => {
   try {
+    // Hole das Paket zuerst
+    const packageToDelete = await Package.findById(req.params.id);
+
+    if (!packageToDelete) {
+      return res.status(404).json({
+        success: false,
+        message: 'Paket nicht gefunden'
+      });
+    }
+
     // Check if any users are using this package
     const usersWithPackage = await User.countDocuments({
-      package: req.params.id
+      package: packageToDelete.name
     });
 
     if (usersWithPackage > 0) {
@@ -159,14 +169,7 @@ exports.deletePackage = async (req, res) => {
       });
     }
 
-    const package = await Package.findByIdAndDelete(req.params.id);
-
-    if (!package) {
-      return res.status(404).json({
-        success: false,
-        message: 'Paket nicht gefunden'
-      });
-    }
+    await Package.findByIdAndDelete(req.params.id);
 
     res.json({
       success: true,
@@ -349,9 +352,15 @@ exports.upgradeUserPackage = async (req, res) => {
 
     const action = currentPackage && targetPackage.order < currentPackage.order ? 'downgegradet' : 'upgegradet';
 
+    // Package-Features zum User hinzufügen
+    const userWithFeatures = {
+      ...updatedUser.toJSON(),
+      packageFeatures: targetPackage.features
+    };
+
     res.json({
       success: true,
-      data: updatedUser,
+      data: userWithFeatures,
       message: `Erfolgreich auf ${targetPackage.displayName} ${action}`,
       subscription: {
         package: targetPackage.displayName,
@@ -438,9 +447,15 @@ exports.purchasePackage = async (req, res) => {
       { new: true }
     ).select('-passwordHash');
 
+    // Package-Features zum User hinzufügen
+    const userWithFeatures = {
+      ...updatedUser.toJSON(),
+      packageFeatures: targetPackage.features
+    };
+
     res.json({
       success: true,
-      data: updatedUser,
+      data: userWithFeatures,
       message: `${targetPackage.displayName} erfolgreich gekauft`,
       subscription: {
         package: targetPackage.displayName,

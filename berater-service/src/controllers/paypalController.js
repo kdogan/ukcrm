@@ -168,10 +168,16 @@ exports.capturePayPalOrder = async (req, res) => {
     const price = targetPackage.calculatePrice(billingInterval);
     const savings = billingInterval === 'yearly' ? targetPackage.yearlySavings : 0;
 
+    // Package-Features zum User hinzufügen
+    const userWithFeatures = {
+      ...updatedUser.toJSON(),
+      packageFeatures: targetPackage.features
+    };
+
     res.json({
       success: true,
       message: `${targetPackage.displayName} erfolgreich gekauft`,
-      data: updatedUser,
+      data: userWithFeatures,
       subscription: {
         package: targetPackage.displayName,
         billingInterval: billingInterval,

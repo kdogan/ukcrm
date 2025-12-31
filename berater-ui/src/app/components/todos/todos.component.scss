@@ -9,7 +9,7 @@
       display: flex;
       gap: 1rem;
     }
-    h1 { font-size: 2rem; color: #333; margin: 0; }
+    h1 { font-size: 2rem; color: var(--text-primary); margin: 0; }
     .filters {
       display: flex;
       gap: 1rem;
@@ -17,7 +17,7 @@
     }
     .search-input, .filter-select {
       padding: 0.75rem;
-      border: 2px solid #e0e0e0;
+      border: 2px solid var(--border-light);
       border-radius: 8px;
       font-size: 1rem;
     }
@@ -38,11 +38,11 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
-    .badge-priority.priority-high { background: #ffebee; color: #c62828; }
-    .badge-priority.priority-medium { background: #fff3e0; color: #e65100; }
-    .badge-priority.priority-low { background: #e3f2fd; color: #1565c0; }
-    .badge-status.status-open { background: #f5f5f5; color: #666; }
-    .badge-status.status-in_progress { background: #e8f5e9; color: #2e7d32; }
+    .badge-priority.priority-high { background: var(--danger-bg); color: var(--danger-color); }
+    .badge-priority.priority-medium { background: var(--warning-bg); color: #e65100; }
+    .badge-priority.priority-low { background: var(--info-bg); color: #1565c0; }
+    .badge-status.status-open { background: var(--bg-gray); color: var(--text-tertiary); }
+    .badge-status.status-in_progress { background: var(--success-bg); color: var(--success-color); }
     .badge-status.status-completed { background: #e0e0e0; color: #424242; }
     .badge-auto { background: #ede7f6; color: #5e35b1; }
     .btn-icon {
@@ -50,18 +50,18 @@
       border: none;
       font-size: 1.5rem;
       cursor: pointer;
-      color: #999;
+      color: var(--text-light);
       line-height: 1;
       padding: 0;
     }
-    .btn-icon:hover { color: #c62828; }
+    .btn-icon:hover { color: var(--danger-color); }
     .todo-title {
       margin: 0 0 0.5rem 0;
       font-size: 1.25rem;
-      color: #333;
+      color: var(--text-primary);
     }
     .todo-description {
-      color: #666;
+      color: var(--text-tertiary);
       font-size: 0.95rem;
       margin: 0 0 1rem 0;
       line-height: 1.5;
@@ -73,22 +73,22 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: #666;
+      color: var(--text-tertiary);
       font-size: 0.9rem;
     }
     .due-date.overdue {
-      color: #c62828;
+      color: var(--danger-color);
       font-weight: 600;
     }
     .overdue-label {
-      background: #ffebee;
-      color: #c62828;
+      background: var(--danger-bg);
+      color: var(--danger-color);
       padding: 0.125rem 0.5rem;
       border-radius: 8px;
       font-size: 0.75rem;
     }
     .todo-relations {
-      background: #f8f9fa;
+      background: var(--bg-table-header);
       border-radius: 8px;
       padding: 0.75rem;
       margin-bottom: 1rem;
@@ -106,7 +106,7 @@
       font-size: 1rem;
     }
     .relation-link {
-      color: #667eea;
+      color: var(--primary-color);
       cursor: pointer;
       text-decoration: underline;
       font-size: 0.9rem;
@@ -124,25 +124,25 @@
       transition: all 0.3s;
     }
     .btn-primary {
-      background: #667eea;
-      color: white;
+      background: var(--primary-color);
+      color: var(--white);
     }
     .btn-primary:hover { background: #5568d3; }
     .btn-secondary {
       background: #e0e0e0;
-      color: #555;
+      color: var(--text-secondary);
     }
     .btn-secondary:hover { background: #d0d0d0; }
     .btn-small {
       padding: 0.4rem 0.8rem;
       font-size: 0.875rem;
-      background: #f0f0f0;
-      color: #555;
+      background: var(--btn-bg-light);
+      color: var(--text-secondary);
     }
     .btn-small:hover { background: #e0e0e0; }
     .btn-success {
       background: #4caf50;
-      color: white;
+      color: var(--white);
       font-size: 0.875rem;
       padding: 0.4rem 0.8rem;
     }
@@ -160,7 +160,7 @@
       z-index: 1000;
     }
     .modal-content {
-      background: white;
+      background: var(--white);
       border-radius: 12px;
       padding: 2rem;
       width: 90%;
@@ -180,20 +180,20 @@
     .modal-header h2 {
       margin: 0;
       font-size: 1.5rem;
-      color: #333;
+      color: var(--text-primary);
     }
     .btn-close {
       background: none;
       border: none;
       font-size: 2rem;
       cursor: pointer;
-      color: #888;
+      color: var(--text-muted);
       line-height: 1;
       padding: 0;
       width: 30px;
       height: 30px;
     }
-    .btn-close:hover { color: #333; }
+    .btn-close:hover { color: var(--text-primary); }
     .form-group {
       margin-bottom: 1.5rem;
     }
@@ -201,12 +201,12 @@
       display: block;
       margin-bottom: 0.5rem;
       font-weight: 600;
-      color: #555;
+      color: var(--text-secondary);
     }
     .form-control {
       width: 100%;
       padding: 0.75rem;
-      border: 2px solid #e0e0e0;
+      border: 2px solid var(--border-light);
       border-radius: 8px;
       font-size: 1rem;
       transition: border-color 0.3s;
@@ -214,7 +214,7 @@
     }
     .form-control:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--primary-color);
     }
     .form-row {
       display: grid;
@@ -229,7 +229,7 @@
     .form-section h3 {
       margin: 0 0 1rem 0;
       font-size: 1.1rem;
-      color: #555;
+      color: var(--text-secondary);
     }
     .modal-footer {
       display: flex;
@@ -246,7 +246,7 @@
     .no-data {
       text-align: center;
       padding: 4rem 2rem;
-      color: #888;
+      color: var(--text-muted);
       font-size: 1.1rem;
       grid-column: 1 / -1;
     }
@@ -258,7 +258,7 @@
   margin-bottom: 1rem;
 
   .active {
-    background: #667eea;
+    background: var(--primary-color);
     color: #fff;
   }
 }
@@ -279,18 +279,18 @@
 .weekday {
   text-align: center;
   font-weight: 600;
-  color: #666;
+  color: var(--text-tertiary);
 }
 
 .day-cell {
   min-height: 120px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-light);
   padding: 0.25rem;
   cursor: pointer;
   background: #fff;
 
   &.other-month {
-    background: #f5f5f5;
+    background: var(--bg-gray);
     color: #aaa;
   }
 

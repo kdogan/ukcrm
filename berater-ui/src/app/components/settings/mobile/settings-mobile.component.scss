@@ -8,27 +8,27 @@
 
 /* SECTION CARD */
 .section-card {
-  background: #ffffff;
+  background: var(--white);
   border-radius: 14px;
   padding: 1rem;
   margin-bottom: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-lg);
 
   h2 {
     font-size: 1.1rem;
     margin: 0 0 0.5rem 0;
-    color: #333;
+    color: var(--text-primary);
   }
 
   h3 {
     font-size: 1rem;
     margin: 1rem 0 0.75rem 0;
-    color: #555;
+    color: var(--text-secondary);
   }
 }
 
 .section-description {
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 0.85rem;
   margin: 0 0 1rem 0;
   line-height: 1.4;
@@ -46,7 +46,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: #f8f9fa;
+  background: var(--bg-table-header);
   border-radius: 10px;
   cursor: pointer;
 
@@ -59,7 +59,7 @@
 
   span {
     font-size: 0.95rem;
-    color: #333;
+    color: var(--text-primary);
   }
 }
 
@@ -70,18 +70,18 @@
   gap: 0.5rem;
   margin-top: 1rem;
   padding: 0.75rem;
-  background: #f8f9fa;
+  background: var(--bg-table-header);
   border-radius: 10px;
 
   label {
     font-size: 0.9rem;
-    color: #555;
+    color: var(--text-secondary);
     font-weight: 500;
   }
 
   input[type="number"] {
     padding: 0.75rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-light);
     border-radius: 8px;
     font-size: 1rem;
 
@@ -107,16 +107,16 @@
   label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #555;
+    color: var(--text-secondary);
   }
 
   input[type="text"],
   select {
     padding: 0.75rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-light);
     border-radius: 8px;
     font-size: 1rem;
-    background: white;
+    background: var(--white);
 
     &:focus {
       outline: none;
@@ -127,8 +127,8 @@
 
 /* CURRENT PACKAGE CARD */
 .current-package-card {
-  background: #f8f9fa;
-  border: 2px solid #e0e0e0;
+  background: var(--bg-table-header);
+  border: 2px solid var(--border-light);
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 1rem;
@@ -137,7 +137,7 @@
 .package-name {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
 }
 
@@ -170,13 +170,13 @@
 .usage-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .usage-value {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .usage-bar-bg {
@@ -256,7 +256,7 @@
   h3 {
     font-size: 1rem;
     margin: 0 0 0.75rem 0;
-    color: #555;
+    color: var(--text-secondary);
   }
 }
 
@@ -267,8 +267,8 @@
 }
 
 .package-card {
-  background: white;
-  border: 2px solid #e0e0e0;
+  background: var(--white);
+  border: 2px solid var(--border-light);
   border-radius: 12px;
   padding: 1rem;
   display: flex;
@@ -295,12 +295,12 @@
 .package-card-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .current-badge {
   background: #34d399;
-  color: white;
+  color: var(--white);
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-size: 0.75rem;
@@ -309,7 +309,7 @@
 
 .pending-badge {
   background: #f59e0b;
-  color: white;
+  color: var(--white);
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-size: 0.75rem;
@@ -319,7 +319,7 @@
 .billing-toggle {
   display: flex;
   gap: 0.5rem;
-  background: #f5f5f5;
+  background: var(--bg-gray);
   padding: 0.25rem;
   border-radius: 8px;
 }
@@ -330,7 +330,7 @@
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #666;
+  color: var(--text-tertiary);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
@@ -338,16 +338,16 @@
 }
 
 .toggle-btn.active {
-  background: white;
+  background: var(--white);
   color: #34d399;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .badge-save {
   display: inline-block;
   background: #34d399;
-  color: white;
+  color: var(--white);
   padding: 0.125rem 0.4rem;
   border-radius: 4px;
   font-size: 0.65rem;
@@ -376,15 +376,15 @@
   gap: 0.5rem;
 
   .feature {
-    color: #555;
+    color: var(--text-secondary);
     font-size: 0.9rem;
 
     &.feature-enabled {
-      color: #27ae60;
+      color: var(--success-green);
     }
 
     &.feature-disabled {
-      color: #e74c3c;
+      color: var(--danger-red);
     }
   }
 }
@@ -404,7 +404,7 @@
 
 .btn-upgrade {
   background: #34d399;
-  color: white;
+  color: var(--white);
 
   &:active {
     background: #10b981;
@@ -413,7 +413,7 @@
 
 .btn-downgrade {
   background: #fbbf24;
-  color: white;
+  color: var(--white);
 
   &:active {
     background: #f59e0b;
@@ -432,11 +432,11 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
+  background: var(--white);
   padding: 1rem;
   display: flex;
   gap: 0.75rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-light);
   z-index: 10;
 }
 
@@ -454,7 +454,7 @@
 
 .btn-primary {
   background: #34d399;
-  color: white;
+  color: var(--white);
 
   &:active {
     background: #10b981;
@@ -463,7 +463,7 @@
 
 .btn-secondary {
   background: #e0e0e0;
-  color: #555;
+  color: var(--text-secondary);
 
   &:active {
     background: #d0d0d0;

@@ -10,7 +10,7 @@
   h2 {
     font-size: 1rem;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin: 0;
   }
 }
@@ -18,7 +18,7 @@
 .meter-card-content {
   .content-row {
     font-size: 0.9rem;
-    color: #555;
+    color: var(--text-secondary);
     margin-bottom: 0.5rem;
   }
 }

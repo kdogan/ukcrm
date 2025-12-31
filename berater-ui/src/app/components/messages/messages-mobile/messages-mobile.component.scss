@@ -5,13 +5,13 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background: #f9fafb;
+    background: var(--bg-input);
     position: relative;
 
     .mobile-header {
         padding: 1rem 1.25rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: var(--primary-gradient);
+        color: var(--white);
         text-align: center;
         font-weight: 600;
         display: flex;
@@ -25,7 +25,7 @@
             left: 1rem;
             background: rgba(255, 255, 255, 0.2);
             border: none;
-            color: white;
+            color: var(--white);
             font-size: 1.5rem;
             cursor: pointer;
             width: 36px;
@@ -64,8 +64,8 @@
                 justify-content: flex-end;
 
                 .bubble {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
+                    background: var(--primary-gradient);
+                    color: var(--white);
                     border-radius: 20px 20px 4px 20px;
                     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
                 }
@@ -75,11 +75,11 @@
                 justify-content: flex-start;
 
                 .bubble {
-                    background: #ffffff;
+                    background: var(--white);
                     color: #1f2937;
                     border-radius: 20px 20px 20px 4px;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-                    border: 1px solid #e5e7eb;
+                    border: 1px solid var(--border-light);
                 }
             }
 
@@ -140,7 +140,7 @@
                 border-radius: 4px;
 
                 &:hover {
-                    background: #f0f0f0;
+                    background: var(--btn-bg-light);
                 }
             }
         }
@@ -162,7 +162,7 @@
 
         li {
             padding: 1rem 1.25rem;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border-light);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -170,13 +170,13 @@
             transition: all 0.2s ease;
             border-radius: 12px;
             margin-bottom: 0.5rem;
-            background: #ffffff;
+            background: var(--white);
             font-weight: 500;
             color: #1f2937;
 
             .badge {
                 background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-                color: white;
+                color: var(--white);
                 border-radius: 12px;
                 padding: 0.25rem 0.5rem;
                 font-size: 0.75rem;
@@ -207,8 +207,8 @@
         align-items: flex-end;
         gap: 0.75rem;
         padding: 1rem;
-        background: #ffffff;
-        border-top: 1px solid #e5e7eb;
+        background: var(--white);
+        border-top: 1px solid var(--border-light);
         box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
         z-index: 100;
 
@@ -217,7 +217,7 @@
             padding: 0.875rem 1.25rem;
             border-radius: 24px;
             border: 1px solid #d1d5db;
-            background: #f9fafb;
+            background: var(--bg-input);
             font-size: 0.95rem;
             font-family: inherit;
             outline: none;
@@ -229,8 +229,8 @@
             line-height: 1.4;
 
             &:focus {
-                border-color: #667eea;
-                background: #ffffff;
+                border-color: var(--primary-color);
+                background: var(--white);
                 box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             }
 
@@ -263,8 +263,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--primary-gradient);
+            color: var(--white);
             border: none;
             border-radius: 50%;
             cursor: pointer;
@@ -292,7 +292,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        color: #666;
+        color: var(--text-tertiary);
         font-size: 1.1rem;
     }
 

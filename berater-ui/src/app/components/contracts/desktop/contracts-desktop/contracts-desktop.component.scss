@@ -7,18 +7,18 @@
     }
     h1 { font-size: 2rem; margin: 0; }
     .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-    select { padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; }
+    select { padding: 0.75rem; border: 2px solid var(--border-light); border-radius: 8px; }
     .data-table { width: 100%; border-collapse: collapse; }
-    .data-table th { background: #f8f9fa; padding: 1rem; text-align: left; font-weight: 600; }
-    .data-table td { padding: 1rem; border-top: 1px solid #eee; }
+    .data-table th { background: var(--bg-table-header); padding: 1rem; text-align: left; font-weight: 600; }
+    .data-table td { padding: 1rem; border-top: 1px solid var(--border-subtle); }
     .badge {
       padding: 0.25rem 0.75rem;
       border-radius: 12px;
-      background: #ffebee;
-      color: #c62828;
+      background: var(--danger-bg);
+      color: var(--danger-color);
       font-size: 0.875rem;
     }
-    .badge-active { background: #e8f5e9; color: #2e7d32; }
+    .badge-active { background: var(--success-bg); color: var(--success-color); }
     .btn-primary, .btn-secondary, .btn-small {
       padding: 0.625rem 1.25rem;
       border: none;
@@ -28,20 +28,20 @@
       transition: all 0.3s;
     }
     .btn-primary {
-      background: #667eea;
-      color: white;
+      background: var(--primary-color);
+      color: var(--white);
     }
     .btn-primary:hover { background: #5568d3; }
     .btn-secondary {
       background: #e0e0e0;
-      color: #555;
+      color: var(--text-secondary);
     }
     .btn-small {
       padding: 0.4rem 0.8rem;
       font-size: 0.875rem;
       margin-right: 0.5rem;
-      background: #f0f0f0;
-      color: #555;
+      background: var(--btn-bg-light);
+      color: var(--text-secondary);
     }
     .modal-overlay {
       position: fixed;
@@ -56,7 +56,7 @@
       z-index: 1000;
     }
     .modal-content {
-      background: white;
+      background: var(--white);
       border-radius: 12px;
       padding: 2rem;
       width: 90%;
@@ -76,20 +76,20 @@
     .modal-header h2 {
       margin: 0;
       font-size: 1.5rem;
-      color: #333;
+      color: var(--text-primary);
     }
     .btn-close {
       background: none;
       border: none;
       font-size: 2rem;
       cursor: pointer;
-      color: #888;
+      color: var(--text-muted);
       line-height: 1;
       padding: 0;
       width: 30px;
       height: 30px;
     }
-    .btn-close:hover { color: #333; }
+    .btn-close:hover { color: var(--text-primary); }
     .form-group {
       margin-bottom: 1.5rem;
       position: relative;
@@ -98,12 +98,12 @@
       display: block;
       margin-bottom: 0.5rem;
       font-weight: 600;
-      color: #555;
+      color: var(--text-secondary);
     }
     .form-control {
       width: 100%;
       padding: 0.75rem;
-      border: 2px solid #e0e0e0;
+      border: 2px solid var(--border-light);
       border-radius: 8px;
       font-size: 1rem;
       transition: border-color 0.3s;
@@ -111,7 +111,7 @@
     }
     .form-control:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--primary-color);
     }
     textarea.form-control {
       resize: vertical;
@@ -119,7 +119,7 @@
     }
     .search-input {
       margin-bottom: 0.5rem;
-      border-color: #667eea;
+      border-color: var(--primary-color);
       background-color: #f8f9ff;
     }
     .dropdown-list {
@@ -133,7 +133,7 @@
 
       border: 2px solid #667eea;
       border-radius: 8px;
-      background: white;
+      background: var(--white);
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       z-index: 2000;
     }
@@ -151,14 +151,14 @@
       font-weight: 600;
     }
     .dropdown-item.occupied {
-      background-color: #ffebee;
-      color: #c62828;
+      background-color: var(--danger-bg);
+      color: var(--danger-color);
     }
     .dropdown-item.disabled {
       opacity: 0.6;
     }
     .dropdown-item.disabled:hover {
-      background-color: #ffebee;
+      background-color: var(--danger-bg);
     }
     .dropdown-item:last-child {
       border-bottom: none;
@@ -166,7 +166,7 @@
     .selected-item {
       margin-top: 0.5rem;
       padding: 0.75rem;
-      background-color: #e8f5e9;
+      background-color: var(--success-bg);
       border: 2px solid #4caf50;
       border-radius: 8px;
       display: flex;
@@ -177,14 +177,14 @@
       background: none;
       border: none;
       font-size: 1.5rem;
-      color: #666;
+      color: var(--text-tertiary);
       cursor: pointer;
       padding: 0;
       margin-left: 0.5rem;
       line-height: 1;
     }
     .btn-clear:hover {
-      color: #c62828;
+      color: var(--danger-color);
     }
     .form-row {
       display: grid;
@@ -217,20 +217,20 @@
       font-size: 1.5rem;
       cursor: pointer;
       padding: 0.25rem 0.5rem;
-      color: #666;
+      color: var(--text-tertiary);
       line-height: 1;
       transition: all 0.2s;
       border-radius: 4px;
     }
     .action-menu-btn:hover {
-      background: #f0f0f0;
-      color: #333;
+      background: var(--btn-bg-light);
+      color: var(--text-primary);
     }
     .action-menu {
       position: absolute;
       right: 0;
       top: 100%;
-      background: white;
+      background: var(--white);
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       min-width: 160px;
@@ -243,24 +243,24 @@
       width: 100%;
       padding: 0.75rem 1rem;
       border: none;
-      background: white;
+      background: var(--white);
       text-align: left;
       cursor: pointer;
       font-size: 0.9rem;
       transition: background 0.2s;
-      color: #333;
+      color: var(--text-primary);
     }
     .menu-item:hover {
-      background: #f5f5f5;
+      background: var(--bg-gray);
     }
     .menu-item-danger {
-      color: #c62828;
+      color: var(--danger-color);
     }
     .menu-item-danger:hover {
-      background: #ffebee;
+      background: var(--danger-bg);
     }
     .clickable-link {
-      color: #667eea;
+      color: var(--primary-color);
       text-decoration: none;
       cursor: pointer;
       font-weight: 500;
@@ -286,12 +286,12 @@
     }
     .detail-label {
       font-weight: 600;
-      color: #555;
+      color: var(--text-secondary);
       min-width: 150px;
       flex-shrink: 0;
     }
     .detail-value {
-      color: #333;
+      color: var(--text-primary);
       flex: 1;
     }
     .phone-link {
@@ -316,13 +316,13 @@
   .page-header {
     position: sticky;
     top: 0;
-    background: white;
+    background: var(--white);
     z-index: 100;
     padding: 1rem 0;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   .page-header h1 {
@@ -360,11 +360,11 @@
 
   /* Jede Zeile = Card */
   .data-table tr {
-    background: white;
+    background: var(--white);
     border-radius: 12px;
     margin-bottom: 1rem;
     padding: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-lg);
   }
 
   .data-table td {
@@ -379,7 +379,7 @@
   .data-table td::before {
     content: attr(data-label);
     font-weight: 600;
-    color: #555;
+    color: var(--text-secondary);
     margin-right: 1rem;
   }
 

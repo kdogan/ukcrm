@@ -1,7 +1,7 @@
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background: #f5f6fa;
+  background: var(--bg-light);
 }
 
 /* =========================
@@ -9,7 +9,7 @@
 ========================= */
 .sidebar {
   width: 70px;
-  color: white;
+  color: var(--white);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -77,14 +77,14 @@
 
 .nav-menu a:hover {
   background: rgba(255, 255, 255, 0.12);
-  color: white;
+  color: var(--white);
 }
 
 .nav-menu a.active {
   background: rgba(255, 255, 255, 0.25);  /* etwas stärker als vorher */
   border-left: 4px solid #6366f1;          /* farbiger Indikator */
   box-shadow: inset 4px 0 0 #6366f1;       /* subtiler innerer Schatten */
-  color: white;
+  color: var(--white);
 }
 .nav-menu a.active:hover {
   background: rgba(255, 255, 255, 0.35);
@@ -110,7 +110,7 @@
   top: 8px;
   left: 25px;
   background: #ef4444;
-  color: white;
+  color: var(--white);
   border-radius: 50%;
   min-width: 20px;
   height: 20px;
@@ -175,7 +175,7 @@
   background: rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   border: none;
-  color: white;
+  color: var(--white);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -204,7 +204,7 @@
 .burger-menu {
   background: none;
   border: none;
-  color: #111827;
+  color: var(--text-primary);
   cursor: pointer;
   padding: 0.5rem;
 }
@@ -224,8 +224,8 @@
     align-items: center;
     gap: 1rem;
     padding: 1rem;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--white);
+    border-bottom: 1px solid var(--border-light);
     position: fixed;
     top: 0;
     left: 0;
@@ -237,7 +237,7 @@
   .mobile-logo {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   /* Sidebar für Mobile */

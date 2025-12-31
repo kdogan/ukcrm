@@ -2,7 +2,7 @@
 // Global styles (FAB, mobile-filters, filter-row, actions) sind in styles.scss definiert
 
 .clickable-link {
-  color: #667eea;
+  color: var(--primary-color);
   text-decoration: none;
   cursor: pointer;
   font-weight: 500;
@@ -16,8 +16,8 @@
 
 /* STATUS ICON - Contract-spezifische Farben */
 .status-icon.active {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--success-bg);
+  color: var(--success-color);
 }
 
 .status-icon.ended {
@@ -31,12 +31,12 @@
 }
 
 .status-icon.draft {
-  background: #e3f2fd;
-  color: #1976d2;
+  background: var(--info-bg);
+  color: var(--info-color);
 }
 
 .row {
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
-  color: #555;
+  color: var(--text-secondary);
 }

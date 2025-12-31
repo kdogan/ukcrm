@@ -5,13 +5,13 @@
     h1 {
       font-size: 2rem;
       margin-bottom: 2rem;
-      color: #333;
+      color: var(--text-primary);
     }
 
     h2 {
       font-size: 1.5rem;
       margin: 2rem 0 1rem;
-      color: #555;
+      color: var(--text-secondary);
     }
 
     .kachel-container {
@@ -21,7 +21,7 @@
     }
 
     .kachel {
-      background: white;
+      background: var(--white);
       padding: 20px;
       text-align: center;
       border-radius: 8px;
@@ -42,22 +42,22 @@
     }
 
     .stat-card {
-      background: white;
+      background: var(--white);
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-md);
     }
 
     .stat-card h3 {
       margin: 0 0 1rem 0;
       font-size: 1.1rem;
-      color: #666;
+      color: var(--text-tertiary);
     }
 
     .stat-number {
       font-size: 3rem;
       font-weight: bold;
-      color: #667eea;
+      color: var(--primary-color);
       margin-bottom: 0.5rem;
     }
 
@@ -66,7 +66,7 @@
     }
 
     .stat-label {
-      color: #888;
+      color: var(--text-muted);
       font-size: 0.9rem;
     }
 
@@ -94,9 +94,9 @@
       margin-bottom: 0.25rem;
     }
 
-    .reminder-item.high .count { color: #e74c3c; }
-    .reminder-item.medium .count { color: #f39c12; }
-    .reminder-item.low .count { color: #27ae60; }
+    .reminder-item.high .count { color: var(--danger-red); }
+    .reminder-item.medium .count { color: var(--warning-color); }
+    .reminder-item.low .count { color: var(--success-green); }
 
     .data-table {
       width: 100%;
@@ -104,38 +104,38 @@
     }
 
     .data-table th {
-      background: #f8f9fa;
+      background: var(--bg-table-header);
       padding: 1rem;
       text-align: left;
       font-weight: 600;
-      color: #555;
+      color: var(--text-secondary);
     }
 
     .data-table td {
       padding: 1rem;
-      border-top: 1px solid #eee;
+      border-top: 1px solid var(--border-subtle);
     }
 
     .badge {
       display: inline-block;
       padding: 0.25rem 0.75rem;
       border-radius: 12px;
-      background: #e8f5e9;
-      color: #2e7d32;
+      background: var(--success-bg);
+      color: var(--success-color);
       font-size: 0.875rem;
       font-weight: 500;
     }
 
     .badge-danger {
-      background: #ffebee;
-      color: #c62828;
+      background: var(--danger-bg);
+      color: var(--danger-color);
     }
 
     .chart-container {
-      background: white;
+      background: var(--white);
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-md);
     }
 
     .chart-bar {
@@ -145,7 +145,7 @@
     .bar-label {
       font-weight: 500;
       margin-bottom: 0.5rem;
-      color: #555;
+      color: var(--text-secondary);
     }
 
     .bar-wrapper {
@@ -163,7 +163,7 @@
 
     .bar-value {
       font-weight: 600;
-      color: #667eea;
+      color: var(--primary-color);
       min-width: 30px;
     }
 
@@ -179,15 +179,15 @@
     .requests-list h3 {
       font-size: 1.2rem;
       margin-bottom: 1rem;
-      color: #555;
+      color: var(--text-secondary);
     }
 
     .request-card {
-      background: white;
+      background: var(--white);
       border-radius: 12px;
       padding: 1.5rem;
       margin-bottom: 1rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-md);
     }
 
     .request-header {
@@ -196,7 +196,7 @@
       align-items: center;
       margin-bottom: 1rem;
       padding-bottom: 1rem;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     .user-info {
@@ -207,11 +207,11 @@
 
     .user-info strong {
       font-size: 1.1rem;
-      color: #333;
+      color: var(--text-primary);
     }
 
     .user-info .email {
-      color: #666;
+      color: var(--text-tertiary);
       font-size: 0.9rem;
     }
 
@@ -257,17 +257,17 @@
 
     .detail-item .label {
       font-size: 0.875rem;
-      color: #888;
+      color: var(--text-muted);
     }
 
     .detail-item .value {
       font-size: 1rem;
-      color: #333;
+      color: var(--text-primary);
       font-weight: 500;
     }
 
     .detail-item .value.highlight {
-      color: #667eea;
+      color: var(--primary-color);
       font-weight: 600;
     }
 
@@ -279,7 +279,7 @@
 
     .btn-success {
       background: #28a745;
-      color: white;
+      color: var(--white);
       border: none;
       padding: 0.75rem 1.5rem;
       border-radius: 8px;
@@ -293,8 +293,8 @@
     }
 
     .btn-danger {
-      background: #dc3545;
-      color: white;
+      background: var(--danger-red);
+      color: var(--white);
       border: none;
       padding: 0.75rem 1.5rem;
       border-radius: 8px;
@@ -308,11 +308,11 @@
     }
 
     .no-data {
-      background: white;
+      background: var(--white);
       padding: 2rem;
       border-radius: 12px;
       text-align: center;
-      color: #888;
+      color: var(--text-muted);
     }
 
     /* Subscription Warning Banner */
@@ -323,16 +323,16 @@
       padding: 1.5rem;
       margin-bottom: 2rem;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-md);
     }
 
     .subscription-warning-banner.warning-expired {
-      background: #ffebee;
-      border-left: 4px solid #c62828;
+      background: var(--danger-bg);
+      border-left: 4px solid var(--danger-color);
     }
 
     .subscription-warning-banner.warning-danger {
-      background: #fff3e0;
+      background: var(--warning-bg);
       border-left: 4px solid #f57c00;
     }
 
@@ -342,8 +342,8 @@
     }
 
     .subscription-warning-banner.warning-info {
-      background: #e3f2fd;
-      border-left: 4px solid #1976d2;
+      background: var(--info-bg);
+      border-left: 4px solid var(--info-color);
     }
 
     .warning-icon {
@@ -353,7 +353,7 @@
     }
 
     .warning-expired .warning-icon {
-      color: #c62828;
+      color: var(--danger-color);
     }
 
     .warning-danger .warning-icon {
@@ -365,7 +365,7 @@
     }
 
     .warning-info .warning-icon {
-      color: #1976d2;
+      color: var(--info-color);
     }
 
     .warning-content {
@@ -379,7 +379,7 @@
     }
 
     .warning-expired .warning-title {
-      color: #c62828;
+      color: var(--danger-color);
     }
 
     .warning-danger .warning-title {
@@ -391,12 +391,12 @@
     }
 
     .warning-info .warning-title {
-      color: #1976d2;
+      color: var(--info-color);
     }
 
     .warning-message {
       font-size: 1rem;
-      color: #333;
+      color: var(--text-primary);
       line-height: 1.5;
     }
 
@@ -408,8 +408,8 @@
     .btn-renew {
       display: inline-block;
       padding: 0.75rem 1.5rem;
-      background: #667eea;
-      color: white;
+      background: var(--primary-color);
+      color: var(--white);
       text-decoration: none;
       border-radius: 8px;
       font-weight: 600;
@@ -427,13 +427,13 @@
     }
 
     .badge-expired {
-      background: #ffebee;
-      color: #c62828;
+      background: var(--danger-bg);
+      color: var(--danger-color);
       font-weight: 600;
     }
 
     .badge-danger-warning {
-      background: #fff3e0;
+      background: var(--warning-bg);
       color: #f57c00;
       font-weight: 600;
     }
@@ -445,8 +445,8 @@
     }
 
     .badge-info {
-      background: #e3f2fd;
-      color: #1976d2;
+      background: var(--info-bg);
+      color: var(--info-color);
       font-weight: 600;
     }
 

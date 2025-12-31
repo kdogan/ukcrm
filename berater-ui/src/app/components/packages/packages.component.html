@@ -209,8 +209,7 @@
 
           <div class="package-actions" *ngIf="isSuperAdmin">
             <button class="btn-edit" (click)="editPackage(package)">Bearbeiten</button>
-            <button class="btn-delete" (click)="deletePackage(package._id)"
-                    *ngIf="!package.isFree">Löschen</button>
+            <button class="btn-delete" (click)="deletePackage(package._id)">Löschen</button>
           </div>
 
           <div class="package-actions" *ngIf="!isSuperAdmin">

@@ -5,17 +5,17 @@
   display: flex;
   gap: 0.5rem;
   padding: 1rem;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--white);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .switch-btn {
   flex: 1;
   padding: 0.75rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-light);
   border-radius: 8px;
-  background: white;
-  color: #666;
+  background: var(--white);
+  color: var(--text-tertiary);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -25,9 +25,9 @@
   gap: 0.5rem;
 
   &.active {
-    border-color: #667eea;
-    background: #667eea;
-    color: white;
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: var(--white);
   }
 
   i {
@@ -47,8 +47,8 @@
   margin-top: 1rem;
   border: 2px dashed #667eea;
   border-radius: 8px;
-  background: white;
-  color: #667eea;
+  background: var(--white);
+  color: var(--primary-color);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -58,7 +58,7 @@
   gap: 0.5rem;
 
   &:active {
-    background: #f0f0f0;
+    background: var(--btn-bg-light);
     transform: scale(0.98);
   }
 
@@ -73,13 +73,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--white);
+  border-bottom: 1px solid var(--border-light);
 
   h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: #333;
+    color: var(--text-primary);
   }
 
   .nav-btn {
@@ -87,8 +87,8 @@
     height: 40px;
     border: none;
     border-radius: 8px;
-    background: #f5f5f5;
-    color: #666;
+    background: var(--bg-gray);
+    color: var(--text-tertiary);
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s;
@@ -107,16 +107,16 @@
   padding: 1rem;
 
   .weekday {
-    background: white;
+    background: var(--white);
     padding: 0.5rem;
     text-align: center;
     font-weight: 600;
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-tertiary);
   }
 
   .day-cell {
-    background: white;
+    background: var(--white);
     padding: 0.5rem;
     min-height: 60px;
     cursor: pointer;
@@ -124,7 +124,7 @@
     transition: all 0.2s;
 
     &:active {
-      background: #f0f0f0;
+      background: var(--btn-bg-light);
     }
 
     &.other-month {
@@ -132,11 +132,11 @@
     }
 
     &.today {
-      background: #e8f5e9;
+      background: var(--success-bg);
 
       .date {
-        background: #667eea;
-        color: white;
+        background: var(--primary-color);
+        color: var(--white);
         border-radius: 50%;
         width: 28px;
         height: 28px;
@@ -160,8 +160,8 @@
       margin-top: 0.25rem;
 
       .todo-count {
-        background: #667eea;
-        color: white;
+        background: var(--primary-color);
+        color: var(--white);
         border-radius: 50%;
         width: 20px;
         height: 20px;
@@ -177,13 +177,13 @@
 
 .day-view-header {
   padding: 1rem;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--white);
+  border-bottom: 1px solid var(--border-light);
 
   .btn-back {
     background: none;
     border: none;
-    color: #667eea;
+    color: var(--primary-color);
     font-weight: 600;
     padding: 0.5rem 0;
     margin-bottom: 0.5rem;
@@ -200,6 +200,6 @@
   h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: #333;
+    color: var(--text-primary);
   }
 }

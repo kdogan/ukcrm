@@ -102,260 +102,274 @@
           </div>
 
           <!-- Action Button for Expired Packages -->
-          <div *ngIf="expiredSubscriptions.length > 0" style="margin-bottom: 1.5rem;">
-            <button class="btn-danger" (click)="downgradeExpiredPackages()">
-              🔽 Alle abgelaufenen Pakete auf "Free" herabstufen ({{ expiredSubscriptions.length }})
-            </button>
-          </div>
-
+           @if(expiredSubscriptions.length > 0){
+            <div style="margin-bottom: 1.5rem;">
+              <button class="btn-danger" (click)="downgradeExpiredPackages()">
+                🔽 Alle abgelaufenen Pakete auf "Free" herabstufen ({{ expiredSubscriptions.length }})
+              </button>
+            </div>
+          }
           <!-- Expired Subscriptions Table -->
-          <div *ngIf="expiredSubscriptions.length > 0" style="margin-bottom: 2rem;">
-            <h3 style="color: #c62828; margin-bottom: 1rem;">❌ Abgelaufene Pakete</h3>
-            <app-table-container>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Benutzer</th>
-                    <th>E-Mail</th>
-                    <th>Paket</th>
-                    <th>Abgelaufen seit</th>
-                    <th>Letzter Login</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let user of expiredSubscriptions">
-                    <td>{{ user.firstName }} {{ user.lastName }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.package }}</td>
-                    <td>
-                      <span class="badge badge-expired">
-                        {{ user.daysExpired }} Tag{{ user.daysExpired === 1 ? '' : 'e' }}
-                      </span>
-                    </td>
-                    <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : 'Nie' }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </app-table-container>
-          </div>
-
+           @if(expiredSubscriptions.length > 0){
+            <div style="margin-bottom: 2rem;">
+              <h3 style="color: #c62828; margin-bottom: 1rem;">❌ Abgelaufene Pakete</h3>
+              <app-table-container>
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Benutzer</th>
+                      <th>E-Mail</th>
+                      <th>Paket</th>
+                      <th>Abgelaufen seit</th>
+                      <th>Letzter Login</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let user of expiredSubscriptions">
+                      <td>{{ user.firstName }} {{ user.lastName }}</td>
+                      <td>{{ user.email }}</td>
+                      <td>{{ user.package }}</td>
+                      <td>
+                        <span class="badge badge-expired">
+                          {{ user.daysExpired }} Tag{{ user.daysExpired === 1 ? '' : 'e' }}
+                        </span>
+                      </td>
+                      <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : 'Nie' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </app-table-container>
+            </div>
+          }
           <!-- Expiring Subscriptions Table -->
-          <div *ngIf="expiringSubscriptions.length > 0">
-            <h3 style="color: #f57c00; margin-bottom: 1rem;">⏰ Bald ablaufende Pakete</h3>
-            <app-table-container>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Benutzer</th>
-                    <th>E-Mail</th>
-                    <th>Paket</th>
-                    <th>Tage bis Ablauf</th>
-                    <th>Warnstufe</th>
-                    <th>Letzter Login</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let user of expiringSubscriptions">
-                    <td>{{ user.firstName }} {{ user.lastName }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.package }}</td>
-                    <td>
-                      <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
-                        {{ user.daysUntilExpiration }} Tag{{ user.daysUntilExpiration === 1 ? '' : 'e' }}
-                      </span>
-                    </td>
-                    <td>
-                      <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
-                        {{ getWarningLevelLabel(user.warningLevel) }}
-                      </span>
-                    </td>
-                    <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : 'Nie' }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </app-table-container>
-          </div>
+             @if(expiringSubscriptions.length > 0){
+              <div>
+                <h3 style="color: #f57c00; margin-bottom: 1rem;">⏰ Bald ablaufende Pakete</h3>
+                <app-table-container>
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Benutzer</th>
+                        <th>E-Mail</th>
+                        <th>Paket</th>
+                        <th>Tage bis Ablauf</th>
+                        <th>Warnstufe</th>
+                        <th>Letzter Login</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let user of expiringSubscriptions">
+                        <td>{{ user.firstName }} {{ user.lastName }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.package }}</td>
+                        <td>
+                          <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
+                            {{ user.daysUntilExpiration }} Tag{{ user.daysUntilExpiration === 1 ? '' : 'e' }}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
+                            {{ getWarningLevelLabel(user.warningLevel) }}
+                          </span>
+                        </td>
+                        <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : 'Nie' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </app-table-container>
+              </div>
+             }
         </div>
-
+        
         <!-- Upgrade-Anfragen -->
-        <div class="upgrade-requests-section" *ngIf="stats?.upgradeRequests">
-          <h2>🔄 Upgrade-Anfragen</h2>
-          <div class="stats-grid" style="margin-bottom: 20px;">
-            <div class="stat-card priority-high">
-              <h3>⏳ Warten auf Prüfung</h3>
-              <div class="stat-number">{{ stats.upgradeRequests.counts?.awaitingReview || 0 }}</div>
-              <div class="stat-label">Pending & Payment Received</div>
+         @if(stats?.upgradeRequests){
+          <div class="upgrade-requests-section">
+            <h2>🔄 Upgrade-Anfragen</h2>
+            <div class="stats-grid" style="margin-bottom: 20px;">
+              <div class="stat-card priority-high">
+                <h3>⏳ Warten auf Prüfung</h3>
+                <div class="stat-number">{{ stats.upgradeRequests.counts?.awaitingReview || 0 }}</div>
+                <div class="stat-label">Pending & Payment Received</div>
+              </div>
+              <div class="stat-card">
+                <h3>📝 Pending</h3>
+                <div class="stat-number">{{ stats.upgradeRequests.counts?.pending || 0 }}</div>
+                <div class="stat-label">Neu erstellt</div>
+              </div>
+              <div class="stat-card">
+                <h3>💰 Payment Received</h3>
+                <div class="stat-number">{{ stats.upgradeRequests.counts?.paymentReceived || 0 }}</div>
+                <div class="stat-label">Zahlung eingegangen</div>
+              </div>
             </div>
-            <div class="stat-card">
-              <h3>📝 Pending</h3>
-              <div class="stat-number">{{ stats.upgradeRequests.counts?.pending || 0 }}</div>
-              <div class="stat-label">Neu erstellt</div>
-            </div>
-            <div class="stat-card">
-              <h3>💰 Payment Received</h3>
-              <div class="stat-number">{{ stats.upgradeRequests.counts?.paymentReceived || 0 }}</div>
-              <div class="stat-label">Zahlung eingegangen</div>
-            </div>
-          </div>
 
-          <div *ngIf="stats.upgradeRequests.pending?.length > 0" class="requests-list">
-            <h3>Offene Anfragen</h3>
-            <div *ngFor="let request of stats.upgradeRequests.pending" class="request-card">
-              <div class="request-header">
-                <div class="user-info">
-                  <strong>{{ request.user.firstName }} {{ request.user.lastName }}</strong>
-                  <span class="email">{{ request.user.email }}</span>
+            <div *ngIf="stats.upgradeRequests.pending?.length > 0" class="requests-list">
+              <h3>Offene Anfragen</h3>
+              <div *ngFor="let request of stats.upgradeRequests.pending" class="request-card">
+                <div class="request-header">
+                  <div class="user-info">
+                    <strong>{{ request.user.firstName }} {{ request.user.lastName }}</strong>
+                    <span class="email">{{ request.user.email }}</span>
+                  </div>
+                  <span class="status-badge" [class]="'status-' + request.status">
+                    {{ getStatusLabel(request.status) }}
+                  </span>
                 </div>
-                <span class="status-badge" [class]="'status-' + request.status">
-                  {{ getStatusLabel(request.status) }}
-                </span>
-              </div>
-              <div class="request-details">
-                <div class="detail-item">
-                  <span class="label">Aktuell:</span>
-                  <span class="value">{{ request.currentPackage }}</span>
+                <div class="request-details">
+                  <div class="detail-item">
+                    <span class="label">Aktuell:</span>
+                    <span class="value">{{ request.currentPackage }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">Gewünscht:</span>
+                    <span class="value highlight">{{ request.packageDetails.displayName }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">Preis:</span>
+                    <span class="value">{{ request.packageDetails.price }} {{ request.packageDetails.currency }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">Datum:</span>
+                    <span class="value">{{ formatDate(request.createdAt) }}</span>
+                  </div>
                 </div>
-                <div class="detail-item">
-                  <span class="label">Gewünscht:</span>
-                  <span class="value highlight">{{ request.packageDetails.displayName }}</span>
+                <div class="request-actions">
+                  <button class="btn-success" (click)="approveUpgrade(request._id)">
+                    ✓ Genehmigen
+                  </button>
+                  <button class="btn-danger" (click)="rejectUpgrade(request._id)">
+                    ✗ Ablehnen
+                  </button>
                 </div>
-                <div class="detail-item">
-                  <span class="label">Preis:</span>
-                  <span class="value">{{ request.packageDetails.price }} {{ request.packageDetails.currency }}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="label">Datum:</span>
-                  <span class="value">{{ formatDate(request.createdAt) }}</span>
-                </div>
-              </div>
-              <div class="request-actions">
-                <button class="btn-success" (click)="approveUpgrade(request._id)">
-                  ✓ Genehmigen
-                </button>
-                <button class="btn-danger" (click)="rejectUpgrade(request._id)">
-                  ✗ Ablehnen
-                </button>
               </div>
             </div>
-          </div>
 
-          <div *ngIf="!stats.upgradeRequests.pending || stats.upgradeRequests.pending.length === 0" class="no-data">
-            <p>Keine offenen Upgrade-Anfragen</p>
+            <div *ngIf="!stats.upgradeRequests.pending || stats.upgradeRequests.pending.length === 0" class="no-data">
+              <p>Keine offenen Upgrade-Anfragen</p>
+            </div>
           </div>
-        </div>
+        }
       </div>
 
       <!-- Berater/Admin Dashboard -->
-      <div *ngIf="!isSuperAdmin">
-        <!-- Subscription Expiration Warning -->
-        <div *ngIf="shouldShowSubscriptionWarning()"
-             class="subscription-warning-banner"
-             [class.warning-expired]="getSubscriptionWarningLevel() === 'expired'"
-             [class.warning-danger]="getSubscriptionWarningLevel() === 'danger'"
-             [class.warning-warning]="getSubscriptionWarningLevel() === 'warning'"
-             [class.warning-info]="getSubscriptionWarningLevel() === 'info'">
-          <div class="warning-icon">
-            <i class="fas"
-               [class.fa-exclamation-triangle]="getSubscriptionWarningLevel() === 'expired' || getSubscriptionWarningLevel() === 'danger'"
-               [class.fa-info-circle]="getSubscriptionWarningLevel() === 'warning' || getSubscriptionWarningLevel() === 'info'"></i>
-          </div>
-          <div class="warning-content">
-            <div class="warning-title">
-              <span *ngIf="getSubscriptionWarningLevel() === 'expired'">Paket abgelaufen</span>
-              <span *ngIf="getSubscriptionWarningLevel() === 'danger'">Paket läuft bald ab!</span>
-              <span *ngIf="getSubscriptionWarningLevel() === 'warning'">Paket-Erinnerung</span>
-              <span *ngIf="getSubscriptionWarningLevel() === 'info'">Paket-Information</span>
-            </div>
-            <div class="warning-message">{{ getSubscriptionWarningMessage() }}</div>
-          </div>
-          <div class="warning-action">
-            <a routerLink="/settings" class="btn-renew">Paket verlängern</a>
-          </div>
-        </div>
-
-        <div class="stats-grid" *ngIf="stats">
-          <!-- Erinnerungen -->
-          <div class="stat-card priority-high" *ngIf="stats.reminders">
-            <h3>🔔 Erinnerungen</h3>
-            <div class="reminder-stats">
-              <div class="reminder-item high">
-                <span class="count">{{ stats.reminders.urgent || 0 }}</span>
-                <span class="label">Dringend</span>
+       @if(!isSuperAdmin){
+        <div>
+          <!-- Subscription Expiration Warning -->
+           @if(shouldShowSubscriptionWarning()){
+            <div class="subscription-warning-banner"
+                [class.warning-expired]="getSubscriptionWarningLevel() === 'expired'"
+                [class.warning-danger]="getSubscriptionWarningLevel() === 'danger'"
+                [class.warning-warning]="getSubscriptionWarningLevel() === 'warning'"
+                [class.warning-info]="getSubscriptionWarningLevel() === 'info'">
+              <div class="warning-icon">
+                <i class="fas"
+                  [class.fa-exclamation-triangle]="getSubscriptionWarningLevel() === 'expired' || getSubscriptionWarningLevel() === 'danger'"
+                  [class.fa-info-circle]="getSubscriptionWarningLevel() === 'warning' || getSubscriptionWarningLevel() === 'info'"></i>
               </div>
-              <div class="reminder-item medium">
-                <span class="count">{{ stats.reminders.total || 0 }}</span>
-                <span class="label">Gesamt</span>
+              <div class="warning-content">
+                <div class="warning-title">
+                  <span *ngIf="getSubscriptionWarningLevel() === 'expired'">Paket abgelaufen</span>
+                  <span *ngIf="getSubscriptionWarningLevel() === 'danger'">Paket läuft bald ab!</span>
+                  <span *ngIf="getSubscriptionWarningLevel() === 'warning'">Paket-Erinnerung</span>
+                  <span *ngIf="getSubscriptionWarningLevel() === 'info'">Paket-Information</span>
+                </div>
+                <div class="warning-message">{{ getSubscriptionWarningMessage() }}</div>
+              </div>
+              <div class="warning-action">
+                <a routerLink="/settings" class="btn-renew">Paket verlängern</a>
               </div>
             </div>
-          </div>
-
-          <!-- Kunden -->
-          <div class="stat-card">
-            <h3>👥 Kunden</h3>
-            <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
-            <div class="stat-label">Aktive Kunden</div>
-          </div>
-
-          <!-- Zähler -->
-          <div class="stat-card">
-            <h3>⚡ Zähler</h3>
-            <div class="stat-split">
-              <div>
-                <div class="stat-number small">{{ stats.meters?.free || 0 }}</div>
-                <div class="stat-label">Frei</div>
+          }
+          <div class="stats-grid" *ngIf="stats">
+            <!-- Erinnerungen -->
+             @if(stats.reminders){
+              <div class="stat-card priority-high">
+                <h3>🔔 Erinnerungen</h3>
+                <div class="reminder-stats">
+                  <div class="reminder-item high">
+                    <span class="count">{{ stats.reminders.urgent || 0 }}</span>
+                    <span class="label">Dringend</span>
+                  </div>
+                  <div class="reminder-item medium">
+                    <span class="count">{{ stats.reminders.total || 0 }}</span>
+                    <span class="label">Gesamt</span>
+                  </div>
+                </div>
               </div>
-              <div>
-                <div class="stat-number small">{{ stats.meters?.occupied || 0 }}</div>
-                <div class="stat-label">Belegt</div>
-              </div>
+            }
+            <!-- Kunden -->
+            <div class="stat-card">
+              <h3>👥 Kunden</h3>
+              <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
+              <div class="stat-label">Aktive Kunden</div>
             </div>
-          </div>
-        </div>
 
-        <!-- Auslaufende Verträge -->
-        <div class="contracts-section" *ngIf="stats?.expiringContracts">
-          <h2>📋 Bald auslaufende Verträge</h2>
-          <app-table-container>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Vertragsnr.</th>
-                  <th>Kunde</th>
-                  <th>Anbieter</th>
-                  <th>Enddatum</th>
-                  <th>Restlaufzeit</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let contract of stats.expiringContracts">
-                  <td>{{ contract.contractNumber }}</td>
-                  <td>{{ contract.customerId.firstName }} {{ contract.customerId.lastName }}</td>
-                  <td>{{ contract.supplierId.name }}</td>
-                  <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
-                  <td>
-                    <span class="badge" [class.badge-danger]="getDaysRemaining(contract.endDate) <= 30">
-                      {{ getDaysRemaining(contract.endDate) }} Tage
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </app-table-container>
-        </div>
-
-        <!-- Verträge nach Anbieter -->
-        <div class="supplier-section" *ngIf="stats?.contractsBySupplier">
-          <h2>📊 Verträge nach Anbieter</h2>
-          <div class="chart-container">
-            <div *ngFor="let item of stats.contractsBySupplier" class="chart-bar">
-              <div class="bar-label">{{ item.name }}</div>
-              <div class="bar-wrapper">
-                <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
-                <span class="bar-value">{{ item.count }}</span>
+            <!-- Zähler -->
+            <div class="stat-card">
+              <h3>⚡ Zähler</h3>
+              <div class="stat-split">
+                <div>
+                  <div class="stat-number small">{{ stats.meters?.free || 0 }}</div>
+                  <div class="stat-label">Frei</div>
+                </div>
+                <div>
+                  <div class="stat-number small">{{ stats.meters?.occupied || 0 }}</div>
+                  <div class="stat-label">Belegt</div>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- Auslaufende Verträge -->
+           @if(stats?.expiringContracts){
+            <div class="contracts-section">
+              <h2>📋 Bald auslaufende Verträge</h2>
+              <app-table-container>
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Vertragsnr.</th>
+                      <th>Kunde</th>
+                      <th>Anbieter</th>
+                      <th>Enddatum</th>
+                      <th>Restlaufzeit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for(contract of stats.expiringContracts; track contract){
+                    <tr>
+                      <td>{{ contract.supplierContractNumber }}</td>
+                      <td>{{ contract.customerId.firstName }} {{ contract.customerId.lastName }}</td>
+                      <td>{{ contract.supplierId.name }}</td>
+                      <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
+                      <td>
+                        <span class="badge" [class.badge-danger]="getDaysRemaining(contract.endDate) <= 30">
+                          {{ getDaysRemaining(contract.endDate) }} Tage
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                  </tbody>
+                </table>
+              </app-table-container>
+            </div>
+          }
+          <!-- Verträge nach Anbieter -->
+           @if(stats?.contractsBySupplier){
+            <div class="supplier-section">
+              <h2>📊 Verträge nach Anbieter</h2>
+              <div class="chart-container">
+                <div *ngFor="let item of stats.contractsBySupplier" class="chart-bar">
+                  <div class="bar-label">{{ item.name }}</div>
+                  <div class="bar-wrapper">
+                    <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+                    <span class="bar-value">{{ item.count }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
         </div>
-      </div>
+      }
     </div>
 }
