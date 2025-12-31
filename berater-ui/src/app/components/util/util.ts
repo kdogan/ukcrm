@@ -24,4 +24,20 @@ export class Util {
   static getMeterStatusLabel(isActive: boolean): string {
     return isActive ? 'Frei' : 'Belegt';
   }
+
+  static getMeterUnit(type: string): string {
+    const meterType = type as MeterType;
+    switch(meterType) {
+      case MeterType.Electricity:
+        return 'kWh';
+      case MeterType.Gas:
+        return 'm³';
+      case MeterType.Water:
+        return 'm³';
+      case MeterType.Heat:
+        return 'kWh';
+      default:
+        return '';
+    }
+  }
 }

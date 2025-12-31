@@ -44,7 +44,14 @@
 
         <div class="meter-card-content">
             <div class="content-row">Type: {{getTypeLabel(meter.type)}}</div>
-            <div class="content-row">letzte Ablesung: {{ meter.currentReading || '-' }}</div>
+            <div class="content-row">
+              @if(meter.isTwoTariff){
+                letzte Ablesung HT: {{ meter.currentReadingHT || '-' }} {{ meter.currentReadingHT ? getMeterUnit(meter.type) : '' }}<br>
+                letzte Ablesung NT: {{ meter.currentReadingNT || '-' }} {{ meter.currentReadingNT ? getMeterUnit(meter.type) : '' }}
+              }@else{
+                letzte Ablesung: {{ meter.currentReading || '-' }} {{ meter.currentReading ? getMeterUnit(meter.type) : '' }}
+              }
+            </div>
             @if(!meter.isFree){
               <div class="content-row">Besitzer: {{ meter.currentCustomerId.firstName + ' ' + meter.currentCustomerId.lastName || '-' }}</div>
             }

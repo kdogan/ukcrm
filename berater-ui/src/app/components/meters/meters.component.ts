@@ -283,6 +283,10 @@ meterTypes: any;
     return labels[type] || type;
   }
 
+  getMeterUnit(type: string): string {
+    return Util.getMeterUnit(type);
+  }
+
   toggleActionMenu(id: string): void {
     this.activeMenuId = this.activeMenuId === id ? null : id;
   }
