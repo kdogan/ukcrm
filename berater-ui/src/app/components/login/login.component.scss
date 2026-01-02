@@ -181,6 +181,80 @@
 }
 
 /* =========================
+   TEST USERS SECTION
+========================= */
+.test-users-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px dashed var(--border-light);
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .test-users-hint {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+}
+
+.test-users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.test-user-card {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--primary-color);
+    background: var(--bg-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.test-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.test-user-row {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+
+  .label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 70px;
+  }
+
+  .value {
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+  }
+}
+
+/* =========================
    MOBILE LOGIN (Native App Style)
 ========================= */
 @media (max-width: 768px) {
@@ -351,6 +425,51 @@
   /* Verbesserte Tastatur-Unterstützung */
   input:focus {
     font-size: 16px; /* Verhindert Zoom auf iOS */
+  }
+
+  /* Test Users Section Mobile */
+  .test-users-section {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 20px 20px 0 0;
+    border-top: none;
+
+    h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+  }
+
+  .test-users-list {
+    gap: 10px;
+  }
+
+  .test-user-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    &:active {
+      transform: scale(0.98);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .test-user-row {
+    font-size: 13px;
+
+    .label {
+      min-width: 75px;
+      font-size: 12px;
+    }
+
+    .value {
+      font-size: 13px;
+    }
   }
 }
 

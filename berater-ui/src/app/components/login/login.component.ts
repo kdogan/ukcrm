@@ -3,6 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
+
+interface TestUser {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+}
 
 @Component({
     selector: 'app-login',
@@ -14,6 +22,9 @@ export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
   error = '';
+  isDevelopment = !environment.production;
+  testUsers: TestUser[] = [];
+  loadingTestUsers = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -23,6 +34,30 @@ export class LoginComponent {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]]
+    });
+
+    // Test-User aus Datenbank laden (nur in Development)
+    if (this.isDevelopment) {
+      this.loadTestUsers();
+    }
+  }
+
+  loadTestUsers(): void {
+    this.loadingTestUsers = true;
+    this.authService.getTestUsers().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.testUsers = response.data;
+          this.testUsers.forEach(tu => tu.password = "Start1234!");
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden der Test-User:', error);
+        this.testUsers = [];
+      },
+      complete: () => {
+        this.loadingTestUsers = false;
+      }
     });
   }
 
@@ -53,6 +88,14 @@ export class LoginComponent {
         this.loading = false;
       }
     });
+  }
+
+  fillTestUser(user: TestUser): void {
+    this.loginForm.patchValue({
+      email: user.email,
+      password: user.password
+    });
+    this.error = '';
   }
 
   get f() {

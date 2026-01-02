@@ -4,6 +4,46 @@ const { generateToken, generateRefreshToken } = require('../middleware/auth');
 const emailService = require('../services/emailService');
 const crypto = require('crypto');
 
+// @desc    Get test users for development
+// @route   GET /api/auth/test-users
+// @access  Public (only in development)
+exports.getTestUsers = async (req, res, next) => {
+  try {
+    // Nur in Development-Umgebung erlauben
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(403).json({
+        success: false,
+        message: 'Nicht verfügbar in Produktionsumgebung'
+      });
+    }
+
+    // ALLE User aus der Datenbank laden
+    const users = await User.find()
+      .select('firstName lastName email role')
+      .sort({ role: -1, email: 1 }); // Sortiert: superadmin -> admin -> berater
+
+    // User formatieren
+    const testUsers = users.map(user => ({
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      password: '********', // Passwort-Platzhalter (echte Passwörter sind gehashed)
+      role: user.role === 'superadmin' ? 'Superadmin' :
+            user.role === 'admin' ? 'Admin' : 'Berater'
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: testUsers
+    });
+  } catch (error) {
+    console.error('Fehler beim Laden der Test-User:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Serverfehler beim Laden der Test-User'
+    });
+  }
+};
+
 // @desc    Register new berater
 // @route   POST /api/auth/register
 // @access  Public

@@ -132,6 +132,10 @@ export class AuthService {
       );
   }
 
+  getTestUsers(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/test-users`);
+  }
+
   isAuthenticated(): boolean {
     const token = this.getToken();
     return !!token;

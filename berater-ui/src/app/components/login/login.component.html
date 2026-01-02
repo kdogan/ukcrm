@@ -62,5 +62,36 @@
         <a routerLink="/privacy">Datenschutzerklärung</a>
       </div>
     </form>
+
+    <div class="test-users-section" *ngIf="isDevelopment && testUsers.length > 0">
+      <h3>Test-Benutzer (Development)</h3>
+      <p class="test-users-hint">Klicken Sie auf einen Benutzer, um die E-Mail und Passwort automatisch einzutragen.</p>
+      <div class="test-users-list">
+        <div
+          class="test-user-card"
+          *ngFor="let user of testUsers"
+          (click)="fillTestUser(user)"
+        >
+          <div class="test-user-info">
+            <div class="test-user-row">
+              <span class="label">Name:</span>
+              <span class="value">{{ user.name }}</span>
+            </div>
+            <div class="test-user-row">
+              <span class="label">Email:</span>
+              <span class="value">{{ user.email }}</span>
+            </div>
+            <div class="test-user-row">
+              <span class="label">Password:</span>
+              <span class="value">{{ user.password }}</span>
+            </div>
+            <div class="test-user-row">
+              <span class="label">Rolle:</span>
+              <span class="value">{{ user.role }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
