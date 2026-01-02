@@ -34,8 +34,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
   .modal-content {
     background: white;
     border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
+    width: 60%;
+    max-width: 100%;
     max-height: 90%;
     overflow-y: auto;
     padding: 1.5rem;
