@@ -163,6 +163,23 @@
   }
 }
 
+.privacy-link {
+  text-align: center;
+  margin-top: 12px;
+
+  a {
+    color: var(--text-tertiary);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--primary-color);
+      text-decoration: underline;
+    }
+  }
+}
+
 /* =========================
    MOBILE LOGIN (Native App Style)
 ========================= */

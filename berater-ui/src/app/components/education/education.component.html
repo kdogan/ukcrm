@@ -171,18 +171,21 @@
 </app-overlay-modal>
 }
 
-<!-- YouTube Video Player Modal -->
+<!-- YouTube Video Player - Direct Fullscreen Overlay -->
 @if (showVideoPlayer) {
-<app-overlay-modal (close)="closeVideoPlayer()">
-  <div class="video-player-content">
-    <div class="video-container">
-      <iframe
-        [src]="getYouTubeEmbedUrl()"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-      ></iframe>
-    </div>
+<div class="video-fullscreen-overlay" (click)="closeVideoPlayer()">
+  <div class="video-fullscreen-container" (click)="$event.stopPropagation()">
+    <button class="video-close-btn" (click)="closeVideoPlayer()" title="Schließen">
+      ✕
+    </button>
+    <iframe
+      [src]="getYouTubeEmbedUrl()"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+      allowfullscreen
+      webkitallowfullscreen
+      mozallowfullscreen
+    ></iframe>
   </div>
-</app-overlay-modal>
+</div>
 }

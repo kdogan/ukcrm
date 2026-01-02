@@ -53,6 +53,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
   },
   {
+    path: 'privacy',
+    loadComponent: () => import('./components/privacy/privacy.component').then(m => m.PrivacyComponent)
+  },
+  {
     path: 'payment/success',
     loadComponent: () => import('./components/payment/payment-success.component').then(m => m.PaymentSuccessComponent),
     canActivate: [authGuard]

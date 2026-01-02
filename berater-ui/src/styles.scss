@@ -867,3 +867,31 @@ body {
     }
   }
 }
+
+/* =========================
+   FULLSCREEN VIDEO FIX
+========================= */
+/* Hide modal overlay when video is in fullscreen mode */
+body:has(iframe:fullscreen) app-overlay-modal,
+body:has(iframe:-webkit-full-screen) app-overlay-modal,
+body:has(iframe:-moz-full-screen) app-overlay-modal {
+  .modal-overlay {
+    z-index: -1 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Ensure fullscreen iframe is on top */
+iframe:fullscreen,
+iframe:-webkit-full-screen,
+iframe:-moz-full-screen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  max-width: none !important;
+  max-height: none !important;
+}

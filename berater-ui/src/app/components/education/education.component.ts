@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -22,7 +22,7 @@ import { OverlayModalComponent } from '../shared/overlay-modal.component';
   templateUrl: './education.component.html',
   styleUrls: ['./education.component.scss']
 })
-export class EducationComponent implements OnInit {
+export class EducationComponent implements OnInit, OnDestroy {
   materials: EducationMaterial[] = [];
   filteredMaterials: EducationMaterial[] = [];
   stats: EducationStats | null = null;
@@ -81,6 +81,39 @@ export class EducationComponent implements OnInit {
     if (this.isMasterBerater) {
       this.loadStats();
       this.loadBeraterList();
+    }
+    this.setupFullscreenListener();
+  }
+
+  ngOnDestroy(): void {
+    this.removeFullscreenListener();
+  }
+
+  private setupFullscreenListener(): void {
+    document.addEventListener('fullscreenchange', this.handleFullscreenChange.bind(this));
+    document.addEventListener('webkitfullscreenchange', this.handleFullscreenChange.bind(this));
+    document.addEventListener('mozfullscreenchange', this.handleFullscreenChange.bind(this));
+  }
+
+  private removeFullscreenListener(): void {
+    document.removeEventListener('fullscreenchange', this.handleFullscreenChange.bind(this));
+    document.removeEventListener('webkitfullscreenchange', this.handleFullscreenChange.bind(this));
+    document.removeEventListener('mozfullscreenchange', this.handleFullscreenChange.bind(this));
+  }
+
+  private handleFullscreenChange(): void {
+    const isFullscreen = !!(document.fullscreenElement ||
+                           (document as any).webkitFullscreenElement ||
+                           (document as any).mozFullScreenElement);
+
+    // Hide/show modal overlay
+    const modalOverlay = document.querySelector('app-overlay-modal .modal-overlay') as HTMLElement;
+    if (modalOverlay) {
+      if (isFullscreen) {
+        modalOverlay.style.display = 'none';
+      } else {
+        modalOverlay.style.display = 'flex';
+      }
     }
   }
 
@@ -286,7 +319,7 @@ export class EducationComponent implements OnInit {
 
   getYouTubeEmbedUrl(): SafeResourceUrl | null {
     if (!this.currentVideoId) return null;
-    const url = `https://www.youtube.com/embed/${this.currentVideoId}?autoplay=1&rel=0`;
+    const url = `https://www.youtube.com/embed/${this.currentVideoId}?autoplay=1&rel=0&modestbranding=1`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 

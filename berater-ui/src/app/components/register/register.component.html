@@ -109,6 +109,22 @@
         </span>
       </div>
 
+      <div class="form-group">
+        <label class="checkbox-container">
+          <input
+            type="checkbox"
+            formControlName="acceptPrivacy"
+            [class.error]="hasFieldError('acceptPrivacy')"
+          />
+          <span class="checkbox-label">
+            Ich habe die <a routerLink="/privacy" target="_blank">Datenschutzerklärung</a> gelesen und akzeptiere diese. *
+          </span>
+        </label>
+        <span *ngIf="hasFieldError('acceptPrivacy')" class="error-message">
+          {{ getFieldError('acceptPrivacy') }}
+        </span>
+      </div>
+
       <div *ngIf="error" class="error-box">
         <p>{{ error }}</p>
       </div>
@@ -123,6 +139,10 @@
 
       <div class="login-link">
         <p>Haben Sie bereits ein Konto? <a routerLink="/login">Hier anmelden</a></p>
+      </div>
+
+      <div class="privacy-link">
+        <a routerLink="/privacy">Datenschutzerklärung</a>
       </div>
     </form>
   </div>

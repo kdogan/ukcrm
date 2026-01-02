@@ -29,7 +29,8 @@ export class RegisterComponent {
       phone: [''],
       masterBeraterEmail: ['', [Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', [Validators.required]],
+      acceptPrivacy: [false, [Validators.requiredTrue]]
     }, {
       validators: this.passwordMatchValidator
     });
@@ -89,6 +90,7 @@ export class RegisterComponent {
       if (field.errors['email']) return 'Bitte geben Sie eine gültige E-Mail-Adresse ein';
       if (field.errors['minlength']) return `${this.getFieldLabel(fieldName)} muss mindestens ${field.errors['minlength'].requiredLength} Zeichen lang sein`;
       if (field.errors['passwordMismatch']) return 'Passwörter stimmen nicht überein';
+      if (fieldName === 'acceptPrivacy' && field.errors['required']) return 'Sie müssen die Datenschutzerklärung akzeptieren';
     }
     return '';
   }
