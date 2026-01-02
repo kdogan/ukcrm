@@ -1,5 +1,6 @@
 const Contract = require('../models/Contract');
 const Reminder = require('../models/Reminder');
+const Todo = require('../models/Todo');
 const getNextContractNumber = require('../utils/getNextContractNumber');
 
 // @desc    Get all contracts
@@ -489,6 +490,20 @@ exports.downloadAttachment = async (req, res, next) => {
 
 // Hilfsfunktion: Erinnerungen erstellen
 async function createReminders(contract) {
+  // Prüfe zuerst ob bereits ein TODO für diesen Vertrag existiert
+  const existingTodo = await Todo.findOne({
+    beraterId: contract.beraterId,
+    relatedContractId: contract._id,
+    autoGenerationType: 'contract_expiring',
+    status: { $ne: 'completed' }
+  });
+
+  // Wenn bereits ein TODO existiert, keine Reminders erstellen
+  if (existingTodo) {
+    console.log(`Skipping reminder creation - TODO already exists for contract ${contract._id}`);
+    return;
+  }
+
   const reminders = [
     { type: '90days', days: 90 },
     { type: '60days', days: 60 },

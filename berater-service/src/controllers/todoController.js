@@ -191,6 +191,22 @@ exports.createTodo = async (req, res, next) => {
 
     const todo = await Todo.create(todoData);
 
+    // Wenn ein TODO für einen Vertrag erstellt wird, lösche existierende offene Reminders
+    // um Duplikate zu vermeiden
+    if (todo.relatedContractId) {
+      await Reminder.updateMany(
+        {
+          beraterId: req.user._id,
+          contractId: todo.relatedContractId,
+          status: 'open'
+        },
+        {
+          status: 'ignored',
+          note: 'Automatisch ignoriert - Manuelles TODO wurde erstellt'
+        }
+      );
+    }
+
     const populatedTodo = await Todo.findById(todo._id)
       .populate('relatedCustomerId', 'firstName lastName customerNumber')
       .populate('relatedContractId', 'contractNumber startDate endDate')
@@ -541,7 +557,15 @@ exports.generateExpiringContractTodos = async (req, res, next) => {
         status: { $ne: 'completed' }
       });
 
-      if (!existingTodo) {
+      // Prüfe auch ob bereits ein Reminder für diesen Vertrag existiert
+      const existingReminder = await Reminder.findOne({
+        beraterId: contract.beraterId,
+        contractId: contract._id,
+        status: { $ne: 'done' }
+      });
+
+      // Nur erstellen wenn weder TODO noch Reminder existiert
+      if (!existingTodo && !existingReminder) {
         const daysUntilExpiry = Math.ceil((contract.endDate - today) / (1000 * 60 * 60 * 24));
 
         await Todo.create({
