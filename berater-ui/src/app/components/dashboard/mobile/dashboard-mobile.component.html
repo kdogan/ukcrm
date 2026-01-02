@@ -163,7 +163,7 @@
     <!-- Stats Cards -->
     <div class="stats-cards" *ngIf="stats">
       <!-- Erinnerungen -->
-      <div class="stat-card priority-high" *ngIf="stats.reminders">
+      <div class="stat-card priority-high clickable" *ngIf="stats.reminders" routerLink="/todos">
         <div class="stat-icon">🔔</div>
         <div class="reminder-values">
           <div class="reminder-urgent">

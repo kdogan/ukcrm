@@ -46,6 +46,16 @@
       padding: 1.5rem;
       border-radius: 12px;
       box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card.clickable {
+      cursor: pointer;
+    }
+
+    .stat-card.clickable:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     }
 
     .stat-card h3 {

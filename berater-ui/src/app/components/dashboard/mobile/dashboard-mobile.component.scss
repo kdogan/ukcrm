@@ -19,10 +19,20 @@
   padding: 1rem;
   box-shadow: var(--shadow-lg);
   text-align: center;
+  transition: all 0.3s ease;
 }
 
 .stat-card.priority-high {
   border-left: 4px solid var(--danger-red);
+}
+
+.stat-card.clickable {
+  cursor: pointer;
+}
+
+.stat-card.clickable:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon {
