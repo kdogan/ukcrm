@@ -95,7 +95,7 @@ exports.getUser = async (req, res, next) => {
 // @access  Superadmin only
 exports.createUser = async (req, res, next) => {
   try {
-    const { email, password, firstName, lastName, phone, role, package: packageType } = req.body;
+    const { email, password, firstName, lastName, phone, role, package: packageType, isMasterBerater } = req.body;
 
     // Prüfe ob User bereits existiert
     const existingUser = await User.findOne({ email });
@@ -117,7 +117,8 @@ exports.createUser = async (req, res, next) => {
       phone,
       role: role || 'berater',
       package: packageType || 'basic',
-      packageLimits: limits
+      packageLimits: limits,
+      isMasterBerater: isMasterBerater || false
     });
 
     // Passwort aus Response entfernen
@@ -138,7 +139,10 @@ exports.createUser = async (req, res, next) => {
 // @access  Superadmin only
 exports.updateUser = async (req, res, next) => {
   try {
-    const { email, firstName, lastName, phone, role, package: packageType, isActive } = req.body;
+    const { email, firstName, lastName, phone, role, package: packageType, isActive, isMasterBerater } = req.body;
+
+    // Debug logging
+    console.log('Update User Request Body:', { email, firstName, lastName, phone, role, packageType, isActive, isMasterBerater });
 
     const user = await User.findById(req.params.id);
 
@@ -164,6 +168,10 @@ exports.updateUser = async (req, res, next) => {
     if (phone !== undefined) user.phone = phone;
     if (role) user.role = role;
     if (isActive !== undefined) user.isActive = isActive;
+    if (isMasterBerater !== undefined) {
+      console.log('Setting isMasterBerater to:', isMasterBerater);
+      user.isMasterBerater = isMasterBerater;
+    }
 
     // Update Paket und Limits
     if (packageType && packageType !== user.package) {
@@ -172,6 +180,7 @@ exports.updateUser = async (req, res, next) => {
     }
 
     await user.save();
+    console.log('User saved. isMasterBerater is now:', user.isMasterBerater);
 
     res.status(200).json({
       success: true,

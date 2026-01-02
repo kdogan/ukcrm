@@ -16,6 +16,13 @@ export interface User {
   package?: string;
   packageFeatures?: { name: string; enabled: boolean }[];
   settings?: UserSettings;
+  isMasterBerater?: boolean;
+  masterBerater?: string | {
+    _id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
 }
 
 export interface LoginResponse {
@@ -65,6 +72,8 @@ export class AuthService {
             // Initialize settings from login response
             if (response.data.user.settings) {
               this.settingsService.initializeSettings(response.data.user.settings);
+              // Apply theme colors after login
+              this.settingsService.applyThemeColors();
             }
           }
         })
@@ -154,6 +163,8 @@ export class AuthService {
         // Initialize settings if available
         if (user.settings) {
           this.settingsService.initializeSettings(user.settings);
+          // Apply theme colors on initial load
+          this.settingsService.applyThemeColors();
         }
       } catch (e) {
         this.clearSession();

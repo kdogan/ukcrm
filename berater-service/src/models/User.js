@@ -34,6 +34,16 @@ const userSchema = new mongoose.Schema({
     enum: ['berater', 'admin', 'superadmin'],
     default: 'berater'
   },
+  // Master Berater kann Materialien mit anderen Beratern teilen
+  isMasterBerater: {
+    type: Boolean,
+    default: false
+  },
+  // Wenn nicht Master, Referenz zum Master Berater
+  masterBerater: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   package: {
     type: String,
     enum: ['free', 'basic', 'professional', 'enterprise'],
@@ -130,7 +140,9 @@ const userSchema = new mongoose.Schema({
       browser: { type: Boolean, default: false }
     },
     theme: {
-      sidebarColor: { type: String, default: 'mint' }
+      sidebarColor: { type: String, default: 'mint' },
+      primaryColor: { type: String, default: '#667eea' },
+      accentColor: { type: String, default: '#764ba2' }
     }
   }
 }, {

@@ -1,0 +1,166 @@
+<div class="education-container">
+  <div class="education-header">
+    <h1>📚 Bildung & Training</h1>
+    @if (isMasterBerater) {
+      <button class="btn btn-primary" (click)="createMaterial.emit()">
+        <i class="fas fa-plus"></i> Neues Material
+      </button>
+    }
+  </div>
+
+  @if (stats && isMasterBerater) {
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-book"></i>
+        </div>
+        <div>
+          <div class="stat-value">{{ stats.totalMaterials }}</div>
+          <div class="stat-label">Materialien</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-eye"></i>
+        </div>
+        <div>
+          <div class="stat-value">{{ stats.totalViews }}</div>
+          <div class="stat-label">Gesamt-Aufrufe</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div>
+          <div class="stat-value">{{ stats.sharedBeraterCount }}</div>
+          <div class="stat-label">Berater mit Zugriff</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="education-toolbar">
+    <div class="toolbar-left">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          placeholder="Materialien suchen..."
+          [value]="searchTerm"
+          (input)="searchChange.emit($any($event.target).value)"
+        />
+      </div>
+    </div>
+
+    <div class="toolbar-right">
+      <select
+        class="form-select"
+        [value]="selectedCategory"
+        (change)="categoryChange.emit($any($event.target).value); filterChange.emit()"
+      >
+        @for (cat of categoryOptions; track cat.value) {
+          <option [value]="cat.value">{{ cat.label }}</option>
+        }
+      </select>
+
+      <select
+        class="form-select"
+        [value]="selectedType"
+        (change)="typeChange.emit($any($event.target).value); filterChange.emit()"
+      >
+        @for (type of typeOptions; track type.value) {
+          <option [value]="type.value">{{ type.label }}</option>
+        }
+      </select>
+
+      <button class="btn btn-outline btn-sm" (click)="resetFilters.emit()">
+        <i class="fas fa-redo"></i> Zurücksetzen
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Lade Materialien...</p>
+    </div>
+  } @else if (materials.length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-book-open"></i>
+      <h3>Keine Materialien gefunden</h3>
+      <p>
+        @if (isMasterBerater) {
+          Erstellen Sie Ihr erstes Bildungsmaterial, um es mit Ihrem Team zu teilen.
+        } @else {
+          Aktuell wurden noch keine Materialien mit Ihnen geteilt.
+        }
+      </p>
+    </div>
+  } @else {
+    <div class="materials-grid">
+      @for (material of materials; track material._id) {
+        <div class="material-card">
+          <div class="material-thumbnail" (click)="viewMaterial.emit(material)">
+            @if (material.type === 'video' && material.videoId) {
+              <img [src]="getYouTubeThumbnail(material.videoId)" [alt]="material.title" />
+              <div class="play-overlay">
+                <i class="fas fa-play-circle"></i>
+              </div>
+            } @else {
+              <div class="thumbnail-icon">
+                <i [class]="getTypeIcon(material.type)"></i>
+              </div>
+            }
+          </div>
+
+          <div class="material-content">
+            <div class="material-header">
+              <div class="material-badges">
+                <span class="badge badge-type">
+                  <i [class]="getTypeIcon(material.type)"></i>
+                  {{ material.type }}
+                </span>
+                <span class="badge badge-category">{{ material.category }}</span>
+              </div>
+
+              @if (isMasterBerater) {
+                <div class="material-actions">
+                  <button class="btn-icon" (click)="editMaterial.emit(material)" title="Bearbeiten">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-icon" (click)="deleteMaterial.emit(material)" title="Löschen">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <h3 class="material-title" (click)="viewMaterial.emit(material)">
+              {{ material.title }}
+            </h3>
+
+            @if (material.description) {
+              <p class="material-description">{{ material.description }}</p>
+            }
+
+            <div class="material-footer">
+              <div class="material-meta">
+                <span class="meta-item">
+                  <i class="fas fa-eye"></i> {{ material.views }} Aufrufe
+                </span>
+                @if (isMasterBerater) {
+                  <span class="meta-item">
+                    <i class="fas fa-users"></i> {{ material.sharedWith.length }} Berater
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

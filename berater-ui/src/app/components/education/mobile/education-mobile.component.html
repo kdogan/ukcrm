@@ -1,0 +1,68 @@
+<div class="education-mobile">
+  <div class="mobile-header">
+    <h1>📚 Bildung</h1>
+    <button class="fab" *ngIf="isMasterBerater" (click)="createMaterial.emit()">+</button>
+  </div>
+
+  <div class="mobile-stats" *ngIf="stats && isMasterBerater">
+    <div class="stat-item">
+      <span class="stat-value">{{ stats.totalMaterials }}</span>
+      <span class="stat-label">Materialien</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ stats.totalViews }}</span>
+      <span class="stat-label">Aufrufe</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ stats.sharedBeraterCount }}</span>
+      <span class="stat-label">Berater</span>
+    </div>
+  </div>
+
+  <div class="mobile-toolbar">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Suchen..." [value]="searchTerm"
+        (input)="searchChange.emit($any($event.target).value)" />
+    </div>
+    <button class="btn-filter" (click)="showFilters = !showFilters" [class.active]="showFilters">
+      <i class="fas fa-filter"></i>
+    </button>
+  </div>
+
+  <div class="mobile-filters" *ngIf="showFilters">
+    <select class="filter-select" [value]="selectedCategory"
+      (change)="categoryChange.emit($any($event.target).value); filterChange.emit()">
+      <option *ngFor="let cat of categoryOptions" [value]="cat.value">{{ cat.label }}</option>
+    </select>
+    <select class="filter-select" [value]="selectedType"
+      (change)="typeChange.emit($any($event.target).value); filterChange.emit()">
+      <option *ngFor="let type of typeOptions" [value]="type.value">{{ type.label }}</option>
+    </select>
+    <button class="btn-reset" (click)="resetFilters.emit()">Zurücksetzen</button>
+  </div>
+
+  <div class="materials-list" *ngIf="!loading">
+    <div class="material-card" *ngFor="let material of materials" (click)="viewMaterial.emit(material)">
+      <div class="card-thumbnail">
+        <img *ngIf="material.type === 'video' && material.videoId"
+          [src]="getYouTubeThumbnail(material.videoId)" [alt]="material.title" />
+        <div *ngIf="material.type !== 'video'" class="thumbnail-icon">
+          <i [class]="getTypeIcon(material.type)"></i>
+        </div>
+      </div>
+      <div class="card-content">
+        <h3>{{ material.title }}</h3>
+        <p *ngIf="material.description">{{ material.description }}</p>
+        <div class="card-meta">
+          <span><i class="fas fa-eye"></i> {{ material.views }}</span>
+          <span *ngIf="isMasterBerater"><i class="fas fa-users"></i> {{ material.sharedWith.length }}</span>
+        </div>
+      </div>
+      <div class="card-actions" *ngIf="isMasterBerater" (click)="$event.stopPropagation()">
+        <button (click)="editMaterial.emit(material)"><i class="fas fa-edit"></i></button>
+        <button (click)="deleteMaterial.emit(material)"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+  </div>
+</div>

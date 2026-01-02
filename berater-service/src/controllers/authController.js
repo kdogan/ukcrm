@@ -9,7 +9,7 @@ const crypto = require('crypto');
 // @access  Public
 exports.register = async (req, res, next) => {
   try {
-    const { email, password, firstName, lastName, phone } = req.body;
+    const { email, password, firstName, lastName, phone, masterBeraterEmail } = req.body;
 
     // Validierung
     if (!email || !password || !firstName || !lastName) {
@@ -55,6 +55,21 @@ exports.register = async (req, res, next) => {
       };
     }
 
+    // Master Berater suchen falls E-Mail angegeben
+    let masterBeraterId = null;
+    if (masterBeraterEmail) {
+      const masterBerater = await User.findOne({
+        email: masterBeraterEmail.toLowerCase().trim(),
+        role: 'berater',
+        isMasterBerater: true
+      });
+
+      if (masterBerater) {
+        masterBeraterId = masterBerater._id;
+      }
+      // Wenn kein Master gefunden wurde, ignorieren wir es einfach (kein Fehler)
+    }
+
     // Email-Verifizierungs-Token generieren
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 Stunden
@@ -69,6 +84,7 @@ exports.register = async (req, res, next) => {
       role: 'berater',
       package: 'basic',
       packageLimits,
+      masterBerater: masterBeraterId,
       isActive: false, // Nicht aktiv bis Email verifiziert
       isEmailVerified: false,
       emailVerificationToken: verificationToken,
@@ -120,8 +136,10 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // User suchen (inkl. Passwort)
-    const user = await User.findOne({ email }).select('+passwordHash');
+    // User suchen (inkl. Passwort und Master Berater)
+    const user = await User.findOne({ email })
+      .select('+passwordHash')
+      .populate('masterBerater', 'email firstName lastName');
     if (!user) {
       return res.status(401).json({
         success: false,

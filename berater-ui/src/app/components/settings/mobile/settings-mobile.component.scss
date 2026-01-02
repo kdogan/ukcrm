@@ -125,6 +125,41 @@
   }
 }
 
+/* COLOR PICKER */
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.color-input {
+  width: 60px;
+  height: 44px;
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+}
+
+.color-text {
+  flex: 1;
+  text-transform: uppercase;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.hint {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
 /* CURRENT PACKAGE CARD */
 .current-package-card {
   background: var(--bg-table-header);

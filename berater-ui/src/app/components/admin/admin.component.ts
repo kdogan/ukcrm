@@ -108,6 +108,9 @@ import { AdminMobileComponent } from './mobile/admin-mobile.component';
                 <span class="badge badge-role" [class.badge-superadmin]="user.role === 'superadmin'">
                   {{ getRoleLabel(user.role) }}
                 </span>
+                <span class="badge badge-master" *ngIf="user.isMasterBerater" title="Master Berater">
+                  🎓 Master
+                </span>
               </td>
               <td>
                 <span class="badge badge-package" [class.badge-enterprise]="user.package === 'enterprise'">
@@ -216,6 +219,13 @@ import { AdminMobileComponent } from './mobile/admin-mobile.component';
               <label class="checkbox-label">
                 <input type="checkbox" [(ngModel)]="currentUser.isActive" name="isActive" />
                 <span>Aktiv</span>
+              </label>
+            </div>
+
+            <div class="form-group" *ngIf="currentUser.role === 'berater'">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="currentUser.isMasterBerater" name="isMasterBerater" />
+                <span>Master Berater (kann Bildungsmaterialien erstellen und teilen)</span>
               </label>
             </div>
 
@@ -354,6 +364,11 @@ import { AdminMobileComponent } from './mobile/admin-mobile.component';
     .badge-superadmin { background: #f3e5f5; color: #7b1fa2; }
     .badge-package { background: #fff3e0; color: #f57c00; }
     .badge-enterprise { background: #e8eaf6; color: #3f51b5; }
+    .badge-master {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      margin-left: 0.5rem;
+    }
 
     .btn-primary, .btn-secondary, .btn-danger {
       padding: 0.625rem 1.25rem;
@@ -580,7 +595,8 @@ export class AdminComponent implements OnInit {
     this.currentUser = {
       role: 'berater',
       package: 'basic',
-      isActive: true
+      isActive: true,
+      isMasterBerater: false
     };
     this.showModal = true;
   }

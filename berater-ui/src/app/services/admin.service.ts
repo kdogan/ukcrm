@@ -15,6 +15,8 @@ export interface AppUser {
   isBlocked: boolean;
   blockedReason?: string;
   blockedAt?: Date;
+  isMasterBerater?: boolean;
+  masterBerater?: string;
   packageLimits: {
     maxCustomers: number;
     maxContracts: number;

@@ -175,6 +175,48 @@
             <option value="red">Rot</option>
           </select>
         </div>
+
+        <div class="input-item">
+          <label>Primärfarbe:</label>
+          <div class="color-picker-wrapper">
+            <input
+              type="color"
+              [(ngModel)]="settings.theme.primaryColor"
+              (change)="onSaveSettings()"
+              class="color-input"
+            />
+            <input
+              type="text"
+              [(ngModel)]="settings.theme.primaryColor"
+              (change)="onSaveSettings()"
+              class="color-text"
+              placeholder="#667eea"
+              maxlength="7"
+            />
+          </div>
+          <small class="hint">Farbe für Buttons und Links</small>
+        </div>
+
+        <div class="input-item">
+          <label>Akzentfarbe:</label>
+          <div class="color-picker-wrapper">
+            <input
+              type="color"
+              [(ngModel)]="settings.theme.accentColor"
+              (change)="onSaveSettings()"
+              class="color-input"
+            />
+            <input
+              type="text"
+              [(ngModel)]="settings.theme.accentColor"
+              (change)="onSaveSettings()"
+              class="color-text"
+              placeholder="#764ba2"
+              maxlength="7"
+            />
+          </div>
+          <small class="hint">Zweite Farbe für Gradienten</small>
+        </div>
       </div>
     </div>
 

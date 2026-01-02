@@ -128,6 +128,10 @@ export const routes: Routes = [
       {
         path: 'support',
         loadComponent: () => import('./components/support/support.component').then(m => m.SupportComponent)
+      },
+      {
+        path: 'education',
+        loadComponent: () => import('./components/education/education.component').then(m => m.EducationComponent)
       }
       // Messages temporarily disabled for performance
       // {

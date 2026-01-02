@@ -29,10 +29,16 @@ export class LayoutComponent implements OnInit {
     this.settings = this.settingsService.getSettings();
     this.sidebarColor = this.settingsService.getSidebarColor();
 
+    // Apply initial theme colors
+    this.settingsService.applyThemeColors();
+
     // Subscribe to settings changes
     this.settingsService.settings$.subscribe(settings => {
       this.settings = settings;
       this.sidebarColor = this.settingsService.getSidebarColor();
+
+      // Apply theme colors when settings change
+      this.settingsService.applyThemeColors();
     });
   }
 

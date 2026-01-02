@@ -1,0 +1,188 @@
+@if (viewportService.isMobile()) {
+  <app-education-mobile
+    [materials]="filteredMaterials"
+    [stats]="stats"
+    [isMasterBerater]="isMasterBerater"
+    [loading]="loading"
+    [searchTerm]="searchTerm"
+    [selectedCategory]="selectedCategory"
+    [selectedType]="selectedType"
+    [categoryOptions]="categoryOptions"
+    [typeOptions]="typeOptions"
+    (createMaterial)="openCreateModal()"
+    (editMaterial)="openEditModal($event)"
+    (deleteMaterial)="confirmDelete($event)"
+    (viewMaterial)="viewMaterial($event)"
+    (searchChange)="onSearchChange($event)"
+    (categoryChange)="onCategoryChange($event)"
+    (typeChange)="onTypeChange($event)"
+    (filterChange)="filterMaterials()"
+    (resetFilters)="resetFilters()"
+  ></app-education-mobile>
+} @else {
+  <app-education-desktop
+    [materials]="filteredMaterials"
+    [stats]="stats"
+    [isMasterBerater]="isMasterBerater"
+    [loading]="loading"
+    [searchTerm]="searchTerm"
+    [selectedCategory]="selectedCategory"
+    [selectedType]="selectedType"
+    [categoryOptions]="categoryOptions"
+    [typeOptions]="typeOptions"
+    (createMaterial)="openCreateModal()"
+    (editMaterial)="openEditModal($event)"
+    (deleteMaterial)="confirmDelete($event)"
+    (viewMaterial)="viewMaterial($event)"
+    (searchChange)="onSearchChange($event)"
+    (categoryChange)="onCategoryChange($event)"
+    (typeChange)="onTypeChange($event)"
+    (filterChange)="filterMaterials()"
+    (resetFilters)="resetFilters()"
+  ></app-education-desktop>
+}
+
+<!-- Create/Edit Modal -->
+@if (showModal) {
+<app-overlay-modal (close)="closeModal()">
+  <div class="modal-content">
+    <h2 class="modal-title">{{ isEditMode ? 'Material bearbeiten' : 'Neues Material erstellen' }}</h2>
+    <form (ngSubmit)="saveMaterial()">
+      <div class="form-group">
+        <label for="title">Titel *</label>
+        <input
+          type="text"
+          id="title"
+          class="form-control"
+          [(ngModel)]="currentMaterial.title"
+          name="title"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="type">Typ *</label>
+        <select
+          id="type"
+          class="form-control"
+          [(ngModel)]="currentMaterial.type"
+          name="type"
+          required
+        >
+          <option value="video">Video</option>
+          <option value="pdf">PDF</option>
+          <option value="document">Dokument</option>
+          <option value="link">Link</option>
+          <option value="image">Bild</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Kategorie *</label>
+        <select
+          id="category"
+          class="form-control"
+          [(ngModel)]="currentMaterial.category"
+          name="category"
+          required
+        >
+          <option value="onboarding">Onboarding</option>
+          <option value="training">Training</option>
+          <option value="product-info">Produktinformationen</option>
+          <option value="sales">Vertrieb</option>
+          <option value="support">Support</option>
+          <option value="other">Sonstiges</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="url">URL *</label>
+        <input
+          type="url"
+          id="url"
+          class="form-control"
+          [(ngModel)]="currentMaterial.url"
+          name="url"
+          placeholder="https://..."
+          required
+        />
+        @if (currentMaterial.type === 'video') {
+          <small class="form-text">YouTube-URL (z.B. https://www.youtube.com/watch?v=...)</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="description">Beschreibung</label>
+        <textarea
+          id="description"
+          class="form-control"
+          [(ngModel)]="currentMaterial.description"
+          name="description"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Mit Beratern teilen</label>
+        <div class="berater-list">
+          @for (berater of beraterList; track berater._id) {
+            <div class="berater-item">
+              <input
+                type="checkbox"
+                [id]="'berater-' + berater._id"
+                [checked]="isBeraterSelected(berater._id)"
+                (change)="toggleBeraterSelection(berater, $event)"
+              />
+              <label [for]="'berater-' + berater._id">
+                {{ berater.firstName }} {{ berater.lastName }}
+                @if (berater.isMasterBerater) {
+                  <span class="badge-master">Master</span>
+                }
+              </label>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">
+          Abbrechen
+        </button>
+        <button type="submit" class="btn btn-primary">
+          {{ isEditMode ? 'Aktualisieren' : 'Erstellen' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</app-overlay-modal>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteConfirm) {
+<app-overlay-modal (close)="cancelDelete()">
+  <div class="modal-content">
+    <h2 class="modal-title">Material löschen</h2>
+    <p>Möchten Sie das Material "{{ materialToDelete?.title }}" wirklich löschen?</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="cancelDelete()">Abbrechen</button>
+      <button class="btn btn-danger" (click)="deleteMaterial()">Löschen</button>
+    </div>
+  </div>
+</app-overlay-modal>
+}
+
+<!-- YouTube Video Player Modal -->
+@if (showVideoPlayer) {
+<app-overlay-modal (close)="closeVideoPlayer()">
+  <div class="video-player-content">
+    <div class="video-container">
+      <iframe
+        [src]="getYouTubeEmbedUrl()"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</app-overlay-modal>
+}

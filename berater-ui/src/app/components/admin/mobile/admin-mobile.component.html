@@ -90,6 +90,9 @@
             <span class="badge badge-role" [class.badge-superadmin]="user.role === 'superadmin'">
               {{ getRoleLabel(user.role) }}
             </span>
+            <span class="badge badge-master" *ngIf="user.isMasterBerater" title="Master Berater">
+              🎓 Master
+            </span>
           </div>
 
           <div class="detail-item">
