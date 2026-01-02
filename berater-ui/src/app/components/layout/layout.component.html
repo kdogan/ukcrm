@@ -20,97 +20,105 @@
         </div>
 
         <ul class="nav-menu">
+            <!-- Hauptmenü-Einträge -->
             <li>
-                <a routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-dashboard fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.dashboard }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
             <li>
-                <a routerLink="/contracts" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                <a routerLink="/contracts" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-file-contract fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.contracts }}</span>
                 </a>
             </li>
             <li>
-                <a routerLink="/customers" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                <a routerLink="/customers" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-users fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.customers }}</span>
                 </a>
             </li>
-
             <li>
-                <a routerLink="/meters" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                <a routerLink="/meters" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-bolt fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.meters }}</span>
                 </a>
             </li>
             }
             <li>
-                <a routerLink="/todos" routerLinkActive="active" (click)="closeSidebarOnMobile()">
-                    <i class="fas fa-check fa-lg"></i>
+                <a routerLink="/todos" routerLinkActive="active" (click)="closeMenusAndSidebar()">
+                    <i class="fas fa-tasks fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.todos }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
             <li>
-                <a routerLink="/suppliers" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                <a routerLink="/suppliers" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-truck fa-lg"></i>
                     <span class="nav-text">{{ settings.sidebarLabels.suppliers || 'Anbieter' }}</span>
                 </a>
             </li>
-
             <li>
-                <a routerLink="/education" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                <a routerLink="/education" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-graduation-cap fa-lg"></i>
                     <span class="nav-text">Bildung</span>
                 </a>
             </li>
-
-            <li>
-                <a routerLink="/settings" routerLinkActive="active" (click)="closeSidebarOnMobile()">
-                    <i class="fas fa-cog fa-lg"></i>
-                    <span class="nav-text">Einstellungen</span>
-                </a>
-            </li>
             }
             <li>
-                <a routerLink="/support" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                <a routerLink="/support" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-life-ring fa-lg"></i>
                     <span class="nav-text">Support</span>
                 </a>
             </li>
             @if(currentUser?.role === 'superadmin'){
             <li>
-                <a routerLink="/admin" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                <a routerLink="/admin" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-users fa-lg"></i>
                     <span class="nav-text">Benutzer</span>
                 </a>
             </li>
-
             <li>
-                <a routerLink="/packages" routerLinkActive="active" (click)="closeSidebarOnMobile()">
+                <a routerLink="/packages" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-box fa-lg"></i>
                     <span class="nav-text">Pakete</span>
                 </a>
             </li>
             }
-
         </ul>
 
+        <!-- User Section mit Dropdown -->
         <div class="user-section">
-            <div class="user-info" *ngIf="currentUser">
-                <div class="user-avatar">{{ getUserInitials() }}</div>
-                <div class="user-details">
-                    <div class="user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</div>
-                    <div class="user-role">{{ currentUser.role }}</div>
+            <div class="user-menu-container">
+                <div class="user-info" *ngIf="currentUser" (click)="toggleUserMenu()">
+                    <div class="user-avatar">{{ getUserInitials() }}</div>
+                    <div class="user-details">
+                        <div class="user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</div>
+                        <div class="user-role">{{ currentUser.role }}</div>
+                    </div>
+                    <i class="fas fa-chevron-down dropdown-icon" [class.rotated]="userMenuOpen"></i>
                 </div>
+                @if(userMenuOpen){
+                <ul class="user-dropdown">
+                    @if(currentUser?.role !== 'superadmin'){
+                    <li>
+                        <a routerLink="/settings" (click)="closeMenusAndSidebar()">
+                            <i class="fas fa-cog"></i>
+                            <span>Einstellungen</span>
+                        </a>
+                    </li>
+                    }
+                    <li>
+                        <a (click)="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Abmelden</span>
+                        </a>
+                    </li>
+                </ul>
+                }
             </div>
-            <button class="logout-btn" (click)="logout()">
-                <i class="fas fa-sign-out-alt"></i>
-                <span class="nav-text">Abmelden</span>
-            </button>
         </div>
     </nav>
 
