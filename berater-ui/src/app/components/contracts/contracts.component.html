@@ -541,10 +541,10 @@
 <!-- Meter Creation Modal -->
 @if(showMeterCreationModal){
   <app-overlay-modal (close)="closeMeterCreationModal()">
-    <app-meter-create 
-      [meter] = "newMeter",
-      [isEditMode]="isEditMode",
-      (close)="closeMeterCreationModal()",
+    <app-meter-create
+      [meter]="newMeter"
+      [isEditMode]="isEditMode"
+      (close)="closeMeterCreationModal()"
       (save)="saveNewMeter()"
     />
   </app-overlay-modal>

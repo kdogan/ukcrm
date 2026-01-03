@@ -9,12 +9,6 @@ const ContractCounterSchema = new mongoose.Schema({
   seq: {
     type: Number,
     default: 0
-  },
-  contractNumber: {
-    type: String,
-    required: true,
-    unique: true,
-    immutable: true
   }
 });
 

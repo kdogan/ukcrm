@@ -1,15 +1,33 @@
 const ContractCounter = require('../models/ContractCounter');
+const Contract = require('../models/Contract');
 
-async function getNextContractNumber() {
+async function getNextContractNumber(beraterId) {
   const year = new Date().getFullYear();
+  const maxRetries = 10;
 
-  const counter = await ContractCounter.findOneAndUpdate(
-    { name: `contract-${year}` },
-    { $inc: { seq: 1 } },
-    { new: true, upsert: true }
-  );
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    // Hole und inkrementiere Counter
+    const counter = await ContractCounter.findOneAndUpdate(
+      { name: `contract-${year}` },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
 
-  return `V-${year}-${String(counter.seq).padStart(3, '0')}`;
+    const contractNumber = `V-${year}-${String(counter.seq).padStart(3, '0')}`;
+
+    // Prüfe ob diese Nummer bereits existiert
+    const exists = await Contract.findOne({ contractNumber });
+
+    if (!exists) {
+      return contractNumber;
+    }
+
+    console.log(`Contract number ${contractNumber} already exists, retrying... (${attempt + 1}/${maxRetries})`);
+  }
+
+  // Fallback: Verwende Timestamp für Eindeutigkeit
+  const timestamp = Date.now();
+  return `V-${year}-${timestamp}`;
 }
 
 module.exports = getNextContractNumber;
