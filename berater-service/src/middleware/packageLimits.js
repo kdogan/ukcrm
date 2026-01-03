@@ -21,6 +21,11 @@ exports.checkContractLimit = async (req, res, next) => {
       });
     }
 
+    // Check if package has unlimited contracts (-1 means unlimited)
+    if (userPackage.maxContracts === -1) {
+      return next();
+    }
+
     // Count current contracts (only active and draft contracts)
     const contractCount = await Contract.countDocuments({
       beraterId: user._id,
