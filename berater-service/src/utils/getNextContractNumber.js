@@ -3,31 +3,53 @@ const Contract = require('../models/Contract');
 
 async function getNextContractNumber(beraterId, session = null) {
   const year = new Date().getFullYear();
-  const maxRetries = 10;
+  const counterName = `contract-${beraterId}-${year}`;
 
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    // Hole und inkrementiere Counter (mit session wenn vorhanden)
-    const counter = await ContractCounter.findOneAndUpdate(
-      { name: `contract-${year}` },
-      { $inc: { seq: 1 } },
-      { new: true, upsert: true, session }
-    );
+  // 1️⃣ Prüfe ob Counter existiert
+  let query = ContractCounter.findOne({ name: counterName });
+  if (session) {
+    query = query.session(session);
+  }
+  let counter = await query;
 
-    const contractNumber = `V-${year}-${String(counter.seq).padStart(3, '0')}`;
+  // 2️⃣ Falls nicht: initialisieren anhand bestehender Verträge
+  if (!counter) {
+    const regex = new RegExp(`^V-${year}-(\\d+)$`);
 
-    // Prüfe ob diese Nummer bereits existiert (mit session wenn vorhanden)
-    const exists = await Contract.findOne({ contractNumber }).session(session);
+    let contractQuery = Contract.findOne({
+      beraterId,
+      contractNumber: { $regex: regex }
+    }).sort({ contractNumber: -1 });
 
-    if (!exists) {
-      return contractNumber;
+    if (session) {
+      contractQuery = contractQuery.session(session);
     }
 
-    console.log(`Contract number ${contractNumber} already exists, retrying... (${attempt + 1}/${maxRetries})`);
+    const lastContract = await contractQuery;
+
+    let startSeq = 0;
+
+    if (lastContract) {
+      const match = lastContract.contractNumber.match(regex);
+      if (match) {
+        startSeq = parseInt(match[1], 10);
+      }
+    }
+
+    counter = await ContractCounter.create([{
+      name: counterName,
+      seq: startSeq
+    }], { session }).then(res => res[0]);
   }
 
-  // Fallback: Verwende Timestamp für Eindeutigkeit
-  const timestamp = Date.now();
-  return `V-${year}-${timestamp}`;
+  // 3️⃣ Jetzt atomar inkrementieren
+  counter = await ContractCounter.findOneAndUpdate(
+    { name: counterName },
+    { $inc: { seq: 1 } },
+    { new: true, session }
+  );
+
+  return `V-${year}-${String(counter.seq).padStart(4, '0')}`;
 }
 
 module.exports = getNextContractNumber;

@@ -27,10 +27,10 @@ const contractSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  // ❗ NICHT mehr global unique
   contractNumber: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   supplierContractNumber: {
     type: String
@@ -111,21 +111,20 @@ const contractSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Compound Indizes
+/**
+ * ✅ Compound Unique Index:
+ * Vertragsnummer ist NUR pro Berater eindeutig
+ */
+contractSchema.index(
+  { beraterId: 1, contractNumber: 1 },
+  { unique: true }
+);
+
+// Weitere Indizes
 contractSchema.index({ beraterId: 1, status: 1, endDate: 1 });
-// contractNumber has unique: true, so no need for explicit index
 
-// Auto-generate contract number
-contractSchema.pre('save', async function(next) {
-  if (this.isNew && !this.contractNumber) {
-    const count = await mongoose.model('Contract').countDocuments();
-    this.contractNumber = `V${String(count + 1).padStart(6, '0')}`;
-  }
-  next();
-});
-
-// Berechne Enddatum automatisch
-contractSchema.pre('save', function(next) {
+// Enddatum automatisch berechnen
+contractSchema.pre('save', function (next) {
   if (this.isModified('startDate') || this.isModified('durationMonths')) {
     const endDate = new Date(this.startDate);
     endDate.setMonth(endDate.getMonth() + this.durationMonths);
@@ -135,7 +134,7 @@ contractSchema.pre('save', function(next) {
 });
 
 // Virtuelles Feld für Restlaufzeit
-contractSchema.virtual('daysRemaining').get(function() {
+contractSchema.virtual('daysRemaining').get(function () {
   const now = new Date();
   const end = new Date(this.endDate);
   const diff = end - now;

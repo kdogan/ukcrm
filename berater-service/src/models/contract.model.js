@@ -17,7 +17,6 @@ const contractSchema = new mongoose.Schema({
   contractNumber: {
     type: String,
     required: [true, 'Vertragsnummer ist erforderlich'],
-    unique: true,
     trim: true
   },
   customerId: {
@@ -63,6 +62,9 @@ const contractSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// Compound Index für unique contractNumber pro Berater
+contractSchema.index({ beraterId: 1, contractNumber: 1 }, { unique: true });
 
 // Compound Indizes für Performance
 contractSchema.index({ beraterId: 1, status: 1, endDate: 1 });
