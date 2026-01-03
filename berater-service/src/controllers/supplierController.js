@@ -6,10 +6,22 @@ const Supplier = require('../models/Supplier');
 exports.getSuppliers = async (req, res, next) => {
   try {
     const { isActive, page = 1, limit = 50 } = req.query;
+    const User = require('../models/User');
 
     const filter = {};
     if (isActive !== undefined) {
       filter.isActive = isActive === 'true';
+    }
+
+    // Shared visibility: Berater sees own suppliers + Masterberater's suppliers
+    const user = await User.findById(req.user._id);
+
+    if (user.masterBerater) {
+      // Regular Berater: see own suppliers + masterberater's suppliers
+      filter.beraterId = { $in: [req.user._id, user.masterBerater] };
+    } else {
+      // Masterberater or standalone Berater: see only own suppliers
+      filter.beraterId = req.user._id;
     }
 
     const skip = (page - 1) * limit;
@@ -60,10 +72,15 @@ exports.getSupplier = async (req, res, next) => {
 
 // @desc    Create supplier
 // @route   POST /api/suppliers
-// @access  Private (Admin only)
+// @access  Private
 exports.createSupplier = async (req, res, next) => {
   try {
-    const supplier = await Supplier.create(req.body);
+    const supplierData = {
+      ...req.body,
+      beraterId: req.user._id
+    };
+
+    const supplier = await Supplier.create(supplierData);
 
     res.status(201).json({
       success: true,

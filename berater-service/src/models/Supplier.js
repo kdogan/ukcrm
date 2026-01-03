@@ -12,6 +12,12 @@ const supplierSchema = new mongoose.Schema({
     required: [true, 'Kurzbezeichnung ist erforderlich'],
     trim: true
   },
+  beraterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true
+  },
   address: {
     street: {
       type: String,

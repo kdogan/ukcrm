@@ -103,8 +103,8 @@ exports.createContract = async (req, res, next) => {
       endDate.setMonth(endDate.getMonth() + parseInt(req.body.durationMonths));
     }
 
-    // ✅ Vertragsnummer automatisch erzeugen
-    const contractNumber = await getNextContractNumber();
+    // ✅ Vertragsnummer automatisch erzeugen (innerhalb der Transaction)
+    const contractNumber = await getNextContractNumber(req.user._id, session);
 
     const contractData = {
       ...req.body,

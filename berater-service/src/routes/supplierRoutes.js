@@ -13,7 +13,7 @@ router.use(authenticate);
 
 router.route('/')
   .get(getSuppliers)
-  .post(requireAdmin, createSupplier);
+  .post(createSupplier);
 
 router.route('/:id')
   .get(getSupplier)
