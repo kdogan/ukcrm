@@ -14,7 +14,8 @@ export class Util {
       {key:MeterType.Electricity, value:'Strom'},
       {key:MeterType.Gas, value:'Gas'},
       {key:MeterType.Water, value:'Wasser'},
-      {key:MeterType.Heat, value:'Wärme'},
+      {key:MeterType.HeatPump, value:'Wärmepumpe'},
+      {key:MeterType.NightStorage, value:'Nachtspeicher'},
     ]
   }
 
@@ -34,7 +35,9 @@ export class Util {
         return 'm³';
       case MeterType.Water:
         return 'm³';
-      case MeterType.Heat:
+      case MeterType.HeatPump:
+        return 'kWh';
+      case MeterType.NightStorage:
         return 'kWh';
       default:
         return '';

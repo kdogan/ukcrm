@@ -29,11 +29,13 @@ export enum MeterType {
   Electricity = 'electricity',
   Gas = 'gas',
   Water = 'water',
-  Heat = 'heat'
-} 
+  HeatPump = 'heatpump',
+  NightStorage = 'nightstorage'
+}
 export const meterTypes: MeterType[] = [
   MeterType.Electricity,
   MeterType.Gas,
   MeterType.Water,
-  MeterType.Heat
+  MeterType.HeatPump,
+  MeterType.NightStorage
 ];
