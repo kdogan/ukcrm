@@ -36,7 +36,8 @@ export class SupportComponent implements OnInit {
   selectedImages: File[] = [];
   imagePreviews: string[] = [];
 
-  // Admin Response Form
+  // Response Form (used by both Berater and Admin)
+  beraterResponse = '';
   adminResponse = '';
   responseStatus: 'open' | 'in_progress' | 'completed' = 'in_progress';
 
@@ -109,9 +110,9 @@ export class SupportComponent implements OnInit {
     // Answered filter
     if (this.filterAnswered !== 'all') {
       if (this.filterAnswered === 'answered') {
-        filtered = filtered.filter(ticket => ticket.adminResponse);
+        filtered = filtered.filter(ticket => ticket.adminResponse || ticket.beraterResponse);
       } else {
-        filtered = filtered.filter(ticket => !ticket.adminResponse);
+        filtered = filtered.filter(ticket => !ticket.adminResponse && !ticket.beraterResponse);
       }
     }
 
@@ -190,6 +191,7 @@ export class SupportComponent implements OnInit {
   viewTicket(ticket: Todo): void {
     this.selectedTicket = ticket;
     this.showViewModal = true;
+    this.beraterResponse = '';
     this.adminResponse = '';
     // Set current ticket status
     this.responseStatus = ticket.status;
@@ -202,16 +204,21 @@ export class SupportComponent implements OnInit {
 
     // Check if status changed or response provided
     const statusChanged = this.selectedTicket.status !== this.responseStatus;
-    const hasResponse = this.adminResponse && this.adminResponse.trim().length > 0;
+    const beraterHasResponse = this.beraterResponse && this.beraterResponse.trim().length > 0;
+    const adminHasResponse = this.adminResponse && this.adminResponse.trim().length > 0;
+    const hasResponse = beraterHasResponse || adminHasResponse;
 
     if (!statusChanged && !hasResponse) {
       alert('Bitte eine Antwort eingeben oder den Status ändern');
       return;
     }
 
+    // Use the appropriate response based on user role
+    const responseText = this.isSuperAdmin ? this.adminResponse : this.beraterResponse;
+
     this.todoService.respondToSupportTicket(
       this.selectedTicket._id,
-      this.adminResponse,
+      responseText,
       this.responseStatus
     ).subscribe({
       next: (response) => {

@@ -754,37 +754,34 @@ exports.respondToSupportTicket = async (req, res, next) => {
     const isSuperAdmin = req.user.role === 'superadmin';
     const isTicketOwner = ticket.beraterId.toString() === req.user._id.toString();
 
-    // Berater can only close their own tickets (change status to 'completed')
-    // They cannot add responses or change to other statuses
-    if (!isSuperAdmin) {
-      if (!isTicketOwner) {
-        return res.status(403).json({
-          success: false,
-          message: 'Sie können nur Ihre eigenen Tickets verwalten'
-        });
-      }
-
-      // Berater can only change status to 'completed', not add responses
-      if (response && response.trim().length > 0) {
-        return res.status(403).json({
-          success: false,
-          message: 'Nur Administratoren können Antworten hinzufügen'
-        });
-      }
-
-      if (status && status !== 'completed') {
-        return res.status(403).json({
-          success: false,
-          message: 'Sie können Tickets nur als abgeschlossen markieren'
-        });
-      }
+    // Check permissions
+    if (!isSuperAdmin && !isTicketOwner) {
+      return res.status(403).json({
+        success: false,
+        message: 'Sie können nur Ihre eigenen Tickets verwalten'
+      });
     }
 
-    // Update response if provided (only superadmin can do this)
+    // Berater can change status to open, in_progress, or completed
+    if (!isSuperAdmin && status && !['open', 'in_progress', 'completed'].includes(status)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Ungültiger Status'
+      });
+    }
+
+    // Update response if provided
     if (response && response.trim().length > 0) {
-      ticket.adminResponse = response;
-      ticket.adminResponseAt = new Date();
-      ticket.respondedBy = req.user._id;
+      if (isSuperAdmin) {
+        // Superadmin response
+        ticket.adminResponse = response;
+        ticket.adminResponseAt = new Date();
+        ticket.respondedBy = req.user._id;
+      } else if (isTicketOwner) {
+        // Berater can add/update their own response
+        ticket.beraterResponse = response;
+        ticket.beraterResponseAt = new Date();
+      }
     }
 
     // Update status if provided

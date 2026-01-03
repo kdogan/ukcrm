@@ -54,31 +54,44 @@ meterHistorySchema.pre('save', function(next) {
 meterHistorySchema.pre('save', async function(next) {
   if (!this.isNew) return next();
 
-  const overlapping = await mongoose.model('MeterHistory').findOne({
+  // Prüfe ob es bereits einen aktiven Eintrag gibt (endDate: null)
+  const activeEntry = await mongoose.model('MeterHistory').findOne({
     meterId: this.meterId,
     _id: { $ne: this._id },
-    $or: [
-      // Neue Periode startet während existierender Periode
-      {
-        startDate: { $lte: this.startDate },
-        $or: [
-          { endDate: { $gte: this.startDate } },
-          { endDate: null }
-        ]
-      },
-      // Neue Periode endet während existierender Periode
-      this.endDate ? {
-        startDate: { $lte: this.endDate },
-        $or: [
-          { endDate: { $gte: this.endDate } },
-          { endDate: null }
-        ]
-      } : null
-    ].filter(Boolean)
+    endDate: null
   });
 
-  if (overlapping) {
+  if (activeEntry) {
     return next(new Error('Überlappende Zeiträume sind nicht erlaubt'));
+  }
+
+  // Prüfe auf Überlappungen mit abgeschlossenen Einträgen
+  if (this.endDate) {
+    const overlapping = await mongoose.model('MeterHistory').findOne({
+      meterId: this.meterId,
+      _id: { $ne: this._id },
+      $or: [
+        // Neue Periode startet während existierender Periode
+        {
+          startDate: { $lte: this.startDate },
+          endDate: { $gte: this.startDate, $ne: null }
+        },
+        // Neue Periode endet während existierender Periode
+        {
+          startDate: { $lte: this.endDate },
+          endDate: { $gte: this.endDate, $ne: null }
+        },
+        // Neue Periode umschließt existierende Periode
+        {
+          startDate: { $gte: this.startDate },
+          endDate: { $lte: this.endDate, $ne: null }
+        }
+      ]
+    });
+
+    if (overlapping) {
+      return next(new Error('Überlappende Zeiträume sind nicht erlaubt'));
+    }
   }
 
   next();

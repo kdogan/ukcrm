@@ -48,6 +48,8 @@ export interface Todo {
     size: number;
     uploadedAt: Date;
   }>;
+  beraterResponse?: string;
+  beraterResponseAt?: Date;
   adminResponse?: string;
   adminResponseAt?: Date;
   respondedBy?: {

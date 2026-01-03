@@ -75,6 +75,15 @@ const todoSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
+  // Für Berater: Zusätzliche Informationen/Antwort
+  beraterResponse: {
+    type: String,
+    default: null
+  },
+  beraterResponseAt: {
+    type: Date,
+    default: null
+  },
   // Für Superadmin: Antwort auf Support-Ticket
   adminResponse: {
     type: String,

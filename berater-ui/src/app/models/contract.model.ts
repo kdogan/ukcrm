@@ -29,6 +29,8 @@ export interface Contract {
   customerId: any;
   meterId: any;
   supplierId: any;
+  isCommercial?: boolean;
+  commercialName?: string;
   startDate: Date;
   endDate: Date;
   durationMonths: number;

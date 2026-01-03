@@ -51,6 +51,14 @@ const contractSchema = new mongoose.Schema({
     ref: 'Supplier',
     required: true
   },
+  isCommercial: {
+    type: Boolean,
+    default: false
+  },
+  commercialName: {
+    type: String,
+    trim: true
+  },
   startDate: {
     type: Date,
     required: [true, 'Startdatum ist erforderlich']

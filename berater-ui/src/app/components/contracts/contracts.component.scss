@@ -399,3 +399,26 @@
     .meter-status {
       color: var(--danger-color); font-weight: bold; margin-left: 0.5rem;
     }
+
+    // Checkbox Styling
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+    }
+
+    .checkbox-input {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--primary-color);
+    }
+
+    .checkbox-label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-primary);
+      user-select: none;
+    }

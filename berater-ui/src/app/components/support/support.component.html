@@ -121,9 +121,16 @@
             </span>
           }
 
-          @if(ticket.adminResponse){
+          @if(ticket.beraterResponse || ticket.adminResponse){
             <span class="ticket-has-response">
-              <i class="fas fa-reply"></i> Beantwortet
+              <i class="fas fa-reply"></i>
+              @if(ticket.beraterResponse && ticket.adminResponse){
+                Beantwortet
+              }@else if(ticket.adminResponse){
+                Support antwortet
+              }@else{
+                Ihre Antwort
+              }
             </span>
           }
 
@@ -272,6 +279,18 @@
           </div>
         }
 
+        @if(selectedTicket.beraterResponse){
+          <div class="detail-section berater-response">
+            <strong>
+              <i class="fas fa-comment"></i> Ihre Antwort:
+            </strong>
+            <p>{{ selectedTicket.beraterResponse }}</p>
+            <small>
+              Hinzugefügt am {{ selectedTicket.beraterResponseAt | date:'dd.MM.yyyy HH:mm' }}
+            </small>
+          </div>
+        }
+
         @if(selectedTicket.adminResponse){
           <div class="detail-section admin-response">
             <strong>
@@ -284,6 +303,40 @@
                 von {{ selectedTicket.respondedBy.firstName }} {{ selectedTicket.respondedBy.lastName }}
               }
             </small>
+          </div>
+        }
+
+        @if(!isSuperAdmin && selectedTicket.status !== 'completed'){
+          <div class="detail-section">
+            @if(!selectedTicket.beraterResponse){
+              <strong>Zusätzliche Informationen hinzufügen:</strong>
+              <textarea [(ngModel)]="beraterResponse"
+                        rows="4"
+                        placeholder="Fügen Sie hier weitere Informationen oder Updates zu Ihrem Ticket hinzu..."></textarea>
+            }@else{
+              <strong>Ihre Antwort aktualisieren:</strong>
+              <textarea [(ngModel)]="beraterResponse"
+                        rows="4"
+                        placeholder="Aktualisieren Sie Ihre Antwort..."></textarea>
+            }
+
+            <div class="form-group">
+              <label>Status ändern:</label>
+              <select [(ngModel)]="responseStatus">
+                <option value="open">Offen</option>
+                <option value="in_progress">In Bearbeitung</option>
+                <option value="completed">Abgeschlossen</option>
+              </select>
+            </div>
+
+            <button class="btn-primary" (click)="submitResponse()">
+              <i class="fas fa-paper-plane"></i>
+              @if(!selectedTicket.beraterResponse){
+                Antwort hinzufügen
+              }@else{
+                Antwort aktualisieren
+              }
+            </button>
           </div>
         }
 
