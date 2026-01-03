@@ -286,8 +286,17 @@ export class ContractsComponent implements OnInit {
     this.meterService.getMeters({ limit: 1000 }).subscribe({
       next: (response) => {
         if (response.success) {
-          this.freeMeters = response.data;
-          this.filteredFreeMeters = response.data;
+          // Explizit neue Arrays erstellen für Change Detection
+          this.freeMeters = [...response.data];
+          this.filteredFreeMeters = [...response.data];
+
+          // Wenn ein Zähler ausgewählt ist, aktualisiere seine Referenz
+          if (this.selectedMeter) {
+            const updatedMeter = this.freeMeters.find(m => m._id === this.selectedMeter._id);
+            if (updatedMeter) {
+              this.selectedMeter = updatedMeter;
+            }
+          }
         }
       }
     });
@@ -457,6 +466,7 @@ export class ContractsComponent implements OnInit {
             this.isSaving = false;
             this.closeModal();
             this.loadContracts();
+            this.loadFreeMeters(); // Zählerliste auch aktualisieren
           }
         },
         error: (error) => {

@@ -87,7 +87,14 @@ exports.getContract = async (req, res, next) => {
 // @route   POST /api/contracts
 // @access  Private
 exports.createContract = async (req, res, next) => {
+  const mongoose = require('mongoose');
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
+    const Meter = require('../models/Meter');
+    const MeterHistory = require('../models/MeterHistory');
+
     // Enddatum berechnen
     let endDate = req.body.endDate;
     if (!endDate && req.body.startDate && req.body.durationMonths) {
@@ -101,7 +108,7 @@ exports.createContract = async (req, res, next) => {
 
     const contractData = {
       ...req.body,
-      contractNumber,          // 🔥 HIER
+      contractNumber,
       endDate,
       beraterId: req.user._id,
       auditLog: [{
@@ -111,25 +118,32 @@ exports.createContract = async (req, res, next) => {
       }]
     };
 
-    const contract = await Contract.create(contractData);
+    // Alle Operationen innerhalb der Transaction
+    const contracts = await Contract.create([contractData], { session });
+    const contract = contracts[0];
 
     // Zähler belegen
-    const Meter = require('../models/Meter');
-    const MeterHistory = require('../models/MeterHistory');
+    await Meter.findByIdAndUpdate(
+      req.body.meterId,
+      { currentCustomerId: req.body.customerId },
+      { session }
+    );
 
-    await Meter.findByIdAndUpdate(req.body.meterId, {
-      currentCustomerId: req.body.customerId
-    });
-
-    await MeterHistory.create({
+    // MeterHistory erstellen - wenn dies fehlschlägt, wird alles zurückgerollt
+    await MeterHistory.create([{
       meterId: req.body.meterId,
       beraterId: req.user._id,
       customerId: req.body.customerId,
       contractId: contract._id,
       startDate: new Date(req.body.startDate),
       endDate: null
-    });
+    }], { session });
 
+    // Transaction committen
+    await session.commitTransaction();
+    session.endSession();
+
+    // Reminders außerhalb der Transaction (nicht kritisch)
     await createReminders(contract);
 
     const populatedContract = await Contract.findById(contract._id)
@@ -142,6 +156,18 @@ exports.createContract = async (req, res, next) => {
       data: populatedContract
     });
   } catch (error) {
+    // Rollback bei Fehler
+    await session.abortTransaction();
+    session.endSession();
+
+    // Bessere Fehlermeldung für Überlappungsfehler
+    if (error.message && error.message.includes('Überlappende Zeiträume')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Dieser Zähler ist bereits von einem anderen Kunden belegt. Bitte wählen Sie einen freien Zähler.'
+      });
+    }
+
     next(error);
   }
 };
