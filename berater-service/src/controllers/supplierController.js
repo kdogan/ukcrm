@@ -120,14 +120,10 @@ exports.updateSupplier = async (req, res, next) => {
 
 // @desc    Delete supplier
 // @route   DELETE /api/suppliers/:id
-// @access  Private (Admin only)
+// @access  Private (Owner or Admin)
 exports.deleteSupplier = async (req, res, next) => {
   try {
-    const supplier = await Supplier.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true }
-    );
+    const supplier = await Supplier.findById(req.params.id);
 
     if (!supplier) {
       return res.status(404).json({
@@ -135,6 +131,20 @@ exports.deleteSupplier = async (req, res, next) => {
         message: 'Anbieter nicht gefunden'
       });
     }
+
+    // Check if user is owner or admin
+    const isOwner = supplier.beraterId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin' || req.user.role === 'superadmin';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Sie können nur Ihre eigenen Anbieter löschen'
+      });
+    }
+
+    supplier.isActive = false;
+    await supplier.save();
 
     res.status(200).json({
       success: true,

@@ -18,6 +18,6 @@ router.route('/')
 router.route('/:id')
   .get(getSupplier)
   .put(requireAdmin, updateSupplier)
-  .delete(requireAdmin, deleteSupplier);
+  .delete(deleteSupplier);
 
 module.exports = router;
