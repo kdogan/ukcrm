@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const {
   getTodos,
   getTodo,
@@ -18,10 +19,16 @@ const {
 } = require('../controllers/todoController');
 const { authenticate, requireSuperAdmin, authenticateFromQuery } = require('../middleware/auth');
 
+// Uploads-Verzeichnis erstellen falls nicht vorhanden
+const uploadsDir = path.join(__dirname, '../../uploads/support-tickets');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Multer configuration for support ticket images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/support-tickets');
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
