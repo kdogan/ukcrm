@@ -35,6 +35,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
     background: white;
     border-radius: 12px;
     width: 60%;
+    min-width:465px;
     max-width: 100%;
     max-height: 90%;
     overflow-y: auto;
