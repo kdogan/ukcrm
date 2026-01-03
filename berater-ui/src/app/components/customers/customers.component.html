@@ -93,6 +93,14 @@
 <app-overlay-modal (close)="closeModal()">
   <h2>{{ editMode ? 'Kunde bearbeiten' : 'Neuer Kunde' }}</h2>
   <form (ngSubmit)="saveCustomer()">
+    <div class="form-group">
+      <label>Anrede</label>
+      <select [(ngModel)]="currentCustomer.anrede" name="anrede">
+        <option [ngValue]="undefined">Bitte wählen</option>
+        <option value="Herr">Herr</option>
+        <option value="Frau">Frau</option>
+      </select>
+    </div>
     <div class="form-row">
       <div class="form-group">
         <label>Vorname*</label>
@@ -171,6 +179,11 @@
     <div class="info-row">
       <span class="label">Kundennummer</span>
       <span class="value">{{ selectedCustomer?.customerNumber }}</span>
+    </div>
+
+    <div class="info-row" *ngIf="selectedCustomer?.anrede">
+      <span class="label">Anrede</span>
+      <span class="value">{{ selectedCustomer?.anrede }}</span>
     </div>
 
     <div class="info-row" *ngIf="selectedCustomer?.phone">

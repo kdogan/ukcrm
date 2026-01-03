@@ -93,14 +93,10 @@ exports.createSupplier = async (req, res, next) => {
 
 // @desc    Update supplier
 // @route   PUT /api/suppliers/:id
-// @access  Private (Admin only)
+// @access  Private (Owner or Admin)
 exports.updateSupplier = async (req, res, next) => {
   try {
-    const supplier = await Supplier.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const supplier = await Supplier.findById(req.params.id);
 
     if (!supplier) {
       return res.status(404).json({
@@ -108,6 +104,21 @@ exports.updateSupplier = async (req, res, next) => {
         message: 'Anbieter nicht gefunden'
       });
     }
+
+    // Check if user is owner or admin
+    const isOwner = supplier.beraterId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin' || req.user.role === 'superadmin';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Sie können nur Ihre eigenen Anbieter bearbeiten'
+      });
+    }
+
+    // Update supplier
+    Object.assign(supplier, req.body);
+    await supplier.save();
 
     res.status(200).json({
       success: true,
@@ -143,12 +154,12 @@ exports.deleteSupplier = async (req, res, next) => {
       });
     }
 
-    supplier.isActive = false;
-    await supplier.save();
+    // Komplett löschen statt nur deaktivieren
+    await Supplier.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
       success: true,
-      message: 'Anbieter deaktiviert'
+      message: 'Anbieter gelöscht'
     });
   } catch (error) {
     next(error);

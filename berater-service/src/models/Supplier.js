@@ -51,6 +51,14 @@ const supplierSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  website: {
+    type: String,
+    trim: true
+  },
+  notes: {
+    type: String,
+    maxlength: 2000
+  },
   isActive: {
     type: Boolean,
     default: true

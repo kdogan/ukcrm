@@ -32,6 +32,11 @@ const customerSchema = new mongoose.Schema({
     unique: true,
     sparse: true
   },
+  anrede: {
+    type: String,
+    enum: ['Herr', 'Frau'],
+    trim: true
+  },
   firstName: {
     type: String,
     required: [true, 'Vorname ist erforderlich'],

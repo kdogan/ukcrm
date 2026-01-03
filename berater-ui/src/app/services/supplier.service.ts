@@ -16,6 +16,8 @@ export interface Supplier {
   contactEmail?: string;
   contactPhone?: string;
   logoUrl?: string;
+  website?: string;
+  notes?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

@@ -8,6 +8,7 @@ import { CacheService } from './cache.service';
 export interface Customer {
   _id: string;
   customerNumber: string;
+  anrede?: 'Herr' | 'Frau';
   firstName: string;
   lastName: string;
   fullName?: string;

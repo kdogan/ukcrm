@@ -80,15 +80,18 @@ import { OverlayModalComponent } from "../shared/overlay-modal.component";
                     ⋮
                   </button>
                   <div class="action-menu" *ngIf="activeMenuId === supplier._id" (click)="$event.stopPropagation()">
+                    <button class="menu-item" (click)="showSupplierDetails(supplier); closeActionMenu()">
+                      <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
+                    </button>
                     <button class="menu-item" (click)="editSupplier(supplier); closeActionMenu()">
-                      ✏️ Bearbeiten
+                      <i class="fas fa-edit fa-lg"></i> Bearbeiten
                     </button>
                     <button
                       class="menu-item menu-item-danger"
                       *ngIf="supplier.isActive"
                       (click)="deleteSupplier(supplier._id); closeActionMenu()"
                     >
-                      🗑️ Löschen
+                      <i class="fas fa-trash fa-lg"></i> Löschen
                     </button>
                   </div>
                 </div>
@@ -147,12 +150,97 @@ import { OverlayModalComponent } from "../shared/overlay-modal.component";
               <input type="email" [(ngModel)]="currentSupplier.contactEmail" name="contactEmail" />
             </div>
           </div>
+          <div class="form-group">
+            <label>Website</label>
+            <input type="url" [(ngModel)]="currentSupplier.website" name="website" placeholder="https://..." />
+          </div>
+
+          <div class="form-group">
+            <label>Notizen</label>
+            <textarea [(ngModel)]="currentSupplier.notes" name="notes" rows="3"></textarea>
+          </div>
 
           <div class="modal-actions">
             <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
             <button type="submit" class="btn-primary">Speichern</button>
           </div>
         </form>
+    </app-overlay-modal>
+  }
+
+  <!-- Details Modal -->
+  @if(showDetailsModal){
+    <app-overlay-modal (close)="closeDetailsModal()">
+      <div class="modal-header">
+        <h2>{{ selectedSupplier?.name }}</h2>
+        <button class="btn-close" (click)="closeDetailsModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="info-row">
+          <span class="label">Name</span>
+          <span class="value">{{ selectedSupplier?.name }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Kurzbezeichnung</span>
+          <span class="value">{{ selectedSupplier?.shortName }}</span>
+        </div>
+
+        <div class="info-row" *ngIf="selectedSupplier?.website">
+          <span class="label">Website</span>
+          <span class="value">
+            <a [href]="selectedSupplier?.website" target="_blank" rel="noopener noreferrer">
+              {{ selectedSupplier?.website }}
+            </a>
+          </span>
+        </div>
+
+        <div class="info-row" *ngIf="selectedSupplier?.contactPhone">
+          <span class="label">Telefon</span>
+          <span class="value">{{ selectedSupplier?.contactPhone }}</span>
+        </div>
+
+        <div class="info-row" *ngIf="selectedSupplier?.contactEmail">
+          <span class="label">E-Mail</span>
+          <span class="value">
+            <a [href]="'mailto:' + selectedSupplier?.contactEmail">
+              {{ selectedSupplier?.contactEmail }}
+            </a>
+          </span>
+        </div>
+
+        <div class="info-row address" *ngIf="selectedSupplier?.address?.street || selectedSupplier?.address?.city">
+          <span class="label">Adresse</span>
+          <span class="value">
+            <span *ngIf="selectedSupplier?.address?.street">{{ selectedSupplier?.address?.street }}<br /></span>
+            <span *ngIf="selectedSupplier?.address?.zipCode || selectedSupplier?.address?.city">
+              {{ selectedSupplier?.address?.zipCode }} {{ selectedSupplier?.address?.city }}
+            </span>
+            <span *ngIf="selectedSupplier?.address?.country"><br />{{ selectedSupplier?.address?.country }}</span>
+          </span>
+        </div>
+
+        <div class="info-row" *ngIf="selectedSupplier?.notes">
+          <span class="label">Notizen</span>
+          <span class="value">{{ selectedSupplier?.notes }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Status</span>
+          <span class="value">
+            <span class="badge" [class.badge-active]="selectedSupplier?.isActive">
+              {{ selectedSupplier?.isActive ? 'Aktiv' : 'Inaktiv' }}
+            </span>
+          </span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeDetailsModal()">Schließen</button>
+      </div>
     </app-overlay-modal>
   }
   `,
@@ -326,14 +414,79 @@ import { OverlayModalComponent } from "../shared/overlay-modal.component";
     .menu-item-danger:hover {
       background: #ffebee;
     }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #333;
+    }
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      padding: 0.5rem;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .btn-close:hover {
+      color: #333;
+    }
+    .modal-body {
+      margin-bottom: 1.5rem;
+    }
+    .info-row {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    .info-row .label {
+      font-weight: 600;
+      color: #555;
+    }
+    .info-row .value {
+      color: #333;
+    }
+    .info-row.address .value {
+      line-height: 1.6;
+    }
+    .info-row a {
+      color: #667eea;
+      text-decoration: none;
+    }
+    .info-row a:hover {
+      text-decoration: underline;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid #e0e0e0;
+    }
   `]
 })
 export class SuppliersComponent implements OnInit {
   suppliers: Supplier[] = [];
   filterActive?: boolean = undefined;
   showModal = false;
+  showDetailsModal = false;
   editMode = false;
   currentSupplier: Partial<Supplier> = { address: {} };
+  selectedSupplier: Supplier | null = null;
   activeMenuId: string | null = null;
 
   constructor(
@@ -382,6 +535,16 @@ export class SuppliersComponent implements OnInit {
   closeModal(): void {
     this.showModal = false;
     this.currentSupplier = { address: {} };
+  }
+
+  showSupplierDetails(supplier: Supplier): void {
+    this.selectedSupplier = supplier;
+    this.showDetailsModal = true;
+  }
+
+  closeDetailsModal(): void {
+    this.showDetailsModal = false;
+    this.selectedSupplier = null;
   }
 
   saveSupplier(): void {
