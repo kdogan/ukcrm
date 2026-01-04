@@ -76,22 +76,22 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    // Basic-Paket aus der Datenbank holen
-    const basicPackage = await Package.findOne({ name: 'basic' });
+    // Kostenloses Paket aus der Datenbank holen
+    const freePackage = await Package.findOne({ name: 'free' });
 
-    // Package-Limits setzen
+    // Package-Limits setzen (Standard für kostenloses Paket)
     let packageLimits = {
-      maxCustomers: 50,
-      maxContracts: 100,
-      maxMeters: 50
+      maxCustomers: 10,
+      maxContracts: 10,
+      maxMeters: 10
     };
 
-    // Wenn Basic-Paket in DB existiert, dessen Limits verwenden
-    if (basicPackage) {
+    // Wenn Free-Paket in DB existiert, dessen Limits verwenden
+    if (freePackage) {
       packageLimits = {
-        maxCustomers: basicPackage.maxCustomers,
-        maxContracts: basicPackage.maxContracts,
-        maxMeters: basicPackage.maxMeters
+        maxCustomers: freePackage.maxCustomers,
+        maxContracts: freePackage.maxContracts,
+        maxMeters: freePackage.maxMeters
       };
     }
 
@@ -122,7 +122,7 @@ exports.register = async (req, res, next) => {
       lastName,
       phone: phone || '',
       role: 'berater',
-      package: 'basic',
+      package: 'free',
       packageLimits,
       masterBerater: masterBeraterId,
       isActive: false, // Nicht aktiv bis Email verifiziert
