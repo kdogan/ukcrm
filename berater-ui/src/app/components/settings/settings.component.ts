@@ -50,7 +50,7 @@ import { UserService } from '../../services/user.service';
           </p>
 
           <div class="setting-group">
-            <label class="checkbox-label">
+            <!-- <label class="checkbox-label">
               <input
                 type="checkbox"
                 [(ngModel)]="settings.reminderDays.days90"
@@ -75,19 +75,23 @@ import { UserService } from '../../services/user.service';
                 (change)="saveSettings()"
               />
               <span>30 Tage vor Ablauf</span>
-            </label>
+            </label> -->
 
             <div class="custom-days">
-              <label>Benutzerdefiniert (Tage vor Ablauf):</label>
-              <input
-                type="number"
-                [(ngModel)]="settings.reminderDays.custom"
-                (change)="saveSettings()"
-                min="1"
-                max="365"
-                placeholder="z.B. 45"
-                class="input-small"
-              />
+              <label>Benutzerdefiniert: {{ settings.reminderDays.custom || 1 }} Tage vor Ablauf</label>
+              <div class="slider-container">
+                <span class="slider-label">1</span>
+                <input
+                  type="range"
+                  [(ngModel)]="settings.reminderDays.custom"
+                  (change)="saveSettings()"
+                  min="1"
+                  max="90"
+                  step="1"
+                  class="slider"
+                />
+                <span class="slider-label">90</span>
+              </div>
             </div>
           </div>
         </div>
@@ -606,9 +610,9 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
 
     .custom-days {
       display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.75rem;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1rem;
       background: #f8f9fa;
       border-radius: 8px;
       margin-top: 0.5rem;
@@ -616,7 +620,70 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
 
     .custom-days label {
       font-size: 0.95rem;
-      color: #555;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .slider-label {
+      min-width: 30px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .slider {
+      flex: 1;
+      height: 8px;
+      border-radius: 5px;
+      background: linear-gradient(to right, #e0e0e0, #34d399);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #34d399;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 3px 8px rgba(52, 211, 153, 0.4);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #34d399;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s;
+    }
+
+    .slider::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 3px 8px rgba(52, 211, 153, 0.4);
+    }
+
+    .slider::-moz-range-track {
+      background: linear-gradient(to right, #e0e0e0, #34d399);
+      border-radius: 5px;
     }
 
     .input-group {
