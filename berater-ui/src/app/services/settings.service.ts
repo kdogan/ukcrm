@@ -9,6 +9,7 @@ export interface UserSettings {
     days60: boolean;
     days30: boolean;
     custom?: number;
+    sendEmail?: boolean;
   };
   sidebarLabels: {
     dashboard: string;
@@ -35,7 +36,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     days90: true,
     days60: true,
     days30: true,
-    custom: undefined
+    custom: undefined,
+    sendEmail: false
   },
   sidebarLabels: {
     dashboard: 'Dashboard',

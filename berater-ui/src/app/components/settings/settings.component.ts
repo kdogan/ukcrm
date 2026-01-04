@@ -93,6 +93,15 @@ import { UserService } from '../../services/user.service';
                 <span class="slider-label">90</span>
               </div>
             </div>
+
+            <label class="checkbox-label email-reminder-checkbox">
+              <input
+                type="checkbox"
+                [(ngModel)]="settings.reminderDays.sendEmail"
+                (change)="saveSettings()"
+              />
+              <span>📧 Zusätzlich per E-Mail benachrichtigen</span>
+            </label>
           </div>
         </div>
 
@@ -684,6 +693,26 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
     .slider::-moz-range-track {
       background: linear-gradient(to right, #e0e0e0, #34d399);
       border-radius: 5px;
+    }
+
+    .email-reminder-checkbox {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: #f0f9ff;
+      border: 2px solid #bfdbfe;
+      border-radius: 8px;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #e0f2fe;
+        border-color: #3b82f6;
+      }
+
+      span {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #1e40af;
+      }
     }
 
     .input-group {

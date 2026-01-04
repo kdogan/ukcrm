@@ -1,7 +1,9 @@
 const cron = require('node-cron');
 const Todo = require('../models/Todo');
 const Contract = require('../models/Contract');
+const User = require('../models/User');
 const { cleanupOldAttachments } = require('./attachmentCleanup');
+const { sendContractExpirationReminder } = require('../services/emailService');
 
 /**
  * Generiert automatisch TODOs für ablaufende Verträge
@@ -26,8 +28,21 @@ const generateExpiringContractTodos = async () => {
     }).populate('customerId', 'firstName lastName');
 
     let createdCount = 0;
+    let emailsSent = 0;
 
     for (const contract of expiringContracts) {
+      // Hole Berater-Daten mit Einstellungen
+      const berater = await User.findById(contract.beraterId);
+      if (!berater) continue;
+
+      const daysUntilExpiry = Math.ceil((contract.endDate - today) / (1000 * 60 * 60 * 24));
+
+      // Prüfe ob der Berater für diesen Tag eine Erinnerung wünscht
+      const reminderDays = berater.settings?.reminderDays?.custom || 30;
+      const shouldRemind = daysUntilExpiry === reminderDays;
+
+      if (!shouldRemind) continue;
+
       // Prüfe ob bereits ein TODO für diesen Vertrag existiert
       const existingTodo = await Todo.findOne({
         beraterId: contract.beraterId,
@@ -37,8 +52,7 @@ const generateExpiringContractTodos = async () => {
       });
 
       if (!existingTodo && contract.customerId) {
-        const daysUntilExpiry = Math.ceil((contract.endDate - today) / (1000 * 60 * 60 * 24));
-
+        // TODO erstellen
         await Todo.create({
           beraterId: contract.beraterId,
           title: `Vertrag ${contract.contractNumber} läuft ab`,
@@ -53,10 +67,21 @@ const generateExpiringContractTodos = async () => {
         });
 
         createdCount++;
+
+        // E-Mail senden wenn aktiviert
+        if (berater.settings?.reminderDays?.sendEmail) {
+          try {
+            await sendContractExpirationReminder(berater, contract, daysUntilExpiry);
+            emailsSent++;
+          } catch (emailError) {
+            console.error(`Fehler beim Senden der E-Mail für Vertrag ${contract.contractNumber}:`, emailError.message);
+          }
+        }
       }
     }
 
     console.log(`${createdCount} TODO(s) für ablaufende Verträge erstellt`);
+    console.log(`${emailsSent} Erinnerungs-E-Mail(s) versendet`);
   } catch (error) {
     console.error('Fehler bei automatischer TODO-Generierung:', error);
   }

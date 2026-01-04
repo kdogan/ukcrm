@@ -58,6 +58,15 @@
                 <span class="slider-label">90</span>
               </div>
             </div>
+
+      <label class="checkbox-item email-reminder">
+        <input
+          type="checkbox"
+          [(ngModel)]="settings.reminderDays.sendEmail"
+          (change)="onSaveSettings()"
+        />
+        <span>📧 Zusätzlich per E-Mail benachrichtigen</span>
+      </label>
     </div>
 
     <!-- Sidebar-Bezeichnungen -->
