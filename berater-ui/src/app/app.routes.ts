@@ -136,6 +136,10 @@ export const routes: Routes = [
       {
         path: 'education',
         loadComponent: () => import('./components/education/education.component').then(m => m.EducationComponent)
+      },
+      {
+        path: 'import',
+        loadComponent: () => import('./components/import/import.component').then(m => m.ImportComponent)
       }
       // Messages temporarily disabled for performance
       // {

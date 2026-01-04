@@ -1,0 +1,140 @@
+<div class="import-container">
+  <h1>📊 Daten-Import</h1>
+  <p class="description">Importieren Sie Kunden und Zähler aus Excel-Dateien</p>
+
+  <!-- Kunden Import -->
+  <div class="import-section">
+    <div class="section-header">
+      <h2>👥 Kunden importieren</h2>
+      <p class="section-description">
+        Excel-Datei mit folgenden Spalten: <strong>Anrede, Accountname, Mobiltelefon, E-Mail</strong>
+      </p>
+    </div>
+
+    <div class="upload-area">
+      <input
+        type="file"
+        id="customerFileInput"
+        accept=".xlsx,.xls"
+        (change)="onCustomerFileSelected($event)"
+        style="display: none"
+      />
+
+      <label for="customerFileInput" class="upload-label">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <span *ngIf="!selectedCustomerFile">Datei auswählen (.xlsx, .xls)</span>
+        <span *ngIf="selectedCustomerFile">{{ selectedCustomerFile.name }}</span>
+      </label>
+
+      <button
+        class="btn-import"
+        [disabled]="!selectedCustomerFile || isImportingCustomers"
+        (click)="importCustomers()"
+      >
+        <i class="fas" [class.fa-spinner]="isImportingCustomers" [class.fa-spin]="isImportingCustomers" [class.fa-upload]="!isImportingCustomers"></i>
+        {{ isImportingCustomers ? 'Importiere...' : 'Kunden importieren' }}
+      </button>
+    </div>
+
+    <!-- Import Result -->
+    <div *ngIf="customerImportResult" class="import-result">
+      <div class="result-summary">
+        <div class="result-success">
+          <i class="fas fa-check-circle"></i>
+          <span>{{ customerImportResult.success }} erfolgreich importiert</span>
+        </div>
+        <div class="result-failed" *ngIf="customerImportResult.failed > 0">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>{{ customerImportResult.failed }} fehlgeschlagen</span>
+        </div>
+      </div>
+
+      <!-- Errors -->
+      <div *ngIf="customerImportResult.errors.length > 0" class="errors-section">
+        <h3>Fehler-Details:</h3>
+        <div class="error-list">
+          <div *ngFor="let error of customerImportResult.errors" class="error-item">
+            <strong>Zeile {{ error.row }}:</strong> {{ error.error }}
+            <div class="error-data">{{ error.data | json }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zähler Import -->
+  <div class="import-section">
+    <div class="section-header">
+      <h2>⚡ Zähler importieren</h2>
+      <p class="section-description">
+        Excel-Datei mit folgenden Spalten: <strong>Zählernummer, Zählerart, Anschrift (Straße), Anschrift (Postleitzahl), Anschrift (Stadt)</strong>
+      </p>
+    </div>
+
+    <div class="upload-area">
+      <input
+        type="file"
+        id="meterFileInput"
+        accept=".xlsx,.xls"
+        (change)="onMeterFileSelected($event)"
+        style="display: none"
+      />
+
+      <label for="meterFileInput" class="upload-label">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <span *ngIf="!selectedMeterFile">Datei auswählen (.xlsx, .xls)</span>
+        <span *ngIf="selectedMeterFile">{{ selectedMeterFile.name }}</span>
+      </label>
+
+      <button
+        class="btn-import"
+        [disabled]="!selectedMeterFile || isImportingMeters"
+        (click)="importMeters()"
+      >
+        <i class="fas" [class.fa-spinner]="isImportingMeters" [class.fa-spin]="isImportingMeters" [class.fa-upload]="!isImportingMeters"></i>
+        {{ isImportingMeters ? 'Importiere...' : 'Zähler importieren' }}
+      </button>
+    </div>
+
+    <!-- Import Result -->
+    <div *ngIf="meterImportResult" class="import-result">
+      <div class="result-summary">
+        <div class="result-success">
+          <i class="fas fa-check-circle"></i>
+          <span>{{ meterImportResult.success }} erfolgreich importiert</span>
+        </div>
+        <div class="result-failed" *ngIf="meterImportResult.failed > 0">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>{{ meterImportResult.failed }} fehlgeschlagen</span>
+        </div>
+      </div>
+
+      <!-- Errors -->
+      <div *ngIf="meterImportResult.errors.length > 0" class="errors-section">
+        <h3>Fehler-Details:</h3>
+        <div class="error-list">
+          <div *ngFor="let error of meterImportResult.errors.slice(0, 10)" class="error-item">
+            <strong>Zeile {{ error.row }}:</strong> {{ error.error }}
+            <div class="error-data">{{ error.data | json }}</div>
+          </div>
+          <div *ngIf="meterImportResult.errors.length > 10" class="more-errors">
+            ... und {{ meterImportResult.errors.length - 10 }} weitere Fehler
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Box -->
+  <div class="info-box">
+    <h3>💡 Hinweise</h3>
+    <ul>
+      <li>Nur Excel-Dateien (.xlsx, .xls) werden unterstützt</li>
+      <li>Die erste Zeile muss die Spaltenüberschriften enthalten</li>
+      <li>Doppelte Einträge (basierend auf E-Mail oder Namen bei Kunden, Zählernummer bei Zählern) werden übersprungen</li>
+      <li>Maximale Dateigröße: 10 MB</li>
+      <li><strong>Kunden-Format:</strong> Accountname sollte im Format "Nachname, Vorname" sein</li>
+      <li><strong>Zähler-Arten:</strong> Strom, Gas, Wasser, Wärmepumpe, Nachtspeicher</li>
+    </ul>
+  </div>
+</div>
