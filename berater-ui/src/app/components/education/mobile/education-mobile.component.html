@@ -39,6 +39,10 @@
       (change)="typeChange.emit($any($event.target).value); filterChange.emit()">
       <option *ngFor="let type of typeOptions" [value]="type.value">{{ type.label }}</option>
     </select>
+    <select class="filter-select" [value]="selectedLanguage"
+      (change)="languageChange.emit($any($event.target).value); filterChange.emit()">
+      <option *ngFor="let lang of languageOptions" [value]="lang.value">{{ lang.label }}</option>
+    </select>
     <button class="btn-reset" (click)="resetFilters.emit()">Zurücksetzen</button>
   </div>
 

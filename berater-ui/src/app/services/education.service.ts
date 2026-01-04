@@ -12,6 +12,7 @@ export interface EducationMaterial {
   videoId?: string;
   thumbnail?: string;
   category: 'onboarding' | 'training' | 'product-info' | 'sales' | 'support' | 'other';
+  language: 'de' | 'tr';
   createdBy: {
     _id: string;
     firstName: string;

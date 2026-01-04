@@ -76,6 +76,16 @@
         }
       </select>
 
+      <select
+        class="form-select"
+        [value]="selectedLanguage"
+        (change)="languageChange.emit($any($event.target).value); filterChange.emit()"
+      >
+        @for (lang of languageOptions; track lang.value) {
+          <option [value]="lang.value">{{ lang.label }}</option>
+        }
+      </select>
+
       <button class="btn btn-outline btn-sm" (click)="resetFilters.emit()">
         <i class="fas fa-redo"></i> Zurücksetzen
       </button>

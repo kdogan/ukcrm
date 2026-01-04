@@ -7,8 +7,10 @@
     [searchTerm]="searchTerm"
     [selectedCategory]="selectedCategory"
     [selectedType]="selectedType"
+    [selectedLanguage]="selectedLanguage"
     [categoryOptions]="categoryOptions"
     [typeOptions]="typeOptions"
+    [languageOptions]="languageOptions"
     (createMaterial)="openCreateModal()"
     (editMaterial)="openEditModal($event)"
     (deleteMaterial)="confirmDelete($event)"
@@ -16,6 +18,7 @@
     (searchChange)="onSearchChange($event)"
     (categoryChange)="onCategoryChange($event)"
     (typeChange)="onTypeChange($event)"
+    (languageChange)="onLanguageChange($event)"
     (filterChange)="filterMaterials()"
     (resetFilters)="resetFilters()"
   ></app-education-mobile>
@@ -28,8 +31,10 @@
     [searchTerm]="searchTerm"
     [selectedCategory]="selectedCategory"
     [selectedType]="selectedType"
+    [selectedLanguage]="selectedLanguage"
     [categoryOptions]="categoryOptions"
     [typeOptions]="typeOptions"
+    [languageOptions]="languageOptions"
     (createMaterial)="openCreateModal()"
     (editMaterial)="openEditModal($event)"
     (deleteMaterial)="confirmDelete($event)"
@@ -37,6 +42,7 @@
     (searchChange)="onSearchChange($event)"
     (categoryChange)="onCategoryChange($event)"
     (typeChange)="onTypeChange($event)"
+    (languageChange)="onLanguageChange($event)"
     (filterChange)="filterMaterials()"
     (resetFilters)="resetFilters()"
   ></app-education-desktop>
@@ -92,6 +98,20 @@
           <option value="sales">Vertrieb</option>
           <option value="support">Support</option>
           <option value="other">Sonstiges</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="language">Sprache *</label>
+        <select
+          id="language"
+          class="form-control"
+          [(ngModel)]="currentMaterial.language"
+          name="language"
+          required
+        >
+          <option value="de">Deutsch</option>
+          <option value="tr">Türkisch</option>
         </select>
       </div>
 

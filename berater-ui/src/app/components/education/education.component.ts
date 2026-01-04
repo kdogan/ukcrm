@@ -35,6 +35,7 @@ export class EducationComponent implements OnInit, OnDestroy {
   searchTerm = '';
   selectedCategory = '';
   selectedType = '';
+  selectedLanguage = '';
 
   // Modal
   showModal = false;
@@ -66,6 +67,12 @@ export class EducationComponent implements OnInit, OnDestroy {
     { value: 'document', label: 'Dokument' },
     { value: 'link', label: 'Link' },
     { value: 'image', label: 'Bild' }
+  ];
+
+  languageOptions = [
+    { value: '', label: 'Alle Sprachen' },
+    { value: 'de', label: 'Deutsch' },
+    { value: 'tr', label: 'Türkisch' }
   ];
 
   constructor(
@@ -173,8 +180,9 @@ export class EducationComponent implements OnInit, OnDestroy {
 
       const matchesCategory = !this.selectedCategory || material.category === this.selectedCategory;
       const matchesType = !this.selectedType || material.type === this.selectedType;
+      const matchesLanguage = !this.selectedLanguage || material.language === this.selectedLanguage;
 
-      return matchesSearch && matchesCategory && matchesType;
+      return matchesSearch && matchesCategory && matchesType && matchesLanguage;
     });
   }
 
@@ -193,10 +201,16 @@ export class EducationComponent implements OnInit, OnDestroy {
     this.filterMaterials();
   }
 
+  onLanguageChange(language: string): void {
+    this.selectedLanguage = language;
+    this.filterMaterials();
+  }
+
   resetFilters(): void {
     this.searchTerm = '';
     this.selectedCategory = '';
     this.selectedType = '';
+    this.selectedLanguage = '';
     this.filterMaterials();
   }
 
@@ -348,6 +362,7 @@ export class EducationComponent implements OnInit, OnDestroy {
       type: 'video',
       url: '',
       category: 'other',
+      language: 'de',
       sharedWith: []
     };
   }

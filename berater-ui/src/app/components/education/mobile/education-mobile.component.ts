@@ -18,8 +18,10 @@ export class EducationMobileComponent {
   @Input({ required: true }) searchTerm!: string;
   @Input({ required: true }) selectedCategory!: string;
   @Input({ required: true }) selectedType!: string;
+  @Input({ required: true }) selectedLanguage!: string;
   @Input({ required: true }) categoryOptions!: any[];
   @Input({ required: true }) typeOptions!: any[];
+  @Input({ required: true }) languageOptions!: any[];
 
   @Output() createMaterial = new EventEmitter<void>();
   @Output() editMaterial = new EventEmitter<EducationMaterial>();
@@ -28,6 +30,7 @@ export class EducationMobileComponent {
   @Output() searchChange = new EventEmitter<string>();
   @Output() categoryChange = new EventEmitter<string>();
   @Output() typeChange = new EventEmitter<string>();
+  @Output() languageChange = new EventEmitter<string>();
   @Output() filterChange = new EventEmitter<void>();
   @Output() resetFilters = new EventEmitter<void>();
 

@@ -46,6 +46,12 @@ const educationMaterialSchema = new mongoose.Schema({
     enum: ['onboarding', 'training', 'product-info', 'sales', 'support', 'other'],
     default: 'other'
   },
+  // Sprache
+  language: {
+    type: String,
+    enum: ['de', 'tr'],
+    default: 'de'
+  },
   tags: [{
     type: String,
     trim: true
