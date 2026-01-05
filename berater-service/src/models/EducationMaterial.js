@@ -17,8 +17,11 @@ const educationMaterialSchema = new mongoose.Schema({
   },
   url: {
     type: String,
-    required: [true, 'URL ist erforderlich'],
-    trim: true
+    trim: true,
+    required: [
+      function() { return this.type !== 'pdf'; },
+      'URL ist erforderlich (außer bei PDF)'
+    ]
   },
   // Für YouTube Videos
   videoId: {
@@ -28,6 +31,18 @@ const educationMaterialSchema = new mongoose.Schema({
   thumbnail: {
     type: String,
     trim: true
+  },
+  // Für PDF Dateien (in DB gespeichert)
+  pdfData: {
+    type: Buffer
+  },
+  pdfName: {
+    type: String,
+    trim: true
+  },
+  pdfMimeType: {
+    type: String,
+    default: 'application/pdf'
   },
   // Master Berater, der das Material erstellt hat
   createdBy: {

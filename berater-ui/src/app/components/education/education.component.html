@@ -21,7 +21,7 @@
     (languageChange)="onLanguageChange($event)"
     (filterChange)="filterMaterials()"
     (resetFilters)="resetFilters()"
-  ></app-education-mobile>
+  />
 } @else {
   <app-education-desktop
     [materials]="filteredMaterials"
@@ -45,7 +45,7 @@
     (languageChange)="onLanguageChange($event)"
     (filterChange)="filterMaterials()"
     (resetFilters)="resetFilters()"
-  ></app-education-desktop>
+  />
 }
 
 <!-- Create/Edit Modal -->
@@ -83,6 +83,26 @@
         </select>
       </div>
 
+      <!-- PDF Upload -->
+      @if (currentMaterial.type === 'pdf') {
+        <div class="form-group">
+          <label for="pdfFile">PDF hochladen *</label>
+          <input
+            type="file"
+            id="pdfFile"
+            class="form-control"
+            (change)="onPdfSelected($event)"
+            accept="application/pdf"
+            [required]="!isEditMode || !currentMaterial.pdfName"
+          />
+          <small class="form-text">Maximale Dateigröße: 12 MB</small>
+          @if (currentMaterial.pdfName) {
+            <small class="form-text text-success">Aktuelle Datei: {{ currentMaterial.pdfName }}</small>
+          }
+        </div>
+      }
+
+
       <div class="form-group">
         <label for="category">Kategorie *</label>
         <select
@@ -115,21 +135,23 @@
         </select>
       </div>
 
-      <div class="form-group">
-        <label for="url">URL *</label>
-        <input
-          type="url"
-          id="url"
-          class="form-control"
-          [(ngModel)]="currentMaterial.url"
-          name="url"
-          placeholder="https://..."
-          required
-        />
-        @if (currentMaterial.type === 'video') {
-          <small class="form-text">YouTube-URL (z.B. https://www.youtube.com/watch?v=...)</small>
-        }
-      </div>
+      @if (currentMaterial.type !== 'pdf') {
+        <div class="form-group">
+          <label for="url">URL *</label>
+          <input
+            type="url"
+            id="url"
+            class="form-control"
+            [(ngModel)]="currentMaterial.url"
+            name="url"
+            placeholder="https://..."
+            required
+          />
+          @if (currentMaterial.type === 'video') {
+            <small class="form-text">YouTube-URL (z.B. https://www.youtube.com/watch?v=...)</small>
+          }
+        </div>
+      }
 
       <div class="form-group">
         <label for="description">Beschreibung</label>
@@ -209,3 +231,15 @@
   </div>
 </div>
 }
+
+@if (showPdfViewer && currentPdfDataUrl) {
+  <app-overlay-modal (close)="closePdfViewer()">
+    <div class="pdf-fullscreen-overlay" (click)="closePdfViewer()">
+      <div class="pdf-fullscreen-container" (click)="$event.stopPropagation()">
+        <button class="pdf-close-btn" (click)="closePdfViewer()" title="Schließen">✕</button>
+        <iframe [src]="currentPdfDataUrl" frameborder="0" width="100%" height="100%" type="application/pdf"></iframe>
+      </div>
+    </div>
+  </app-overlay-modal>
+}
+

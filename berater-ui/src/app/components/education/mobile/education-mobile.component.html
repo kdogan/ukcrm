@@ -51,7 +51,10 @@
       <div class="card-thumbnail">
         <img *ngIf="material.type === 'video' && material.videoId"
           [src]="getYouTubeThumbnail(material.videoId)" [alt]="material.title" />
-        <div *ngIf="material.type !== 'video'" class="thumbnail-icon">
+        <div *ngIf="material.type === 'pdf'" class="thumbnail-icon thumbnail-pdf">
+          <i class="fas fa-file-pdf"></i>
+        </div>
+        <div *ngIf="material.type !== 'video' && material.type !== 'pdf'" class="thumbnail-icon">
           <i [class]="getTypeIcon(material.type)"></i>
         </div>
       </div>

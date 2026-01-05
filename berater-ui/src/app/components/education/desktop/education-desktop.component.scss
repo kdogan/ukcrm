@@ -130,6 +130,26 @@
     height: 100%;
     font-size: 4rem;
     color: white;
+
+    &.thumbnail-pdf {
+      flex-direction: column;
+      background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+
+      i {
+        font-size: 3.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .pdf-name {
+        font-size: 0.75rem;
+        max-width: 90%;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        opacity: 0.9;
+      }
+    }
   }
 
   .play-overlay {

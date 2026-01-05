@@ -24,33 +24,33 @@
             <li>
                 <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-dashboard fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.dashboard }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.dashboard ||'Startseite' }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
             <li>
                 <a routerLink="/contracts" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-file-contract fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.contracts }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.contracts || 'Verträge' }}</span>
                 </a>
             </li>
             <li>
                 <a routerLink="/customers" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-users fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.customers }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.customers || 'Kunden'  }}</span>
                 </a>
             </li>
             <li>
                 <a routerLink="/meters" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-bolt fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.meters }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.meters || 'Zähler'  }}</span>
                 </a>
             </li>
             }
             <li>
                 <a routerLink="/todos" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-tasks fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.todos }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.todos || 'Aufgaben'  }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
@@ -67,12 +67,12 @@
                 </a>
             </li>
             
-            <li>
+            <!-- <li>
                 <a routerLink="/import" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-file-import fa-lg"></i>
                     <span class="nav-text">Daten-Import</span>
                 </a>
-            </li>
+            </li> -->
             }
             <li>
                 <a routerLink="/support" routerLinkActive="active" (click)="closeMenusAndSidebar()">

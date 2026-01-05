@@ -46,6 +46,12 @@ export class EducationComponent implements OnInit, OnDestroy {
   materialToDelete: EducationMaterial | null = null;
   currentVideoId: string | null = null;
 
+  showPdfViewer = false;
+  currentPdfDataUrl: SafeResourceUrl | null = null;
+  currentPdfName: string | null = null;
+  
+
+
   // Berater Selection
   selectedBeraterIds: string[] = [];
 
@@ -319,6 +325,20 @@ export class EducationComponent implements OnInit, OnDestroy {
       // Zeige YouTube-Video im eingebetteten Player
       this.currentVideoId = material.videoId;
       this.showVideoPlayer = true;
+    } else if (material.type === 'pdf' && material._id) {
+      // PDF im Fullscreen-Overlay anzeigen
+      this.educationService.getPdf(material._id).subscribe({
+        next: (blob) => {
+          const objectUrl = URL.createObjectURL(blob);
+          this.currentPdfDataUrl = this.sanitizer.bypassSecurityTrustResourceUrl(objectUrl);
+          this.currentPdfName = material.title || 'document.pdf';
+          this.showPdfViewer = true;
+        },
+        error: (err) => {
+          console.error('PDF konnte nicht geladen werden', err);
+          alert('PDF konnte nicht geladen werden');
+        }
+      });
     } else if (material.type === 'link') {
       window.open(material.url, '_blank');
     } else if (material.url) {
@@ -330,6 +350,7 @@ export class EducationComponent implements OnInit, OnDestroy {
     this.showVideoPlayer = false;
     this.currentVideoId = null;
   }
+
 
   getYouTubeEmbedUrl(): SafeResourceUrl | null {
     if (!this.currentVideoId) return null;
@@ -375,4 +396,28 @@ export class EducationComponent implements OnInit, OnDestroy {
     if (!videoId) return '';
     return this.educationService.getYouTubeThumbnail(videoId);
   }
+
+onPdfSelected(event: any): void {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 12 * 1024 * 1024) { // 12 MB Limit
+    alert('Die PDF-Datei darf maximal 12 MB groß sein.');
+    event.target.value = ''; // Input zurücksetzen
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    this.currentMaterial.pdfBase64 = reader.result?.toString() || '';
+    this.currentMaterial.pdfName = file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+closePdfViewer(): void {
+  this.showPdfViewer = false;
+  this.currentPdfDataUrl = null;
+  this.currentPdfName = null;
+}
 }

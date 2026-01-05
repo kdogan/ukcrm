@@ -9,7 +9,7 @@ export interface EducationMaterial {
   description?: string;
   type: 'video' | 'pdf' | 'document' | 'link' | 'image';
   url: string;
-  videoId?: string;
+  videoId?: string|null;
   thumbnail?: string;
   category: 'onboarding' | 'training' | 'product-info' | 'sales' | 'support' | 'other';
   language: 'de' | 'tr';
@@ -34,6 +34,9 @@ export interface EducationMaterial {
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  pdfFile?:File;
+  pdfName?:string;
+  pdfBase64?:string
 }
 
 export interface EducationStats {
@@ -119,5 +122,23 @@ export class EducationService {
       other: 'Sonstiges'
     };
     return labels[category] || category;
+  }
+
+    // -------------------------------
+  // PDF / FormData Erstellung
+  // -------------------------------
+  createMaterialFormData(formData: FormData): Observable<any> {
+    return this.http.post<any>(this.apiUrl, formData);
+  }
+
+  updateMaterialFormData(id: string, formData: FormData): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
+  }
+
+    /**
+   * Holt das PDF eines Materials als Blob
+   */
+  getPdf(materialId: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/pdf/${materialId}`, { responseType: 'blob' });
   }
 }

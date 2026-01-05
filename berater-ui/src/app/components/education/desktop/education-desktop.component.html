@@ -119,6 +119,13 @@
               <div class="play-overlay">
                 <i class="fas fa-play-circle"></i>
               </div>
+            } @else if (material.type === 'pdf') {
+              <div class="thumbnail-icon thumbnail-pdf">
+                <i class="fas fa-file-pdf"></i>
+                @if (material.pdfName) {
+                  <span class="pdf-name">{{ material.pdfName }}</span>
+                }
+              </div>
             } @else {
               <div class="thumbnail-icon">
                 <i [class]="getTypeIcon(material.type)"></i>

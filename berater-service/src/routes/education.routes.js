@@ -18,6 +18,7 @@ router.get('/', authenticate, async (req, res) => {
         createdBy: userId,
         isActive: true
       })
+        .select('-pdfData') // PDF-Daten nicht laden (zu groß)
         .populate('createdBy', 'firstName lastName email')
         .populate('sharedWith', 'firstName lastName email')
         .sort({ order: 1, createdAt: -1 });
@@ -32,6 +33,7 @@ router.get('/', authenticate, async (req, res) => {
           createdBy: user.masterBerater,
           isActive: true
         })
+          .select('-pdfData') // PDF-Daten nicht laden (zu groß)
           .populate('createdBy', 'firstName lastName email')
           .sort({ order: 1, createdAt: -1 });
       }
@@ -142,6 +144,63 @@ router.get('/berater/list', authenticate, async (req, res) => {
   }
 });
 
+// GET /api/education/pdf/:id - PDF-Datei abrufen
+router.get('/pdf/:id', authenticate, async (req, res) => {
+  try {
+    const material = await EducationMaterial.findById(req.params.id);
+
+    if (!material) {
+      return res.status(404).json({
+        success: false,
+        message: 'Material nicht gefunden'
+      });
+    }
+
+    if (material.type !== 'pdf' || !material.pdfData) {
+      return res.status(404).json({
+        success: false,
+        message: 'Keine PDF-Datei vorhanden'
+      });
+    }
+
+    // Zugriffsprüfung
+    const userId = req.user._id.toString();
+    const user = await User.findById(userId);
+    const isCreator = material.createdBy.toString() === userId;
+
+    // Slave-Berater haben nur Zugriff auf Materialien ihres Masters
+    const isSlaveBeraterWithAccess = user.masterBerater &&
+                                      material.createdBy.toString() === user.masterBerater.toString();
+
+    if (!isCreator && !isSlaveBeraterWithAccess) {
+      return res.status(403).json({
+        success: false,
+        message: 'Kein Zugriff auf dieses PDF'
+      });
+    }
+
+    // View registrieren
+    if (!isCreator) {
+      await material.registerView(userId);
+    }
+
+    res.set({
+      'Content-Type': material.pdfMimeType || 'application/pdf',
+      'Content-Disposition': `inline; filename="${material.pdfName || 'document.pdf'}"`,
+      'Content-Length': material.pdfData.length
+    });
+
+    res.send(material.pdfData);
+  } catch (error) {
+    console.error('Fehler beim Abrufen des PDFs:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Abrufen des PDFs',
+      error: error.message
+    });
+  }
+});
+
 // GET /api/education/:id - Einzelnes Material abrufen
 router.get('/:id', authenticate, async (req, res) => {
   try {
@@ -203,12 +262,44 @@ router.post('/', authenticate, async (req, res) => {
       });
     }
 
-    const material = new EducationMaterial({
-      ...req.body,
-      createdBy: req.user._id
-    });
+    const materialData = { ...req.body, createdBy: req.user._id };
 
+    // PDF Base64 verarbeiten
+    if (req.body.type === 'pdf' && req.body.pdfBase64) {
+      const base64Data = req.body.pdfBase64;
+      const matches = base64Data.match(/^data:(.+);base64,(.+)$/);
+
+      if (!matches) {
+        return res.status(400).json({
+          success: false,
+          message: 'Ungültiges PDF-Format'
+        });
+      }
+
+      const buffer = Buffer.from(matches[2], 'base64');
+
+      // 12MB Limit prüfen
+      if (buffer.length > 12 * 1024 * 1024) {
+        return res.status(400).json({
+          success: false,
+          message: 'PDF darf maximal 12 MB groß sein'
+        });
+      }
+
+      materialData.pdfData = buffer;
+      materialData.pdfMimeType = matches[1];
+      materialData.pdfName = req.body.pdfName || 'document.pdf';
+
+      // Base64 nicht in DB speichern
+      delete materialData.pdfBase64;
+    }
+
+    const material = new EducationMaterial(materialData);
     await material.save();
+
+    // PDF-Daten nicht in Response senden (zu groß)
+    const responseData = material.toObject();
+    delete responseData.pdfData;
 
     await material.populate('createdBy', 'firstName lastName email');
     await material.populate('sharedWith', 'firstName lastName email');
@@ -216,7 +307,7 @@ router.post('/', authenticate, async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Material erfolgreich erstellt',
-      data: material
+      data: responseData
     });
   } catch (error) {
     console.error('Fehler beim Erstellen des Materials:', error);
@@ -248,14 +339,45 @@ router.put('/:id', authenticate, async (req, res) => {
       });
     }
 
+    // PDF Base64 verarbeiten falls vorhanden
+    if (req.body.type === 'pdf' && req.body.pdfBase64) {
+      const base64Data = req.body.pdfBase64;
+      const matches = base64Data.match(/^data:(.+);base64,(.+)$/);
+
+      if (!matches) {
+        return res.status(400).json({
+          success: false,
+          message: 'Ungültiges PDF-Format'
+        });
+      }
+
+      const buffer = Buffer.from(matches[2], 'base64');
+
+      // 12MB Limit prüfen
+      if (buffer.length > 12 * 1024 * 1024) {
+        return res.status(400).json({
+          success: false,
+          message: 'PDF darf maximal 12 MB groß sein'
+        });
+      }
+
+      material.pdfData = buffer;
+      material.pdfMimeType = matches[1];
+      material.pdfName = req.body.pdfName || material.pdfName || 'document.pdf';
+    }
+
     // Update fields
     Object.keys(req.body).forEach(key => {
-      if (key !== 'createdBy') { // Prevent changing creator
+      if (key !== 'createdBy' && key !== 'pdfBase64' && key !== 'pdfData') {
         material[key] = req.body[key];
       }
     });
 
     await material.save();
+
+    // PDF-Daten nicht in Response senden (zu groß)
+    const responseData = material.toObject();
+    delete responseData.pdfData;
 
     await material.populate('createdBy', 'firstName lastName email');
     await material.populate('sharedWith', 'firstName lastName email');
@@ -263,7 +385,7 @@ router.put('/:id', authenticate, async (req, res) => {
     res.json({
       success: true,
       message: 'Material erfolgreich aktualisiert',
-      data: material
+      data: responseData
     });
   } catch (error) {
     console.error('Fehler beim Aktualisieren des Materials:', error);
