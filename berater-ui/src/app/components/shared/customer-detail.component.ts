@@ -17,10 +17,10 @@ export interface CustomerContract {
   imports: [CommonModule],
   template: `
     <div class="customer-detail">
-      <div class="detail-row" *ngIf="customer?.customerNumber">
+      <!-- <div class="detail-row" *ngIf="customer?.customerNumber">
         <span class="detail-label">Kundennummer:</span>
         <span class="detail-value">{{ customer?.customerNumber }}</span>
-      </div>
+      </div> -->
 
       <div class="detail-row">
         <span class="detail-label">Name:</span>
