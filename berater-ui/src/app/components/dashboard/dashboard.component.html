@@ -16,241 +16,244 @@
       <h1>{{ 'DASHBOARD.TITLE' | translate }}</h1>
 
       <!-- Superadmin Dashboard -->
-      <div *ngIf="isSuperAdmin">
-        <div class="stats-grid" *ngIf="userStats">
-          <!-- Gesamt Benutzer -->
-          <div class="stat-card">
-            <h3>👥 {{ 'ADMIN.USERS' | translate }}</h3>
-            <div class="stat-number">{{ userStats.total || 0 }}</div>
-            <div class="stat-label">{{ 'COMMON.ALL' | translate }}</div>
-          </div>
-
-          <!-- Aktive Benutzer -->
-          <div class="stat-card">
-            <h3>✅ {{ 'DASHBOARD.ACTIVE' | translate }}</h3>
-            <div class="stat-number">{{ userStats.active || 0 }}</div>
-            <div class="stat-label">{{ 'ADMIN.STATUS.ACTIVE' | translate }}</div>
-          </div>
-
-          <!-- Blockierte Benutzer -->
-          <div class="stat-card">
-            <h3>🚫 {{ 'ADMIN.STATUS.BLOCKED' | translate }}</h3>
-            <div class="stat-number">{{ userStats.blocked || 0 }}</div>
-            <div class="stat-label">{{ 'ADMIN.STATUS.BLOCKED' | translate }}</div>
-          </div>
-          <div class="stat-card">
-            <h3>📦 {{ 'ADMIN.FIELDS.PACKAGE' | translate }}</h3>
-            <div class="stat-number">{{ userStats.package || 0 }}</div>
-            <div class="stat-label">{{ 'ADMIN.FIELDS.PACKAGE' | translate }}</div>
-          </div>
-
-        </div>
-
-        <!-- Benutzer nach Rolle -->
-        <div class="supplier-section" *ngIf="userStats?.byRole">
-          <h2>📊 {{ 'ADMIN.USERS' | translate }} {{ 'ADMIN.FIELDS.ROLE' | translate }}</h2>
-          <div class="chart-container">
-            <div *ngFor="let item of getRoleStats()" class="chart-bar">
-              <div class="bar-label">{{ item.name }}</div>
-              <div class="bar-wrapper">
-                <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
-                <span class="bar-value">{{ item.count }}</span>
+      @if(isSuperAdmin){
+        <div>
+          @if(userStats){
+            <div class="stats-grid">
+              <!-- Gesamt Benutzer -->
+              <div class="stat-card">
+                <h3><i class="fas fa-users"></i>{{ 'ADMIN.USERS' | translate }}</h3>
+                <div class="stat-number">{{ userStats.total || 0 }}</div>
+                <div class="stat-label">{{ 'COMMON.ALL' | translate }}</div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Benutzer nach Paket -->
-        <div class="supplier-section" *ngIf="userStats?.byPackage">
-          <h2>📦 {{ 'ADMIN.USERS' | translate }} {{ 'ADMIN.FIELDS.PACKAGE' | translate }}</h2>
-          <div class="chart-container">
-            <div *ngFor="let item of getPackageStats()" class="chart-bar">
-              <div class="bar-label">{{ item.name }}</div>
-              <div class="bar-wrapper">
-                <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
-                <span class="bar-value">{{ item.count }}</span>
+              <!-- Aktive Benutzer -->
+              <div class="stat-card">
+                <h3><i class="fas fa-check-circle"></i> {{ 'DASHBOARD.ACTIVE' | translate }}</h3>
+                <div class="stat-number">{{ userStats.active || 0 }}</div>
+                <div class="stat-label">{{ 'ADMIN.STATUS.ACTIVE' | translate }}</div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Ablaufende Pakete -->
-        <div class="expiring-subscriptions-section" *ngIf="expiringSubscriptions.length > 0 || expiredSubscriptions.length > 0">
-          <h2>⚠️ {{ 'DASHBOARD.EXPIRING_PACKAGES' | translate }}</h2>
-
-          <div class="stats-grid" style="margin-bottom: 20px;">
-            <div class="stat-card priority-high">
-              <h3>⏰ {{ 'DASHBOARD.EXPIRED' | translate }}</h3>
-              <div class="stat-number">{{ expiredSubscriptions.length }}</div>
-              <div class="stat-label">{{ 'DASHBOARD.PACKAGES' | translate }}</div>
-            </div>
-            <div class="stat-card">
-              <h3>⚠️ {{ 'DASHBOARD.URGENT_DAYS' | translate }}</h3>
-              <div class="stat-number">{{ getCountByWarningLevel('danger') }}</div>
-              <div class="stat-label">{{ 'DASHBOARD.PACKAGES' | translate }}</div>
-            </div>
-            <div class="stat-card">
-              <h3>📅 {{ 'DASHBOARD.WARNING_DAYS' | translate }}</h3>
-              <div class="stat-number">{{ getCountByWarningLevel('warning') }}</div>
-              <div class="stat-label">{{ 'DASHBOARD.PACKAGES' | translate }}</div>
-            </div>
-            <div class="stat-card">
-              <h3>ℹ️ {{ 'DASHBOARD.INFO_DAYS' | translate }}</h3>
-              <div class="stat-number">{{ getCountByWarningLevel('info') }}</div>
-              <div class="stat-label">{{ 'DASHBOARD.PACKAGES' | translate }}</div>
-            </div>
-          </div>
-
-          <!-- Action Button for Expired Packages -->
-           @if(expiredSubscriptions.length > 0){
-            <div style="margin-bottom: 1.5rem;">
-              <button class="btn-danger" (click)="downgradeExpiredPackages()">
-                🔽 {{ 'DASHBOARD.DOWNGRADE_EXPIRED' | translate }} ({{ expiredSubscriptions.length }})
-              </button>
-            </div>
-          }
-          <!-- Expired Subscriptions Table -->
-           @if(expiredSubscriptions.length > 0){
-            <div style="margin-bottom: 2rem;">
-              <h3 style="color: #c62828; margin-bottom: 1rem;">❌ {{ 'DASHBOARD.EXPIRED_PACKAGES' | translate }}</h3>
-              <app-table-container>
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>{{ 'DASHBOARD.USER' | translate }}</th>
-                      <th>{{ 'COMMON.EMAIL' | translate }}</th>
-                      <th>{{ 'ADMIN.FIELDS.PACKAGE' | translate }}</th>
-                      <th>{{ 'DASHBOARD.EXPIRED_SINCE' | translate }}</th>
-                      <th>{{ 'DASHBOARD.LAST_LOGIN' | translate }}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let user of expiredSubscriptions">
-                      <td>{{ user.firstName }} {{ user.lastName }}</td>
-                      <td>{{ user.email }}</td>
-                      <td>{{ user.package }}</td>
-                      <td>
-                        <span class="badge badge-expired">
-                          {{ user.daysExpired }} {{ 'DASHBOARD.DAYS' | translate }}
-                        </span>
-                      </td>
-                      <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : ('DASHBOARD.NEVER' | translate) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </app-table-container>
-            </div>
-          }
-          <!-- Expiring Subscriptions Table -->
-             @if(expiringSubscriptions.length > 0){
-              <div>
-                <h3 style="color: #f57c00; margin-bottom: 1rem;">⏰ {{ 'DASHBOARD.EXPIRING_PACKAGES_SOON' | translate }}</h3>
-                <app-table-container>
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th>{{ 'DASHBOARD.USER' | translate }}</th>
-                        <th>{{ 'COMMON.EMAIL' | translate }}</th>
-                        <th>{{ 'ADMIN.FIELDS.PACKAGE' | translate }}</th>
-                        <th>{{ 'DASHBOARD.DAYS_UNTIL_EXPIRY' | translate }}</th>
-                        <th>{{ 'DASHBOARD.WARNING_LEVEL' | translate }}</th>
-                        <th>{{ 'DASHBOARD.LAST_LOGIN' | translate }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let user of expiringSubscriptions">
-                        <td>{{ user.firstName }} {{ user.lastName }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.package }}</td>
-                        <td>
-                          <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
-                            {{ user.daysUntilExpiration }} {{ 'DASHBOARD.DAYS' | translate }}
-                          </span>
-                        </td>
-                        <td>
-                          <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
-                            {{ getWarningLevelLabel(user.warningLevel) }}
-                          </span>
-                        </td>
-                        <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : ('DASHBOARD.NEVER' | translate) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </app-table-container>
-              </div>
-             }
-        </div>
-        
-        <!-- Upgrade-Anfragen -->
-         @if(stats?.upgradeRequests){
-          <div class="upgrade-requests-section">
-            <h2>🔄 {{ 'DASHBOARD.UPGRADE_REQUESTS' | translate }}</h2>
-            <div class="stats-grid" style="margin-bottom: 20px;">
-              <div class="stat-card priority-high">
-                <h3>⏳ {{ 'DASHBOARD.AWAITING_REVIEW' | translate }}</h3>
-                <div class="stat-number">{{ stats.upgradeRequests.counts?.awaitingReview || 0 }}</div>
-                <div class="stat-label">{{ 'DASHBOARD.PENDING' | translate }} & {{ 'DASHBOARD.PAYMENT_RECEIVED' | translate }}</div>
+              <!-- Blockierte Benutzer -->
+              <div class="stat-card">
+                <h3><i class="fas fa-ban"></i> {{ 'ADMIN.STATUS.BLOCKED' | translate }}</h3>
+                <div class="stat-number">{{ userStats.blocked || 0 }}</div>
+                <div class="stat-label">{{ 'ADMIN.STATUS.BLOCKED' | translate }}</div>
               </div>
               <div class="stat-card">
-                <h3>📝 {{ 'DASHBOARD.PENDING' | translate }}</h3>
-                <div class="stat-number">{{ stats.upgradeRequests.counts?.pending || 0 }}</div>
-                <div class="stat-label">{{ 'DASHBOARD.NEWLY_CREATED' | translate }}</div>
+                <h3><i class="fas fa-box"></i> {{ 'ADMIN.FIELDS.PACKAGE' | translate }}</h3>
+                <div class="stat-number">{{ userStats.package || 0 }}</div>
+                <div class="stat-label">{{ 'ADMIN.FIELDS.PACKAGE' | translate }}</div>
               </div>
-              <div class="stat-card">
-                <h3>💰 {{ 'DASHBOARD.PAYMENT_RECEIVED' | translate }}</h3>
-                <div class="stat-number">{{ stats.upgradeRequests.counts?.paymentReceived || 0 }}</div>
-                <div class="stat-label">{{ 'DASHBOARD.PAYMENT_INCOMING' | translate }}</div>
-              </div>
-            </div>
 
-            <div *ngIf="stats.upgradeRequests.pending?.length > 0" class="requests-list">
-              <h3>{{ 'DASHBOARD.OPEN_REQUESTS' | translate }}</h3>
-              <div *ngFor="let request of stats.upgradeRequests.pending" class="request-card">
-                <div class="request-header">
-                  <div class="user-info">
-                    <strong>{{ request.user.firstName }} {{ request.user.lastName }}</strong>
-                    <span class="email">{{ request.user.email }}</span>
-                  </div>
-                  <span class="status-badge" [class]="'status-' + request.status">
-                    {{ getStatusLabel(request.status) }}
-                  </span>
-                </div>
-                <div class="request-details">
-                  <div class="detail-item">
-                    <span class="label">{{ 'DASHBOARD.CURRENT' | translate }}:</span>
-                    <span class="value">{{ request.currentPackage }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="label">{{ 'DASHBOARD.REQUESTED' | translate }}:</span>
-                    <span class="value highlight">{{ request.packageDetails.displayName }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="label">{{ 'DASHBOARD.PRICE' | translate }}:</span>
-                    <span class="value">{{ request.packageDetails.price }} {{ request.packageDetails.currency }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="label">{{ 'DASHBOARD.DATE' | translate }}:</span>
-                    <span class="value">{{ formatDate(request.createdAt) }}</span>
-                  </div>
-                </div>
-                <div class="request-actions">
-                  <button class="btn-success" (click)="approveUpgrade(request._id)">
-                    ✓ {{ 'DASHBOARD.APPROVE' | translate }}
-                  </button>
-                  <button class="btn-danger" (click)="rejectUpgrade(request._id)">
-                    ✗ {{ 'DASHBOARD.REJECT' | translate }}
-                  </button>
+            </div>
+          }
+          <!-- Benutzer nach Rolle -->
+          <div class="supplier-section" *ngIf="userStats?.byRole">
+            <h2><i class="fas fa-chart-bar"></i> {{ 'ADMIN.USERS' | translate }} {{ 'ADMIN.FIELDS.ROLE' | translate }}</h2>
+            <div class="chart-container">
+              <div *ngFor="let item of getRoleStats()" class="chart-bar">
+                <div class="bar-label">{{ item.name }}</div>
+                <div class="bar-wrapper">
+                  <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+                  <span class="bar-value">{{ item.count }}</span>
                 </div>
               </div>
-            </div>
-
-            <div *ngIf="!stats.upgradeRequests.pending || stats.upgradeRequests.pending.length === 0" class="no-data">
-              <p>{{ 'DASHBOARD.NO_OPEN_REQUESTS' | translate }}</p>
             </div>
           </div>
-        }
-      </div>
 
+          <!-- Benutzer nach Paket -->
+          <div class="supplier-section" *ngIf="userStats?.byPackage">
+            <h2><i class="fas fa-box"></i> {{ 'ADMIN.USERS' | translate }} {{ 'ADMIN.FIELDS.PACKAGE' | translate }}</h2>
+            <div class="chart-container">
+              <div *ngFor="let item of getPackageStats()" class="chart-bar">
+                <div class="bar-label">{{ item.name }}</div>
+                <div class="bar-wrapper">
+                  <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+                  <span class="bar-value">{{ item.count }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ablaufende Pakete -->
+           @if(expiringSubscriptions.length > 0 || expiredSubscriptions.length > 0){
+            <div class="expiring-subscriptions-section">
+              <h2><i class="fas fa-exclamation-triangle"></i> {{ 'DASHBOARD.EXPIRING_PACKAGES' | translate }}</h2>
+
+              <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="stat-card priority-high">
+                  <h3><i class="fas fa-clock"></i> {{ 'DASHBOARD.EXPIRED' | translate }}</h3>
+                  <div class="stat-number">{{ expiredSubscriptions.length }}</div>
+                  <div class="stat-label">{{ 'DASHBOARD.PACKAGES' | translate }}</div>
+                </div>
+                <div class="stat-card">
+                  <h3><i class="fas fa-exclamation-triangle"></i> {{ 'DASHBOARD.URGENT_DAYS' | translate }}</h3>
+                  <div class="stat-number">{{ getCountByWarningLevel('danger') }}</div>
+                  <div class="stat-label">{{ 'DASHBOARD.PACKAGES' | translate }}</div>
+                </div>
+                <div class="stat-card">
+                  <h3><i class="fas fa-calendar-alt"></i> {{ 'DASHBOARD.WARNING_DAYS' | translate }}</h3>
+                  <div class="stat-number">{{ getCountByWarningLevel('warning') }}</div>
+                  <div class="stat-label">{{ 'DASHBOARD.PACKAGES' | translate }}</div>
+                </div>
+                <div class="stat-card">
+                  <h3><i class="fas fa-info-circle"></i> {{ 'DASHBOARD.INFO_DAYS' | translate }}</h3>
+                  <div class="stat-number">{{ getCountByWarningLevel('info') }}</div>
+                  <div class="stat-label">{{ 'DASHBOARD.PACKAGES' | translate }}</div>
+                </div>
+              </div>
+
+              <!-- Action Button for Expired Packages -->
+              @if(expiredSubscriptions.length > 0){
+                <div style="margin-bottom: 1.5rem;">
+                  <button class="btn-danger" (click)="downgradeExpiredPackages()">
+                    <i class="fas fa-arrow-down"></i> {{ 'DASHBOARD.DOWNGRADE_EXPIRED' | translate }} ({{ expiredSubscriptions.length }})
+                  </button>
+                </div>
+              }
+              <!-- Expired Subscriptions Table -->
+              @if(expiredSubscriptions.length > 0){
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #c62828; margin-bottom: 1rem;"><i class="fas fa-times-circle"></i> {{ 'DASHBOARD.EXPIRED_PACKAGES' | translate }}</h3>
+                  <app-table-container>
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <th>{{ 'DASHBOARD.USER' | translate }}</th>
+                          <th>{{ 'COMMON.EMAIL' | translate }}</th>
+                          <th>{{ 'ADMIN.FIELDS.PACKAGE' | translate }}</th>
+                          <th>{{ 'DASHBOARD.EXPIRED_SINCE' | translate }}</th>
+                          <th>{{ 'DASHBOARD.LAST_LOGIN' | translate }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let user of expiredSubscriptions">
+                          <td>{{ user.firstName }} {{ user.lastName }}</td>
+                          <td>{{ user.email }}</td>
+                          <td>{{ user.package }}</td>
+                          <td>
+                            <span class="badge badge-expired">
+                              {{ user.daysExpired }} {{ 'DASHBOARD.DAYS' | translate }}
+                            </span>
+                          </td>
+                          <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : ('DASHBOARD.NEVER' | translate) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </app-table-container>
+                </div>
+              }
+              <!-- Expiring Subscriptions Table -->
+                @if(expiringSubscriptions.length > 0){
+                  <div>
+                    <h3 style="color: #f57c00; margin-bottom: 1rem;"><i class="fas fa-clock"></i> {{ 'DASHBOARD.EXPIRING_PACKAGES_SOON' | translate }}</h3>
+                    <app-table-container>
+                      <table class="data-table">
+                        <thead>
+                          <tr>
+                            <th>{{ 'DASHBOARD.USER' | translate }}</th>
+                            <th>{{ 'COMMON.EMAIL' | translate }}</th>
+                            <th>{{ 'ADMIN.FIELDS.PACKAGE' | translate }}</th>
+                            <th>{{ 'DASHBOARD.DAYS_UNTIL_EXPIRY' | translate }}</th>
+                            <th>{{ 'DASHBOARD.WARNING_LEVEL' | translate }}</th>
+                            <th>{{ 'DASHBOARD.LAST_LOGIN' | translate }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let user of expiringSubscriptions">
+                            <td>{{ user.firstName }} {{ user.lastName }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.package }}</td>
+                            <td>
+                              <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
+                                {{ user.daysUntilExpiration }} {{ 'DASHBOARD.DAYS' | translate }}
+                              </span>
+                            </td>
+                            <td>
+                              <span class="badge" [ngClass]="getWarningLevelBadgeClass(user.warningLevel)">
+                                {{ getWarningLevelLabel(user.warningLevel) }}
+                              </span>
+                            </td>
+                            <td>{{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : ('DASHBOARD.NEVER' | translate) }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </app-table-container>
+                  </div>
+                }
+            </div>
+            }
+          <!-- Upgrade-Anfragen -->
+          @if(stats?.upgradeRequests){
+            <div class="upgrade-requests-section">
+              <h2><i class="fas fa-sync-alt"></i> {{ 'DASHBOARD.UPGRADE_REQUESTS' | translate }}</h2>
+              <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="stat-card priority-high">
+                  <h3><i class="fas fa-hourglass-half"></i> {{ 'DASHBOARD.AWAITING_REVIEW' | translate }}</h3>
+                  <div class="stat-number">{{ stats.upgradeRequests.counts?.awaitingReview || 0 }}</div>
+                  <div class="stat-label">{{ 'DASHBOARD.PENDING' | translate }} & {{ 'DASHBOARD.PAYMENT_RECEIVED' | translate }}</div>
+                </div>
+                <div class="stat-card">
+                  <h3><i class="fas fa-file-alt"></i> {{ 'DASHBOARD.PENDING' | translate }}</h3>
+                  <div class="stat-number">{{ stats.upgradeRequests.counts?.pending || 0 }}</div>
+                  <div class="stat-label">{{ 'DASHBOARD.NEWLY_CREATED' | translate }}</div>
+                </div>
+                <div class="stat-card">
+                  <h3><i class="fas fa-money-bill-wave"></i> {{ 'DASHBOARD.PAYMENT_RECEIVED' | translate }}</h3>
+                  <div class="stat-number">{{ stats.upgradeRequests.counts?.paymentReceived || 0 }}</div>
+                  <div class="stat-label">{{ 'DASHBOARD.PAYMENT_INCOMING' | translate }}</div>
+                </div>
+              </div>
+
+              <div *ngIf="stats.upgradeRequests.pending?.length > 0" class="requests-list">
+                <h3>{{ 'DASHBOARD.OPEN_REQUESTS' | translate }}</h3>
+                <div *ngFor="let request of stats.upgradeRequests.pending" class="request-card">
+                  <div class="request-header">
+                    <div class="user-info">
+                      <strong>{{ request.user.firstName }} {{ request.user.lastName }}</strong>
+                      <span class="email">{{ request.user.email }}</span>
+                    </div>
+                    <span class="status-badge" [class]="'status-' + request.status">
+                      {{ getStatusLabel(request.status) }}
+                    </span>
+                  </div>
+                  <div class="request-details">
+                    <div class="detail-item">
+                      <span class="label">{{ 'DASHBOARD.CURRENT' | translate }}:</span>
+                      <span class="value">{{ request.currentPackage }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">{{ 'DASHBOARD.REQUESTED' | translate }}:</span>
+                      <span class="value highlight">{{ request.packageDetails.displayName }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">{{ 'DASHBOARD.PRICE' | translate }}:</span>
+                      <span class="value">{{ request.packageDetails.price }} {{ request.packageDetails.currency }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">{{ 'DASHBOARD.DATE' | translate }}:</span>
+                      <span class="value">{{ formatDate(request.createdAt) }}</span>
+                    </div>
+                  </div>
+                  <div class="request-actions">
+                    <button class="btn-success" (click)="approveUpgrade(request._id)">
+                      <i class="fas fa-check"></i> {{ 'DASHBOARD.APPROVE' | translate }}
+                    </button>
+                    <button class="btn-danger" (click)="rejectUpgrade(request._id)">
+                      <i class="fas fa-times"></i> {{ 'DASHBOARD.REJECT' | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="!stats.upgradeRequests.pending || stats.upgradeRequests.pending.length === 0" class="no-data">
+                <p>{{ 'DASHBOARD.NO_OPEN_REQUESTS' | translate }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
       <!-- Berater/Admin Dashboard -->
        @if(!isSuperAdmin){
         <div>
@@ -284,7 +287,7 @@
             <!-- Erinnerungen -->
              @if(stats.reminders){
               <div class="stat-card priority-high clickable" routerLink="/todos">
-                <h3>🔔 {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h3>
+                <h3><i class="fas fa-bell"></i> {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h3>
                 <div class="reminder-stats">
                   <div class="reminder-item high">
                     <span class="count">{{ stats.reminders.urgent || 0 }}</span>
@@ -299,14 +302,14 @@
             }
             <!-- Kunden -->
             <div class="stat-card">
-              <h3>👥 {{ 'DASHBOARD.CUSTOMERS' | translate }}</h3>
+              <h3><i class="fas fa-users"></i> {{ 'DASHBOARD.CUSTOMERS' | translate }}</h3>
               <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
               <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
             </div>
 
             <!-- Zähler -->
             <div class="stat-card">
-              <h3>⚡ {{ 'DASHBOARD.METERS' | translate }}</h3>
+              <h3><i class="fas fa-bolt"></i> {{ 'DASHBOARD.METERS' | translate }}</h3>
               <div class="stat-split">
                 <div>
                   <div class="stat-number small">{{ stats.meters?.free || 0 }}</div>
@@ -323,12 +326,11 @@
           <!-- Auslaufende Verträge -->
            @if(stats?.expiringContracts){
             <div class="contracts-section">
-              <h2>📋 {{ 'DASHBOARD.EXPIRING_SOON' | translate }}</h2>
+              <h2><i class="fas fa-file-contract"></i> {{ 'DASHBOARD.EXPIRING_SOON' | translate }}</h2>
               <app-table-container>
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>{{ 'CONTRACTS.FIELDS.CONTRACT_NUMBER' | translate }}</th>
                       <th>{{ 'CONTRACTS.FIELDS.CUSTOMER' | translate }}</th>
                       <th>{{ 'CONTRACTS.FIELDS.SUPPLIER' | translate }}</th>
                       <th>{{ 'CONTRACTS.FIELDS.END_DATE' | translate }}</th>
@@ -338,7 +340,6 @@
                   <tbody>
                     @for(contract of stats.expiringContracts; track contract){
                     <tr>
-                      <td>{{ contract.supplierContractNumber }}</td>
                       <td>{{ contract.customerId.firstName }} {{ contract.customerId.lastName }}</td>
                       <td>{{ contract.supplierId.name }}</td>
                       <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
@@ -357,7 +358,7 @@
           <!-- Verträge nach Anbieter -->
            @if(stats?.contractsBySupplier){
             <div class="supplier-section">
-              <h2>📊 {{ 'DASHBOARD.CONTRACTS_BY_SUPPLIER' | translate }}</h2>
+              <h2><i class="fas fa-chart-pie"></i> {{ 'DASHBOARD.CONTRACTS_BY_SUPPLIER' | translate }}</h2>
               <div class="chart-container">
                 <div *ngFor="let item of stats.contractsBySupplier" class="chart-bar">
                   <div class="bar-label">{{ item.name }}</div>

@@ -32,7 +32,7 @@
 
   <!-- LIST -->
   <div class="card-list">
-    <div class="eskapp-card" *ngFor="let meter of meters">
+    <div class="eskapp-card clickable-card" *ngFor="let meter of meters" (click)="showDetails.emit(meter)">
         <div class="meter-card-header">
             <h2>Zählernummer: {{ meter?.meterNumber }}</h2>
             <div class="status-icon"
@@ -62,10 +62,7 @@
             }
         </div>
 
-      <div class="actions">
-        <button class="details" (click)="showDetails.emit(meter)" [title]="'COMMON.DETAILS' | translate">
-          <i class="fas fa-info-circle"></i>
-        </button>
+      <div class="actions" (click)="$event.stopPropagation()">
         <button class="edit" (click)="edit.emit(meter)" [title]="'COMMON.EDIT' | translate">
           <i class="fas fa-edit"></i>
         </button>

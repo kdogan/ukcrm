@@ -28,7 +28,7 @@
     (resetFilters)="resetFilters()"
     (generateToken)="generateToken()"
     (connectWithToken)="connectWithToken()"
-    (disconnectFromMaster)="disconnectFromMaster()"
+    (disconnectFromMaster)="confirmDisconnect()"
     (copyToken)="copyTokenToClipboard()"
     (tokenInputChange)="tokenInput = $event"
   />
@@ -62,7 +62,7 @@
     (resetFilters)="resetFilters()"
     (generateToken)="generateToken()"
     (connectWithToken)="connectWithToken()"
-    (disconnectFromMaster)="disconnectFromMaster()"
+    (disconnectFromMaster)="confirmDisconnect()"
     (copyToken)="copyTokenToClipboard()"
     (tokenInputChange)="tokenInput = $event"
   />
@@ -228,6 +228,20 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" (click)="cancelDelete()">{{ 'COMMON.CANCEL' | translate }}</button>
       <button class="btn btn-danger" (click)="deleteMaterial()">{{ 'COMMON.DELETE' | translate }}</button>
+    </div>
+  </div>
+</app-overlay-modal>
+}
+
+<!-- Disconnect Confirmation Modal -->
+@if (showDisconnectConfirm) {
+<app-overlay-modal (close)="cancelDisconnect()">
+  <div class="modal-content">
+    <h2 class="modal-title">{{ 'EDUCATION.TOKEN.DISCONNECT_CONFIRM_TITLE' | translate }}</h2>
+    <p>{{ 'EDUCATION.TOKEN.DISCONNECT_CONFIRM_MESSAGE' | translate }}</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="cancelDisconnect()">{{ 'COMMON.CANCEL' | translate }}</button>
+      <button class="btn btn-danger" (click)="disconnectFromMaster()">{{ 'EDUCATION.TOKEN.DISCONNECT' | translate }}</button>
     </div>
   </div>
 </app-overlay-modal>

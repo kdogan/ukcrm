@@ -46,7 +46,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let meter of filteredMeters">
+        <tr *ngFor="let meter of filteredMeters" class="clickable-row" (click)="showMeterDetails(meter)">
           <td>{{ meter.meterNumber }}</td>
           <td>{{ getTypeLabel(meter.type) }}</td>
           <td>

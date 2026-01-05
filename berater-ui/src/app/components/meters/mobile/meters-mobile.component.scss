@@ -1,6 +1,15 @@
 // Meter-specific mobile styles
 // Global styles (FAB, mobile-filters, filter-row, actions) sind in styles.scss definiert
 
+.clickable-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
 .meter-card-header {
   display: flex;
   justify-content: space-between;

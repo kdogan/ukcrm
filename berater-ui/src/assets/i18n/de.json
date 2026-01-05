@@ -493,6 +493,8 @@
       "CONNECT_BTN": "Verbinden",
       "CONNECTED": "Sie erhalten jetzt Bildungsmaterialien von",
       "DISCONNECT": "Verbindung trennen",
+      "DISCONNECT_CONFIRM_TITLE": "Verbindung trennen?",
+      "DISCONNECT_CONFIRM_MESSAGE": "Wenn Sie die Verbindung trennen, können Sie keine Bildungsmaterialien mehr von diesem Master Berater erhalten. Sind Sie sicher?",
       "DISCONNECTED": "Verbindung erfolgreich getrennt",
       "INVALID_TOKEN": "Ungültiger Token",
       "ENTER_TOKEN_ERROR": "Bitte geben Sie einen Token ein"

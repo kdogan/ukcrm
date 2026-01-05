@@ -493,6 +493,8 @@
       "CONNECT_BTN": "Bağlan",
       "CONNECTED": "Artık eğitim materyallerini alıyorsunuz:",
       "DISCONNECT": "Bağlantıyı Kes",
+      "DISCONNECT_CONFIRM_TITLE": "Bağlantıyı kes?",
+      "DISCONNECT_CONFIRM_MESSAGE": "Bağlantıyı keserseniz, artık bu Master Danışmandan eğitim materyalleri alamazsınız. Emin misiniz?",
       "DISCONNECTED": "Bağlantı başarıyla kesildi",
       "INVALID_TOKEN": "Geçersiz token",
       "ENTER_TOKEN_ERROR": "Lütfen bir token girin"

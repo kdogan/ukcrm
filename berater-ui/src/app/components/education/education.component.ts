@@ -49,6 +49,7 @@ export class EducationComponent implements OnInit, OnDestroy {
   // Modal
   showModal = false;
   showDeleteConfirm = false;
+  showDisconnectConfirm = false;
   showVideoPlayer = false;
   isEditMode = false;
   currentMaterial: Partial<EducationMaterial> = this.getEmptyMaterial();
@@ -510,7 +511,16 @@ connectWithToken(): void {
   });
 }
 
+confirmDisconnect(): void {
+  this.showDisconnectConfirm = true;
+}
+
+cancelDisconnect(): void {
+  this.showDisconnectConfirm = false;
+}
+
 disconnectFromMaster(): void {
+  this.showDisconnectConfirm = false;
   this.tokenError = '';
   this.tokenSuccess = '';
   this.educationService.disconnectMasterBerater().subscribe({
