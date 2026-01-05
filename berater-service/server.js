@@ -97,9 +97,10 @@ const authLimiter = rateLimit({
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 300, // max 200 Requests pro IP
+  max: process.env.NODE_ENV === 'development' ? 0 : 1000, // 0 = unlimited in dev, 1000 in production
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'development', // Skip rate limiting in development
   message: "Zu viele Anfragen, bitte später erneut versuchen."
 });
 
