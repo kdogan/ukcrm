@@ -15,6 +15,7 @@ export class ContractService {
   getContracts(filters: {
     status?: string;
     supplierId?: string;
+    customerId?: string;
     daysRemaining?: number;
     page?: number;
     limit?: number;

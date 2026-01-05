@@ -102,6 +102,8 @@ export class AuthService {
       .pipe(
         tap((response: any) => {
           if (response.success) {
+            // Aktualisiere den User auch im localStorage
+            localStorage.setItem('user', JSON.stringify(response.data));
             this.currentUserSubject.next(response.data);
           }
         })

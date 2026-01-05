@@ -22,3 +22,15 @@
     margin-bottom: 0.5rem;
   }
 }
+
+.customer-link {
+  color: #3b82f6;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+  }
+}

@@ -1,5 +1,18 @@
 /* Meter-specific styles */
 
+/* Clickable customer link */
+.customer-link {
+  color: #3b82f6;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+  }
+}
+
 /* Override form-row for meters */
 .form-row {
   grid-template-columns: 1fr 2fr;

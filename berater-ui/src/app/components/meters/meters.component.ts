@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MeterService } from '../../services/meter.service';
 import { MeterReadingService } from '../../services/meter-reading.service';
+import { ContractService } from '../../services/contract.service';
+import { CustomerService } from '../../services/customer.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { MetersMobileComponent } from './mobile/meters-mobile.component';
 import { ViewportService } from 'src/app/services/viewport.service';
@@ -13,6 +15,8 @@ import { Meter } from 'src/app/models/meter.model';
 import { MeterCreateComponent } from '../shared/meter-create.component';
 import { SearchInputComponent } from '../shared/search-input.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { CustomerDetailComponent, CustomerContract } from '../shared/customer-detail.component';
+import { Customer } from '../../services/customer.service';
 
 @Component({
     selector: 'app-meters',
@@ -21,7 +25,7 @@ import { TranslateModule } from '@ngx-translate/core';
       TableContainerComponent,
       MetersMobileComponent,
       OverlayModalComponent, MeterCreateComponent,
-      SearchInputComponent, TranslateModule],
+      SearchInputComponent, TranslateModule, CustomerDetailComponent],
     styleUrls: ['./meters.component.scss'],
     templateUrl: './meters.component.html'
 })
@@ -54,9 +58,16 @@ export class MetersComponent implements OnInit {
   meterReadings: any[] = [];
 meterTypes: any;
 
+  // Customer details modal
+  showCustomerDetailsModal = false;
+  selectedCustomer: Customer | null = null;
+  customerContracts: CustomerContract[] = [];
+
   constructor(
     private meterService: MeterService,
     private meterReadingService: MeterReadingService,
+    private contractService: ContractService,
+    private customerService: CustomerService,
     private route: ActivatedRoute,
     private viewport: ViewportService
   ) { }
@@ -325,5 +336,37 @@ meterTypes: any;
         }
       }
     });
+  }
+
+  showCustomerDetails(customer: any): void {
+    if (!customer || !customer._id) return;
+
+    this.selectedCustomer = null;
+    this.customerContracts = [];
+    this.showCustomerDetailsModal = true;
+
+    // Lade vollständige Kundendaten
+    this.customerService.getCustomer(customer._id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.selectedCustomer = response.data;
+        }
+      }
+    });
+
+    // Lade Verträge des Kunden
+    this.contractService.getContracts({ customerId: customer._id }).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.customerContracts = response.data;
+        }
+      }
+    });
+  }
+
+  closeCustomerDetailsModal(): void {
+    this.showCustomerDetailsModal = false;
+    this.selectedCustomer = null;
+    this.customerContracts = [];
   }
 }

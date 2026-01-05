@@ -50,6 +50,12 @@
   },
   "SETTINGS": {
     "TITLE": "Einstellungen",
+    "PROFILE": {
+      "TITLE": "Profil",
+      "DESCRIPTION": "Ändern Sie Ihren Namen und verwalten Sie Ihre Kontodaten.",
+      "SAVE": "Profil speichern",
+      "EMAIL_HINT": "Die E-Mail-Adresse kann nicht geändert werden."
+    },
     "REMINDERS": {
       "TITLE": "Erinnerungen für Vertragsablauf",
       "DESCRIPTION": "Wählen Sie aus, wann Sie vor Vertragsablauf benachrichtigt werden möchten.",
@@ -289,7 +295,8 @@
     },
     "NO_CUSTOMERS": "Keine Kunden gefunden",
     "NO_CUSTOMERS_DESC": "Erstellen Sie Ihren ersten Kunden",
-    "CONTRACTS_COUNT": "Verträge"
+    "CONTRACTS_COUNT": "Verträge",
+    "DETAILS": "Kundendetails"
   },
   "METERS": {
     "TITLE": "Zähler",
@@ -301,12 +308,14 @@
       "METER_NUMBER": "Zählernummer",
       "TYPE": "Typ",
       "CUSTOMER": "Kunde",
+      "OWNER": "Besitzer",
       "LOCATION": "Standort",
       "READING": "Zählerstand",
       "LAST_READING": "Letzter Stand",
       "READING_DATE": "Ablesedatum",
       "NOTES": "Notizen"
     },
+    "SHOW_CUSTOMER_DETAILS": "Kundendetails anzeigen",
     "STATUS": {
       "FREE": "Frei",
       "OCCUPIED": "Belegt"

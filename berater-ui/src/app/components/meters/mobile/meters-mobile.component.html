@@ -52,8 +52,13 @@
                 letzte Ablesung: {{ meter.currentReading || '-' }} {{ meter.currentReading ? getMeterUnit(meter.type) : '' }}
               }
             </div>
-            @if(!meter.isFree){
-              <div class="content-row">Besitzer: {{ meter.currentCustomerId.firstName + ' ' + meter.currentCustomerId.lastName || '-' }}</div>
+            @if(!meter.isFree && meter.currentCustomerId){
+              <div class="content-row">
+                {{ 'METERS.FIELDS.OWNER' | translate }}:
+                <span class="customer-link" (click)="showCustomerDetails.emit(meter.currentCustomerId); $event.stopPropagation()">
+                  {{ meter.currentCustomerId.firstName }} {{ meter.currentCustomerId.lastName }}
+                </span>
+              </div>
             }
         </div>
 

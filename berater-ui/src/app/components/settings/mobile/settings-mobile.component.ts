@@ -21,8 +21,15 @@ export class SettingsMobileComponent {
   @Input() newPassword = '';
   @Input() confirmPassword = '';
   @Input() isChangingPassword = false;
+  @Input() profileFirstName = '';
+  @Input() profileLastName = '';
+  @Input() isSavingProfile = false;
+  @Input() currentUserEmail = '';
 
   @Output() saveSettingsEvent = new EventEmitter<void>();
+  @Output() saveProfileEvent = new EventEmitter<void>();
+  @Output() profileFirstNameChange = new EventEmitter<string>();
+  @Output() profileLastNameChange = new EventEmitter<string>();
   @Output() resetToDefaultsEvent = new EventEmitter<void>();
   @Output() changePackageEvent = new EventEmitter<{ packageName: string; order: number }>();
   @Output() selectBillingIntervalEvent = new EventEmitter<{ packageName: string; interval: 'monthly' | 'yearly' }>();

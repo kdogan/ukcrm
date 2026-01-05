@@ -7,6 +7,54 @@
 
   <div class="mobile-content">
 
+    <!-- Profil -->
+    <div class="section-card">
+      <h2>👤 Profil</h2>
+      <p class="section-description">
+        Ändern Sie Ihren Namen
+      </p>
+
+      <div class="input-list">
+        <div class="input-item">
+          <label>Vorname *</label>
+          <input
+            type="text"
+            [ngModel]="profileFirstName"
+            (ngModelChange)="profileFirstNameChange.emit($event)"
+            placeholder="Vorname"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>Nachname *</label>
+          <input
+            type="text"
+            [ngModel]="profileLastName"
+            (ngModelChange)="profileLastNameChange.emit($event)"
+            placeholder="Nachname"
+          />
+        </div>
+
+        <div class="input-item" *ngIf="currentUserEmail">
+          <label>E-Mail</label>
+          <input
+            type="email"
+            [value]="currentUserEmail"
+            disabled
+          />
+          <small class="hint">E-Mail kann nicht geändert werden</small>
+        </div>
+      </div>
+
+      <button
+        class="btn-primary profile-btn"
+        (click)="saveProfileEvent.emit()"
+        [disabled]="isSavingProfile || !profileFirstName || !profileLastName">
+        <i class="fas" [class.fa-spinner]="isSavingProfile" [class.fa-spin]="isSavingProfile" [class.fa-save]="!isSavingProfile"></i>
+        {{ isSavingProfile ? 'Wird gespeichert...' : 'Profil speichern' }}
+      </button>
+    </div>
+
     <!-- Erinnerungen für Vertragsablauf -->
     <div class="section-card">
       <h2>📅 Erinnerungen</h2>

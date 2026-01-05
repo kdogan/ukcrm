@@ -4,7 +4,8 @@
   (filterTypeChange)="typeFilter = $event; filterMeters()" (toggleActionMenu)="toggleActionMenu($event)"
   (searchTermChange)="searchTerm = $event; onSearchChange()" (showDetails)="showMeterDetails($event); closeActionMenu()"
   (addReading)="showAddReadingModal($event); closeActionMenu()"
-  (viewReadings)="viewReadings($event); closeActionMenu()" />
+  (viewReadings)="viewReadings($event); closeActionMenu()"
+  (showCustomerDetails)="showCustomerDetails($event)" />
 } @else {
 <div class="page-container" (click)="closeActionMenu()">
   <div class="page-header">
@@ -49,7 +50,9 @@
           <td>{{ meter.meterNumber }}</td>
           <td>{{ getTypeLabel(meter.type) }}</td>
           <td>
-            <span class="badge" [class.badge-active]="!meter.currentCustomerId">
+            <span class="badge"
+                  [class.badge-active]="!meter.currentCustomerId"
+                  [class.badge-inactive]="meter.currentCustomerId">
               {{ meter.currentCustomerId ? ('METERS.STATUS.OCCUPIED' | translate) : ('METERS.STATUS.FREE' | translate) }}
             </span>
           </td>
@@ -70,8 +73,15 @@
             {{ meter.lastReadingDate ? (meter.lastReadingDate | date:'dd.MM.yyyy') : '-' }}
           </td>
           <td>
-            {{ meter.currentCustomerId ?
-            (meter.currentCustomerId.firstName + ' ' + meter.currentCustomerId.lastName) : '-' }}
+            @if(meter.currentCustomerId) {
+              <span class="customer-link"
+                    (click)="showCustomerDetails(meter.currentCustomerId); $event.stopPropagation()"
+                    title="{{ 'METERS.SHOW_CUSTOMER_DETAILS' | translate }}">
+                {{ meter.currentCustomerId.firstName }} {{ meter.currentCustomerId.lastName }}
+              </span>
+            } @else {
+              -
+            }
           </td>
           <td class="actions-cell">
             <div class="action-menu-container">
@@ -310,3 +320,27 @@
     </table>
   </div>
 </ng-template>
+
+<!-- Customer Details Modal -->
+@if(showCustomerDetailsModal && selectedCustomer) {
+  <app-overlay-modal (close)="closeCustomerDetailsModal()">
+    <div class="modal-header">
+      <h2>{{ 'CUSTOMERS.DETAILS' | translate }}</h2>
+      <button class="btn-close" (click)="closeCustomerDetailsModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <app-customer-detail
+        [customer]="selectedCustomer"
+        [contracts]="customerContracts"
+        [showContracts]="true">
+      </app-customer-detail>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeCustomerDetailsModal()">
+        {{ 'COMMON.CLOSE' | translate }}
+      </button>
+    </div>
+  </app-overlay-modal>
+}

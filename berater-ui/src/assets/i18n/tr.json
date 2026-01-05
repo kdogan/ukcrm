@@ -50,6 +50,12 @@
   },
   "SETTINGS": {
     "TITLE": "Ayarlar",
+    "PROFILE": {
+      "TITLE": "Profil",
+      "DESCRIPTION": "Adınızı değiştirin ve hesap bilgilerinizi yönetin.",
+      "SAVE": "Profili kaydet",
+      "EMAIL_HINT": "E-posta adresi değiştirilemez."
+    },
     "REMINDERS": {
       "TITLE": "Sözleşme Bitiş Hatırlatmaları",
       "DESCRIPTION": "Sözleşme bitiminden önce ne zaman bildirim almak istediğinizi seçin.",
@@ -289,7 +295,8 @@
     },
     "NO_CUSTOMERS": "Müşteri bulunamadı",
     "NO_CUSTOMERS_DESC": "İlk müşterinizi oluşturun",
-    "CONTRACTS_COUNT": "Sözleşmeler"
+    "CONTRACTS_COUNT": "Sözleşmeler",
+    "DETAILS": "Müşteri Detayları"
   },
   "METERS": {
     "TITLE": "Sayaçlar",
@@ -301,12 +308,14 @@
       "METER_NUMBER": "Sayaç Numarası",
       "TYPE": "Tür",
       "CUSTOMER": "Müşteri",
+      "OWNER": "Sahibi",
       "LOCATION": "Konum",
       "READING": "Sayaç Değeri",
       "LAST_READING": "Son Değer",
       "READING_DATE": "Okuma Tarihi",
       "NOTES": "Notlar"
     },
+    "SHOW_CUSTOMER_DETAILS": "Müşteri detaylarını göster",
     "STATUS": {
       "FREE": "Boş",
       "OCCUPIED": "Dolu"

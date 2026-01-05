@@ -27,6 +27,10 @@ import { LanguageService, Language } from '../../services/language.service';
         [newPassword]="newPassword"
         [confirmPassword]="confirmPassword"
         [isChangingPassword]="isChangingPassword"
+        [profileFirstName]="profileFirstName"
+        [profileLastName]="profileLastName"
+        [isSavingProfile]="isSavingProfile"
+        [currentUserEmail]="currentUser?.email || ''"
         (saveSettingsEvent)="saveSettings()"
         (resetToDefaultsEvent)="resetToDefaults()"
         (changePackageEvent)="changePackage($event.packageName, $event.order)"
@@ -35,6 +39,9 @@ import { LanguageService, Language } from '../../services/language.service';
         (currentPasswordChange)="currentPassword = $any($event)"
         (newPasswordChange)="newPassword = $any($event)"
         (confirmPasswordChange)="confirmPassword = $any($event)"
+        (saveProfileEvent)="saveProfile()"
+        (profileFirstNameChange)="profileFirstName = $event"
+        (profileLastNameChange)="profileLastName = $event"
       ></app-settings-mobile>
     } @else {
     <div class="page-container">
@@ -43,6 +50,55 @@ import { LanguageService, Language } from '../../services/language.service';
       </div>
 
       <div class="settings-content">
+        <!-- Profil -->
+        <div class="settings-section">
+          <h2>👤 {{ 'SETTINGS.PROFILE.TITLE' | translate }}</h2>
+          <p class="section-description">
+            {{ 'SETTINGS.PROFILE.DESCRIPTION' | translate }}
+          </p>
+
+          <div class="setting-group">
+            <div class="input-group">
+              <label>{{ 'AUTH.FIRST_NAME' | translate }} *</label>
+              <input
+                type="text"
+                [(ngModel)]="profileFirstName"
+                [placeholder]="'AUTH.FIRST_NAME' | translate"
+                class="input-field"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>{{ 'AUTH.LAST_NAME' | translate }} *</label>
+              <input
+                type="text"
+                [(ngModel)]="profileLastName"
+                [placeholder]="'AUTH.LAST_NAME' | translate"
+                class="input-field"
+              />
+            </div>
+
+            <div class="input-group" *ngIf="currentUser?.email">
+              <label>{{ 'AUTH.EMAIL' | translate }}</label>
+              <input
+                type="email"
+                [value]="currentUser?.email"
+                class="input-field"
+                disabled
+              />
+              <small class="hint">{{ 'SETTINGS.PROFILE.EMAIL_HINT' | translate }}</small>
+            </div>
+
+            <button
+              class="btn-primary"
+              (click)="saveProfile()"
+              [disabled]="isSavingProfile || !profileFirstName || !profileLastName">
+              <i class="fas" [class.fa-spinner]="isSavingProfile" [class.fa-spin]="isSavingProfile" [class.fa-save]="!isSavingProfile"></i>
+              {{ isSavingProfile ? ('COMMON.SAVING' | translate) : ('SETTINGS.PROFILE.SAVE' | translate) }}
+            </button>
+          </div>
+        </div>
+
         <!-- Erinnerungen für Vertragsablauf -->
         <div class="settings-section">
           <h2>📅 {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h2>
@@ -1169,6 +1225,11 @@ export class SettingsComponent implements OnInit {
   confirmPassword = '';
   isChangingPassword = false;
 
+  // Profile properties
+  profileFirstName = '';
+  profileLastName = '';
+  isSavingProfile = false;
+
   // Language
   currentLanguage: Language = 'de';
 
@@ -1197,6 +1258,10 @@ export class SettingsComponent implements OnInit {
     // Load current user
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
+      if (user) {
+        this.profileFirstName = user.firstName || '';
+        this.profileLastName = user.lastName || '';
+      }
     });
 
     // Nur Limits und Pakete laden, wenn der Benutzer eingeloggt ist
@@ -1443,6 +1508,35 @@ export class SettingsComponent implements OnInit {
       error: (error) => {
         this.isChangingPassword = false;
         const errorMessage = error.error?.message || 'Fehler beim Ändern des Passworts';
+        alert(errorMessage);
+      }
+    });
+  }
+
+  saveProfile(): void {
+    if (!this.profileFirstName.trim() || !this.profileLastName.trim()) {
+      alert('Bitte geben Sie Vor- und Nachname ein.');
+      return;
+    }
+
+    this.isSavingProfile = true;
+
+    this.authService.updateProfile({
+      firstName: this.profileFirstName.trim(),
+      lastName: this.profileLastName.trim()
+    }).subscribe({
+      next: (response) => {
+        this.isSavingProfile = false;
+        if (response.success) {
+          this.showSaveIndicator = true;
+          setTimeout(() => {
+            this.showSaveIndicator = false;
+          }, 2000);
+        }
+      },
+      error: (error) => {
+        this.isSavingProfile = false;
+        const errorMessage = error.error?.message || 'Fehler beim Speichern des Profils';
         alert(errorMessage);
       }
     });
