@@ -1,21 +1,21 @@
 <div class="education-mobile">
   <div class="mobile-header">
-    <h1>📚 Bildung</h1>
+    <h1>{{ 'EDUCATION.TITLE' | translate }}</h1>
     <button class="fab" *ngIf="isMasterBerater" (click)="createMaterial.emit()">+</button>
   </div>
 
   <div class="mobile-stats" *ngIf="stats && isMasterBerater">
     <div class="stat-item">
       <span class="stat-value">{{ stats.totalMaterials }}</span>
-      <span class="stat-label">Materialien</span>
+      <span class="stat-label">{{ 'EDUCATION.STATS.MATERIALS' | translate }}</span>
     </div>
     <div class="stat-item">
       <span class="stat-value">{{ stats.totalViews }}</span>
-      <span class="stat-label">Aufrufe</span>
+      <span class="stat-label">{{ 'EDUCATION.STATS.VIEWS' | translate }}</span>
     </div>
     <div class="stat-item">
       <span class="stat-value">{{ stats.sharedBeraterCount }}</span>
-      <span class="stat-label">Berater</span>
+      <span class="stat-label">{{ 'EDUCATION.STATS.BERATER' | translate }}</span>
     </div>
   </div>
 
@@ -23,18 +23,18 @@
   <div class="token-card" *ngIf="isMasterBerater">
     <div class="token-card-header">
       <i class="fas fa-key"></i>
-      <span>Ihr Zugangs-Token</span>
+      <span>{{ 'EDUCATION.TOKEN.YOUR_TOKEN' | translate }}</span>
     </div>
-    <p class="token-description">Teilen Sie diesen Token mit Beratern.</p>
+    <p class="token-description">{{ 'EDUCATION.TOKEN.TOKEN_DESC' | translate }}</p>
     <div class="token-display" *ngIf="shareToken">
       <span class="token-value">{{ shareToken }}</span>
-      <button class="btn-icon" (click)="copyToken.emit()"><i class="fas fa-copy"></i></button>
+      <button class="btn-icon" (click)="copyToken.emit()" [title]="'EDUCATION.TOKEN.COPY' | translate"><i class="fas fa-copy"></i></button>
     </div>
     <button class="btn btn-primary btn-block" *ngIf="shareToken" (click)="generateToken.emit()">
-      <i class="fas fa-sync"></i> Neuer Token
+      <i class="fas fa-sync"></i> {{ 'EDUCATION.TOKEN.NEW_TOKEN' | translate }}
     </button>
     <button class="btn btn-primary btn-block" *ngIf="!shareToken" (click)="generateToken.emit()">
-      <i class="fas fa-key"></i> Token generieren
+      <i class="fas fa-key"></i> {{ 'EDUCATION.TOKEN.GENERATE' | translate }}
     </button>
     <div class="token-message success" *ngIf="tokenSuccess">{{ tokenSuccess }}</div>
     <div class="token-message error" *ngIf="tokenError">{{ tokenError }}</div>
@@ -44,7 +44,7 @@
   <div class="token-card" *ngIf="!isMasterBerater">
     <div class="token-card-header">
       <i class="fas fa-link"></i>
-      <span>Mit Master verbinden</span>
+      <span>{{ 'EDUCATION.TOKEN.CONNECT' | translate }}</span>
     </div>
     <div class="connected-info" *ngIf="connectedMasterBerater">
       <div class="connected-badge">
@@ -56,7 +56,7 @@
       </button>
     </div>
     <div class="token-input-group" *ngIf="!connectedMasterBerater">
-      <input type="text" class="form-control" placeholder="Token eingeben"
+      <input type="text" class="form-control" [placeholder]="'EDUCATION.TOKEN.ENTER_TOKEN' | translate"
         [value]="tokenInput"
         (input)="tokenInputChange.emit($any($event.target).value)"
         (keyup.enter)="connectWithToken.emit()" />
@@ -71,7 +71,7 @@
   <div class="mobile-toolbar">
     <div class="search-box">
       <i class="fas fa-search"></i>
-      <input type="text" placeholder="Suchen..." [value]="searchTerm"
+      <input type="text" [placeholder]="'EDUCATION.SEARCH' | translate" [value]="searchTerm"
         (input)="searchChange.emit($any($event.target).value)" />
     </div>
     <button class="btn-filter" (click)="showFilters = !showFilters" [class.active]="showFilters">
@@ -82,17 +82,17 @@
   <div class="mobile-filters" *ngIf="showFilters">
     <select class="filter-select" [value]="selectedCategory"
       (change)="categoryChange.emit($any($event.target).value); filterChange.emit()">
-      <option *ngFor="let cat of categoryOptions" [value]="cat.value">{{ cat.label }}</option>
+      <option *ngFor="let cat of categoryOptions" [value]="cat.value">{{ cat.labelKey | translate }}</option>
     </select>
     <select class="filter-select" [value]="selectedType"
       (change)="typeChange.emit($any($event.target).value); filterChange.emit()">
-      <option *ngFor="let type of typeOptions" [value]="type.value">{{ type.label }}</option>
+      <option *ngFor="let type of typeOptions" [value]="type.value">{{ type.labelKey | translate }}</option>
     </select>
     <select class="filter-select" [value]="selectedLanguage"
       (change)="languageChange.emit($any($event.target).value); filterChange.emit()">
-      <option *ngFor="let lang of languageOptions" [value]="lang.value">{{ lang.label }}</option>
+      <option *ngFor="let lang of languageOptions" [value]="lang.value">{{ lang.labelKey | translate }}</option>
     </select>
-    <button class="btn-reset" (click)="resetFilters.emit()">Zurücksetzen</button>
+    <button class="btn-reset" (click)="resetFilters.emit()">{{ 'EDUCATION.RESET_FILTERS' | translate }}</button>
   </div>
 
   <div class="materials-list" *ngIf="!loading">

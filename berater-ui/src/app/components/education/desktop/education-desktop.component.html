@@ -136,7 +136,7 @@
         (change)="categoryChange.emit($any($event.target).value); filterChange.emit()"
       >
         @for (cat of categoryOptions; track cat.value) {
-          <option [value]="cat.value">{{ cat.label }}</option>
+          <option [value]="cat.value">{{ cat.labelKey | translate }}</option>
         }
       </select>
 
@@ -146,7 +146,7 @@
         (change)="typeChange.emit($any($event.target).value); filterChange.emit()"
       >
         @for (type of typeOptions; track type.value) {
-          <option [value]="type.value">{{ type.label }}</option>
+          <option [value]="type.value">{{ type.labelKey | translate }}</option>
         }
       </select>
 
@@ -156,7 +156,7 @@
         (change)="languageChange.emit($any($event.target).value); filterChange.emit()"
       >
         @for (lang of languageOptions; track lang.value) {
-          <option [value]="lang.value">{{ lang.label }}</option>
+          <option [value]="lang.value">{{ lang.labelKey | translate }}</option>
         }
       </select>
 

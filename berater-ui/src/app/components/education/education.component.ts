@@ -67,28 +67,28 @@ export class EducationComponent implements OnInit, OnDestroy {
 
   // Options
   categoryOptions = [
-    { value: '', label: 'Alle Kategorien' },
-    { value: 'onboarding', label: 'Onboarding' },
-    { value: 'training', label: 'Training' },
-    { value: 'product-info', label: 'Produktinformationen' },
-    { value: 'sales', label: 'Vertrieb' },
-    { value: 'support', label: 'Support' },
-    { value: 'other', label: 'Sonstiges' }
+    { value: '', labelKey: 'EDUCATION.FILTER.ALL_CATEGORIES' },
+    { value: 'onboarding', labelKey: 'EDUCATION.CATEGORIES.ONBOARDING' },
+    { value: 'training', labelKey: 'EDUCATION.CATEGORIES.TRAINING' },
+    { value: 'product-info', labelKey: 'EDUCATION.CATEGORIES.PRODUCT' },
+    { value: 'sales', labelKey: 'EDUCATION.CATEGORIES.SALES' },
+    { value: 'support', labelKey: 'SUPPORT.TITLE' },
+    { value: 'other', labelKey: 'EDUCATION.CATEGORIES.OTHER' }
   ];
 
   typeOptions = [
-    { value: '', label: 'Alle Typen' },
-    { value: 'video', label: 'Video' },
-    { value: 'pdf', label: 'PDF' },
-    { value: 'document', label: 'Dokument' },
-    { value: 'link', label: 'Link' },
-    { value: 'image', label: 'Bild' }
+    { value: '', labelKey: 'EDUCATION.FILTER.ALL_TYPES' },
+    { value: 'video', labelKey: 'EDUCATION.TYPES.VIDEO' },
+    { value: 'pdf', labelKey: 'EDUCATION.TYPES.PDF' },
+    { value: 'document', labelKey: 'EDUCATION.TYPES.DOCUMENT' },
+    { value: 'link', labelKey: 'EDUCATION.TYPES.LINK' },
+    { value: 'image', labelKey: 'EDUCATION.TYPES.IMAGE' }
   ];
 
   languageOptions = [
-    { value: '', label: 'Alle Sprachen' },
-    { value: 'de', label: 'Deutsch' },
-    { value: 'tr', label: 'Türkisch' }
+    { value: '', labelKey: 'EDUCATION.FILTER.ALL_LANGUAGES' },
+    { value: 'de', labelKey: 'EDUCATION.LANGUAGES.GERMAN' },
+    { value: 'tr', labelKey: 'EDUCATION.LANGUAGES.TURKISH' }
   ];
 
   constructor(
