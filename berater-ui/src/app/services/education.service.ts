@@ -141,4 +141,11 @@ export class EducationService {
   getPdf(materialId: string): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/pdf/${materialId}`, { responseType: 'blob' });
   }
+
+  /**
+   * Registriert einen View für ein Material
+   */
+  registerView(materialId: string): Observable<{ success: boolean; message: string; data: { views: number } }> {
+    return this.http.post<{ success: boolean; message: string; data: { views: number } }>(`${this.apiUrl}/${materialId}/view`, {});
+  }
 }

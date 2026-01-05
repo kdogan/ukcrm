@@ -250,6 +250,53 @@ router.get('/:id', authenticate, async (req, res) => {
   }
 });
 
+// POST /api/education/:id/view - View registrieren
+router.post('/:id/view', authenticate, async (req, res) => {
+  try {
+    const material = await EducationMaterial.findById(req.params.id);
+
+    if (!material) {
+      return res.status(404).json({
+        success: false,
+        message: 'Material nicht gefunden'
+      });
+    }
+
+    const userId = req.user._id.toString();
+    const user = await User.findById(userId);
+    const isCreator = material.createdBy.toString() === userId;
+
+    // Slave-Berater haben nur Zugriff auf Materialien ihres Masters
+    const isSlaveBeraterWithAccess = user.masterBerater &&
+                                      material.createdBy.toString() === user.masterBerater.toString();
+
+    if (!isCreator && !isSlaveBeraterWithAccess) {
+      return res.status(403).json({
+        success: false,
+        message: 'Kein Zugriff auf dieses Material'
+      });
+    }
+
+    // View nur registrieren wenn NICHT der Ersteller
+    if (!isCreator) {
+      await material.registerView(userId);
+    }
+
+    res.json({
+      success: true,
+      message: 'View registriert',
+      data: { views: material.views }
+    });
+  } catch (error) {
+    console.error('Fehler beim Registrieren des Views:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Registrieren des Views',
+      error: error.message
+    });
+  }
+});
+
 // POST /api/education - Neues Material erstellen (nur Master Berater)
 router.post('/', authenticate, async (req, res) => {
   try {

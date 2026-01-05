@@ -321,6 +321,21 @@ export class EducationComponent implements OnInit, OnDestroy {
   }
 
   viewMaterial(material: EducationMaterial): void {
+    // View registrieren (nur für Nicht-Master-Berater)
+    if (material._id && !this.isMasterBerater) {
+      this.educationService.registerView(material._id).subscribe({
+        next: () => {
+          // View-Zähler im lokalen Material aktualisieren
+          const index = this.materials.findIndex(m => m._id === material._id);
+          if (index !== -1) {
+            this.materials[index].views = (this.materials[index].views || 0) + 1;
+            this.filterMaterials();
+          }
+        },
+        error: (err) => console.error('View konnte nicht registriert werden', err)
+      });
+    }
+
     if (material.type === 'video' && material.videoId) {
       // Zeige YouTube-Video im eingebetteten Player
       this.currentVideoId = material.videoId;
