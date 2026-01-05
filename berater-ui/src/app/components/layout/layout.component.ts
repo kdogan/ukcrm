@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 
 @Component({
     selector: 'app-layout',
-    imports: [CommonModule, RouterLink, RouterOutlet, RouterModule],
+    imports: [CommonModule, RouterLink, RouterOutlet, RouterModule, TranslateModule],
     templateUrl: './layout.component.html',
     styleUrls: ['./layout.component.scss']
 })

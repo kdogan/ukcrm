@@ -4,7 +4,7 @@
         <button class="burger-menu" (click)="toggleSidebar()">
             <i class="fas fa-bars fa-2x"></i>
         </button>
-        <span class="mobile-logo">Berater App</span>
+        <span class="mobile-logo">{{ 'APP.NAME' | translate }}</span>
     </header>
 
     <!-- Sidebar Overlay for Mobile -->
@@ -16,7 +16,7 @@
     <nav class="sidebar" [class.open]="sidebarOpen" [style.background]="sidebarColor">
         <div class="logo">
             <span class="logo-icon">🏢</span>
-            <h2 class="logo-text">Berater App</h2>
+            <h2 class="logo-text">{{ 'APP.NAME' | translate }}</h2>
         </div>
 
         <ul class="nav-menu">
@@ -24,73 +24,66 @@
             <li>
                 <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-dashboard fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.dashboard ||'Startseite' }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.dashboard || ('NAV.DASHBOARD' | translate) }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
             <li>
                 <a routerLink="/contracts" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-file-contract fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.contracts || 'Verträge' }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.contracts || ('NAV.CONTRACTS' | translate) }}</span>
                 </a>
             </li>
             <li>
                 <a routerLink="/customers" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-users fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.customers || 'Kunden'  }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.customers || ('NAV.CUSTOMERS' | translate) }}</span>
                 </a>
             </li>
             <li>
                 <a routerLink="/meters" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-bolt fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.meters || 'Zähler'  }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.meters || ('NAV.METERS' | translate) }}</span>
                 </a>
             </li>
             }
             <li>
                 <a routerLink="/todos" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-tasks fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.todos || 'Aufgaben'  }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.todos || ('NAV.TODOS' | translate) }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
             <li>
                 <a routerLink="/suppliers" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-truck fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.suppliers || 'Anbieter' }}</span>
+                    <span class="nav-text">{{ settings.sidebarLabels.suppliers || ('NAV.SUPPLIERS' | translate) }}</span>
                 </a>
             </li>
             <li>
                 <a routerLink="/education" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-graduation-cap fa-lg"></i>
-                    <span class="nav-text">Bildung</span>
+                    <span class="nav-text">{{ 'NAV.EDUCATION' | translate }}</span>
                 </a>
             </li>
-            
-            <!-- <li>
-                <a routerLink="/import" routerLinkActive="active" (click)="closeMenusAndSidebar()">
-                    <i class="fas fa-file-import fa-lg"></i>
-                    <span class="nav-text">Daten-Import</span>
-                </a>
-            </li> -->
             }
             <li>
                 <a routerLink="/support" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-life-ring fa-lg"></i>
-                    <span class="nav-text">Support</span>
+                    <span class="nav-text">{{ 'NAV.SUPPORT' | translate }}</span>
                 </a>
             </li>
             @if(currentUser?.role === 'superadmin'){
             <li>
                 <a routerLink="/admin" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-users fa-lg"></i>
-                    <span class="nav-text">Benutzer</span>
+                    <span class="nav-text">{{ 'NAV.USERS' | translate }}</span>
                 </a>
             </li>
             <li>
                 <a routerLink="/packages" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-box fa-lg"></i>
-                    <span class="nav-text">Pakete</span>
+                    <span class="nav-text">{{ 'NAV.PACKAGES' | translate }}</span>
                 </a>
             </li>
             }
@@ -113,14 +106,14 @@
                     <li>
                         <a routerLink="/settings" (click)="closeMenusAndSidebar()">
                             <i class="fas fa-cog"></i>
-                            <span>Einstellungen</span>
+                            <span>{{ 'NAV.SETTINGS' | translate }}</span>
                         </a>
                     </li>
                     }
                     <li>
                         <a (click)="logout()">
                             <i class="fas fa-sign-out-alt"></i>
-                            <span>Abmelden</span>
+                            <span>{{ 'NAV.LOGOUT' | translate }}</span>
                         </a>
                     </li>
                 </ul>

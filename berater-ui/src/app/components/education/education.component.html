@@ -72,10 +72,10 @@
 @if (showModal) {
 <app-overlay-modal (close)="closeModal()">
   <div class="modal-content">
-    <h2 class="modal-title">{{ isEditMode ? 'Material bearbeiten' : 'Neues Material erstellen' }}</h2>
+    <h2 class="modal-title">{{ isEditMode ? ('EDUCATION.EDIT_MATERIAL' | translate) : ('EDUCATION.NEW_MATERIAL' | translate) }}</h2>
     <form (ngSubmit)="saveMaterial()">
       <div class="form-group">
-        <label for="title">Titel *</label>
+        <label for="title">{{ 'EDUCATION.FIELDS.TITLE' | translate }} *</label>
         <input
           type="text"
           id="title"
@@ -87,7 +87,7 @@
       </div>
 
       <div class="form-group">
-        <label for="type">Typ *</label>
+        <label for="type">{{ 'EDUCATION.FIELDS.TYPE' | translate }} *</label>
         <select
           id="type"
           class="form-control"
@@ -95,18 +95,18 @@
           name="type"
           required
         >
-          <option value="video">Video</option>
-          <option value="pdf">PDF</option>
-          <option value="document">Dokument</option>
-          <option value="link">Link</option>
-          <option value="image">Bild</option>
+          <option value="video">{{ 'EDUCATION.TYPES.VIDEO' | translate }}</option>
+          <option value="pdf">{{ 'EDUCATION.TYPES.PDF' | translate }}</option>
+          <option value="document">{{ 'EDUCATION.TYPES.DOCUMENT' | translate }}</option>
+          <option value="link">{{ 'EDUCATION.TYPES.LINK' | translate }}</option>
+          <option value="image">{{ 'EDUCATION.TYPES.IMAGE' | translate }}</option>
         </select>
       </div>
 
       <!-- PDF Upload -->
       @if (currentMaterial.type === 'pdf') {
         <div class="form-group">
-          <label for="pdfFile">PDF hochladen *</label>
+          <label for="pdfFile">{{ 'COMMON.UPLOAD' | translate }} PDF *</label>
           <input
             type="file"
             id="pdfFile"
@@ -115,16 +115,16 @@
             accept="application/pdf"
             [required]="!isEditMode || !currentMaterial.pdfName"
           />
-          <small class="form-text">Maximale Dateigröße: 12 MB</small>
+          <small class="form-text">{{ 'EDUCATION.MAX_FILE_SIZE' | translate }}: 12 MB</small>
           @if (currentMaterial.pdfName) {
-            <small class="form-text text-success">Aktuelle Datei: {{ currentMaterial.pdfName }}</small>
+            <small class="form-text text-success">{{ 'EDUCATION.CURRENT_FILE' | translate }}: {{ currentMaterial.pdfName }}</small>
           }
         </div>
       }
 
 
       <div class="form-group">
-        <label for="category">Kategorie *</label>
+        <label for="category">{{ 'EDUCATION.FIELDS.CATEGORY' | translate }} *</label>
         <select
           id="category"
           class="form-control"
@@ -132,17 +132,17 @@
           name="category"
           required
         >
-          <option value="onboarding">Onboarding</option>
-          <option value="training">Training</option>
-          <option value="product-info">Produktinformationen</option>
-          <option value="sales">Vertrieb</option>
-          <option value="support">Support</option>
-          <option value="other">Sonstiges</option>
+          <option value="onboarding">{{ 'EDUCATION.CATEGORIES.ONBOARDING' | translate }}</option>
+          <option value="training">{{ 'EDUCATION.CATEGORIES.TRAINING' | translate }}</option>
+          <option value="product-info">{{ 'EDUCATION.CATEGORIES.PRODUCT' | translate }}</option>
+          <option value="sales">{{ 'EDUCATION.CATEGORIES.SALES' | translate }}</option>
+          <option value="support">{{ 'SUPPORT.TITLE' | translate }}</option>
+          <option value="other">{{ 'EDUCATION.CATEGORIES.OTHER' | translate }}</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="language">Sprache *</label>
+        <label for="language">{{ 'EDUCATION.FIELDS.LANGUAGE' | translate }} *</label>
         <select
           id="language"
           class="form-control"
@@ -150,14 +150,14 @@
           name="language"
           required
         >
-          <option value="de">Deutsch</option>
-          <option value="tr">Türkisch</option>
+          <option value="de">{{ 'EDUCATION.LANGUAGES.GERMAN' | translate }}</option>
+          <option value="tr">{{ 'EDUCATION.LANGUAGES.TURKISH' | translate }}</option>
         </select>
       </div>
 
       @if (currentMaterial.type !== 'pdf') {
         <div class="form-group">
-          <label for="url">URL *</label>
+          <label for="url">{{ 'EDUCATION.FIELDS.URL' | translate }} *</label>
           <input
             type="url"
             id="url"
@@ -168,13 +168,13 @@
             required
           />
           @if (currentMaterial.type === 'video') {
-            <small class="form-text">YouTube-URL (z.B. https://www.youtube.com/watch?v=...)</small>
+            <small class="form-text">{{ 'EDUCATION.YOUTUBE_URL_HINT' | translate }}</small>
           }
         </div>
       }
 
       <div class="form-group">
-        <label for="description">Beschreibung</label>
+        <label for="description">{{ 'EDUCATION.FIELDS.DESCRIPTION' | translate }}</label>
         <textarea
           id="description"
           class="form-control"
@@ -185,7 +185,7 @@
       </div>
 
       <div class="form-group">
-        <label>Mit Beratern teilen</label>
+        <label>{{ 'EDUCATION.SHARE_WITH_BERATER' | translate }}</label>
         <div class="berater-list">
           @for (berater of beraterList; track berater._id) {
             <div class="berater-item">
@@ -208,10 +208,10 @@
 
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" (click)="closeModal()">
-          Abbrechen
+          {{ 'COMMON.CANCEL' | translate }}
         </button>
         <button type="submit" class="btn btn-primary">
-          {{ isEditMode ? 'Aktualisieren' : 'Erstellen' }}
+          {{ isEditMode ? ('COMMON.UPDATE' | translate) : ('COMMON.CREATE' | translate) }}
         </button>
       </div>
     </form>
@@ -223,11 +223,11 @@
 @if (showDeleteConfirm) {
 <app-overlay-modal (close)="cancelDelete()">
   <div class="modal-content">
-    <h2 class="modal-title">Material löschen</h2>
-    <p>Möchten Sie das Material "{{ materialToDelete?.title }}" wirklich löschen?</p>
+    <h2 class="modal-title">{{ 'EDUCATION.DELETE_MATERIAL' | translate }}</h2>
+    <p>{{ 'EDUCATION.MESSAGES.DELETE_CONFIRM' | translate }} "{{ materialToDelete?.title }}"?</p>
     <div class="modal-actions">
-      <button class="btn btn-secondary" (click)="cancelDelete()">Abbrechen</button>
-      <button class="btn btn-danger" (click)="deleteMaterial()">Löschen</button>
+      <button class="btn btn-secondary" (click)="cancelDelete()">{{ 'COMMON.CANCEL' | translate }}</button>
+      <button class="btn btn-danger" (click)="deleteMaterial()">{{ 'COMMON.DELETE' | translate }}</button>
     </div>
   </div>
 </app-overlay-modal>

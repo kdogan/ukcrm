@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { TranslateModule } from '@ngx-translate/core';
 import { EducationService, EducationMaterial, EducationStats, Berater, ShareStatus } from '../../services/education.service';
 import { AuthService } from '../../services/auth.service';
 import { ViewportService } from '../../services/viewport.service';
@@ -15,6 +16,7 @@ import { OverlayModalComponent } from '../shared/overlay-modal.component';
   imports: [
     CommonModule,
     FormsModule,
+    TranslateModule,
     EducationDesktopComponent,
     EducationMobileComponent,
     OverlayModalComponent

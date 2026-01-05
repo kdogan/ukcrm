@@ -318,3 +318,79 @@ exports.getShareStatus = async (req, res) => {
     });
   }
 };
+
+/**
+ * 🌐 Benutzersprache abrufen
+ */
+exports.getLanguage = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const currentUser = await User.findById(currentUserId).select('language');
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Benutzer nicht gefunden'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        language: currentUser.language || 'de'
+      }
+    });
+  } catch (err) {
+    console.error('Fehler beim Abrufen der Sprache:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Abrufen der Sprache',
+      error: err.message
+    });
+  }
+};
+
+/**
+ * 🌐 Benutzersprache aktualisieren
+ */
+exports.updateLanguage = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const { language } = req.body;
+
+    // Validierung
+    if (!language || !['de', 'tr'].includes(language)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ungültige Sprache. Erlaubt sind: de, tr'
+      });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Benutzer nicht gefunden'
+      });
+    }
+
+    currentUser.language = language;
+    await currentUser.save();
+
+    res.json({
+      success: true,
+      message: 'Sprache erfolgreich aktualisiert',
+      data: {
+        language: currentUser.language
+      }
+    });
+  } catch (err) {
+    console.error('Fehler beim Aktualisieren der Sprache:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Aktualisieren der Sprache',
+      error: err.message
+    });
+  }
+};

@@ -1,9 +1,9 @@
 <div class="education-container">
   <div class="education-header">
-    <h1>📚 Bildung & Training</h1>
+    <h1>📚 {{ 'EDUCATION.TITLE' | translate }}</h1>
     @if (isMasterBerater) {
       <button class="btn btn-primary" (click)="createMaterial.emit()">
-        <i class="fas fa-plus"></i> Neues Material
+        <i class="fas fa-plus"></i> {{ 'EDUCATION.NEW_MATERIAL' | translate }}
       </button>
     }
   </div>
@@ -16,7 +16,7 @@
         </div>
         <div>
           <div class="stat-value">{{ stats.totalMaterials }}</div>
-          <div class="stat-label">Materialien</div>
+          <div class="stat-label">{{ 'EDUCATION.STATS.MATERIALS' | translate }}</div>
         </div>
       </div>
 
@@ -26,7 +26,7 @@
         </div>
         <div>
           <div class="stat-value">{{ stats.totalViews }}</div>
-          <div class="stat-label">Gesamt-Aufrufe</div>
+          <div class="stat-label">{{ 'EDUCATION.STATS.VIEWS' | translate }}</div>
         </div>
       </div>
 
@@ -36,7 +36,7 @@
         </div>
         <div>
           <div class="stat-value">{{ stats.sharedBeraterCount }}</div>
-          <div class="stat-label">Berater mit Zugriff</div>
+          <div class="stat-label">{{ 'EDUCATION.STATS.BERATER' | translate }}</div>
         </div>
       </div>
     </div>
@@ -47,22 +47,22 @@
     <div class="token-card master-token-card">
       <div class="token-card-header">
         <i class="fas fa-key"></i>
-        <h3>Ihr Zugangs-Token</h3>
+        <h3>{{ 'EDUCATION.TOKEN.YOUR_TOKEN' | translate }}</h3>
       </div>
-      <p class="token-description">Teilen Sie diesen Token mit Beratern, damit diese Ihre Materialien sehen können.</p>
+      <p class="token-description">{{ 'EDUCATION.TOKEN.TOKEN_DESC' | translate }}</p>
       @if (shareToken) {
         <div class="token-display">
           <span class="token-value">{{ shareToken }}</span>
-          <button class="btn btn-outline btn-sm" (click)="copyToken.emit()" title="Token kopieren">
+          <button class="btn btn-outline btn-sm" (click)="copyToken.emit()" [title]="'EDUCATION.TOKEN.COPY' | translate">
             <i class="fas fa-copy"></i>
           </button>
         </div>
         <button class="btn btn-secondary btn-sm" (click)="generateToken.emit()">
-          <i class="fas fa-sync"></i> Neuen Token generieren
+          <i class="fas fa-sync"></i> {{ 'EDUCATION.TOKEN.NEW_TOKEN' | translate }}
         </button>
       } @else {
         <button class="btn btn-primary" (click)="generateToken.emit()">
-          <i class="fas fa-key"></i> Token generieren
+          <i class="fas fa-key"></i> {{ 'EDUCATION.TOKEN.GENERATE' | translate }}
         </button>
       }
       @if (tokenSuccess) {
@@ -79,31 +79,31 @@
     <div class="token-card berater-token-card">
       <div class="token-card-header">
         <i class="fas fa-link"></i>
-        <h3>Mit Master Berater verbinden</h3>
+        <h3>{{ 'EDUCATION.TOKEN.CONNECT' | translate }}</h3>
       </div>
       @if (connectedMasterBerater) {
         <div class="connected-info">
           <div class="connected-badge">
             <i class="fas fa-check-circle"></i>
-            Sie können jetzt Bildungsmaterialien von  <strong>{{ connectedMasterBerater.firstName }} {{ connectedMasterBerater.lastName }}</strong> sehen.
+            {{ 'EDUCATION.TOKEN.CONNECTED' | translate }} <strong>{{ connectedMasterBerater.firstName }} {{ connectedMasterBerater.lastName }}</strong>
           </div>
           <button class="btn btn-outline btn-sm btn-danger-outline" (click)="disconnectFromMaster.emit()">
-            <i class="fas fa-unlink"></i> Verbindung trennen
+            <i class="fas fa-unlink"></i> {{ 'EDUCATION.TOKEN.DISCONNECT' | translate }}
           </button>
         </div>
       } @else {
-        <p class="token-description">Geben Sie den Token Ihres Master Beraters ein, um dessen Materialien zu sehen.</p>
+        <p class="token-description">{{ 'EDUCATION.TOKEN.CONNECT_DESC' | translate }}</p>
         <div class="token-input-group">
           <input
             type="text"
             class="form-control"
-            placeholder="Token eingeben (z.B. A1B2C3D4)"
+            [placeholder]="'EDUCATION.TOKEN.ENTER_TOKEN' | translate"
             [value]="tokenInput"
             (input)="tokenInputChange.emit($any($event.target).value)"
             (keyup.enter)="connectWithToken.emit()"
           />
           <button class="btn btn-primary" (click)="connectWithToken.emit()">
-            <i class="fas fa-plug"></i> Verbinden
+            <i class="fas fa-plug"></i> {{ 'EDUCATION.TOKEN.CONNECT_BTN' | translate }}
           </button>
         </div>
       }
@@ -122,7 +122,7 @@
         <i class="fas fa-search"></i>
         <input
           type="text"
-          placeholder="Materialien suchen..."
+          [placeholder]="'EDUCATION.SEARCH' | translate"
           [value]="searchTerm"
           (input)="searchChange.emit($any($event.target).value)"
         />
@@ -161,7 +161,7 @@
       </select>
 
       <button class="btn btn-outline btn-sm" (click)="resetFilters.emit()">
-        <i class="fas fa-redo"></i> Zurücksetzen
+        <i class="fas fa-redo"></i> {{ 'EDUCATION.RESET_FILTERS' | translate }}
       </button>
     </div>
   </div>
@@ -169,17 +169,17 @@
   @if (loading) {
     <div class="loading-container">
       <div class="spinner"></div>
-      <p>Lade Materialien...</p>
+      <p>{{ 'COMMON.LOADING' | translate }}</p>
     </div>
   } @else if (materials.length === 0) {
     <div class="empty-state">
       <i class="fas fa-book-open"></i>
-      <h3>Keine Materialien gefunden</h3>
+      <h3>{{ 'EDUCATION.NO_MATERIALS' | translate }}</h3>
       <p>
         @if (isMasterBerater) {
-          Erstellen Sie Ihr erstes Bildungsmaterial, um es mit Ihrem Team zu teilen.
+          {{ 'EDUCATION.NO_MATERIALS_MASTER' | translate }}
         } @else {
-          Aktuell wurden noch keine Materialien mit Ihnen geteilt.
+          {{ 'EDUCATION.NO_MATERIALS_BERATER' | translate }}
         }
       </p>
     </div>
@@ -219,10 +219,10 @@
 
               @if (isMasterBerater) {
                 <div class="material-actions">
-                  <button class="btn-icon" (click)="editMaterial.emit(material)" title="Bearbeiten">
+                  <button class="btn-icon" (click)="editMaterial.emit(material)" [title]="'COMMON.EDIT' | translate">
                     <i class="fas fa-edit"></i>
                   </button>
-                  <button class="btn-icon" (click)="deleteMaterial.emit(material)" title="Löschen">
+                  <button class="btn-icon" (click)="deleteMaterial.emit(material)" [title]="'COMMON.DELETE' | translate">
                     <i class="fas fa-trash"></i>
                   </button>
                 </div>
@@ -240,11 +240,11 @@
             <div class="material-footer">
               <div class="material-meta">
                 <span class="meta-item">
-                  <i class="fas fa-eye"></i> {{ material.views }} Aufrufe
+                  <i class="fas fa-eye"></i> {{ material.views }} {{ 'EDUCATION.VIEWS' | translate }}
                 </span>
                 @if (isMasterBerater) {
                   <span class="meta-item">
-                    <i class="fas fa-users"></i> {{ material.sharedWith.length }} Berater
+                    <i class="fas fa-users"></i> {{ material.sharedWith.length }} {{ 'EDUCATION.BERATER_COUNT' | translate }}
                   </span>
                 }
               </div>

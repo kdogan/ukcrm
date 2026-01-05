@@ -126,6 +126,12 @@ const userSchema = new mongoose.Schema({
   lastLogin: {
     type: Date
   },
+  // Bevorzugte Sprache des Benutzers
+  language: {
+    type: String,
+    enum: ['de', 'tr'],
+    default: 'de'
+  },
   settings: {
     reminderDays: {
       days90: { type: Boolean, default: true },

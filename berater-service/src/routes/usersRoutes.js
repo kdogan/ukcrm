@@ -7,7 +7,9 @@ const {
   generateShareToken,
   connectByToken,
   disconnectMasterBerater,
-  getShareStatus
+  getShareStatus,
+  getLanguage,
+  updateLanguage
 } = require('../controllers/usersController');
 
 // Auth Middleware
@@ -30,5 +32,11 @@ router.post('/connect-by-token', connectByToken);
 
 // POST /api/users/disconnect-master -> Verbindung zum Master Berater trennen
 router.post('/disconnect-master', disconnectMasterBerater);
+
+// GET /api/users/language -> Benutzersprache abrufen
+router.get('/language', getLanguage);
+
+// PUT /api/users/language -> Benutzersprache aktualisieren
+router.put('/language', updateLanguage);
 
 module.exports = router;

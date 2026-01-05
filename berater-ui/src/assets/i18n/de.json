@@ -1,0 +1,574 @@
+{
+  "APP": {
+    "NAME": "Berater App",
+    "LOADING": "Laden..."
+  },
+  "NAV": {
+    "DASHBOARD": "Startseite",
+    "CONTRACTS": "Verträge",
+    "CUSTOMERS": "Kunden",
+    "METERS": "Zähler",
+    "TODOS": "Aufgaben",
+    "SUPPLIERS": "Anbieter",
+    "EDUCATION": "Bildung",
+    "SUPPORT": "Support",
+    "USERS": "Benutzer",
+    "PACKAGES": "Pakete",
+    "SETTINGS": "Einstellungen",
+    "LOGOUT": "Abmelden",
+    "DATA_IMPORT": "Daten-Import"
+  },
+  "AUTH": {
+    "LOGIN": "Anmelden",
+    "REGISTER": "Registrieren",
+    "LOGOUT": "Abmelden",
+    "EMAIL": "E-Mail",
+    "PASSWORD": "Passwort",
+    "CONFIRM_PASSWORD": "Passwort bestätigen",
+    "FORGOT_PASSWORD": "Passwort vergessen?",
+    "RESET_PASSWORD": "Passwort zurücksetzen",
+    "NEW_PASSWORD": "Neues Passwort",
+    "CURRENT_PASSWORD": "Aktuelles Passwort",
+    "FIRST_NAME": "Vorname",
+    "LAST_NAME": "Nachname",
+    "COMPANY": "Firma",
+    "PHONE": "Telefon",
+    "REMEMBER_ME": "Angemeldet bleiben",
+    "NO_ACCOUNT": "Noch kein Konto?",
+    "HAVE_ACCOUNT": "Bereits ein Konto?",
+    "VERIFY_EMAIL": "E-Mail bestätigen",
+    "VERIFICATION_SENT": "Bestätigungslink wurde gesendet",
+    "LOGIN_SUCCESS": "Erfolgreich angemeldet",
+    "LOGOUT_SUCCESS": "Erfolgreich abgemeldet",
+    "REGISTER_SUCCESS": "Registrierung erfolgreich",
+    "PASSWORD_CHANGED": "Passwort erfolgreich geändert",
+    "PASSWORD_RESET_SENT": "Link zum Zurücksetzen wurde gesendet",
+    "INVALID_CREDENTIALS": "Ungültige Anmeldedaten",
+    "EMAIL_NOT_VERIFIED": "E-Mail wurde noch nicht bestätigt",
+    "PASSWORD_MIN_LENGTH": "Das Passwort muss mindestens 8 Zeichen lang sein",
+    "PASSWORDS_NOT_MATCH": "Die Passwörter stimmen nicht überein"
+  },
+  "SETTINGS": {
+    "TITLE": "Einstellungen",
+    "REMINDERS": {
+      "TITLE": "Erinnerungen für Vertragsablauf",
+      "DESCRIPTION": "Wählen Sie aus, wann Sie vor Vertragsablauf benachrichtigt werden möchten.",
+      "DAYS_BEFORE": "Tage vor Ablauf",
+      "CUSTOM_DAYS": "Benutzerdefiniert",
+      "DAYS_90": "90 Tage vor Ablauf",
+      "DAYS_60": "60 Tage vor Ablauf",
+      "DAYS_30": "30 Tage vor Ablauf",
+      "EMAIL_NOTIFY": "Zusätzlich per E-Mail benachrichtigen"
+    },
+    "SIDEBAR": {
+      "TITLE": "Sidebar-Bezeichnungen anpassen",
+      "DESCRIPTION": "Passen Sie die Bezeichnungen in der Sidebar nach Ihren Wünschen an."
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Benachrichtigungen",
+      "DESCRIPTION": "Wählen Sie aus, wie Sie benachrichtigt werden möchten.",
+      "EMAIL": "E-Mail-Benachrichtigungen",
+      "BROWSER": "Browser-Benachrichtigungen"
+    },
+    "APPEARANCE": {
+      "TITLE": "Erscheinungsbild",
+      "DESCRIPTION": "Passen Sie das Aussehen der Anwendung an.",
+      "SIDEBAR_COLOR": "Sidebar-Farbe",
+      "PRIMARY_COLOR": "Primärfarbe",
+      "ACCENT_COLOR": "Akzentfarbe",
+      "PRIMARY_HINT": "Farbe für Buttons, Links und aktive Elemente",
+      "ACCENT_HINT": "Zweite Farbe für Hervorhebungen und Gradienten",
+      "COLORS": {
+        "MINT": "Mintgrün (Standard)",
+        "BLUE": "Blau",
+        "PURPLE": "Lila",
+        "ORANGE": "Orange",
+        "RED": "Rot"
+      }
+    },
+    "LANGUAGE": {
+      "TITLE": "Sprache",
+      "DESCRIPTION": "Wählen Sie die Anzeigesprache der Anwendung.",
+      "SELECT": "Sprache auswählen",
+      "GERMAN": "Deutsch",
+      "TURKISH": "Türkçe"
+    },
+    "PACKAGE": {
+      "TITLE": "Ihr Paket",
+      "DESCRIPTION": "Verwalten Sie Ihr aktuelles Paket und sehen Sie Ihre Nutzung.",
+      "CURRENT": "Aktuell",
+      "REQUESTED": "Beantragt",
+      "MONTHLY": "Monatlich",
+      "YEARLY": "Jährlich",
+      "PER_MONTH": "/ Monat",
+      "PER_YEAR": "/ Jahr",
+      "SAVE_2_MONTHS": "2 Monate sparen",
+      "YOU_SAVE": "Sie sparen",
+      "CONTRACTS": "Verträge",
+      "UNLIMITED": "Unbegrenzt",
+      "FILE_UPLOAD": "Dateiupload",
+      "ALLOWED": "erlaubt",
+      "NOT_ALLOWED": "nicht erlaubt",
+      "UPGRADE": "Upgraden",
+      "DOWNGRADE": "Downgraden",
+      "IN_PROGRESS": "In Bearbeitung...",
+      "NOT_AVAILABLE": "Nicht verfügbar",
+      "AVAILABLE_PACKAGES": "Verfügbare Pakete",
+      "UPGRADE_PENDING": "Upgrade-Anfrage wird bearbeitet",
+      "WAITING_PAYMENT": "wurde erstellt und wartet auf Zahlung.",
+      "ADMIN_REVIEW": "wird vom Administrator geprüft.",
+      "PRICE": "Preis",
+      "STATUS": "Status",
+      "CREATED": "Erstellt",
+      "FREE_UNTIL": "Sie können das kostenlose Paket mit vollem Funktionsumfang bis",
+      "FREE_UNTIL_2": "nutzen. Danach wird das Paket automatisch auf 30 Verträge und ohne Dateiupload umgestellt. Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst zu wählen."
+    },
+    "PASSWORD": {
+      "TITLE": "Passwort ändern",
+      "DESCRIPTION": "Ändern Sie Ihr Passwort für mehr Sicherheit.",
+      "CURRENT": "Aktuelles Passwort",
+      "NEW": "Neues Passwort",
+      "CONFIRM": "Passwort bestätigen",
+      "MIN_CHARS": "min. 8 Zeichen",
+      "CHANGE": "Passwort ändern",
+      "CHANGING": "Wird geändert..."
+    },
+    "ACTIONS": {
+      "SAVE": "Änderungen speichern",
+      "RESET": "Auf Standardwerte zurücksetzen",
+      "SAVED": "Einstellungen gespeichert"
+    },
+    "UPGRADE_STATUS": {
+      "PENDING": "Neu",
+      "PAYMENT_RECEIVED": "Zahlung erhalten",
+      "APPROVED": "Genehmigt",
+      "REJECTED": "Abgelehnt",
+      "CANCELLED": "Storniert"
+    }
+  },
+  "DASHBOARD": {
+    "TITLE": "Dashboard",
+    "WELCOME": "Willkommen",
+    "OVERVIEW": "Übersicht",
+    "CONTRACTS": "Verträge",
+    "CUSTOMERS": "Kunden",
+    "METERS": "Zähler",
+    "SUPPLIERS": "Anbieter",
+    "TODOS": "Offene Aufgaben",
+    "EXPIRING_SOON": "Bald ablaufend",
+    "EXPIRED": "Abgelaufen",
+    "ACTIVE": "Aktiv",
+    "NO_EXPIRING": "Keine ablaufenden Verträge",
+    "SUBSCRIPTION": {
+      "TITLE": "Ihr Abonnement",
+      "PACKAGE": "Paket",
+      "USAGE": "Nutzung",
+      "UPGRADE": "Upgrade verfügbar"
+    }
+  },
+  "CONTRACTS": {
+    "TITLE": "Verträge",
+    "NEW": "Neuer Vertrag",
+    "EDIT": "Vertrag bearbeiten",
+    "DELETE": "Vertrag löschen",
+    "SEARCH": "Verträge suchen...",
+    "FILTER": {
+      "ALL": "Alle",
+      "ACTIVE": "Aktiv",
+      "EXPIRING": "Bald ablaufend",
+      "EXPIRED": "Abgelaufen"
+    },
+    "FIELDS": {
+      "CONTRACT_NUMBER": "Vertragsnummer",
+      "CUSTOMER": "Kunde",
+      "SUPPLIER": "Anbieter",
+      "START_DATE": "Startdatum",
+      "END_DATE": "Enddatum",
+      "STATUS": "Status",
+      "TYPE": "Vertragsart",
+      "NOTES": "Notizen",
+      "METER": "Zähler",
+      "PRICE": "Preis",
+      "UNIT": "Einheit"
+    },
+    "STATUS": {
+      "ACTIVE": "Aktiv",
+      "EXPIRING": "Läuft bald ab",
+      "EXPIRED": "Abgelaufen"
+    },
+    "TYPES": {
+      "ELECTRICITY": "Strom",
+      "GAS": "Gas",
+      "WATER": "Wasser",
+      "INTERNET": "Internet",
+      "PHONE": "Telefon",
+      "INSURANCE": "Versicherung",
+      "OTHER": "Sonstige"
+    },
+    "MESSAGES": {
+      "CREATED": "Vertrag erfolgreich erstellt",
+      "UPDATED": "Vertrag erfolgreich aktualisiert",
+      "DELETED": "Vertrag erfolgreich gelöscht",
+      "DELETE_CONFIRM": "Möchten Sie diesen Vertrag wirklich löschen?"
+    },
+    "NO_CONTRACTS": "Keine Verträge gefunden",
+    "NO_CONTRACTS_DESC": "Erstellen Sie Ihren ersten Vertrag",
+    "DAYS_LEFT": "Tage verbleibend",
+    "DAYS_OVERDUE": "Tage überfällig"
+  },
+  "CUSTOMERS": {
+    "TITLE": "Kunden",
+    "NEW": "Neuer Kunde",
+    "EDIT": "Kunde bearbeiten",
+    "DELETE": "Kunde löschen",
+    "SEARCH": "Kunden suchen...",
+    "FIELDS": {
+      "CUSTOMER_NUMBER": "Kundennummer",
+      "FIRST_NAME": "Vorname",
+      "LAST_NAME": "Nachname",
+      "COMPANY": "Firma",
+      "EMAIL": "E-Mail",
+      "PHONE": "Telefon",
+      "ADDRESS": "Adresse",
+      "STREET": "Straße",
+      "ZIP": "PLZ",
+      "CITY": "Stadt",
+      "COUNTRY": "Land",
+      "NOTES": "Notizen"
+    },
+    "MESSAGES": {
+      "CREATED": "Kunde erfolgreich erstellt",
+      "UPDATED": "Kunde erfolgreich aktualisiert",
+      "DELETED": "Kunde erfolgreich gelöscht",
+      "DELETE_CONFIRM": "Möchten Sie diesen Kunden wirklich löschen?"
+    },
+    "NO_CUSTOMERS": "Keine Kunden gefunden",
+    "NO_CUSTOMERS_DESC": "Erstellen Sie Ihren ersten Kunden",
+    "CONTRACTS_COUNT": "Verträge"
+  },
+  "METERS": {
+    "TITLE": "Zähler",
+    "NEW": "Neuer Zähler",
+    "EDIT": "Zähler bearbeiten",
+    "DELETE": "Zähler löschen",
+    "SEARCH": "Zähler suchen...",
+    "FIELDS": {
+      "METER_NUMBER": "Zählernummer",
+      "TYPE": "Typ",
+      "CUSTOMER": "Kunde",
+      "LOCATION": "Standort",
+      "READING": "Zählerstand",
+      "LAST_READING": "Letzter Stand",
+      "READING_DATE": "Ablesedatum",
+      "NOTES": "Notizen"
+    },
+    "TYPES": {
+      "ELECTRICITY": "Strom",
+      "GAS": "Gas",
+      "WATER": "Wasser",
+      "HEAT": "Wärme"
+    },
+    "MESSAGES": {
+      "CREATED": "Zähler erfolgreich erstellt",
+      "UPDATED": "Zähler erfolgreich aktualisiert",
+      "DELETED": "Zähler erfolgreich gelöscht",
+      "DELETE_CONFIRM": "Möchten Sie diesen Zähler wirklich löschen?"
+    },
+    "NO_METERS": "Keine Zähler gefunden",
+    "NO_METERS_DESC": "Erstellen Sie Ihren ersten Zähler"
+  },
+  "SUPPLIERS": {
+    "TITLE": "Anbieter",
+    "NEW": "Neuer Anbieter",
+    "EDIT": "Anbieter bearbeiten",
+    "DELETE": "Anbieter löschen",
+    "SEARCH": "Anbieter suchen...",
+    "FIELDS": {
+      "NAME": "Name",
+      "TYPE": "Typ",
+      "EMAIL": "E-Mail",
+      "PHONE": "Telefon",
+      "WEBSITE": "Website",
+      "ADDRESS": "Adresse",
+      "NOTES": "Notizen",
+      "CONTACT_PERSON": "Ansprechpartner"
+    },
+    "TYPES": {
+      "ELECTRICITY": "Strom",
+      "GAS": "Gas",
+      "WATER": "Wasser",
+      "INTERNET": "Internet",
+      "PHONE": "Telefon",
+      "INSURANCE": "Versicherung",
+      "OTHER": "Sonstige"
+    },
+    "MESSAGES": {
+      "CREATED": "Anbieter erfolgreich erstellt",
+      "UPDATED": "Anbieter erfolgreich aktualisiert",
+      "DELETED": "Anbieter erfolgreich gelöscht",
+      "DELETE_CONFIRM": "Möchten Sie diesen Anbieter wirklich löschen?"
+    },
+    "NO_SUPPLIERS": "Keine Anbieter gefunden",
+    "NO_SUPPLIERS_DESC": "Erstellen Sie Ihren ersten Anbieter",
+    "CONTRACTS_COUNT": "Verträge"
+  },
+  "TODOS": {
+    "TITLE": "Aufgaben",
+    "NEW": "Neue Aufgabe",
+    "EDIT": "Aufgabe bearbeiten",
+    "DELETE": "Aufgabe löschen",
+    "SEARCH": "Aufgaben suchen...",
+    "FILTER": {
+      "ALL": "Alle",
+      "OPEN": "Offen",
+      "IN_PROGRESS": "In Bearbeitung",
+      "COMPLETED": "Erledigt"
+    },
+    "FIELDS": {
+      "TITLE": "Titel",
+      "DESCRIPTION": "Beschreibung",
+      "DUE_DATE": "Fälligkeitsdatum",
+      "PRIORITY": "Priorität",
+      "STATUS": "Status",
+      "ASSIGNED_TO": "Zugewiesen an",
+      "CONTRACT": "Vertrag",
+      "CUSTOMER": "Kunde"
+    },
+    "PRIORITY": {
+      "LOW": "Niedrig",
+      "MEDIUM": "Mittel",
+      "HIGH": "Hoch",
+      "URGENT": "Dringend"
+    },
+    "STATUS": {
+      "OPEN": "Offen",
+      "IN_PROGRESS": "In Bearbeitung",
+      "COMPLETED": "Erledigt"
+    },
+    "MESSAGES": {
+      "CREATED": "Aufgabe erfolgreich erstellt",
+      "UPDATED": "Aufgabe erfolgreich aktualisiert",
+      "DELETED": "Aufgabe erfolgreich gelöscht",
+      "DELETE_CONFIRM": "Möchten Sie diese Aufgabe wirklich löschen?",
+      "COMPLETED": "Aufgabe als erledigt markiert"
+    },
+    "NO_TODOS": "Keine Aufgaben gefunden",
+    "NO_TODOS_DESC": "Erstellen Sie Ihre erste Aufgabe"
+  },
+  "EDUCATION": {
+    "TITLE": "Bildung & Training",
+    "NEW_MATERIAL": "Neues Material",
+    "EDIT_MATERIAL": "Material bearbeiten",
+    "DELETE_MATERIAL": "Material löschen",
+    "SEARCH": "Materialien suchen...",
+    "FILTER": {
+      "ALL_CATEGORIES": "Alle Kategorien",
+      "ALL_TYPES": "Alle Typen",
+      "ALL_LANGUAGES": "Alle Sprachen"
+    },
+    "CATEGORIES": {
+      "ONBOARDING": "Onboarding",
+      "TRAINING": "Training",
+      "PRODUCT": "Produkt",
+      "SALES": "Vertrieb",
+      "COMPLIANCE": "Compliance",
+      "OTHER": "Sonstige"
+    },
+    "TYPES": {
+      "VIDEO": "Video",
+      "PDF": "PDF",
+      "DOCUMENT": "Dokument",
+      "LINK": "Link",
+      "IMAGE": "Bild"
+    },
+    "LANGUAGES": {
+      "GERMAN": "Deutsch",
+      "TURKISH": "Türkisch",
+      "ENGLISH": "Englisch"
+    },
+    "FIELDS": {
+      "TITLE": "Titel",
+      "DESCRIPTION": "Beschreibung",
+      "CATEGORY": "Kategorie",
+      "TYPE": "Typ",
+      "LANGUAGE": "Sprache",
+      "URL": "URL",
+      "FILE": "Datei"
+    },
+    "STATS": {
+      "MATERIALS": "Materialien",
+      "VIEWS": "Gesamt-Aufrufe",
+      "BERATER": "Berater mit Zugriff"
+    },
+    "TOKEN": {
+      "YOUR_TOKEN": "Ihr Zugangs-Token",
+      "TOKEN_DESC": "Teilen Sie diesen Token mit Beratern, damit diese Ihre Materialien sehen können.",
+      "GENERATE": "Token generieren",
+      "NEW_TOKEN": "Neuen Token generieren",
+      "COPY": "Token kopieren",
+      "COPIED": "Token in die Zwischenablage kopiert!",
+      "GENERATED": "Token erfolgreich generiert!",
+      "CONNECT": "Mit Master Berater verbinden",
+      "CONNECT_DESC": "Geben Sie den Token Ihres Master Beraters ein, um dessen Materialien zu sehen.",
+      "ENTER_TOKEN": "Token eingeben",
+      "CONNECT_BTN": "Verbinden",
+      "CONNECTED": "Verbunden mit",
+      "DISCONNECT": "Verbindung trennen",
+      "DISCONNECTED": "Verbindung erfolgreich getrennt",
+      "INVALID_TOKEN": "Ungültiger Token",
+      "ENTER_TOKEN_ERROR": "Bitte geben Sie einen Token ein"
+    },
+    "MESSAGES": {
+      "CREATED": "Material erfolgreich erstellt",
+      "UPDATED": "Material erfolgreich aktualisiert",
+      "DELETED": "Material erfolgreich gelöscht",
+      "DELETE_CONFIRM": "Möchten Sie dieses Material wirklich löschen?"
+    },
+    "NO_MATERIALS": "Keine Materialien gefunden",
+    "NO_MATERIALS_MASTER": "Erstellen Sie Ihr erstes Bildungsmaterial, um es mit Ihrem Team zu teilen.",
+    "NO_MATERIALS_BERATER": "Aktuell wurden noch keine Materialien mit Ihnen geteilt.",
+    "VIEWS": "Aufrufe",
+    "BERATER_COUNT": "Berater",
+    "RESET_FILTERS": "Zurücksetzen",
+    "MAX_FILE_SIZE": "Maximale Dateigröße",
+    "CURRENT_FILE": "Aktuelle Datei",
+    "YOUTUBE_URL_HINT": "YouTube-URL (z.B. https://www.youtube.com/watch?v=...)",
+    "SHARE_WITH_BERATER": "Mit Beratern teilen"
+  },
+  "SUPPORT": {
+    "TITLE": "Support",
+    "CONTACT": "Kontakt",
+    "FAQ": "Häufige Fragen",
+    "SEND_MESSAGE": "Nachricht senden",
+    "SUBJECT": "Betreff",
+    "MESSAGE": "Nachricht",
+    "SEND": "Absenden",
+    "SENT_SUCCESS": "Ihre Nachricht wurde erfolgreich gesendet"
+  },
+  "ADMIN": {
+    "TITLE": "Benutzerverwaltung",
+    "USERS": "Benutzer",
+    "SEARCH": "Benutzer suchen...",
+    "NEW_USER": "Neuer Benutzer",
+    "EDIT_USER": "Benutzer bearbeiten",
+    "DELETE_USER": "Benutzer löschen",
+    "BLOCK_USER": "Benutzer sperren",
+    "UNBLOCK_USER": "Benutzer entsperren",
+    "RESET_PASSWORD": "Passwort zurücksetzen",
+    "FIELDS": {
+      "NAME": "Name",
+      "EMAIL": "E-Mail",
+      "ROLE": "Rolle",
+      "PACKAGE": "Paket",
+      "STATUS": "Status",
+      "CREATED": "Erstellt am",
+      "LAST_LOGIN": "Letzter Login"
+    },
+    "ROLES": {
+      "USER": "Benutzer",
+      "BERATER": "Berater",
+      "SUPERADMIN": "Administrator"
+    },
+    "STATUS": {
+      "ACTIVE": "Aktiv",
+      "BLOCKED": "Gesperrt",
+      "PENDING": "Ausstehend"
+    },
+    "MESSAGES": {
+      "UPDATED": "Benutzer erfolgreich aktualisiert",
+      "DELETED": "Benutzer erfolgreich gelöscht",
+      "BLOCKED": "Benutzer wurde gesperrt",
+      "UNBLOCKED": "Benutzer wurde entsperrt",
+      "PASSWORD_RESET": "Passwort wurde zurückgesetzt"
+    }
+  },
+  "COMMON": {
+    "SAVE": "Speichern",
+    "CANCEL": "Abbrechen",
+    "DELETE": "Löschen",
+    "EDIT": "Bearbeiten",
+    "CREATE": "Erstellen",
+    "UPDATE": "Aktualisieren",
+    "CLOSE": "Schließen",
+    "BACK": "Zurück",
+    "NEXT": "Weiter",
+    "PREVIOUS": "Zurück",
+    "YES": "Ja",
+    "NO": "Nein",
+    "OK": "OK",
+    "CONFIRM": "Bestätigen",
+    "SEARCH": "Suchen",
+    "FILTER": "Filter",
+    "SORT": "Sortieren",
+    "EXPORT": "Exportieren",
+    "IMPORT": "Importieren",
+    "DOWNLOAD": "Herunterladen",
+    "UPLOAD": "Hochladen",
+    "REFRESH": "Aktualisieren",
+    "LOADING": "Laden...",
+    "SAVING": "Speichern...",
+    "DELETING": "Löschen...",
+    "PROCESSING": "Verarbeiten...",
+    "REQUIRED": "Pflichtfeld",
+    "OPTIONAL": "Optional",
+    "SELECT": "Auswählen",
+    "SELECT_OPTION": "Option auswählen",
+    "NO_DATA": "Keine Daten vorhanden",
+    "NO_RESULTS": "Keine Ergebnisse gefunden",
+    "ACTIONS": "Aktionen",
+    "DETAILS": "Details",
+    "VIEW": "Ansehen",
+    "ALL": "Alle",
+    "NONE": "Keine",
+    "DATE": "Datum",
+    "TIME": "Uhrzeit",
+    "FROM": "Von",
+    "TO": "Bis",
+    "STATUS": "Status",
+    "TYPE": "Typ",
+    "NAME": "Name",
+    "DESCRIPTION": "Beschreibung",
+    "NOTES": "Notizen",
+    "EMAIL": "E-Mail",
+    "PHONE": "Telefon"
+  },
+  "ERRORS": {
+    "GENERIC": "Ein Fehler ist aufgetreten",
+    "NETWORK": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
+    "NOT_FOUND": "Nicht gefunden",
+    "UNAUTHORIZED": "Nicht autorisiert",
+    "FORBIDDEN": "Zugriff verweigert",
+    "VALIDATION": "Bitte überprüfen Sie Ihre Eingaben",
+    "SAVE_FAILED": "Fehler beim Speichern",
+    "DELETE_FAILED": "Fehler beim Löschen",
+    "LOAD_FAILED": "Fehler beim Laden",
+    "SESSION_EXPIRED": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    "SERVER_ERROR": "Serverfehler. Bitte versuchen Sie es später erneut.",
+    "LIMIT_REACHED": "Limit erreicht",
+    "FILE_TOO_LARGE": "Die Datei ist zu groß",
+    "INVALID_FILE_TYPE": "Ungültiger Dateityp",
+    "REQUIRED_FIELD": "Dieses Feld ist erforderlich"
+  },
+  "MESSAGES": {
+    "CONFIRM_DELETE": "Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?",
+    "CONFIRM_ACTION": "Sind Sie sicher, dass Sie diese Aktion ausführen möchten?",
+    "UNSAVED_CHANGES": "Sie haben ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?",
+    "SUCCESS": "Erfolgreich",
+    "ERROR": "Fehler",
+    "WARNING": "Warnung",
+    "INFO": "Information",
+    "CHANGES_SAVED": "Änderungen wurden gespeichert",
+    "OPERATION_SUCCESS": "Vorgang erfolgreich abgeschlossen",
+    "OPERATION_FAILED": "Vorgang fehlgeschlagen"
+  },
+  "VALIDATION": {
+    "REQUIRED": "Dieses Feld ist erforderlich",
+    "EMAIL": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "MIN_LENGTH": "Mindestens {{min}} Zeichen erforderlich",
+    "MAX_LENGTH": "Maximal {{max}} Zeichen erlaubt",
+    "PATTERN": "Ungültiges Format",
+    "DATE": "Ungültiges Datum",
+    "NUMBER": "Bitte geben Sie eine Zahl ein",
+    "URL": "Bitte geben Sie eine gültige URL ein"
+  }
+}

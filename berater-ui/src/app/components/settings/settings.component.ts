@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 import { PackageService, Package, UserLimits } from '../../services/package.service';
 import { UpgradeService } from '../../services/upgrade.service';
@@ -8,10 +9,11 @@ import { AuthService } from '../../services/auth.service';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { SettingsMobileComponent } from './mobile/settings-mobile.component';
 import { PaypalService } from '../../services/paypal.service';
+import { LanguageService, Language } from '../../services/language.service';
 
 @Component({
     selector: 'app-settings',
-    imports: [CommonModule, FormsModule, SettingsMobileComponent],
+    imports: [CommonModule, FormsModule, SettingsMobileComponent, TranslateModule],
     standalone: true,
     template: `
     @if(isMobile){
@@ -37,15 +39,15 @@ import { PaypalService } from '../../services/paypal.service';
     } @else {
     <div class="page-container">
       <div class="page-header">
-        <h1>Einstellungen</h1>
+        <h1>{{ 'SETTINGS.TITLE' | translate }}</h1>
       </div>
 
       <div class="settings-content">
         <!-- Erinnerungen für Vertragsablauf -->
         <div class="settings-section">
-          <h2>📅 Erinnerungen für Vertragsablauf</h2>
+          <h2>📅 {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h2>
           <p class="section-description">
-            Wählen Sie aus, wann Sie vor Vertragsablauf benachrichtigt werden möchten.
+            {{ 'SETTINGS.REMINDERS.DESCRIPTION' | translate }}
           </p>
 
           <div class="setting-group">
@@ -55,7 +57,7 @@ import { PaypalService } from '../../services/paypal.service';
                 [(ngModel)]="settings.reminderDays.days90"
                 (change)="saveSettings()"
               />
-              <span>90 Tage vor Ablauf</span>
+              <span>{{ 'SETTINGS.REMINDERS.DAYS_90' | translate }}</span>
             </label>
 
             <label class="checkbox-label">
@@ -64,7 +66,7 @@ import { PaypalService } from '../../services/paypal.service';
                 [(ngModel)]="settings.reminderDays.days60"
                 (change)="saveSettings()"
               />
-              <span>60 Tage vor Ablauf</span>
+              <span>{{ 'SETTINGS.REMINDERS.DAYS_60' | translate }}</span>
             </label>
 
             <label class="checkbox-label">
@@ -73,11 +75,11 @@ import { PaypalService } from '../../services/paypal.service';
                 [(ngModel)]="settings.reminderDays.days30"
                 (change)="saveSettings()"
               />
-              <span>30 Tage vor Ablauf</span>
+              <span>{{ 'SETTINGS.REMINDERS.DAYS_30' | translate }}</span>
             </label> -->
 
             <div class="custom-days">
-              <label>Benutzerdefiniert: {{ settings.reminderDays.custom || 1 }} Tage vor Ablauf</label>
+              <label>{{ 'SETTINGS.REMINDERS.CUSTOM_DAYS' | translate }}: {{ settings.reminderDays.custom || 1 }} {{ 'SETTINGS.REMINDERS.DAYS_BEFORE' | translate }}</label>
               <div class="slider-container">
                 <span class="slider-label">1</span>
                 <input
@@ -99,81 +101,81 @@ import { PaypalService } from '../../services/paypal.service';
                 [(ngModel)]="settings.reminderDays.sendEmail"
                 (change)="saveSettings()"
               />
-              <span>📧 Zusätzlich per E-Mail benachrichtigen</span>
+              <span>📧 {{ 'SETTINGS.REMINDERS.EMAIL_NOTIFY' | translate }}</span>
             </label>
           </div>
         </div>
 
         <!-- Sidebar-Bezeichnungen -->
         <div class="settings-section">
-          <h2>🎨 Sidebar-Bezeichnungen anpassen</h2>
+          <h2>🎨 {{ 'SETTINGS.SIDEBAR.TITLE' | translate }}</h2>
           <p class="section-description">
-            Passen Sie die Bezeichnungen in der Sidebar nach Ihren Wünschen an.
+            {{ 'SETTINGS.SIDEBAR.DESCRIPTION' | translate }}
           </p>
 
           <div class="setting-group">
             <div class="input-group">
-              <label>Dashboard:</label>
+              <label>{{ 'NAV.DASHBOARD' | translate }}:</label>
               <input
                 type="text"
                 [(ngModel)]="settings.sidebarLabels.dashboard"
                 (blur)="saveSettings()"
-                placeholder="Dashboard"
+                [placeholder]="'NAV.DASHBOARD' | translate"
                 class="input-field"
               />
             </div>
 
             <div class="input-group">
-              <label>Kunden:</label>
+              <label>{{ 'NAV.CUSTOMERS' | translate }}:</label>
               <input
                 type="text"
                 [(ngModel)]="settings.sidebarLabels.customers"
                 (blur)="saveSettings()"
-                placeholder="Kunden"
+                [placeholder]="'NAV.CUSTOMERS' | translate"
                 class="input-field"
               />
             </div>
 
             <div class="input-group">
-              <label>Zähler:</label>
+              <label>{{ 'NAV.METERS' | translate }}:</label>
               <input
                 type="text"
                 [(ngModel)]="settings.sidebarLabels.meters"
                 (blur)="saveSettings()"
-                placeholder="Zähler"
+                [placeholder]="'NAV.METERS' | translate"
                 class="input-field"
               />
             </div>
 
             <div class="input-group">
-              <label>Verträge:</label>
+              <label>{{ 'NAV.CONTRACTS' | translate }}:</label>
               <input
                 type="text"
                 [(ngModel)]="settings.sidebarLabels.contracts"
                 (blur)="saveSettings()"
-                placeholder="Verträge"
+                [placeholder]="'NAV.CONTRACTS' | translate"
                 class="input-field"
               />
             </div>
 
             <div class="input-group">
-              <label>TODOs:</label>
+              <label>{{ 'NAV.TODOS' | translate }}:</label>
               <input
                 type="text"
                 [(ngModel)]="settings.sidebarLabels.todos"
                 (blur)="saveSettings()"
-                placeholder="TODOs"
+                [placeholder]="'NAV.TODOS' | translate"
                 class="input-field"
               />
             </div>
 
             <div class="input-group">
-              <label>Anbieter:</label>
+              <label>{{ 'NAV.SUPPLIERS' | translate }}:</label>
               <input
                 type="text"
                 [(ngModel)]="settings.sidebarLabels.suppliers"
                 (blur)="saveSettings()"
-                placeholder="Anbieter"
+                [placeholder]="'NAV.SUPPLIERS' | translate"
                 class="input-field"
               />
             </div>
@@ -182,9 +184,9 @@ import { PaypalService } from '../../services/paypal.service';
 
         <!-- Benachrichtigungseinstellungen -->
         <div class="settings-section">
-          <h2>🔔 Benachrichtigungen</h2>
+          <h2>🔔 {{ 'SETTINGS.NOTIFICATIONS.TITLE' | translate }}</h2>
           <p class="section-description">
-            Wählen Sie aus, wie Sie benachrichtigt werden möchten.
+            {{ 'SETTINGS.NOTIFICATIONS.DESCRIPTION' | translate }}
           </p>
 
           <div class="setting-group">
@@ -194,7 +196,7 @@ import { PaypalService } from '../../services/paypal.service';
                 [(ngModel)]="settings.notifications.email"
                 (change)="saveSettings()"
               />
-              <span>E-Mail-Benachrichtigungen</span>
+              <span>{{ 'SETTINGS.NOTIFICATIONS.EMAIL' | translate }}</span>
             </label>
 
             <label class="checkbox-label">
@@ -203,36 +205,36 @@ import { PaypalService } from '../../services/paypal.service';
                 [(ngModel)]="settings.notifications.browser"
                 (change)="saveSettings()"
               />
-              <span>Browser-Benachrichtigungen</span>
+              <span>{{ 'SETTINGS.NOTIFICATIONS.BROWSER' | translate }}</span>
             </label>
           </div>
         </div>
 
         <!-- Theme/Farben -->
         <div class="settings-section">
-          <h2>🎨 Erscheinungsbild</h2>
+          <h2>🎨 {{ 'SETTINGS.APPEARANCE.TITLE' | translate }}</h2>
           <p class="section-description">
-            Passen Sie das Aussehen der Anwendung an.
+            {{ 'SETTINGS.APPEARANCE.DESCRIPTION' | translate }}
           </p>
 
           <div class="setting-group">
             <div class="input-group">
-              <label>Sidebar-Farbe:</label>
+              <label>{{ 'SETTINGS.APPEARANCE.SIDEBAR_COLOR' | translate }}:</label>
               <select
                 [(ngModel)]="settings.theme.sidebarColor"
                 (change)="saveSettings()"
                 class="input-field"
               >
-                <option value="mint">Mintgrün (Standard)</option>
-                <option value="blue">Blau</option>
-                <option value="purple">Lila</option>
-                <option value="orange">Orange</option>
-                <option value="red">Rot</option>
+                <option value="mint">{{ 'SETTINGS.APPEARANCE.COLORS.MINT' | translate }}</option>
+                <option value="blue">{{ 'SETTINGS.APPEARANCE.COLORS.BLUE' | translate }}</option>
+                <option value="purple">{{ 'SETTINGS.APPEARANCE.COLORS.PURPLE' | translate }}</option>
+                <option value="orange">{{ 'SETTINGS.APPEARANCE.COLORS.ORANGE' | translate }}</option>
+                <option value="red">{{ 'SETTINGS.APPEARANCE.COLORS.RED' | translate }}</option>
               </select>
             </div>
 
             <div class="input-group">
-              <label>Primärfarbe:</label>
+              <label>{{ 'SETTINGS.APPEARANCE.PRIMARY_COLOR' | translate }}:</label>
               <div class="color-picker-wrapper">
                 <input
                   type="color"
@@ -251,11 +253,11 @@ import { PaypalService } from '../../services/paypal.service';
                 />
                 <span class="color-preview" [style.background-color]="settings.theme.primaryColor"></span>
               </div>
-              <small class="hint">Farbe für Buttons, Links und aktive Elemente</small>
+              <small class="hint">{{ 'SETTINGS.APPEARANCE.PRIMARY_HINT' | translate }}</small>
             </div>
 
             <div class="input-group">
-              <label>Akzentfarbe:</label>
+              <label>{{ 'SETTINGS.APPEARANCE.ACCENT_COLOR' | translate }}:</label>
               <div class="color-picker-wrapper">
                 <input
                   type="color"
@@ -274,37 +276,56 @@ import { PaypalService } from '../../services/paypal.service';
                 />
                 <span class="color-preview" [style.background-color]="settings.theme.accentColor"></span>
               </div>
-              <small class="hint">Zweite Farbe für Hervorhebungen und Gradienten</small>
+              <small class="hint">{{ 'SETTINGS.APPEARANCE.ACCENT_HINT' | translate }}</small>
             </div>
           </div>
         </div>
 
+        <!-- Sprache -->
+        <div class="settings-section">
+          <h2>🌐 {{ 'SETTINGS.LANGUAGE.TITLE' | translate }}</h2>
+          <p class="section-description">
+            {{ 'SETTINGS.LANGUAGE.DESCRIPTION' | translate }}
+          </p>
+
+          <div class="setting-group">
+            <div class="input-group">
+              <label>{{ 'SETTINGS.LANGUAGE.SELECT' | translate }}:</label>
+              <select
+                [(ngModel)]="currentLanguage"
+                (change)="changeLanguage()"
+                class="input-field"
+              >
+                <option value="de">🇩🇪 Deutsch</option>
+                <option value="tr">🇹🇷 Türkçe</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
         <!-- Paket-Verwaltung -->
         <div class="settings-section">
                       <div class="info-box">
       <i class="fas fa-info-circle"></i>
       <div>
-        <p>Sie können das kostenlose Paket mit vollem Funktionsumfang bis <strong>31. März 2026 </strong> nutzen.
-Danach wird das Paket automatisch auf 30 Verträge und ohne Dateiupload umgestellt.
-Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst zu wählen.</p>
+        <p>{{ 'SETTINGS.PACKAGE.FREE_UNTIL' | translate }} <strong>31. März 2026 </strong> {{ 'SETTINGS.PACKAGE.FREE_UNTIL_2' | translate }}</p>
       </div>
     </div>
-          <h2>📦 Ihr Paket</h2>
+          <h2>📦 {{ 'SETTINGS.PACKAGE.TITLE' | translate }}</h2>
           <p class="section-description">
-            Verwalten Sie Ihr aktuelles Paket und sehen Sie Ihre Nutzung.
+            {{ 'SETTINGS.PACKAGE.DESCRIPTION' | translate }}
           </p>
 
           <div *ngIf="userLimits" class="package-info">
             <div class="current-package">
               <div class="package-header">
                 <h3>{{ userLimits.package.displayName }}</h3>
-                <span class="package-price">{{ userLimits.package.monthlyPrice | number:'1.2-2' }} {{ userLimits.package.currency }} / Monat</span>
+                <span class="package-price">{{ userLimits.package.monthlyPrice | number:'1.2-2' }} {{ userLimits.package.currency }} {{ 'SETTINGS.PACKAGE.PER_MONTH' | translate }}</span>
               </div>
 
               <div class="usage-section">
                 <div class="usage-item">
-                  <div class="usage-label">Verträge</div>
+                  <div class="usage-label">{{ 'SETTINGS.PACKAGE.CONTRACTS' | translate }}</div>
                   <div class="usage-bar-container">
                     <div class="usage-bar-bg">
                       <div class="usage-bar-fill"
@@ -345,26 +366,26 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
             </div>
 
             <div class="available-packages">
-              <h3>Verfügbare Pakete</h3>
+              <h3>{{ 'SETTINGS.PACKAGE.AVAILABLE_PACKAGES' | translate }}</h3>
 
               <!-- Pending Upgrade Request Info Banner -->
               <div *ngIf="pendingUpgradeRequest" class="upgrade-pending-banner">
                 <div class="banner-icon">⏳</div>
                 <div class="banner-content">
                   <div class="banner-title">
-                    Upgrade-Anfrage wird bearbeitet
+                    {{ 'SETTINGS.PACKAGE.UPGRADE_PENDING' | translate }}
                   </div>
                   <div class="banner-message">
-                    Ihr Upgrade auf <strong>{{ pendingUpgradeRequest.packageDetails.displayName }}</strong>
-                    <span *ngIf="pendingUpgradeRequest.status === 'pending'">wurde erstellt und wartet auf Zahlung.</span>
-                    <span *ngIf="pendingUpgradeRequest.status === 'payment_received'">wird vom Administrator geprüft.</span>
+                    {{ 'SETTINGS.PACKAGE.UPGRADE' | translate }}: <strong>{{ pendingUpgradeRequest.packageDetails.displayName }}</strong>
+                    <span *ngIf="pendingUpgradeRequest.status === 'pending'">{{ 'SETTINGS.PACKAGE.WAITING_PAYMENT' | translate }}</span>
+                    <span *ngIf="pendingUpgradeRequest.status === 'payment_received'">{{ 'SETTINGS.PACKAGE.ADMIN_REVIEW' | translate }}</span>
                   </div>
                   <div class="banner-details">
-                    <span class="detail-item">Preis: {{ pendingUpgradeRequest.packageDetails.price }} {{ pendingUpgradeRequest.packageDetails.currency }}</span>
+                    <span class="detail-item">{{ 'SETTINGS.PACKAGE.PRICE' | translate }}: {{ pendingUpgradeRequest.packageDetails.price }} {{ pendingUpgradeRequest.packageDetails.currency }}</span>
                     <span class="detail-separator">•</span>
-                    <span class="detail-item">Status: {{ getStatusLabel(pendingUpgradeRequest.status) }}</span>
+                    <span class="detail-item">{{ 'SETTINGS.PACKAGE.STATUS' | translate }}: {{ getStatusLabel(pendingUpgradeRequest.status) }}</span>
                     <span class="detail-separator">•</span>
-                    <span class="detail-item">Erstellt: {{ formatDate(pendingUpgradeRequest.createdAt) }}</span>
+                    <span class="detail-item">{{ 'SETTINGS.PACKAGE.CREATED' | translate }}: {{ formatDate(pendingUpgradeRequest.createdAt) }}</span>
                   </div>
                 </div>
               </div>
@@ -376,8 +397,8 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
                      [class.pending-upgrade]="pendingUpgradeRequest && pkg.name === pendingUpgradeRequest.requestedPackage">
                   <div class="package-card-header">
                     <h4>{{ pkg.displayName }}</h4>
-                    <span class="current-badge" *ngIf="pkg.name === userLimits.package.name">Aktuell</span>
-                    <span class="pending-badge" *ngIf="pendingUpgradeRequest && pkg.name === pendingUpgradeRequest.requestedPackage">Beantragt</span>
+                    <span class="current-badge" *ngIf="pkg.name === userLimits.package.name">{{ 'SETTINGS.PACKAGE.CURRENT' | translate }}</span>
+                    <span class="pending-badge" *ngIf="pendingUpgradeRequest && pkg.name === pendingUpgradeRequest.requestedPackage">{{ 'SETTINGS.PACKAGE.REQUESTED' | translate }}</span>
                   </div>
 
                   <!-- Billing interval toggle -->
@@ -386,49 +407,49 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
                       class="toggle-btn"
                       [class.active]="selectedBillingInterval[pkg.name] === 'monthly'"
                       (click)="selectBillingInterval(pkg.name, 'monthly')">
-                      Monatlich
+                      {{ 'SETTINGS.PACKAGE.MONTHLY' | translate }}
                     </button>
                     <button
                       class="toggle-btn"
                       [class.active]="selectedBillingInterval[pkg.name] === 'yearly'"
                       (click)="selectBillingInterval(pkg.name, 'yearly')">
-                      Jährlich <span class="badge-save">2 Monate sparen</span>
+                      {{ 'SETTINGS.PACKAGE.YEARLY' | translate }} <span class="badge-save">{{ 'SETTINGS.PACKAGE.SAVE_2_MONTHS' | translate }}</span>
                     </button>
                   </div>
 
                   <div class="package-price-tag">
                     <!-- For current package: Always show monthly price -->
                     <span *ngIf="pkg.name === userLimits.package.name">
-                      {{ pkg.monthlyPrice | number:'1.2-2' }} {{ pkg.currency }} / Monat
+                      {{ pkg.monthlyPrice | number:'1.2-2' }} {{ pkg.currency }} {{ 'SETTINGS.PACKAGE.PER_MONTH' | translate }}
                     </span>
                     <!-- For other packages: Show based on selection -->
                     <span *ngIf="pkg.name !== userLimits.package.name && selectedBillingInterval[pkg.name] === 'monthly'">
-                      {{ pkg.monthlyPrice | number:'1.2-2' }} {{ pkg.currency }} / Monat
+                      {{ pkg.monthlyPrice | number:'1.2-2' }} {{ pkg.currency }} {{ 'SETTINGS.PACKAGE.PER_MONTH' | translate }}
                     </span>
                     <span *ngIf="pkg.name !== userLimits.package.name && selectedBillingInterval[pkg.name] === 'yearly'">
-                      {{ pkg.yearlyPrice | number:'1.2-2' }} {{ pkg.currency }} / Jahr
+                      {{ pkg.yearlyPrice | number:'1.2-2' }} {{ pkg.currency }} {{ 'SETTINGS.PACKAGE.PER_YEAR' | translate }}
                     </span>
                   </div>
 
                   <div class="savings-info" *ngIf="selectedBillingInterval[pkg.name] === 'yearly' && pkg.yearlySavings && pkg.name !== userLimits.package.name">
-                    Sie sparen {{ pkg.yearlySavings | number:'1.2-2' }} {{ pkg.currency }}
+                    {{ 'SETTINGS.PACKAGE.YOU_SAVE' | translate }} {{ pkg.yearlySavings | number:'1.2-2' }} {{ pkg.currency }}
                   </div>
 
                   <div class="package-features">
-                    <div class="feature">✓ {{ pkg.maxContracts === -1 ? 'Unbegrenzt' : pkg.maxContracts }} Verträge</div>
+                    <div class="feature">✓ {{ pkg.maxContracts === -1 ? ('SETTINGS.PACKAGE.UNLIMITED' | translate) : pkg.maxContracts }} {{ 'SETTINGS.PACKAGE.CONTRACTS' | translate }}</div>
                     <div class="feature" [class.feature-enabled]="isFileUploadEnabled(pkg)" [class.feature-disabled]="!isFileUploadEnabled(pkg)">
-                      {{ isFileUploadEnabled(pkg) ? '✓' : '✗' }} Dateiupload {{ isFileUploadEnabled(pkg) ? 'erlaubt' : 'nicht erlaubt' }}
+                      {{ isFileUploadEnabled(pkg) ? '✓' : '✗' }} {{ 'SETTINGS.PACKAGE.FILE_UPLOAD' | translate }} {{ isFileUploadEnabled(pkg) ? ('SETTINGS.PACKAGE.ALLOWED' | translate) : ('SETTINGS.PACKAGE.NOT_ALLOWED' | translate) }}
                     </div>
                   </div>
                   <button *ngIf="pkg.name !== userLimits.package.name && !pendingUpgradeRequest"
                           [class]="pkg.order < userLimits.package.order ? 'btn-downgrade' : 'btn-upgrade'"
                           (click)="changePackage(pkg.name, pkg.order)">
-                    {{ pkg.order < userLimits.package.order ? 'Downgraden' : 'Upgraden' }}
+                    {{ pkg.order < userLimits.package.order ? ('SETTINGS.PACKAGE.DOWNGRADE' | translate) : ('SETTINGS.PACKAGE.UPGRADE' | translate) }}
                   </button>
                   <button *ngIf="pendingUpgradeRequest && pkg.name !== userLimits.package.name"
                           class="btn-disabled"
                           disabled>
-                    {{ pkg.name === pendingUpgradeRequest.requestedPackage ? 'In Bearbeitung...' : 'Nicht verfügbar' }}
+                    {{ pkg.name === pendingUpgradeRequest.requestedPackage ? ('SETTINGS.PACKAGE.IN_PROGRESS' | translate) : ('SETTINGS.PACKAGE.NOT_AVAILABLE' | translate) }}
                   </button>
                 </div>
               </div>
@@ -438,40 +459,40 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
 
         <!-- Passwort ändern -->
         <div class="settings-section">
-          <h2>🔒 Passwort ändern</h2>
+          <h2>🔒 {{ 'SETTINGS.PASSWORD.TITLE' | translate }}</h2>
           <p class="section-description">
-            Ändern Sie Ihr Passwort für mehr Sicherheit.
+            {{ 'SETTINGS.PASSWORD.DESCRIPTION' | translate }}
           </p>
 
           <div class="setting-group">
             <div class="input-group">
-              <label>Aktuelles Passwort *</label>
+              <label>{{ 'SETTINGS.PASSWORD.CURRENT' | translate }} *</label>
               <input
                 type="password"
                 [(ngModel)]="currentPassword"
-                placeholder="Aktuelles Passwort"
+                [placeholder]="'SETTINGS.PASSWORD.CURRENT' | translate"
                 class="input-field"
                 autocomplete="current-password"
               />
             </div>
 
             <div class="input-group">
-              <label>Neues Passwort *</label>
+              <label>{{ 'SETTINGS.PASSWORD.NEW' | translate }} *</label>
               <input
                 type="password"
                 [(ngModel)]="newPassword"
-                placeholder="Neues Passwort (min. 8 Zeichen)"
+                [placeholder]="('SETTINGS.PASSWORD.NEW' | translate) + ' (' + ('SETTINGS.PASSWORD.MIN_CHARS' | translate) + ')'"
                 class="input-field"
                 autocomplete="new-password"
               />
             </div>
 
             <div class="input-group">
-              <label>Passwort bestätigen *</label>
+              <label>{{ 'SETTINGS.PASSWORD.CONFIRM' | translate }} *</label>
               <input
                 type="password"
                 [(ngModel)]="confirmPassword"
-                placeholder="Neues Passwort wiederholen"
+                [placeholder]="'SETTINGS.PASSWORD.CONFIRM' | translate"
                 class="input-field"
                 autocomplete="new-password"
               />
@@ -482,7 +503,7 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
               (click)="changePassword()"
               [disabled]="isChangingPassword || !currentPassword || !newPassword || !confirmPassword">
               <i class="fas" [class.fa-spinner]="isChangingPassword" [class.fa-spin]="isChangingPassword" [class.fa-key]="!isChangingPassword"></i>
-              {{ isChangingPassword ? 'Wird geändert...' : 'Passwort ändern' }}
+              {{ isChangingPassword ? ('SETTINGS.PASSWORD.CHANGING' | translate) : ('SETTINGS.PASSWORD.CHANGE' | translate) }}
             </button>
           </div>
         </div>
@@ -490,15 +511,15 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
         <!-- Aktionen -->
         <div class="settings-actions">
           <button class="btn-secondary" (click)="resetToDefaults()">
-            Auf Standardwerte zurücksetzen
+            {{ 'SETTINGS.ACTIONS.RESET' | translate }}
           </button>
           <button class="btn-primary" (click)="saveSettings()">
-            Änderungen speichern
+            {{ 'SETTINGS.ACTIONS.SAVE' | translate }}
           </button>
         </div>
 
         <div class="save-indicator" *ngIf="showSaveIndicator">
-          ✓ Einstellungen gespeichert
+          ✓ {{ 'SETTINGS.ACTIONS.SAVED' | translate }}
         </div>
       </div>
     </div>
@@ -1224,6 +1245,9 @@ export class SettingsComponent implements OnInit {
   confirmPassword = '';
   isChangingPassword = false;
 
+  // Language
+  currentLanguage: Language = 'de';
+
   currentUser: any = null;
 
   constructor(
@@ -1232,7 +1256,8 @@ export class SettingsComponent implements OnInit {
     private upgradeService: UpgradeService,
     private authService: AuthService,
     private viewport: ViewportService,
-    private paypalService: PaypalService
+    private paypalService: PaypalService,
+    private languageService: LanguageService
   ) {}
 
   get isMobile() {
@@ -1241,6 +1266,9 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.settings = this.settingsService.getSettings();
+
+    // Load current language
+    this.currentLanguage = this.languageService.getCurrentLanguage();
 
     // Load current user
     this.authService.currentUser$.subscribe(user => {
@@ -1253,6 +1281,10 @@ export class SettingsComponent implements OnInit {
       this.loadPackages();
       this.loadPendingUpgradeRequest();
     }
+  }
+
+  changeLanguage(): void {
+    this.languageService.setLanguage(this.currentLanguage);
   }
 
   loadPendingUpgradeRequest(): void {

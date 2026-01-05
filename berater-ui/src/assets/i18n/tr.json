@@ -1,0 +1,574 @@
+{
+  "APP": {
+    "NAME": "Danışman Uygulaması",
+    "LOADING": "Yükleniyor..."
+  },
+  "NAV": {
+    "DASHBOARD": "Ana Sayfa",
+    "CONTRACTS": "Sözleşmeler",
+    "CUSTOMERS": "Müşteriler",
+    "METERS": "Sayaçlar",
+    "TODOS": "Görevler",
+    "SUPPLIERS": "Tedarikçiler",
+    "EDUCATION": "Eğitim",
+    "SUPPORT": "Destek",
+    "USERS": "Kullanıcılar",
+    "PACKAGES": "Paketler",
+    "SETTINGS": "Ayarlar",
+    "LOGOUT": "Çıkış Yap",
+    "DATA_IMPORT": "Veri İçe Aktar"
+  },
+  "AUTH": {
+    "LOGIN": "Giriş Yap",
+    "REGISTER": "Kayıt Ol",
+    "LOGOUT": "Çıkış Yap",
+    "EMAIL": "E-posta",
+    "PASSWORD": "Şifre",
+    "CONFIRM_PASSWORD": "Şifre Tekrar",
+    "FORGOT_PASSWORD": "Şifrenizi mi unuttunuz?",
+    "RESET_PASSWORD": "Şifreyi Sıfırla",
+    "NEW_PASSWORD": "Yeni Şifre",
+    "CURRENT_PASSWORD": "Mevcut Şifre",
+    "FIRST_NAME": "Ad",
+    "LAST_NAME": "Soyad",
+    "COMPANY": "Firma",
+    "PHONE": "Telefon",
+    "REMEMBER_ME": "Beni hatırla",
+    "NO_ACCOUNT": "Hesabınız yok mu?",
+    "HAVE_ACCOUNT": "Zaten hesabınız var mı?",
+    "VERIFY_EMAIL": "E-postayı Doğrula",
+    "VERIFICATION_SENT": "Doğrulama linki gönderildi",
+    "LOGIN_SUCCESS": "Başarıyla giriş yapıldı",
+    "LOGOUT_SUCCESS": "Başarıyla çıkış yapıldı",
+    "REGISTER_SUCCESS": "Kayıt başarılı",
+    "PASSWORD_CHANGED": "Şifre başarıyla değiştirildi",
+    "PASSWORD_RESET_SENT": "Sıfırlama linki gönderildi",
+    "INVALID_CREDENTIALS": "Geçersiz giriş bilgileri",
+    "EMAIL_NOT_VERIFIED": "E-posta henüz doğrulanmadı",
+    "PASSWORD_MIN_LENGTH": "Şifre en az 8 karakter olmalıdır",
+    "PASSWORDS_NOT_MATCH": "Şifreler eşleşmiyor"
+  },
+  "SETTINGS": {
+    "TITLE": "Ayarlar",
+    "REMINDERS": {
+      "TITLE": "Sözleşme Bitiş Hatırlatmaları",
+      "DESCRIPTION": "Sözleşme bitiminden önce ne zaman bildirim almak istediğinizi seçin.",
+      "DAYS_BEFORE": "gün önce",
+      "CUSTOM_DAYS": "Özel",
+      "DAYS_90": "90 gün önce",
+      "DAYS_60": "60 gün önce",
+      "DAYS_30": "30 gün önce",
+      "EMAIL_NOTIFY": "Ayrıca e-posta ile bildir"
+    },
+    "SIDEBAR": {
+      "TITLE": "Kenar Çubuğu Etiketlerini Özelleştir",
+      "DESCRIPTION": "Kenar çubuğundaki etiketleri isteğinize göre özelleştirin."
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Bildirimler",
+      "DESCRIPTION": "Nasıl bildirim almak istediğinizi seçin.",
+      "EMAIL": "E-posta Bildirimleri",
+      "BROWSER": "Tarayıcı Bildirimleri"
+    },
+    "APPEARANCE": {
+      "TITLE": "Görünüm",
+      "DESCRIPTION": "Uygulamanın görünümünü özelleştirin.",
+      "SIDEBAR_COLOR": "Kenar Çubuğu Rengi",
+      "PRIMARY_COLOR": "Ana Renk",
+      "ACCENT_COLOR": "Vurgu Rengi",
+      "PRIMARY_HINT": "Butonlar, linkler ve aktif elemanlar için renk",
+      "ACCENT_HINT": "Vurgular ve geçişler için ikinci renk",
+      "COLORS": {
+        "MINT": "Nane Yeşili (Varsayılan)",
+        "BLUE": "Mavi",
+        "PURPLE": "Mor",
+        "ORANGE": "Turuncu",
+        "RED": "Kırmızı"
+      }
+    },
+    "LANGUAGE": {
+      "TITLE": "Dil",
+      "DESCRIPTION": "Uygulamanın görüntüleme dilini seçin.",
+      "SELECT": "Dil seçin",
+      "GERMAN": "Deutsch",
+      "TURKISH": "Türkçe"
+    },
+    "PACKAGE": {
+      "TITLE": "Paketiniz",
+      "DESCRIPTION": "Mevcut paketinizi yönetin ve kullanımınızı görün.",
+      "CURRENT": "Mevcut",
+      "REQUESTED": "Talep Edildi",
+      "MONTHLY": "Aylık",
+      "YEARLY": "Yıllık",
+      "PER_MONTH": "/ ay",
+      "PER_YEAR": "/ yıl",
+      "SAVE_2_MONTHS": "2 ay tasarruf",
+      "YOU_SAVE": "Tasarruf:",
+      "CONTRACTS": "Sözleşmeler",
+      "UNLIMITED": "Sınırsız",
+      "FILE_UPLOAD": "Dosya Yükleme",
+      "ALLOWED": "izinli",
+      "NOT_ALLOWED": "izinli değil",
+      "UPGRADE": "Yükselt",
+      "DOWNGRADE": "Düşür",
+      "IN_PROGRESS": "İşleniyor...",
+      "NOT_AVAILABLE": "Mevcut değil",
+      "AVAILABLE_PACKAGES": "Mevcut Paketler",
+      "UPGRADE_PENDING": "Yükseltme talebi işleniyor",
+      "WAITING_PAYMENT": "oluşturuldu ve ödeme bekliyor.",
+      "ADMIN_REVIEW": "yönetici tarafından inceleniyor.",
+      "PRICE": "Fiyat",
+      "STATUS": "Durum",
+      "CREATED": "Oluşturuldu",
+      "FREE_UNTIL": "Tam özellikli ücretsiz paketi şu tarihe kadar kullanabilirsiniz:",
+      "FREE_UNTIL_2": "Bundan sonra paket otomatik olarak 30 sözleşme ve dosya yükleme olmadan değiştirilecektir. Ardından istediğiniz paketi kendiniz seçebilirsiniz."
+    },
+    "PASSWORD": {
+      "TITLE": "Şifre Değiştir",
+      "DESCRIPTION": "Güvenliğiniz için şifrenizi değiştirin.",
+      "CURRENT": "Mevcut Şifre",
+      "NEW": "Yeni Şifre",
+      "CONFIRM": "Şifre Tekrar",
+      "MIN_CHARS": "en az 8 karakter",
+      "CHANGE": "Şifre Değiştir",
+      "CHANGING": "Değiştiriliyor..."
+    },
+    "ACTIONS": {
+      "SAVE": "Değişiklikleri Kaydet",
+      "RESET": "Varsayılanlara Sıfırla",
+      "SAVED": "Ayarlar kaydedildi"
+    },
+    "UPGRADE_STATUS": {
+      "PENDING": "Yeni",
+      "PAYMENT_RECEIVED": "Ödeme alındı",
+      "APPROVED": "Onaylandı",
+      "REJECTED": "Reddedildi",
+      "CANCELLED": "İptal edildi"
+    }
+  },
+  "DASHBOARD": {
+    "TITLE": "Kontrol Paneli",
+    "WELCOME": "Hoş Geldiniz",
+    "OVERVIEW": "Genel Bakış",
+    "CONTRACTS": "Sözleşmeler",
+    "CUSTOMERS": "Müşteriler",
+    "METERS": "Sayaçlar",
+    "SUPPLIERS": "Tedarikçiler",
+    "TODOS": "Açık Görevler",
+    "EXPIRING_SOON": "Yakında Bitiyor",
+    "EXPIRED": "Süresi Dolmuş",
+    "ACTIVE": "Aktif",
+    "NO_EXPIRING": "Biten sözleşme yok",
+    "SUBSCRIPTION": {
+      "TITLE": "Aboneliğiniz",
+      "PACKAGE": "Paket",
+      "USAGE": "Kullanım",
+      "UPGRADE": "Yükseltme mevcut"
+    }
+  },
+  "CONTRACTS": {
+    "TITLE": "Sözleşmeler",
+    "NEW": "Yeni Sözleşme",
+    "EDIT": "Sözleşmeyi Düzenle",
+    "DELETE": "Sözleşmeyi Sil",
+    "SEARCH": "Sözleşme ara...",
+    "FILTER": {
+      "ALL": "Tümü",
+      "ACTIVE": "Aktif",
+      "EXPIRING": "Yakında Bitiyor",
+      "EXPIRED": "Süresi Dolmuş"
+    },
+    "FIELDS": {
+      "CONTRACT_NUMBER": "Sözleşme Numarası",
+      "CUSTOMER": "Müşteri",
+      "SUPPLIER": "Tedarikçi",
+      "START_DATE": "Başlangıç Tarihi",
+      "END_DATE": "Bitiş Tarihi",
+      "STATUS": "Durum",
+      "TYPE": "Sözleşme Türü",
+      "NOTES": "Notlar",
+      "METER": "Sayaç",
+      "PRICE": "Fiyat",
+      "UNIT": "Birim"
+    },
+    "STATUS": {
+      "ACTIVE": "Aktif",
+      "EXPIRING": "Yakında Bitiyor",
+      "EXPIRED": "Süresi Dolmuş"
+    },
+    "TYPES": {
+      "ELECTRICITY": "Elektrik",
+      "GAS": "Gaz",
+      "WATER": "Su",
+      "INTERNET": "İnternet",
+      "PHONE": "Telefon",
+      "INSURANCE": "Sigorta",
+      "OTHER": "Diğer"
+    },
+    "MESSAGES": {
+      "CREATED": "Sözleşme başarıyla oluşturuldu",
+      "UPDATED": "Sözleşme başarıyla güncellendi",
+      "DELETED": "Sözleşme başarıyla silindi",
+      "DELETE_CONFIRM": "Bu sözleşmeyi gerçekten silmek istiyor musunuz?"
+    },
+    "NO_CONTRACTS": "Sözleşme bulunamadı",
+    "NO_CONTRACTS_DESC": "İlk sözleşmenizi oluşturun",
+    "DAYS_LEFT": "gün kaldı",
+    "DAYS_OVERDUE": "gün gecikmiş"
+  },
+  "CUSTOMERS": {
+    "TITLE": "Müşteriler",
+    "NEW": "Yeni Müşteri",
+    "EDIT": "Müşteriyi Düzenle",
+    "DELETE": "Müşteriyi Sil",
+    "SEARCH": "Müşteri ara...",
+    "FIELDS": {
+      "CUSTOMER_NUMBER": "Müşteri Numarası",
+      "FIRST_NAME": "Ad",
+      "LAST_NAME": "Soyad",
+      "COMPANY": "Firma",
+      "EMAIL": "E-posta",
+      "PHONE": "Telefon",
+      "ADDRESS": "Adres",
+      "STREET": "Sokak",
+      "ZIP": "Posta Kodu",
+      "CITY": "Şehir",
+      "COUNTRY": "Ülke",
+      "NOTES": "Notlar"
+    },
+    "MESSAGES": {
+      "CREATED": "Müşteri başarıyla oluşturuldu",
+      "UPDATED": "Müşteri başarıyla güncellendi",
+      "DELETED": "Müşteri başarıyla silindi",
+      "DELETE_CONFIRM": "Bu müşteriyi gerçekten silmek istiyor musunuz?"
+    },
+    "NO_CUSTOMERS": "Müşteri bulunamadı",
+    "NO_CUSTOMERS_DESC": "İlk müşterinizi oluşturun",
+    "CONTRACTS_COUNT": "Sözleşmeler"
+  },
+  "METERS": {
+    "TITLE": "Sayaçlar",
+    "NEW": "Yeni Sayaç",
+    "EDIT": "Sayacı Düzenle",
+    "DELETE": "Sayacı Sil",
+    "SEARCH": "Sayaç ara...",
+    "FIELDS": {
+      "METER_NUMBER": "Sayaç Numarası",
+      "TYPE": "Tür",
+      "CUSTOMER": "Müşteri",
+      "LOCATION": "Konum",
+      "READING": "Sayaç Değeri",
+      "LAST_READING": "Son Değer",
+      "READING_DATE": "Okuma Tarihi",
+      "NOTES": "Notlar"
+    },
+    "TYPES": {
+      "ELECTRICITY": "Elektrik",
+      "GAS": "Gaz",
+      "WATER": "Su",
+      "HEAT": "Isı"
+    },
+    "MESSAGES": {
+      "CREATED": "Sayaç başarıyla oluşturuldu",
+      "UPDATED": "Sayaç başarıyla güncellendi",
+      "DELETED": "Sayaç başarıyla silindi",
+      "DELETE_CONFIRM": "Bu sayacı gerçekten silmek istiyor musunuz?"
+    },
+    "NO_METERS": "Sayaç bulunamadı",
+    "NO_METERS_DESC": "İlk sayacınızı oluşturun"
+  },
+  "SUPPLIERS": {
+    "TITLE": "Tedarikçiler",
+    "NEW": "Yeni Tedarikçi",
+    "EDIT": "Tedarikçiyi Düzenle",
+    "DELETE": "Tedarikçiyi Sil",
+    "SEARCH": "Tedarikçi ara...",
+    "FIELDS": {
+      "NAME": "Ad",
+      "TYPE": "Tür",
+      "EMAIL": "E-posta",
+      "PHONE": "Telefon",
+      "WEBSITE": "Website",
+      "ADDRESS": "Adres",
+      "NOTES": "Notlar",
+      "CONTACT_PERSON": "İletişim Kişisi"
+    },
+    "TYPES": {
+      "ELECTRICITY": "Elektrik",
+      "GAS": "Gaz",
+      "WATER": "Su",
+      "INTERNET": "İnternet",
+      "PHONE": "Telefon",
+      "INSURANCE": "Sigorta",
+      "OTHER": "Diğer"
+    },
+    "MESSAGES": {
+      "CREATED": "Tedarikçi başarıyla oluşturuldu",
+      "UPDATED": "Tedarikçi başarıyla güncellendi",
+      "DELETED": "Tedarikçi başarıyla silindi",
+      "DELETE_CONFIRM": "Bu tedarikçiyi gerçekten silmek istiyor musunuz?"
+    },
+    "NO_SUPPLIERS": "Tedarikçi bulunamadı",
+    "NO_SUPPLIERS_DESC": "İlk tedarikçinizi oluşturun",
+    "CONTRACTS_COUNT": "Sözleşmeler"
+  },
+  "TODOS": {
+    "TITLE": "Görevler",
+    "NEW": "Yeni Görev",
+    "EDIT": "Görevi Düzenle",
+    "DELETE": "Görevi Sil",
+    "SEARCH": "Görev ara...",
+    "FILTER": {
+      "ALL": "Tümü",
+      "OPEN": "Açık",
+      "IN_PROGRESS": "Devam Ediyor",
+      "COMPLETED": "Tamamlandı"
+    },
+    "FIELDS": {
+      "TITLE": "Başlık",
+      "DESCRIPTION": "Açıklama",
+      "DUE_DATE": "Son Tarih",
+      "PRIORITY": "Öncelik",
+      "STATUS": "Durum",
+      "ASSIGNED_TO": "Atanan",
+      "CONTRACT": "Sözleşme",
+      "CUSTOMER": "Müşteri"
+    },
+    "PRIORITY": {
+      "LOW": "Düşük",
+      "MEDIUM": "Orta",
+      "HIGH": "Yüksek",
+      "URGENT": "Acil"
+    },
+    "STATUS": {
+      "OPEN": "Açık",
+      "IN_PROGRESS": "Devam Ediyor",
+      "COMPLETED": "Tamamlandı"
+    },
+    "MESSAGES": {
+      "CREATED": "Görev başarıyla oluşturuldu",
+      "UPDATED": "Görev başarıyla güncellendi",
+      "DELETED": "Görev başarıyla silindi",
+      "DELETE_CONFIRM": "Bu görevi gerçekten silmek istiyor musunuz?",
+      "COMPLETED": "Görev tamamlandı olarak işaretlendi"
+    },
+    "NO_TODOS": "Görev bulunamadı",
+    "NO_TODOS_DESC": "İlk görevinizi oluşturun"
+  },
+  "EDUCATION": {
+    "TITLE": "Eğitim & Öğretim",
+    "NEW_MATERIAL": "Yeni Materyal",
+    "EDIT_MATERIAL": "Materyali Düzenle",
+    "DELETE_MATERIAL": "Materyali Sil",
+    "SEARCH": "Materyal ara...",
+    "FILTER": {
+      "ALL_CATEGORIES": "Tüm Kategoriler",
+      "ALL_TYPES": "Tüm Türler",
+      "ALL_LANGUAGES": "Tüm Diller"
+    },
+    "CATEGORIES": {
+      "ONBOARDING": "Oryantasyon",
+      "TRAINING": "Eğitim",
+      "PRODUCT": "Ürün",
+      "SALES": "Satış",
+      "COMPLIANCE": "Uyumluluk",
+      "OTHER": "Diğer"
+    },
+    "TYPES": {
+      "VIDEO": "Video",
+      "PDF": "PDF",
+      "DOCUMENT": "Döküman",
+      "LINK": "Link",
+      "IMAGE": "Resim"
+    },
+    "LANGUAGES": {
+      "GERMAN": "Almanca",
+      "TURKISH": "Türkçe",
+      "ENGLISH": "İngilizce"
+    },
+    "FIELDS": {
+      "TITLE": "Başlık",
+      "DESCRIPTION": "Açıklama",
+      "CATEGORY": "Kategori",
+      "TYPE": "Tür",
+      "LANGUAGE": "Dil",
+      "URL": "URL",
+      "FILE": "Dosya"
+    },
+    "STATS": {
+      "MATERIALS": "Materyaller",
+      "VIEWS": "Toplam Görüntüleme",
+      "BERATER": "Erişimi Olan Danışmanlar"
+    },
+    "TOKEN": {
+      "YOUR_TOKEN": "Erişim Tokenınız",
+      "TOKEN_DESC": "Bu tokeni danışmanlarla paylaşarak materyallerinizi görmelerini sağlayın.",
+      "GENERATE": "Token Oluştur",
+      "NEW_TOKEN": "Yeni Token Oluştur",
+      "COPY": "Tokeni Kopyala",
+      "COPIED": "Token panoya kopyalandı!",
+      "GENERATED": "Token başarıyla oluşturuldu!",
+      "CONNECT": "Master Danışmana Bağlan",
+      "CONNECT_DESC": "Master danışmanınızın tokenini girerek materyallerini görün.",
+      "ENTER_TOKEN": "Token girin",
+      "CONNECT_BTN": "Bağlan",
+      "CONNECTED": "Bağlandı:",
+      "DISCONNECT": "Bağlantıyı Kes",
+      "DISCONNECTED": "Bağlantı başarıyla kesildi",
+      "INVALID_TOKEN": "Geçersiz token",
+      "ENTER_TOKEN_ERROR": "Lütfen bir token girin"
+    },
+    "MESSAGES": {
+      "CREATED": "Materyal başarıyla oluşturuldu",
+      "UPDATED": "Materyal başarıyla güncellendi",
+      "DELETED": "Materyal başarıyla silindi",
+      "DELETE_CONFIRM": "Bu materyali gerçekten silmek istiyor musunuz?"
+    },
+    "NO_MATERIALS": "Materyal bulunamadı",
+    "NO_MATERIALS_MASTER": "Ekibinizle paylaşmak için ilk eğitim materyalinizi oluşturun.",
+    "NO_MATERIALS_BERATER": "Şu anda sizinle paylaşılan materyal bulunmuyor.",
+    "VIEWS": "Görüntüleme",
+    "BERATER_COUNT": "Danışman",
+    "RESET_FILTERS": "Sıfırla",
+    "MAX_FILE_SIZE": "Maksimum dosya boyutu",
+    "CURRENT_FILE": "Mevcut dosya",
+    "YOUTUBE_URL_HINT": "YouTube URL'si (örn. https://www.youtube.com/watch?v=...)",
+    "SHARE_WITH_BERATER": "Danışmanlarla paylaş"
+  },
+  "SUPPORT": {
+    "TITLE": "Destek",
+    "CONTACT": "İletişim",
+    "FAQ": "Sık Sorulan Sorular",
+    "SEND_MESSAGE": "Mesaj Gönder",
+    "SUBJECT": "Konu",
+    "MESSAGE": "Mesaj",
+    "SEND": "Gönder",
+    "SENT_SUCCESS": "Mesajınız başarıyla gönderildi"
+  },
+  "ADMIN": {
+    "TITLE": "Kullanıcı Yönetimi",
+    "USERS": "Kullanıcılar",
+    "SEARCH": "Kullanıcı ara...",
+    "NEW_USER": "Yeni Kullanıcı",
+    "EDIT_USER": "Kullanıcıyı Düzenle",
+    "DELETE_USER": "Kullanıcıyı Sil",
+    "BLOCK_USER": "Kullanıcıyı Engelle",
+    "UNBLOCK_USER": "Engeli Kaldır",
+    "RESET_PASSWORD": "Şifreyi Sıfırla",
+    "FIELDS": {
+      "NAME": "Ad",
+      "EMAIL": "E-posta",
+      "ROLE": "Rol",
+      "PACKAGE": "Paket",
+      "STATUS": "Durum",
+      "CREATED": "Oluşturulma",
+      "LAST_LOGIN": "Son Giriş"
+    },
+    "ROLES": {
+      "USER": "Kullanıcı",
+      "BERATER": "Danışman",
+      "SUPERADMIN": "Yönetici"
+    },
+    "STATUS": {
+      "ACTIVE": "Aktif",
+      "BLOCKED": "Engelli",
+      "PENDING": "Beklemede"
+    },
+    "MESSAGES": {
+      "UPDATED": "Kullanıcı başarıyla güncellendi",
+      "DELETED": "Kullanıcı başarıyla silindi",
+      "BLOCKED": "Kullanıcı engellendi",
+      "UNBLOCKED": "Kullanıcının engeli kaldırıldı",
+      "PASSWORD_RESET": "Şifre sıfırlandı"
+    }
+  },
+  "COMMON": {
+    "SAVE": "Kaydet",
+    "CANCEL": "İptal",
+    "DELETE": "Sil",
+    "EDIT": "Düzenle",
+    "CREATE": "Oluştur",
+    "UPDATE": "Güncelle",
+    "CLOSE": "Kapat",
+    "BACK": "Geri",
+    "NEXT": "İleri",
+    "PREVIOUS": "Önceki",
+    "YES": "Evet",
+    "NO": "Hayır",
+    "OK": "Tamam",
+    "CONFIRM": "Onayla",
+    "SEARCH": "Ara",
+    "FILTER": "Filtrele",
+    "SORT": "Sırala",
+    "EXPORT": "Dışa Aktar",
+    "IMPORT": "İçe Aktar",
+    "DOWNLOAD": "İndir",
+    "UPLOAD": "Yükle",
+    "REFRESH": "Yenile",
+    "LOADING": "Yükleniyor...",
+    "SAVING": "Kaydediliyor...",
+    "DELETING": "Siliniyor...",
+    "PROCESSING": "İşleniyor...",
+    "REQUIRED": "Zorunlu alan",
+    "OPTIONAL": "İsteğe bağlı",
+    "SELECT": "Seç",
+    "SELECT_OPTION": "Bir seçenek seçin",
+    "NO_DATA": "Veri bulunamadı",
+    "NO_RESULTS": "Sonuç bulunamadı",
+    "ACTIONS": "İşlemler",
+    "DETAILS": "Detaylar",
+    "VIEW": "Görüntüle",
+    "ALL": "Tümü",
+    "NONE": "Hiçbiri",
+    "DATE": "Tarih",
+    "TIME": "Saat",
+    "FROM": "Başlangıç",
+    "TO": "Bitiş",
+    "STATUS": "Durum",
+    "TYPE": "Tür",
+    "NAME": "Ad",
+    "DESCRIPTION": "Açıklama",
+    "NOTES": "Notlar",
+    "EMAIL": "E-posta",
+    "PHONE": "Telefon"
+  },
+  "ERRORS": {
+    "GENERIC": "Bir hata oluştu",
+    "NETWORK": "Ağ hatası. Lütfen bağlantınızı kontrol edin.",
+    "NOT_FOUND": "Bulunamadı",
+    "UNAUTHORIZED": "Yetkisiz",
+    "FORBIDDEN": "Erişim engellendi",
+    "VALIDATION": "Lütfen girişlerinizi kontrol edin",
+    "SAVE_FAILED": "Kaydetme hatası",
+    "DELETE_FAILED": "Silme hatası",
+    "LOAD_FAILED": "Yükleme hatası",
+    "SESSION_EXPIRED": "Oturumunuz sona erdi. Lütfen tekrar giriş yapın.",
+    "SERVER_ERROR": "Sunucu hatası. Lütfen daha sonra tekrar deneyin.",
+    "LIMIT_REACHED": "Limit aşıldı",
+    "FILE_TOO_LARGE": "Dosya çok büyük",
+    "INVALID_FILE_TYPE": "Geçersiz dosya türü",
+    "REQUIRED_FIELD": "Bu alan zorunludur"
+  },
+  "MESSAGES": {
+    "CONFIRM_DELETE": "Bu kaydı gerçekten silmek istiyor musunuz?",
+    "CONFIRM_ACTION": "Bu işlemi gerçekten yapmak istiyor musunuz?",
+    "UNSAVED_CHANGES": "Kaydedilmemiş değişiklikler var. Sayfadan ayrılmak istiyor musunuz?",
+    "SUCCESS": "Başarılı",
+    "ERROR": "Hata",
+    "WARNING": "Uyarı",
+    "INFO": "Bilgi",
+    "CHANGES_SAVED": "Değişiklikler kaydedildi",
+    "OPERATION_SUCCESS": "İşlem başarıyla tamamlandı",
+    "OPERATION_FAILED": "İşlem başarısız"
+  },
+  "VALIDATION": {
+    "REQUIRED": "Bu alan zorunludur",
+    "EMAIL": "Lütfen geçerli bir e-posta adresi girin",
+    "MIN_LENGTH": "En az {{min}} karakter gerekli",
+    "MAX_LENGTH": "En fazla {{max}} karakter izinli",
+    "PATTERN": "Geçersiz format",
+    "DATE": "Geçersiz tarih",
+    "NUMBER": "Lütfen bir sayı girin",
+    "URL": "Lütfen geçerli bir URL girin"
+  }
+}
