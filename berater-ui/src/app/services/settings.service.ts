@@ -36,7 +36,7 @@ const DEFAULT_SETTINGS: UserSettings = {
     days90: true,
     days60: true,
     days30: true,
-    custom: undefined,
+    custom: 30,
     sendEmail: false
   },
   sidebarLabels: {
@@ -72,7 +72,12 @@ export class SettingsService {
     return this.http.get<any>(`${this.apiUrl}/settings`).pipe(
       tap(response => {
         if (response.success && response.data) {
-          this.settingsSubject.next(response.data);
+          // Sicherstellen, dass custom einen gültigen Wert hat
+          const settings = response.data;
+          if (settings.reminderDays && (settings.reminderDays.custom === undefined || settings.reminderDays.custom === null)) {
+            settings.reminderDays.custom = 30;
+          }
+          this.settingsSubject.next(settings);
         }
       })
     );
@@ -80,6 +85,10 @@ export class SettingsService {
 
   initializeSettings(settings: UserSettings): void {
     if (settings) {
+      // Sicherstellen, dass custom einen gültigen Wert hat
+      if (settings.reminderDays && (settings.reminderDays.custom === undefined || settings.reminderDays.custom === null)) {
+        settings.reminderDays.custom = 30;
+      }
       this.settingsSubject.next(settings);
     } else {
       this.settingsSubject.next(DEFAULT_SETTINGS);
