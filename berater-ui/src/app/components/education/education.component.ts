@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { EducationService, EducationMaterial, EducationStats, Berater } from '../../services/education.service';
+import { EducationService, EducationMaterial, EducationStats, Berater, ShareStatus } from '../../services/education.service';
 import { AuthService } from '../../services/auth.service';
 import { ViewportService } from '../../services/viewport.service';
 import { EducationDesktopComponent } from './desktop/education-desktop.component';
@@ -30,6 +30,13 @@ export class EducationComponent implements OnInit, OnDestroy {
 
   isMasterBerater = false;
   loading = true;
+
+  // Master Berater Token
+  shareToken: string | null = null;
+  connectedMasterBerater: { _id: string; firstName: string; lastName: string } | null = null;
+  tokenInput = '';
+  tokenError = '';
+  tokenSuccess = '';
 
   // Filter & Search
   searchTerm = '';
@@ -90,11 +97,7 @@ export class EducationComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.checkUserRole();
-    this.loadMaterials();
-    if (this.isMasterBerater) {
-      this.loadStats();
-      this.loadBeraterList();
-    }
+    this.loadShareStatus();
     this.setupFullscreenListener();
   }
 
@@ -133,6 +136,30 @@ export class EducationComponent implements OnInit, OnDestroy {
   checkUserRole(): void {
     const user = this.authService.currentUser;
     this.isMasterBerater = user?.isMasterBerater || false;
+  }
+
+  loadShareStatus(): void {
+    this.educationService.getShareStatus().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.isMasterBerater = response.data.isMasterBerater;
+          this.shareToken = response.data.shareToken;
+          this.connectedMasterBerater = response.data.masterBerater;
+
+          // Materialien laden
+          this.loadMaterials();
+
+          if (this.isMasterBerater) {
+            this.loadStats();
+            this.loadBeraterList();
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden des Share-Status:', error);
+        this.loading = false;
+      }
+    });
   }
 
   loadMaterials(): void {
@@ -434,5 +461,78 @@ closePdfViewer(): void {
   this.showPdfViewer = false;
   this.currentPdfDataUrl = null;
   this.currentPdfName = null;
+}
+
+// -------------------------------
+// Master Berater Token Methoden
+// -------------------------------
+
+generateToken(): void {
+  this.tokenError = '';
+  this.tokenSuccess = '';
+  this.educationService.generateShareToken().subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.shareToken = response.data.shareToken;
+        this.tokenSuccess = 'Token erfolgreich generiert!';
+      }
+    },
+    error: (error) => {
+      console.error('Fehler beim Generieren des Tokens:', error);
+      this.tokenError = error.error?.message || 'Fehler beim Generieren des Tokens';
+    }
+  });
+}
+
+connectWithToken(): void {
+  if (!this.tokenInput.trim()) {
+    this.tokenError = 'Bitte geben Sie einen Token ein';
+    return;
+  }
+
+  this.tokenError = '';
+  this.tokenSuccess = '';
+  this.educationService.connectByToken(this.tokenInput).subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.connectedMasterBerater = response.data.masterBerater;
+        this.tokenInput = '';
+        this.tokenSuccess = `Erfolgreich mit ${response.data.masterBerater.firstName} ${response.data.masterBerater.lastName} verbunden!`;
+        this.loadMaterials();
+      }
+    },
+    error: (error) => {
+      console.error('Fehler beim Verbinden:', error);
+      this.tokenError = error.error?.message || 'Ungültiger Token';
+    }
+  });
+}
+
+disconnectFromMaster(): void {
+  this.tokenError = '';
+  this.tokenSuccess = '';
+  this.educationService.disconnectMasterBerater().subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.connectedMasterBerater = null;
+        this.materials = [];
+        this.filteredMaterials = [];
+        this.tokenSuccess = 'Verbindung erfolgreich getrennt';
+      }
+    },
+    error: (error) => {
+      console.error('Fehler beim Trennen:', error);
+      this.tokenError = error.error?.message || 'Fehler beim Trennen der Verbindung';
+    }
+  });
+}
+
+copyTokenToClipboard(): void {
+  if (this.shareToken) {
+    navigator.clipboard.writeText(this.shareToken).then(() => {
+      this.tokenSuccess = 'Token in die Zwischenablage kopiert!';
+      setTimeout(() => this.tokenSuccess = '', 3000);
+    });
+  }
 }
 }

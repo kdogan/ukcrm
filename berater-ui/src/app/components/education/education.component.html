@@ -11,6 +11,11 @@
     [categoryOptions]="categoryOptions"
     [typeOptions]="typeOptions"
     [languageOptions]="languageOptions"
+    [shareToken]="shareToken"
+    [connectedMasterBerater]="connectedMasterBerater"
+    [tokenInput]="tokenInput"
+    [tokenError]="tokenError"
+    [tokenSuccess]="tokenSuccess"
     (createMaterial)="openCreateModal()"
     (editMaterial)="openEditModal($event)"
     (deleteMaterial)="confirmDelete($event)"
@@ -21,6 +26,11 @@
     (languageChange)="onLanguageChange($event)"
     (filterChange)="filterMaterials()"
     (resetFilters)="resetFilters()"
+    (generateToken)="generateToken()"
+    (connectWithToken)="connectWithToken()"
+    (disconnectFromMaster)="disconnectFromMaster()"
+    (copyToken)="copyTokenToClipboard()"
+    (tokenInputChange)="tokenInput = $event"
   />
 } @else {
   <app-education-desktop
@@ -35,6 +45,11 @@
     [categoryOptions]="categoryOptions"
     [typeOptions]="typeOptions"
     [languageOptions]="languageOptions"
+    [shareToken]="shareToken"
+    [connectedMasterBerater]="connectedMasterBerater"
+    [tokenInput]="tokenInput"
+    [tokenError]="tokenError"
+    [tokenSuccess]="tokenSuccess"
     (createMaterial)="openCreateModal()"
     (editMaterial)="openEditModal($event)"
     (deleteMaterial)="confirmDelete($event)"
@@ -45,6 +60,11 @@
     (languageChange)="onLanguageChange($event)"
     (filterChange)="filterMaterials()"
     (resetFilters)="resetFilters()"
+    (generateToken)="generateToken()"
+    (connectWithToken)="connectWithToken()"
+    (disconnectFromMaster)="disconnectFromMaster()"
+    (copyToken)="copyTokenToClipboard()"
+    (tokenInputChange)="tokenInput = $event"
   />
 }
 

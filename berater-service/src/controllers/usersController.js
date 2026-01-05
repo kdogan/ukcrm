@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const crypto = require('crypto');
 
 /**
  * 📥 Lade User für Chat-Start
@@ -120,6 +121,199 @@ exports.updateMasterBerater = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Fehler beim Aktualisieren des Master Beraters',
+      error: err.message
+    });
+  }
+};
+
+/**
+ * 🔑 Token generieren/neu generieren für Master Berater
+ * Nur Master Berater können einen Share-Token erstellen
+ */
+exports.generateShareToken = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const currentUser = await User.findById(currentUserId);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Benutzer nicht gefunden'
+      });
+    }
+
+    if (!currentUser.isMasterBerater) {
+      return res.status(403).json({
+        success: false,
+        message: 'Nur Master Berater können einen Share-Token generieren'
+      });
+    }
+
+    // Neuen 8-stelligen Token generieren (Großbuchstaben + Zahlen)
+    const token = crypto.randomBytes(4).toString('hex').toUpperCase();
+
+    currentUser.shareToken = token;
+    await currentUser.save();
+
+    res.json({
+      success: true,
+      message: 'Share-Token erfolgreich generiert',
+      data: {
+        shareToken: token
+      }
+    });
+  } catch (err) {
+    console.error('Fehler beim Generieren des Share-Tokens:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Generieren des Share-Tokens',
+      error: err.message
+    });
+  }
+};
+
+/**
+ * 🔗 Master Berater per Token verbinden
+ * Berater gibt Token ein und wird dem Master Berater zugewiesen
+ */
+exports.connectByToken = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const { token } = req.body;
+
+    if (!token || token.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: 'Token ist erforderlich'
+      });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Benutzer nicht gefunden'
+      });
+    }
+
+    if (currentUser.isMasterBerater) {
+      return res.status(403).json({
+        success: false,
+        message: 'Master Berater können sich nicht mit anderen Master Beratern verbinden'
+      });
+    }
+
+    // Master Berater per Token suchen
+    const masterBerater = await User.findOne({
+      shareToken: token.toUpperCase().trim(),
+      isMasterBerater: true,
+      isActive: true
+    });
+
+    if (!masterBerater) {
+      return res.status(404).json({
+        success: false,
+        message: 'Kein Master Berater mit diesem Token gefunden'
+      });
+    }
+
+    // Master Berater zuweisen
+    currentUser.masterBerater = masterBerater._id;
+    await currentUser.save();
+
+    res.json({
+      success: true,
+      message: 'Erfolgreich mit Master Berater verbunden',
+      data: {
+        masterBerater: {
+          _id: masterBerater._id,
+          firstName: masterBerater.firstName,
+          lastName: masterBerater.lastName
+        }
+      }
+    });
+  } catch (err) {
+    console.error('Fehler beim Verbinden mit Master Berater:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Verbinden mit Master Berater',
+      error: err.message
+    });
+  }
+};
+
+/**
+ * 🔓 Verbindung zum Master Berater trennen
+ */
+exports.disconnectMasterBerater = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const currentUser = await User.findById(currentUserId);
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Benutzer nicht gefunden'
+      });
+    }
+
+    if (!currentUser.masterBerater) {
+      return res.status(400).json({
+        success: false,
+        message: 'Sie sind mit keinem Master Berater verbunden'
+      });
+    }
+
+    currentUser.masterBerater = null;
+    await currentUser.save();
+
+    res.json({
+      success: true,
+      message: 'Verbindung zum Master Berater erfolgreich getrennt'
+    });
+  } catch (err) {
+    console.error('Fehler beim Trennen der Verbindung:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Trennen der Verbindung',
+      error: err.message
+    });
+  }
+};
+
+/**
+ * 📋 Aktuellen Share-Token und Master Berater Status abrufen
+ */
+exports.getShareStatus = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+    const currentUser = await User.findById(currentUserId).populate('masterBerater', 'firstName lastName');
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Benutzer nicht gefunden'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        isMasterBerater: currentUser.isMasterBerater,
+        shareToken: currentUser.isMasterBerater ? currentUser.shareToken : null,
+        masterBerater: currentUser.masterBerater ? {
+          _id: currentUser.masterBerater._id,
+          firstName: currentUser.masterBerater.firstName,
+          lastName: currentUser.masterBerater.lastName
+        } : null
+      }
+    });
+  } catch (err) {
+    console.error('Fehler beim Abrufen des Share-Status:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Abrufen des Share-Status',
       error: err.message
     });
   }

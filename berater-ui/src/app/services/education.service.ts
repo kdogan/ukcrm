@@ -54,11 +54,22 @@ export interface Berater {
   isMasterBerater: boolean;
 }
 
+export interface ShareStatus {
+  isMasterBerater: boolean;
+  shareToken: string | null;
+  masterBerater: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  } | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class EducationService {
   private apiUrl = `${environment.apiUrl}/education`;
+  private usersApiUrl = `${environment.apiUrl}/users`;
 
   constructor(private http: HttpClient) {}
 
@@ -147,5 +158,37 @@ export class EducationService {
    */
   registerView(materialId: string): Observable<{ success: boolean; message: string; data: { views: number } }> {
     return this.http.post<{ success: boolean; message: string; data: { views: number } }>(`${this.apiUrl}/${materialId}/view`, {});
+  }
+
+  // -------------------------------
+  // Master Berater Token API
+  // -------------------------------
+
+  /**
+   * Share-Status und Token abrufen
+   */
+  getShareStatus(): Observable<{ success: boolean; data: ShareStatus }> {
+    return this.http.get<{ success: boolean; data: ShareStatus }>(`${this.usersApiUrl}/share-status`);
+  }
+
+  /**
+   * Share-Token generieren (nur Master Berater)
+   */
+  generateShareToken(): Observable<{ success: boolean; message: string; data: { shareToken: string } }> {
+    return this.http.post<{ success: boolean; message: string; data: { shareToken: string } }>(`${this.usersApiUrl}/generate-token`, {});
+  }
+
+  /**
+   * Mit Master Berater per Token verbinden
+   */
+  connectByToken(token: string): Observable<{ success: boolean; message: string; data: { masterBerater: { _id: string; firstName: string; lastName: string } } }> {
+    return this.http.post<{ success: boolean; message: string; data: { masterBerater: { _id: string; firstName: string; lastName: string } } }>(`${this.usersApiUrl}/connect-by-token`, { token });
+  }
+
+  /**
+   * Verbindung zum Master Berater trennen
+   */
+  disconnectMasterBerater(): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.usersApiUrl}/disconnect-master`, {});
   }
 }

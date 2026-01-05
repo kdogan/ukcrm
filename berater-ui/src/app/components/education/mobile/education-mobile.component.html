@@ -19,6 +19,55 @@
     </div>
   </div>
 
+  <!-- Master Berater Token Card -->
+  <div class="token-card" *ngIf="isMasterBerater">
+    <div class="token-card-header">
+      <i class="fas fa-key"></i>
+      <span>Ihr Zugangs-Token</span>
+    </div>
+    <p class="token-description">Teilen Sie diesen Token mit Beratern.</p>
+    <div class="token-display" *ngIf="shareToken">
+      <span class="token-value">{{ shareToken }}</span>
+      <button class="btn-icon" (click)="copyToken.emit()"><i class="fas fa-copy"></i></button>
+    </div>
+    <button class="btn btn-primary btn-block" *ngIf="shareToken" (click)="generateToken.emit()">
+      <i class="fas fa-sync"></i> Neuer Token
+    </button>
+    <button class="btn btn-primary btn-block" *ngIf="!shareToken" (click)="generateToken.emit()">
+      <i class="fas fa-key"></i> Token generieren
+    </button>
+    <div class="token-message success" *ngIf="tokenSuccess">{{ tokenSuccess }}</div>
+    <div class="token-message error" *ngIf="tokenError">{{ tokenError }}</div>
+  </div>
+
+  <!-- Berater Token Connection Card -->
+  <div class="token-card" *ngIf="!isMasterBerater">
+    <div class="token-card-header">
+      <i class="fas fa-link"></i>
+      <span>Mit Master verbinden</span>
+    </div>
+    <div class="connected-info" *ngIf="connectedMasterBerater">
+      <div class="connected-badge">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ connectedMasterBerater.firstName }} {{ connectedMasterBerater.lastName }}</span>
+      </div>
+      <button class="btn btn-outline btn-sm btn-danger-outline" (click)="disconnectFromMaster.emit()">
+        <i class="fas fa-unlink"></i> Trennen
+      </button>
+    </div>
+    <div class="token-input-group" *ngIf="!connectedMasterBerater">
+      <input type="text" class="form-control" placeholder="Token eingeben"
+        [value]="tokenInput"
+        (input)="tokenInputChange.emit($any($event.target).value)"
+        (keyup.enter)="connectWithToken.emit()" />
+      <button class="btn btn-primary" (click)="connectWithToken.emit()">
+        <i class="fas fa-plug"></i>
+      </button>
+    </div>
+    <div class="token-message success" *ngIf="tokenSuccess">{{ tokenSuccess }}</div>
+    <div class="token-message error" *ngIf="tokenError">{{ tokenError }}</div>
+  </div>
+
   <div class="mobile-toolbar">
     <div class="search-box">
       <i class="fas fa-search"></i>

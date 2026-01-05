@@ -42,6 +42,80 @@
     </div>
   }
 
+  <!-- Master Berater Token Card -->
+  @if (isMasterBerater) {
+    <div class="token-card master-token-card">
+      <div class="token-card-header">
+        <i class="fas fa-key"></i>
+        <h3>Ihr Zugangs-Token</h3>
+      </div>
+      <p class="token-description">Teilen Sie diesen Token mit Beratern, damit diese Ihre Materialien sehen können.</p>
+      @if (shareToken) {
+        <div class="token-display">
+          <span class="token-value">{{ shareToken }}</span>
+          <button class="btn btn-outline btn-sm" (click)="copyToken.emit()" title="Token kopieren">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        <button class="btn btn-secondary btn-sm" (click)="generateToken.emit()">
+          <i class="fas fa-sync"></i> Neuen Token generieren
+        </button>
+      } @else {
+        <button class="btn btn-primary" (click)="generateToken.emit()">
+          <i class="fas fa-key"></i> Token generieren
+        </button>
+      }
+      @if (tokenSuccess) {
+        <div class="token-message success">{{ tokenSuccess }}</div>
+      }
+      @if (tokenError) {
+        <div class="token-message error">{{ tokenError }}</div>
+      }
+    </div>
+  }
+
+  <!-- Berater Token Connection Card (für nicht-Master Berater) -->
+  @if (!isMasterBerater) {
+    <div class="token-card berater-token-card">
+      <div class="token-card-header">
+        <i class="fas fa-link"></i>
+        <h3>Mit Master Berater verbinden</h3>
+      </div>
+      @if (connectedMasterBerater) {
+        <div class="connected-info">
+          <div class="connected-badge">
+            <i class="fas fa-check-circle"></i>
+            Sie können jetzt Bildungsmaterialien von  <strong>{{ connectedMasterBerater.firstName }} {{ connectedMasterBerater.lastName }}</strong> sehen.
+          </div>
+          <button class="btn btn-outline btn-sm btn-danger-outline" (click)="disconnectFromMaster.emit()">
+            <i class="fas fa-unlink"></i> Verbindung trennen
+          </button>
+        </div>
+      } @else {
+        <p class="token-description">Geben Sie den Token Ihres Master Beraters ein, um dessen Materialien zu sehen.</p>
+        <div class="token-input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Token eingeben (z.B. A1B2C3D4)"
+            [value]="tokenInput"
+            (input)="tokenInputChange.emit($any($event.target).value)"
+            (keyup.enter)="connectWithToken.emit()"
+          />
+          <button class="btn btn-primary" (click)="connectWithToken.emit()">
+            <i class="fas fa-plug"></i> Verbinden
+          </button>
+        </div>
+      }
+      @if (tokenSuccess) {
+        <div class="token-message success">{{ tokenSuccess }}</div>
+      }
+      @if (tokenError) {
+        <div class="token-message error">{{ tokenError }}</div>
+      }
+    </div>
+  }
+
   <div class="education-toolbar">
     <div class="toolbar-left">
       <div class="search-box">

@@ -8,7 +8,6 @@ import { AuthService } from '../../services/auth.service';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { SettingsMobileComponent } from './mobile/settings-mobile.component';
 import { PaypalService } from '../../services/paypal.service';
-import { UserService } from '../../services/user.service';
 
 @Component({
     selector: 'app-settings',
@@ -485,45 +484,6 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
               <i class="fas" [class.fa-spinner]="isChangingPassword" [class.fa-spin]="isChangingPassword" [class.fa-key]="!isChangingPassword"></i>
               {{ isChangingPassword ? 'Wird geändert...' : 'Passwort ändern' }}
             </button>
-          </div>
-        </div>
-
-        <!-- Master Berater -->
-        <div class="settings-section" *ngIf="currentUser?.role === 'berater'">
-          <h2>🎓 Master Berater</h2>
-          <p class="section-description">
-            Weisen Sie sich einem Master Berater zu, um automatisch Zugriff auf dessen Bildungsmaterialien zu erhalten.
-          </p>
-
-          <div class="master-berater-form">
-            <div class="form-group">
-              <label for="masterBeraterEmail">E-Mail des Master Beraters</label>
-              <input
-                type="email"
-                id="masterBeraterEmail"
-                [(ngModel)]="masterBeraterEmail"
-                placeholder="master@example.com"
-                class="form-control"
-              />
-              <small class="form-text">
-                Geben Sie die E-Mail-Adresse Ihres Master Beraters ein. Lassen Sie das Feld leer, um die Zuweisung zu entfernen.
-              </small>
-            </div>
-
-            <button
-              class="btn-primary"
-              (click)="updateMasterBerater()"
-              [disabled]="isUpdatingMasterBerater">
-              <i class="fas" [class.fa-spinner]="isUpdatingMasterBerater" [class.fa-spin]="isUpdatingMasterBerater" [class.fa-user-graduate]="!isUpdatingMasterBerater"></i>
-              {{ isUpdatingMasterBerater ? 'Wird aktualisiert...' : 'Master Berater aktualisieren' }}
-            </button>
-
-            <div class="success-message" *ngIf="masterBeraterSuccess">
-              ✓ {{ masterBeraterSuccessMessage }}
-            </div>
-            <div class="error-message" *ngIf="masterBeraterError">
-              {{ masterBeraterErrorMessage }}
-            </div>
           </div>
         </div>
 
@@ -1244,64 +1204,6 @@ Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst
       margin-top: 0.25rem;
     }
 
-    /* Master Berater Styles */
-    .master-berater-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .form-group label {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #555;
-    }
-
-    .form-control {
-      width: 100%;
-      max-width: 400px;
-      padding: 0.75rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-
-    .form-control:focus {
-      outline: none;
-      border-color: #34d399;
-    }
-
-    .form-text {
-      color: #6b7280;
-      font-size: 0.875rem;
-      line-height: 1.4;
-    }
-
-    .success-message {
-      background: #d1fae5;
-      border: 2px solid #10b981;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      color: #065f46;
-      font-weight: 500;
-    }
-
-    .error-message {
-      background: #fee2e2;
-      border: 2px solid #ef4444;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      color: #b91c1c;
-      font-weight: 500;
-    }
-
     .btn-primary:disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -1322,13 +1224,6 @@ export class SettingsComponent implements OnInit {
   confirmPassword = '';
   isChangingPassword = false;
 
-  // Master Berater properties
-  masterBeraterEmail = '';
-  isUpdatingMasterBerater = false;
-  masterBeraterSuccess = false;
-  masterBeraterError = false;
-  masterBeraterSuccessMessage = '';
-  masterBeraterErrorMessage = '';
   currentUser: any = null;
 
   constructor(
@@ -1337,8 +1232,7 @@ export class SettingsComponent implements OnInit {
     private upgradeService: UpgradeService,
     private authService: AuthService,
     private viewport: ViewportService,
-    private paypalService: PaypalService,
-    private userService: UserService
+    private paypalService: PaypalService
   ) {}
 
   get isMobile() {
@@ -1351,11 +1245,6 @@ export class SettingsComponent implements OnInit {
     // Load current user
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-
-      // Wenn User einen Master Berater hat, E-Mail vorausfüllen
-      if (user && user.masterBerater && typeof user.masterBerater === 'object') {
-        this.masterBeraterEmail = user.masterBerater.email;
-      }
     });
 
     // Nur Limits und Pakete laden, wenn der Benutzer eingeloggt ist
@@ -1599,42 +1488,6 @@ export class SettingsComponent implements OnInit {
         this.isChangingPassword = false;
         const errorMessage = error.error?.message || 'Fehler beim Ändern des Passworts';
         alert(errorMessage);
-      }
-    });
-  }
-
-  updateMasterBerater(): void {
-    this.isUpdatingMasterBerater = true;
-    this.masterBeraterSuccess = false;
-    this.masterBeraterError = false;
-
-    this.userService.updateMasterBerater(this.masterBeraterEmail).subscribe({
-      next: (response) => {
-        this.isUpdatingMasterBerater = false;
-        if (response.success) {
-          this.masterBeraterSuccess = true;
-          this.masterBeraterSuccessMessage = response.message;
-
-          // Update currentUser with new masterBerater data
-          if (this.currentUser) {
-            this.currentUser.masterBerater = response.data.masterBerater;
-            this.authService.updateCurrentUser(this.currentUser);
-          }
-
-          // Auto-hide success message after 3 seconds
-          setTimeout(() => {
-            this.masterBeraterSuccess = false;
-          }, 3000);
-        }
-      },
-      error: (error) => {
-        this.isUpdatingMasterBerater = false;
-        this.masterBeraterError = true;
-        this.masterBeraterErrorMessage = error.error?.message || 'Fehler beim Aktualisieren des Master Beraters';
-        // Auto-hide error message after 5 seconds
-        setTimeout(() => {
-          this.masterBeraterError = false;
-        }, 5000);
       }
     });
   }

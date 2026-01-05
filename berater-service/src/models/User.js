@@ -39,6 +39,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  // Einmaliger Share-Token für Master Berater (Berater geben diesen Token ein um Zugriff zu erhalten)
+  shareToken: {
+    type: String,
+    unique: true,
+    sparse: true // Erlaubt null Werte für nicht-Master Berater
+  },
   // Wenn nicht Master, Referenz zum Master Berater
   masterBerater: {
     type: mongoose.Schema.Types.ObjectId,

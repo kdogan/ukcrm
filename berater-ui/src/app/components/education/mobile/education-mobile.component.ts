@@ -23,6 +23,13 @@ export class EducationMobileComponent {
   @Input({ required: true }) typeOptions!: any[];
   @Input({ required: true }) languageOptions!: any[];
 
+  // Token-related inputs
+  @Input() shareToken: string | null = null;
+  @Input() connectedMasterBerater: { _id: string; firstName: string; lastName: string } | null = null;
+  @Input() tokenInput: string = '';
+  @Input() tokenError: string = '';
+  @Input() tokenSuccess: string = '';
+
   @Output() createMaterial = new EventEmitter<void>();
   @Output() editMaterial = new EventEmitter<EducationMaterial>();
   @Output() deleteMaterial = new EventEmitter<EducationMaterial>();
@@ -33,6 +40,13 @@ export class EducationMobileComponent {
   @Output() languageChange = new EventEmitter<string>();
   @Output() filterChange = new EventEmitter<void>();
   @Output() resetFilters = new EventEmitter<void>();
+
+  // Token-related outputs
+  @Output() generateToken = new EventEmitter<void>();
+  @Output() connectWithToken = new EventEmitter<void>();
+  @Output() disconnectFromMaster = new EventEmitter<void>();
+  @Output() copyToken = new EventEmitter<void>();
+  @Output() tokenInputChange = new EventEmitter<string>();
 
   showFilters = false;
 
