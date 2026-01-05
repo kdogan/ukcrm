@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { TodoService, Todo, CreateTodoDto } from '../../services/todo.service';
 import { CustomerService } from '../../services/customer.service';
 import { ContractService } from '../../services/contract.service';
@@ -16,7 +17,7 @@ import { Util } from '../util/util';
 @Component({
     selector: 'app-todos',
     standalone: true,
-    imports: [CommonModule, FormsModule, TodoComponent,
+    imports: [CommonModule, FormsModule, TranslateModule, TodoComponent,
       TodosDesktopComponent, TodosMobileComponent, OverlayModalComponent],
     templateUrl: './todos.component.html',
     styleUrls: ['./todos.component.scss']

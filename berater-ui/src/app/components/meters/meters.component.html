@@ -8,22 +8,22 @@
 } @else {
 <div class="page-container" (click)="closeActionMenu()">
   <div class="page-header">
-    <h1>Zähler</h1>
-    <button class="btn-primary" (click)="showCreateModal()">+ Neuer Zähler</button>
+    <h1>{{ 'METERS.TITLE' | translate }}</h1>
+    <button class="btn-primary" (click)="showCreateModal()">+ {{ 'METERS.NEW' | translate }}</button>
   </div>
 
   <div class="filters">
     <app-search-input [value]="searchTerm" (valueChange)="searchTerm = $event; onSearchChange()"
-      placeholder="Suche nach Zählernummer...">
+      [placeholder]="'METERS.SEARCH' | translate">
     </app-search-input>
     <select [(ngModel)]="statusFilter" (ngModelChange)="filterMeters()" class="filter-select">
-      <option value="">Alle Status</option>
-      <option value="free">Frei</option>
-      <option value="occupied">Belegt</option>
+      <option value="">{{ 'COMMON.ALL' | translate }}</option>
+      <option value="free">{{ 'METERS.STATUS.FREE' | translate }}</option>
+      <option value="occupied">{{ 'METERS.STATUS.OCCUPIED' | translate }}</option>
     </select>
     <select [(ngModel)]="typeFilter" (ngModelChange)="filterMeters()" class="filter-select">
-      <option value="" disabled>Zählertyp wählen</option>
-      <option value="">Alle Typen</option>
+      <option value="" disabled>{{ 'METERS.FIELDS.TYPE' | translate }}</option>
+      <option value="">{{ 'COMMON.ALL' | translate }}</option>
       <option *ngFor="let type of meterTypes" [value]="type">
         {{ getTypeLabel(type) }}
       </option>
@@ -35,13 +35,13 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th>Zählernummer</th>
-          <th>Typ</th>
-          <th>Status</th>
-          <th>Aktueller Zählerstand</th>
-          <th>Letzte Ablesung</th>
-          <th>Aktueller Kunde</th>
-          <th>Aktionen</th>
+          <th>{{ 'METERS.FIELDS.METER_NUMBER' | translate }}</th>
+          <th>{{ 'METERS.FIELDS.TYPE' | translate }}</th>
+          <th>{{ 'COMMON.STATUS' | translate }}</th>
+          <th>{{ 'METERS.FIELDS.READING' | translate }}</th>
+          <th>{{ 'METERS.FIELDS.LAST_READING' | translate }}</th>
+          <th>{{ 'METERS.FIELDS.CUSTOMER' | translate }}</th>
+          <th>{{ 'COMMON.ACTIONS' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -50,7 +50,7 @@
           <td>{{ getTypeLabel(meter.type) }}</td>
           <td>
             <span class="badge" [class.badge-active]="!meter.currentCustomerId">
-              {{ meter.currentCustomerId ? 'Belegt' : 'Frei' }}
+              {{ meter.currentCustomerId ? ('METERS.STATUS.OCCUPIED' | translate) : ('METERS.STATUS.FREE' | translate) }}
             </span>
           </td>
           <td>
@@ -80,19 +80,19 @@
               </button>
               <div class="action-menu" *ngIf="activeMenuId === meter._id" (click)="$event.stopPropagation()">
                 <button class="menu-item" (click)="showMeterDetails(meter); closeActionMenu()">
-                  <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
+                  <i class="fas fa-info-circle fa-lg"></i> {{ 'COMMON.DETAILS' | translate }}
                 </button>
                 <button class="menu-item" (click)="showAddReadingModal(meter); closeActionMenu()">
-                  <i class="fas fa-plus-circle fa-lg"></i>Ablesung hinzufügen
+                  <i class="fas fa-plus-circle fa-lg"></i> {{ 'METERS.ADD_READING' | translate }}
                 </button>
                 <button class="menu-item" (click)="viewReadings(meter); closeActionMenu()">
-                  <i class="fas fa-eye fa-lg"></i>Ablesungen anzeigen
+                  <i class="fas fa-eye fa-lg"></i> {{ 'METERS.VIEW_READINGS' | translate }}
                 </button>
                 <button class="menu-item" (click)="editMeter(meter); closeActionMenu()">
-                  <i class="fas fa-edit fa-lg"></i> Bearbeiten
+                  <i class="fas fa-edit fa-lg"></i> {{ 'COMMON.EDIT' | translate }}
                 </button>
                 <button class="menu-item menu-item-danger" (click)="deleteMeter(meter._id); closeActionMenu()">
-                  <i class="fas fa-trash fa-lg"></i> Löschen
+                  <i class="fas fa-trash fa-lg"></i> {{ 'COMMON.DELETE' | translate }}
                 </button>
               </div>
             </div>

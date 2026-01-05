@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { Supplier } from '../../../services/supplier.service';
 
 @Component({
     selector: 'app-suppliers-mobile',
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, TranslateModule],
     templateUrl: './suppliers-mobile.component.html',
     styleUrl: './suppliers-mobile.component.scss'
 })

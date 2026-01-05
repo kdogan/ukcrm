@@ -12,6 +12,7 @@ import { OverlayModalComponent } from '../shared/overlay-modal.component';
 import { Meter } from 'src/app/models/meter.model';
 import { MeterCreateComponent } from '../shared/meter-create.component';
 import { SearchInputComponent } from '../shared/search-input.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-meters',
@@ -20,7 +21,7 @@ import { SearchInputComponent } from '../shared/search-input.component';
       TableContainerComponent,
       MetersMobileComponent,
       OverlayModalComponent, MeterCreateComponent,
-      SearchInputComponent],
+      SearchInputComponent, TranslateModule],
     styleUrls: ['./meters.component.scss'],
     templateUrl: './meters.component.html'
 })

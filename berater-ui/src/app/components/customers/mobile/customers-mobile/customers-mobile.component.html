@@ -2,7 +2,7 @@
 
   <!-- HEADER -->
   <div class="mobile-header">
-    <h1>Kunden</h1>
+    <h1>{{ 'CUSTOMERS.TITLE' | translate }}</h1>
     <button class="fab" (click)="create.emit()">
       <i class="fas fa-plus"></i>
     </button>
@@ -12,7 +12,7 @@
   <div class="mobile-filters">
     <input
       type="search"
-      placeholder="Suche..."
+      [placeholder]="'COMMON.SEARCH' | translate"
       [ngModel]="searchTerm"
       (ngModelChange)="searchTermChange.emit($event)"
     />
@@ -21,9 +21,9 @@
       [ngModel]="filterActive"
       (ngModelChange)="filterActiveChange.emit($event)"
     >
-      <option [ngValue]="undefined">Alle</option>
-      <option [ngValue]="true">Aktiv</option>
-      <option [ngValue]="false">Inaktiv</option>
+      <option [ngValue]="undefined">{{ 'COMMON.ALL' | translate }}</option>
+      <option [ngValue]="true">{{ 'DASHBOARD.ACTIVE' | translate }}</option>
+      <option [ngValue]="false">{{ 'ADMIN.STATUS.BLOCKED' | translate }}</option>
     </select>
   </div>
 
@@ -46,13 +46,13 @@
       </div>
 
       <div class="actions">
-        <button class="details" (click)="showDetails.emit(c)" title="Details anzeigen">
+        <button class="details" (click)="showDetails.emit(c)" [title]="'COMMON.DETAILS' | translate">
           <i class="fas fa-info-circle"></i>
         </button>
-        <button class="edit" (click)="edit.emit(c)" title="Bearbeiten">
+        <button class="edit" (click)="edit.emit(c)" [title]="'COMMON.EDIT' | translate">
           <i class="fas fa-edit"></i>
         </button>
-        <button class="danger" (click)="delete.emit(c._id)" title="Löschen">
+        <button class="danger" (click)="delete.emit(c._id)" [title]="'COMMON.DELETE' | translate">
           <i class="fas fa-trash"></i>
         </button>
       </div>

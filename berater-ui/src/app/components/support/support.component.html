@@ -1,9 +1,9 @@
 <div class="page-container">
   <div class="page-header">
-    <h1>Support Tickets</h1>
+    <h1>{{ 'SUPPORT.TITLE' | translate }}</h1>
     @if(!isSuperAdmin){
       <button class="btn-primary" (click)="showCreateTicketModal()">
-        <i class="fas fa-plus"></i> Neues Ticket erstellen
+        <i class="fas fa-plus"></i> {{ 'SUPPORT.NEW_TICKET' | translate }}
       </button>
     }
   </div>
@@ -12,10 +12,8 @@
     <div class="info-box">
       <i class="fas fa-info-circle"></i>
       <div>
-        <strong>Willkommen beim Support-System!</strong>
-        <p>Haben Sie technische Probleme, Fragen zur Anwendung oder benötigen Sie Hilfe?
-        Erstellen Sie hier ein Support-Ticket und unser Team wird sich schnellstmöglich um Ihr Anliegen kümmern.
-        Sie können Bilder anhängen, um Probleme besser zu veranschaulichen.</p>
+        <strong>{{ 'SUPPORT.WELCOME_TITLE' | translate }}</strong>
+        <p>{{ 'SUPPORT.WELCOME_TEXT' | translate }}</p>
       </div>
     </div>
   }
@@ -23,7 +21,7 @@
   @if(isSuperAdmin){
     <div class="info-box admin">
       <i class="fas fa-user-shield"></i>
-      Sie sehen alle Support-Tickets von allen Beratern
+      {{ 'SUPPORT.ADMIN_VIEW' | translate }}
     </div>
   }
 
@@ -34,7 +32,7 @@
       <input type="text"
              [(ngModel)]="searchQuery"
              (ngModelChange)="onSearchChange()"
-             placeholder="Tickets durchsuchen...">
+             [placeholder]="'SUPPORT.SEARCH_PLACEHOLDER' | translate">
       @if(searchQuery){
         <button class="clear-search" (click)="searchQuery = ''; onSearchChange()">
           <i class="fas fa-times"></i>
@@ -44,47 +42,47 @@
 
     <div class="filters-row">
       <div class="filter-group">
-        <label>Status</label>
+        <label>{{ 'COMMON.STATUS' | translate }}</label>
         <select [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
-          <option value="all">Alle offenen</option>
-          <option value="open">Offen</option>
-          <option value="in_progress">In Bearbeitung</option>
+          <option value="all">{{ 'TODOS.ALL_OPEN' | translate }}</option>
+          <option value="open">{{ 'SUPPORT.STATUS.OPEN' | translate }}</option>
+          <option value="in_progress">{{ 'SUPPORT.STATUS.IN_PROGRESS' | translate }}</option>
         </select>
       </div>
 
       <div class="filter-group">
-        <label>Priorität</label>
+        <label>{{ 'TODOS.FIELDS.PRIORITY' | translate }}</label>
         <select [(ngModel)]="filterPriority" (ngModelChange)="onFilterChange()">
-          <option value="all">Alle</option>
-          <option value="high">Hoch</option>
-          <option value="medium">Mittel</option>
-          <option value="low">Niedrig</option>
+          <option value="all">{{ 'COMMON.ALL' | translate }}</option>
+          <option value="high">{{ 'SUPPORT.PRIORITY.HIGH' | translate }}</option>
+          <option value="medium">{{ 'SUPPORT.PRIORITY.MEDIUM' | translate }}</option>
+          <option value="low">{{ 'SUPPORT.PRIORITY.LOW' | translate }}</option>
         </select>
       </div>
 
       <div class="filter-group">
-        <label>Antwort</label>
+        <label>{{ 'SUPPORT.FILTER_ANSWER' | translate }}</label>
         <select [(ngModel)]="filterAnswered" (ngModelChange)="onFilterChange()">
-          <option value="all">Alle</option>
-          <option value="answered">Beantwortet</option>
-          <option value="unanswered">Unbeantwortet</option>
+          <option value="all">{{ 'COMMON.ALL' | translate }}</option>
+          <option value="answered">{{ 'SUPPORT.ANSWERED' | translate }}</option>
+          <option value="unanswered">{{ 'SUPPORT.UNANSWERED' | translate }}</option>
         </select>
       </div>
 
       <div class="filter-group checkbox-filter">
         <label class="checkbox-label">
           <input type="checkbox" [(ngModel)]="showCompleted" (ngModelChange)="onFilterChange()">
-          <span>Abgeschlossene anzeigen</span>
+          <span>{{ 'SUPPORT.SHOW_COMPLETED' | translate }}</span>
         </label>
       </div>
 
-      <button class="btn-reset" (click)="resetFilters()" title="Filter zurücksetzen">
+      <button class="btn-reset" (click)="resetFilters()" [title]="'TODOS.RESET_FILTERS' | translate">
         <i class="fas fa-redo"></i>
       </button>
     </div>
 
     <div class="results-info">
-      <span>{{ filteredTickets.length }} von {{ tickets.length }} Tickets</span>
+      <span>{{ filteredTickets.length }} {{ 'SUPPORT.TICKETS_COUNT' | translate }} {{ tickets.length }} {{ 'SUPPORT.TICKETS' | translate }}</span>
     </div>
   </div>
 
@@ -109,7 +107,7 @@
         @if(isSuperAdmin && typeof ticket.beraterId === 'object'){
           <div class="ticket-berater">
             <i class="fas fa-user"></i>
-            Von: {{ getBeraterName(ticket) }}
+            {{ 'SUPPORT.FROM' | translate }}: {{ getBeraterName(ticket) }}
           </div>
         }
 
@@ -131,11 +129,11 @@
             <span class="ticket-has-response">
               <i class="fas fa-reply"></i>
               @if(ticket.beraterResponse && ticket.adminResponse){
-                Beantwortet
+                {{ 'SUPPORT.ANSWERED' | translate }}
               }@else if(ticket.adminResponse){
-                Support antwortet
+                {{ 'SUPPORT.SUPPORT_RESPONSE' | translate }}
               }@else{
-                Ihre Antwort
+                {{ 'SUPPORT.YOUR_RESPONSE' | translate }}
               }
             </span>
           }
@@ -147,14 +145,13 @@
       <div class="no-data">
         @if(searchQuery || filterStatus !== 'all' || filterPriority !== 'all' || filterAnswered !== 'all' || showCompleted){
           <i class="fas fa-search"></i>
-          <p>Keine Tickets gefunden, die den Suchkriterien entsprechen.</p>
-          <button class="btn-secondary" (click)="resetFilters()">Filter zurücksetzen</button>
+          <p>{{ 'SUPPORT.NO_TICKETS_MATCH' | translate }}</p>
+          <button class="btn-secondary" (click)="resetFilters()">{{ 'TODOS.RESET_FILTERS' | translate }}</button>
         }@else{
           @if(isSuperAdmin){
-            Keine Support-Tickets vorhanden
+            {{ 'SUPPORT.NO_TICKETS_ADMIN' | translate }}
           }@else{
-            Sie haben noch keine Support-Tickets erstellt.
-            Klicken Sie auf "Neues Ticket erstellen" um ein Problem zu melden.
+            {{ 'SUPPORT.NO_TICKETS_USER' | translate }}
           }
         }
       </div>
@@ -167,45 +164,45 @@
   <div class="modal-overlay" (click)="closeCreateModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>Neues Support-Ticket erstellen</h2>
+        <h2>{{ 'SUPPORT.CREATE_TICKET_TITLE' | translate }}</h2>
         <button class="btn-close" (click)="closeCreateModal()">&times;</button>
       </div>
 
       <form (ngSubmit)="createTicket()">
         <div class="form-group">
-          <label>Titel*</label>
+          <label>{{ 'SUPPORT.TITLE_LABEL' | translate }}*</label>
           <input type="text" [(ngModel)]="newTicket.title" name="title" required
-                 placeholder="Kurze Beschreibung des Problems">
+                 [placeholder]="'SUPPORT.TITLE_PLACEHOLDER' | translate">
         </div>
 
         <div class="form-group">
-          <label>Beschreibung*</label>
+          <label>{{ 'SUPPORT.DESCRIPTION_LABEL' | translate }}*</label>
           <textarea [(ngModel)]="newTicket.description" name="description"
                     rows="6" required
-                    placeholder="Detaillierte Beschreibung des Problems..."></textarea>
+                    [placeholder]="'SUPPORT.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
         </div>
 
         <div class="form-group">
-          <label>Priorität</label>
+          <label>{{ 'TODOS.FIELDS.PRIORITY' | translate }}</label>
           <select [(ngModel)]="newTicket.priority" name="priority">
-            <option value="low">Niedrig</option>
-            <option value="medium">Mittel</option>
-            <option value="high">Hoch</option>
+            <option value="low">{{ 'SUPPORT.PRIORITY.LOW' | translate }}</option>
+            <option value="medium">{{ 'SUPPORT.PRIORITY.MEDIUM' | translate }}</option>
+            <option value="high">{{ 'SUPPORT.PRIORITY.HIGH' | translate }}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Bilder hochladen (max. 5)</label>
+          <label>{{ 'SUPPORT.UPLOAD_IMAGES' | translate }}</label>
           <input type="file" accept="image/*" multiple (change)="onImageSelect($event)"
                  #fileInput>
-          <small>JPEG, PNG, GIF oder WebP (max. 5MB pro Bild)</small>
+          <small>{{ 'SUPPORT.IMAGE_HINT' | translate }}</small>
         </div>
 
         @if(imagePreviews.length > 0){
           <div class="image-previews">
             @for(preview of imagePreviews; track $index){
               <div class="image-preview">
-                <img [src]="preview" alt="Vorschau">
+                <img [src]="preview" alt="Preview">
                 <button type="button" class="remove-image" (click)="removeImage($index)">
                   <i class="fas fa-times"></i>
                 </button>
@@ -215,8 +212,8 @@
         }
 
         <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="closeCreateModal()">Abbrechen</button>
-          <button type="submit" class="btn-primary">Ticket erstellen</button>
+          <button type="button" class="btn-secondary" (click)="closeCreateModal()">{{ 'COMMON.CANCEL' | translate }}</button>
+          <button type="submit" class="btn-primary">{{ 'SUPPORT.CREATE_TICKET' | translate }}</button>
         </div>
       </form>
     </div>
@@ -234,7 +231,7 @@
 
       <div class="ticket-details">
         <div class="detail-row">
-          <strong>Status:</strong>
+          <strong>{{ 'COMMON.STATUS' | translate }}:</strong>
           <span class="ticket-status"
                 [class.status-open]="selectedTicket.status === 'open'"
                 [class.status-progress]="selectedTicket.status === 'in_progress'"
@@ -244,7 +241,7 @@
         </div>
 
         <div class="detail-row">
-          <strong>Priorität:</strong>
+          <strong>{{ 'TODOS.FIELDS.PRIORITY' | translate }}:</strong>
           <span class="badge"
                 [class.badge-high]="selectedTicket.priority === 'high'"
                 [class.badge-medium]="selectedTicket.priority === 'medium'"
@@ -255,24 +252,24 @@
 
         @if(isSuperAdmin){
           <div class="detail-row">
-            <strong>Von:</strong>
+            <strong>{{ 'SUPPORT.FROM' | translate }}:</strong>
             {{ getBeraterName(selectedTicket) }}
           </div>
         }
 
         <div class="detail-row">
-          <strong>Erstellt am:</strong>
+          <strong>{{ 'SUPPORT.CREATED_AT' | translate }}:</strong>
           {{ selectedTicket.createdAt | date:'dd.MM.yyyy HH:mm' }}
         </div>
 
         <div class="detail-section">
-          <strong>Beschreibung:</strong>
+          <strong>{{ 'SUPPORT.DESCRIPTION_LABEL' | translate }}:</strong>
           <p class="ticket-description-full">{{ selectedTicket.description }}</p>
         </div>
 
         @if(selectedTicket.ticketImages && selectedTicket.ticketImages.length > 0){
           <div class="detail-section">
-            <strong>Angehängte Bilder:</strong>
+            <strong>{{ 'SUPPORT.ATTACHED_IMAGES' | translate }}:</strong>
             <div class="ticket-images">
               @for(image of selectedTicket.ticketImages; track image.filename){
                 <div class="ticket-image" (click)="openImageViewer(getImageUrl(selectedTicket._id, image.filename))">
@@ -288,11 +285,11 @@
         @if(selectedTicket.beraterResponse){
           <div class="detail-section berater-response">
             <strong>
-              <i class="fas fa-comment"></i> Ihre Antwort:
+              <i class="fas fa-comment"></i> {{ 'SUPPORT.YOUR_ANSWER' | translate }}:
             </strong>
             <p>{{ selectedTicket.beraterResponse }}</p>
             <small>
-              Hinzugefügt am {{ selectedTicket.beraterResponseAt | date:'dd.MM.yyyy HH:mm' }}
+              {{ 'SUPPORT.ADDED_AT' | translate }} {{ selectedTicket.beraterResponseAt | date:'dd.MM.yyyy HH:mm' }}
             </small>
           </div>
         }
@@ -300,13 +297,13 @@
         @if(selectedTicket.adminResponse){
           <div class="detail-section admin-response">
             <strong>
-              <i class="fas fa-reply"></i> Antwort vom Support:
+              <i class="fas fa-reply"></i> {{ 'SUPPORT.SUPPORT_ANSWER' | translate }}:
             </strong>
             <p>{{ selectedTicket.adminResponse }}</p>
             <small>
-              Beantwortet am {{ selectedTicket.adminResponseAt | date:'dd.MM.yyyy HH:mm' }}
+              {{ 'SUPPORT.ANSWERED_AT' | translate }} {{ selectedTicket.adminResponseAt | date:'dd.MM.yyyy HH:mm' }}
               @if(selectedTicket.respondedBy){
-                von {{ selectedTicket.respondedBy.firstName }} {{ selectedTicket.respondedBy.lastName }}
+                {{ 'SUPPORT.BY' | translate }} {{ selectedTicket.respondedBy.firstName }} {{ selectedTicket.respondedBy.lastName }}
               }
             </small>
           </div>
@@ -315,32 +312,32 @@
         @if(!isSuperAdmin && selectedTicket.status !== 'completed'){
           <div class="detail-section">
             @if(!selectedTicket.beraterResponse){
-              <strong>Zusätzliche Informationen hinzufügen:</strong>
+              <strong>{{ 'SUPPORT.ADD_INFO' | translate }}:</strong>
               <textarea [(ngModel)]="beraterResponse"
                         rows="4"
-                        placeholder="Fügen Sie hier weitere Informationen oder Updates zu Ihrem Ticket hinzu..."></textarea>
+                        [placeholder]="'SUPPORT.ADD_INFO_PLACEHOLDER' | translate"></textarea>
             }@else{
-              <strong>Ihre Antwort aktualisieren:</strong>
+              <strong>{{ 'SUPPORT.UPDATE_ANSWER' | translate }}:</strong>
               <textarea [(ngModel)]="beraterResponse"
                         rows="4"
-                        placeholder="Aktualisieren Sie Ihre Antwort..."></textarea>
+                        [placeholder]="'SUPPORT.UPDATE_ANSWER_PLACEHOLDER' | translate"></textarea>
             }
 
             <div class="form-group">
-              <label>Status ändern:</label>
+              <label>{{ 'SUPPORT.CHANGE_STATUS' | translate }}:</label>
               <select [(ngModel)]="responseStatus">
-                <option value="open">Offen</option>
-                <option value="in_progress">In Bearbeitung</option>
-                <option value="completed">Abgeschlossen</option>
+                <option value="open">{{ 'SUPPORT.STATUS.OPEN' | translate }}</option>
+                <option value="in_progress">{{ 'SUPPORT.STATUS.IN_PROGRESS' | translate }}</option>
+                <option value="completed">{{ 'SUPPORT.STATUS.COMPLETED' | translate }}</option>
               </select>
             </div>
 
             <button class="btn-primary" (click)="submitResponse()">
               <i class="fas fa-paper-plane"></i>
               @if(!selectedTicket.beraterResponse){
-                Antwort hinzufügen
+                {{ 'SUPPORT.ADD_RESPONSE' | translate }}
               }@else{
-                Antwort aktualisieren
+                {{ 'SUPPORT.UPDATE_RESPONSE' | translate }}
               }
             </button>
           </div>
@@ -349,32 +346,32 @@
         @if(isSuperAdmin){
           <div class="detail-section">
             @if(!selectedTicket.adminResponse){
-              <strong>Antwort hinzufügen:</strong>
+              <strong>{{ 'SUPPORT.ADMIN_ADD_RESPONSE' | translate }}:</strong>
               <textarea [(ngModel)]="adminResponse"
                         rows="4"
-                        placeholder="Ihre Antwort an den Berater..."></textarea>
+                        [placeholder]="'SUPPORT.ADMIN_ADD_RESPONSE_PLACEHOLDER' | translate"></textarea>
             }@else{
-              <strong>Weitere Antwort hinzufügen:</strong>
+              <strong>{{ 'SUPPORT.ADMIN_UPDATE_RESPONSE' | translate }}:</strong>
               <textarea [(ngModel)]="adminResponse"
                         rows="4"
-                        placeholder="Weitere Antwort oder Update..."></textarea>
+                        [placeholder]="'SUPPORT.ADMIN_UPDATE_PLACEHOLDER' | translate"></textarea>
             }
 
             <div class="form-group">
-              <label>Status ändern:</label>
+              <label>{{ 'SUPPORT.CHANGE_STATUS' | translate }}:</label>
               <select [(ngModel)]="responseStatus">
-                <option value="open">Offen</option>
-                <option value="in_progress">In Bearbeitung</option>
-                <option value="completed">Abgeschlossen</option>
+                <option value="open">{{ 'SUPPORT.STATUS.OPEN' | translate }}</option>
+                <option value="in_progress">{{ 'SUPPORT.STATUS.IN_PROGRESS' | translate }}</option>
+                <option value="completed">{{ 'SUPPORT.STATUS.COMPLETED' | translate }}</option>
               </select>
             </div>
 
             <button class="btn-primary" (click)="submitResponse()">
               <i class="fas fa-paper-plane"></i>
               @if(!selectedTicket.adminResponse){
-                Antwort senden
+                {{ 'SUPPORT.SEND_RESPONSE' | translate }}
               }@else{
-                Update senden
+                {{ 'SUPPORT.SEND_UPDATE' | translate }}
               }
             </button>
           </div>
@@ -384,12 +381,11 @@
       <div class="modal-footer">
         @if(!isSuperAdmin && selectedTicket.status !== 'completed'){
           <button type="button" class="btn-success" (click)="closeTicket()">
-            <i class="fas fa-check-circle"></i> Ticket abschließen
+            <i class="fas fa-check-circle"></i> {{ 'SUPPORT.CLOSE_TICKET' | translate }}
           </button>
         }
-        <button type="button" class="btn-secondary" (click)="closeViewModal()">Schließen</button>
+        <button type="button" class="btn-secondary" (click)="closeViewModal()">{{ 'COMMON.CLOSE' | translate }}</button>
       </div>
     </div>
   </div>
 }
-

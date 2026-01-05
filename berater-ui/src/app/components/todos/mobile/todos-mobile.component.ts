@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { Todo } from 'src/app/services/todo.service';
 import { TodoComponent } from '../todo.component';
 
 @Component({
   selector: 'app-todos-mobile',
   standalone: true,
-  imports: [CommonModule, FormsModule, TodoComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, TodoComponent],
   templateUrl: './todos-mobile.component.html',
   styleUrls: ['./todos-mobile.component.scss']
 })

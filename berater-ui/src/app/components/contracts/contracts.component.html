@@ -40,7 +40,7 @@
  @if(showModal){
   <app-overlay-modal (close)="closeModal()">
     <div class="modal-header">
-      <h2>{{ isEditMode ? 'Vertrag bearbeiten' : 'Neuer Vertrag' }}</h2>
+      <h2>{{ isEditMode ? ('CONTRACTS.EDIT' | translate) : ('CONTRACTS.NEW' | translate) }}</h2>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
     <form (ngSubmit)="saveContract()" #contractForm="ngForm">
@@ -52,9 +52,9 @@
       }
 
       <div class="form-group">
-        <label for="customerId">Kunde *</label>
+        <label for="customerId">{{ 'CONTRACTS.FIELDS.CUSTOMER' | translate }} *</label>
         <input type="text"
-              placeholder="Suche nach Kunden..."
+              [placeholder]="'CUSTOMERS.SEARCH' | translate"
               [(ngModel)]="customerSearch"
               (input)="filterCustomers()"
               (focus)="showCustomerDropdown = true; filterCustomers()"
@@ -76,7 +76,7 @@
                 }
                 @if(filteredCustomers.length === 0 && customerSearch.trim()) {
                   <div class="dropdown-item create-new" (click)="openCustomerCreationModal()">
-                    <i class="fas fa-plus-circle"></i> Neuen Kunden erstellen
+                    <i class="fas fa-plus-circle"></i> {{ 'CUSTOMERS.NEW' | translate }}
                   </div>
                 }
                 </div>
@@ -87,7 +87,7 @@
               [(ngModel)]="currentContract.customerId" required />
         @if(selectedCustomer){
         <div class="selected-item">
-          Ausgewählt: <strong>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</strong> ({{
+          {{ 'COMMON.SELECT' | translate }}: <strong>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</strong> ({{
           selectedCustomer.customerNumber }})
           <button type="button" class="btn-clear" (click)="clearCustomer()">&times;</button>
         </div>
@@ -101,26 +101,26 @@
               name="isCommercial"
               [(ngModel)]="currentContract.isCommercial"
               class="checkbox-input" />
-            <label for="isCommercial" class="checkbox-label">Handelt es sich um eine Gewerbe?</label>
+            <label for="isCommercial" class="checkbox-label">{{ 'CONTRACTS.FIELDS.IS_COMMERCIAL' | translate }}</label>
           </div>
       </div>
 
       @if(currentContract.isCommercial){
         <div class="form-group">
-          <label for="commercialName">Gewerbename</label>
+          <label for="commercialName">{{ 'CONTRACTS.FIELDS.COMMERCIAL_NAME' | translate }}</label>
           <input
             type="text"
             id="commercialName"
             name="commercialName"
             [(ngModel)]="currentContract.commercialName"
-            placeholder="Name des Gewerbes"
+            [placeholder]="'CONTRACTS.FIELDS.COMMERCIAL_NAME' | translate"
             class="form-control" />
         </div>
       }
 
       <div class="form-group">
-        <label for="meterId">Zähler *</label>
-        <input type="text" placeholder="Suche nach Zählernummer..."
+        <label for="meterId">{{ 'CONTRACTS.FIELDS.METER' | translate }} *</label>
+        <input type="text" [placeholder]="'METERS.SEARCH' | translate"
           [(ngModel)]="meterSearch"
           (input)="filterMeters()"
           (focus)="showMeterDropdown = true; filterMeters()"
@@ -138,13 +138,13 @@
               [style.cursor]="isMeterFree(meter) ? 'pointer' : 'not-allowed'">
               {{ meter.meterNumber }} ({{ getTypeLabel(meter.type) }})
               @if(!isMeterFree(meter)){
-                <span class="meter-status">- Belegt</span>
+                <span class="meter-status">- {{ 'METERS.STATUS.OCCUPIED' | translate }}</span>
               }
             </div>
           }
           @if(filteredFreeMeters.length === 0 && meterSearch.trim()) {
             <div class="dropdown-item create-new" (click)="openMeterCreationModal()">
-              <i class="fas fa-plus-circle"></i> Neuen Zähler erstellen
+              <i class="fas fa-plus-circle"></i> {{ 'METERS.NEW' | translate }}
             </div>
           }
         </div>
@@ -152,42 +152,42 @@
         <input type="hidden" id="meterId" name="meterId" [(ngModel)]="currentContract.meterId" required />
         @if(selectedMeter){
           <div class="selected-item">
-            Ausgewählt: <strong>{{ selectedMeter.meterNumber }}</strong> ({{ getTypeLabel(selectedMeter.type) }})
+            {{ 'COMMON.SELECT' | translate }}: <strong>{{ selectedMeter.meterNumber }}</strong> ({{ getTypeLabel(selectedMeter.type) }})
             <button type="button" class="btn-clear" (click)="clearMeter()">&times;</button>
           </div>
         }
       </div>
 
       <div class="form-group">
-        <label for="supplierId">Anbieter *</label>
+        <label for="supplierId">{{ 'CONTRACTS.FIELDS.SUPPLIER' | translate }} *</label>
         <select id="supplierId" name="supplierId" [(ngModel)]="currentContract.supplierId" required class="form-control">
-          <option value="">Bitte wählen</option>
+          <option value="">{{ 'COMMON.SELECT' | translate }}</option>
           @for(supplier of suppliers; track supplier){
             <option [value]="supplier._id"> {{ supplier.name }}</option>
           }
         </select>
       </div>
       <div class="form-group">
-        <label>Vertragsnummer (vom Anbieter geliefert)</label>
+        <label>{{ 'CONTRACTS.FIELDS.CONTRACT_NUMBER' | translate }}</label>
         <input type="text" id="supplierContractNumber" name="supplierContractNumber" class="form-control" [(ngModel)]="currentContract.supplierContractNumber" />
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="startDate">Startdatum *</label>
+          <label for="startDate">{{ 'CONTRACTS.FIELDS.START_DATE' | translate }} *</label>
           <input type="date" id="startDate" name="startDate" [(ngModel)]="currentContract.startDate" required
             class="form-control" />
         </div>
 
         <div class="form-group">
-          <label for="durationMonths">Laufzeit (Monate) *</label>
+          <label for="durationMonths">{{ 'CONTRACTS.FIELDS.DURATION' | translate }} *</label>
           <input type="number" id="durationMonths" name="durationMonths" [(ngModel)]="currentContract.durationMonths"
             required min="1" max="120" placeholder="z.B. 24" class="form-control" />
         </div>
       </div>
 
       <div class="form-group">
-        <label for="status">Status</label>
+        <label for="status">{{ 'COMMON.STATUS' | translate }}</label>
         <select id="status" name="status" [(ngModel)]="currentContract.status" class="form-control">
           @for(state of contractState; track state){
             <option [value]="state.key">{{state.value}}</option>
@@ -197,7 +197,7 @@
 
       <!-- Datei-Uploads -->
       <div class="form-group" *ngIf="packageFeatureService.hasFileUpload() && (isEditMode || !isEditMode)">
-        <label>Anhänge</label>
+        <label>{{ 'CONTRACTS.FIELDS.ATTACHMENTS' | translate }}</label>
 
         <!-- Upload-Button -->
         <div class="file-upload-section">
@@ -205,7 +205,7 @@
                 accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" />
           <button type="button" class="btn-secondary btn-sm" (click)="fileInput.click()" [disabled]="uploadingFile">
             <i class="fas fa-upload"></i>
-            {{ uploadingFile ? 'Uploading...' : 'Datei hochladen' }}
+            {{ uploadingFile ? ('COMMON.LOADING' | translate) : ('COMMON.UPLOAD' | translate) }}
           </button>
           <small class="file-info">Max. 10MB | JPG, PNG, PDF, Word, Excel, TXT, CSV</small>
         </div>
@@ -226,14 +226,14 @@
               </div>
             </div>
             <div class="attachment-actions">
-              <button type="button" class="btn-icon" (click)="viewImage(attachment)" title="Vorschau"
+              <button type="button" class="btn-icon" (click)="viewImage(attachment)" [title]="'COMMON.VIEW' | translate"
                       *ngIf="isImage(attachment.mimetype)">
                 <i class="fas fa-eye"></i>
               </button>
-              <button type="button" class="btn-icon" (click)="downloadAttachment(attachment)" title="Herunterladen">
+              <button type="button" class="btn-icon" (click)="downloadAttachment(attachment)" [title]="'COMMON.DOWNLOAD' | translate">
                 <i class="fas fa-download"></i>
               </button>
-              <button type="button" class="btn-icon btn-danger" (click)="deleteAttachment(attachment)" title="Löschen">
+              <button type="button" class="btn-icon btn-danger" (click)="deleteAttachment(attachment)" [title]="'COMMON.DELETE' | translate">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
@@ -249,11 +249,11 @@
             <div class="attachment-info">
               <div class="attachment-name">{{ file.name }}</div>
               <div class="attachment-meta">
-                {{ formatFileSize(file.size) }} • Wird beim Speichern hochgeladen
+                {{ formatFileSize(file.size) }}
               </div>
             </div>
             <div class="attachment-actions">
-              <button type="button" class="btn-icon btn-danger" (click)="deleteAttachment(file)" title="Löschen">
+              <button type="button" class="btn-icon btn-danger" (click)="deleteAttachment(file)" [title]="'COMMON.DELETE' | translate">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
@@ -271,16 +271,16 @@
       </div>
 
       <div class="form-group">
-        <label for="notes">Notizen</label>
+        <label for="notes">{{ 'COMMON.NOTES' | translate }}</label>
         <textarea id="notes" name="notes" [(ngModel)]="currentContract.notes" rows="3"
-          placeholder="Optional: Zusätzliche Informationen zum Vertrag" class="form-control"></textarea>
+          class="form-control"></textarea>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="closeModal()" [disabled]="isSaving">Abbrechen</button>
+        <button type="button" class="btn-secondary" (click)="closeModal()" [disabled]="isSaving">{{ 'COMMON.CANCEL' | translate }}</button>
         <button type="submit" class="btn-primary" [disabled]="!contractForm.form.valid || !isFormValid() || isSaving">
           <i class="fas" [class.fa-spinner]="isSaving" [class.fa-spin]="isSaving" [class.fa-save]="!isSaving"></i>
-          {{ isSaving ? 'Wird gespeichert...' : (isEditMode ? 'Speichern' : 'Erstellen') }}
+          {{ isSaving ? ('COMMON.SAVING' | translate) : (isEditMode ? ('COMMON.SAVE' | translate) : ('COMMON.CREATE' | translate)) }}
         </button>
       </div>
     </form>
@@ -290,7 +290,7 @@
 @if(showCustomerDetailsModal){
   <app-overlay-modal (close)="closeCustomerDetails()">
     <div class="modal-header">
-      <h2>Kundendetails</h2>
+      <h2>{{ 'COMMON.DETAILS' | translate }}</h2>
       <button class="btn-close" (click)="closeCustomerDetails()">&times;</button>
     </div>
     <app-customer-detail

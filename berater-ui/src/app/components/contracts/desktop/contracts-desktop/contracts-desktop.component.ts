@@ -4,11 +4,12 @@ import { TableContainerComponent } from "src/app/components/shared/tablecontaine
 import { FormsModule, NgModel } from '@angular/forms';
 import { Contract, ContractState, stateToLabel } from 'src/app/models/contract.model';
 import { SearchInputComponent } from 'src/app/components/shared/search-input.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-contracts-desktop',
     standalone: true,
-    imports: [CommonModule, TableContainerComponent, FormsModule, SearchInputComponent],
+    imports: [CommonModule, TableContainerComponent, FormsModule, SearchInputComponent, TranslateModule],
     templateUrl: './contracts-desktop.component.html',
     styleUrls: ['./contracts-desktop.component.scss']
 })

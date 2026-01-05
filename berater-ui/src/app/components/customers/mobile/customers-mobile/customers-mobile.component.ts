@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Customer } from 'src/app/services/customer.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-customers-mobile',
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, TranslateModule],
     templateUrl: './customers-mobile.component.html',
     styleUrl: './customers-mobile.component.scss',
     standalone:true

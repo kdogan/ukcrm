@@ -6,10 +6,11 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService } from '../../services/viewport.service';
 import { SuppliersMobileComponent } from './mobile/suppliers-mobile.component';
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-suppliers',
-    imports: [CommonModule, FormsModule, TableContainerComponent, SuppliersMobileComponent, OverlayModalComponent],
+    imports: [CommonModule, FormsModule, TableContainerComponent, SuppliersMobileComponent, OverlayModalComponent, TranslateModule],
     templateUrl:'supplier.component.html',
     styleUrls:['supplier.component.scss']
 })

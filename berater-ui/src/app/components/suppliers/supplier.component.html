@@ -10,15 +10,15 @@
     } @else {
     <div class="page-container" (click)="closeActionMenu()">
       <div class="page-header">
-        <h1>Anbieter</h1>
-        <button class="btn-primary" (click)="showCreateModal()">+ Neuer Anbieter</button>
+        <h1>{{ 'SUPPLIERS.TITLE' | translate }}</h1>
+        <button class="btn-primary" (click)="showCreateModal()">+ {{ 'SUPPLIERS.NEW' | translate }}</button>
       </div>
 
       <div class="filters">
         <select [(ngModel)]="filterActive" (ngModelChange)="loadSuppliers()" class="filter-select">
-          <option [ngValue]="undefined">Alle</option>
-          <option [ngValue]="true">Aktiv</option>
-          <option [ngValue]="false">Inaktiv</option>
+          <option [ngValue]="undefined">{{ 'COMMON.ALL' | translate }}</option>
+          <option [ngValue]="true">{{ 'DASHBOARD.ACTIVE' | translate }}</option>
+          <option [ngValue]="false">{{ 'ADMIN.STATUS.BLOCKED' | translate }}</option>
         </select>
       </div>
 
@@ -26,13 +26,13 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Kurzbezeichnung</th>
-              <th>Adresse</th>
-              <th>Telefon</th>
-              <th>E-Mail</th>
-              <th>Status</th>
-              <th>Aktionen</th>
+              <th>{{ 'COMMON.NAME' | translate }}</th>
+              <th>{{ 'SUPPLIERS.FIELDS.SHORT_NAME' | translate }}</th>
+              <th>{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}</th>
+              <th>{{ 'COMMON.PHONE' | translate }}</th>
+              <th>{{ 'COMMON.EMAIL' | translate }}</th>
+              <th>{{ 'COMMON.STATUS' | translate }}</th>
+              <th>{{ 'COMMON.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -58,7 +58,7 @@
               <td>{{ supplier.contactEmail || '-' }}</td>
               <td>
                 <span class="badge" [class.badge-active]="supplier.isActive">
-                  {{ supplier.isActive ? 'Aktiv' : 'Inaktiv' }}
+                  {{ supplier.isActive ? ('DASHBOARD.ACTIVE' | translate) : ('ADMIN.STATUS.BLOCKED' | translate) }}
                 </span>
               </td>
               <td class="actions-cell">
@@ -69,14 +69,14 @@
                     @if(activeMenuId === supplier._id){
                     <div class="action-menu" (click)="$event.stopPropagation()">
                         <button class="menu-item" (click)="showSupplierDetails(supplier); closeActionMenu()">
-                        <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
+                        <i class="fas fa-info-circle fa-lg"></i> {{ 'COMMON.DETAILS' | translate }}
                         </button>
                         <button class="menu-item" (click)="editSupplier(supplier); closeActionMenu()">
-                        <i class="fas fa-edit fa-lg"></i> Bearbeiten
+                        <i class="fas fa-edit fa-lg"></i> {{ 'COMMON.EDIT' | translate }}
                         </button>
                         @if(supplier.isActive){
                             <button class="menu-item menu-item-danger" (click)="deleteSupplier(supplier._id); closeActionMenu()">
-                            <i class="fas fa-trash fa-lg"></i> Löschen
+                            <i class="fas fa-trash fa-lg"></i> {{ 'COMMON.DELETE' | translate }}
                             </button>
                         }
                     </div>
@@ -93,63 +93,63 @@
     <!-- Create/Edit Modal -->
     @if(showModal){
     <app-overlay-modal (close)="closeModal()">
-        <h2>{{ editMode ? 'Anbieter bearbeiten' : 'Neuer Anbieter' }}</h2>
+        <h2>{{ editMode ? ('SUPPLIERS.EDIT' | translate) : ('SUPPLIERS.NEW' | translate) }}</h2>
         <form (ngSubmit)="saveSupplier()">
           <div class="form-row">
             <div class="form-group">
-              <label>Name*</label>
+              <label>{{ 'COMMON.NAME' | translate }}*</label>
               <input type="text" [(ngModel)]="currentSupplier.name" name="name" required />
             </div>
             <div class="form-group">
-              <label>Kurzbezeichnung*</label>
+              <label>{{ 'SUPPLIERS.FIELDS.SHORT_NAME' | translate }}*</label>
               <input type="text" [(ngModel)]="currentSupplier.shortName" name="shortName" required />
             </div>
           </div>
 
-          <h3 class="section-title">Adresse</h3>
+          <h3 class="section-title">{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}</h3>
           <div class="form-group">
-            <label>Straße</label>
+            <label>{{ 'CUSTOMERS.FIELDS.STREET' | translate }}</label>
             <input type="text" [(ngModel)]="currentSupplier.address!.street" name="street" />
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>PLZ</label>
+              <label>{{ 'CUSTOMERS.FIELDS.ZIP' | translate }}</label>
               <input type="text" [(ngModel)]="currentSupplier.address!.zipCode" name="zipCode" />
             </div>
             <div class="form-group">
-              <label>Stadt</label>
+              <label>{{ 'CUSTOMERS.FIELDS.CITY' | translate }}</label>
               <input type="text" [(ngModel)]="currentSupplier.address!.city" name="city" />
             </div>
           </div>
           <div class="form-group">
-            <label>Land</label>
+            <label>{{ 'CUSTOMERS.FIELDS.COUNTRY' | translate }}</label>
             <input type="text" [(ngModel)]="currentSupplier.address!.country" name="country" />
           </div>
 
-          <h3 class="section-title">Kontakt</h3>
+          <h3 class="section-title">{{ 'SUPPLIERS.FIELDS.CONTACT' | translate }}</h3>
           <div class="form-row">
             <div class="form-group">
-              <label>Telefon</label>
+              <label>{{ 'COMMON.PHONE' | translate }}</label>
               <input type="tel" [(ngModel)]="currentSupplier.contactPhone" name="contactPhone" />
             </div>
             <div class="form-group">
-              <label>E-Mail</label>
+              <label>{{ 'COMMON.EMAIL' | translate }}</label>
               <input type="email" [(ngModel)]="currentSupplier.contactEmail" name="contactEmail" />
             </div>
           </div>
           <div class="form-group">
-            <label>Website</label>
+            <label>{{ 'SUPPLIERS.FIELDS.WEBSITE' | translate }}</label>
             <input type="url" [(ngModel)]="currentSupplier.website" name="website" placeholder="https://..." />
           </div>
 
           <div class="form-group">
-            <label>Notizen</label>
+            <label>{{ 'COMMON.NOTES' | translate }}</label>
             <textarea [(ngModel)]="currentSupplier.notes" name="notes" rows="3"></textarea>
           </div>
 
           <div class="modal-actions">
-            <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
-            <button type="submit" class="btn-primary">Speichern</button>
+            <button type="button" class="btn-secondary" (click)="closeModal()">{{ 'COMMON.CANCEL' | translate }}</button>
+            <button type="submit" class="btn-primary">{{ 'COMMON.SAVE' | translate }}</button>
           </div>
         </form>
     </app-overlay-modal>
@@ -167,17 +167,17 @@
 
       <div class="modal-body">
         <div class="info-row">
-          <span class="label">Name</span>
+          <span class="label">{{ 'COMMON.NAME' | translate }}</span>
           <span class="value">{{ selectedSupplier?.name }}</span>
         </div>
 
         <div class="info-row">
-          <span class="label">Kurzbezeichnung</span>
+          <span class="label">{{ 'SUPPLIERS.FIELDS.SHORT_NAME' | translate }}</span>
           <span class="value">{{ selectedSupplier?.shortName }}</span>
         </div>
 
         <div class="info-row" *ngIf="selectedSupplier?.website">
-          <span class="label">Website</span>
+          <span class="label">{{ 'SUPPLIERS.FIELDS.WEBSITE' | translate }}</span>
           <span class="value">
             <a [href]="selectedSupplier?.website" target="_blank" rel="noopener noreferrer">
               {{ selectedSupplier?.website }}
@@ -186,12 +186,12 @@
         </div>
 
         <div class="info-row" *ngIf="selectedSupplier?.contactPhone">
-          <span class="label">Telefon</span>
+          <span class="label">{{ 'COMMON.PHONE' | translate }}</span>
           <span class="value">{{ selectedSupplier?.contactPhone }}</span>
         </div>
 
         <div class="info-row" *ngIf="selectedSupplier?.contactEmail">
-          <span class="label">E-Mail</span>
+          <span class="label">{{ 'COMMON.EMAIL' | translate }}</span>
           <span class="value">
             <a [href]="'mailto:' + selectedSupplier?.contactEmail">
               {{ selectedSupplier?.contactEmail }}
@@ -200,7 +200,7 @@
         </div>
 
         <div class="info-row address" *ngIf="selectedSupplier?.address?.street || selectedSupplier?.address?.city">
-          <span class="label">Adresse</span>
+          <span class="label">{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}</span>
           <span class="value">
             <span *ngIf="selectedSupplier?.address?.street">{{ selectedSupplier?.address?.street }}<br /></span>
             <span *ngIf="selectedSupplier?.address?.zipCode || selectedSupplier?.address?.city">
@@ -211,22 +211,22 @@
         </div>
 
         <div class="info-row" *ngIf="selectedSupplier?.notes">
-          <span class="label">Notizen</span>
+          <span class="label">{{ 'COMMON.NOTES' | translate }}</span>
           <span class="value">{{ selectedSupplier?.notes }}</span>
         </div>
 
         <div class="info-row">
-          <span class="label">Status</span>
+          <span class="label">{{ 'COMMON.STATUS' | translate }}</span>
           <span class="value">
             <span class="badge" [class.badge-active]="selectedSupplier?.isActive">
-              {{ selectedSupplier?.isActive ? 'Aktiv' : 'Inaktiv' }}
+              {{ selectedSupplier?.isActive ? ('DASHBOARD.ACTIVE' | translate) : ('ADMIN.STATUS.BLOCKED' | translate) }}
             </span>
           </span>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="closeDetailsModal()">Schließen</button>
+        <button type="button" class="btn-secondary" (click)="closeDetailsModal()">{{ 'COMMON.CLOSE' | translate }}</button>
       </div>
     </app-overlay-modal>
   }

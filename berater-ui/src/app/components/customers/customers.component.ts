@@ -10,10 +10,11 @@ import { CustomersMobileComponent } from "./mobile/customers-mobile/customers-mo
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
 import { CustomerDetailComponent, CustomerContract } from "../shared/customer-detail.component";
 import { Contract } from 'src/app/models/contract.model';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-customers',
-    imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent, CustomerDetailComponent],
+    imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent, CustomerDetailComponent, TranslateModule],
     templateUrl: './customers.component.html',
     styleUrls: ['./customers.component.scss']
 })

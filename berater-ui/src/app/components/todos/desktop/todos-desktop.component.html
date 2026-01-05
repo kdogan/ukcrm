@@ -1,11 +1,11 @@
 <div class="page-container">
   <div class="page-header">
-    <h1>TODOs</h1>
+    <h1>{{ 'TODOS.TITLE' | translate }}</h1>
     <div class="header-actions">
       <button class="btn-secondary" (click)="generateAuto.emit()">
-        <i class="fas fa-magic"></i> Automatische TODOs generieren
+        <i class="fas fa-magic"></i> {{ 'TODOS.GENERATE_AUTO' | translate }}
       </button>
-      <button class="btn-primary" (click)="create.emit()">+ Neues TODO</button>
+      <button class="btn-primary" (click)="create.emit()">+ {{ 'TODOS.NEW' | translate }}</button>
     </div>
   </div>
 
@@ -15,13 +15,13 @@
       class="btn-small"
       [class.active]="mainView === 'list'"
       (click)="mainViewChange.emit('list')">
-      Liste
+      {{ 'TODOS.LIST_VIEW' | translate }}
     </button>
     <button
       class="btn-small"
       [class.active]="mainView === 'calendar'"
       (click)="mainViewChange.emit('calendar')">
-      Kalender
+      {{ 'TODOS.CALENDAR_VIEW' | translate }}
     </button>
   </div>
 
@@ -34,7 +34,7 @@
         <app-search-input
           [value]="searchTerm"
           (valueChange)="searchTerm = $event; onFilterChange()"
-          placeholder="TODOs durchsuchen...">
+          [placeholder]="'TODOS.SEARCH_PLACEHOLDER' | translate">
         </app-search-input>
         @if(searchTerm){
           <button class="clear-search" (click)="searchTerm = ''; onFilterChange()">
@@ -45,38 +45,38 @@
 
       <div class="filters-row">
         <div class="filter-group">
-          <label>Status</label>
+          <label>{{ 'TODOS.FIELDS.STATUS' | translate }}</label>
           <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
-            <option value="">Alle offenen</option>
-            <option value="open">Offen</option>
-            <option value="in_progress">In Bearbeitung</option>
+            <option value="">{{ 'TODOS.ALL_OPEN' | translate }}</option>
+            <option value="open">{{ 'TODOS.STATUS.OPEN' | translate }}</option>
+            <option value="in_progress">{{ 'TODOS.STATUS.IN_PROGRESS' | translate }}</option>
           </select>
         </div>
 
         <div class="filter-group">
-          <label>Priorität</label>
+          <label>{{ 'TODOS.FIELDS.PRIORITY' | translate }}</label>
           <select [(ngModel)]="priorityFilter" (ngModelChange)="onFilterChange()">
-            <option value="">Alle</option>
-            <option value="high">Hoch</option>
-            <option value="medium">Mittel</option>
-            <option value="low">Niedrig</option>
+            <option value="">{{ 'COMMON.ALL' | translate }}</option>
+            <option value="high">{{ 'TODOS.PRIORITY.HIGH' | translate }}</option>
+            <option value="medium">{{ 'TODOS.PRIORITY.MEDIUM' | translate }}</option>
+            <option value="low">{{ 'TODOS.PRIORITY.LOW' | translate }}</option>
           </select>
         </div>
 
         <div class="filter-group checkbox-filter">
           <label class="checkbox-label">
             <input type="checkbox" [(ngModel)]="showCompleted" (ngModelChange)="onFilterChange()">
-            <span>Abgeschlossene anzeigen</span>
+            <span>{{ 'TODOS.SHOW_COMPLETED' | translate }}</span>
           </label>
         </div>
 
-        <button class="btn-reset" (click)="resetFilters()" title="Filter zurücksetzen">
+        <button class="btn-reset" (click)="resetFilters()" [title]="'TODOS.RESET_FILTERS' | translate">
           <i class="fas fa-redo"></i>
         </button>
       </div>
 
       <div class="results-info">
-        <span>{{ filteredTodos.length }} TODOs</span>
+        <span>{{ filteredTodos.length }} {{ 'TODOS.TITLE' | translate }}</span>
       </div>
     </div>
 
@@ -94,10 +94,10 @@
       <div *ngIf="filteredTodos.length === 0" class="no-data">
         @if(searchTerm || statusFilter || priorityFilter){
           <i class="fas fa-search"></i>
-          <p>Keine TODOs gefunden, die den Suchkriterien entsprechen.</p>
-          <button class="btn-secondary" (click)="resetFilters()">Filter zurücksetzen</button>
+          <p>{{ 'TODOS.NO_MATCH' | translate }}</p>
+          <button class="btn-secondary" (click)="resetFilters()">{{ 'TODOS.RESET_FILTERS' | translate }}</button>
         }@else{
-          <p>Keine TODOs vorhanden</p>
+          <p>{{ 'TODOS.NO_TODOS' | translate }}</p>
         }
       </div>
     </div>
@@ -132,7 +132,7 @@
     }
 
     @if(calendarView === 'day') {
-      <button class="btn-small" (click)="backToMonthEvent.emit()">← Zurück</button>
+      <button class="btn-small" (click)="backToMonthEvent.emit()">← {{ 'TODOS.BACK' | translate }}</button>
       <h2>{{ selectedDay | date:'fullDate' }}</h2>
 
       <div class="todos-grid">
@@ -147,7 +147,7 @@
           (navigateToMeterEmiter)="navigateToMeter.emit($event)" />
 
         <div *ngIf="todosForDate(selectedDay!).length === 0" class="no-data">
-          Keine TODOs
+          {{ 'TODOS.NO_TODOS' | translate }}
         </div>
       </div>
     }

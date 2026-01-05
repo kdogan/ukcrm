@@ -2,7 +2,7 @@
 
   <!-- HEADER -->
   <div class="mobile-header">
-    <h1>Anbieter</h1>
+    <h1>{{ 'SUPPLIERS.TITLE' | translate }}</h1>
     <button class="fab" (click)="create.emit()">
       <i class="fas fa-plus"></i>
     </button>
@@ -14,9 +14,9 @@
       [ngModel]="filterActive"
       (ngModelChange)="filterActiveChange.emit($event)"
     >
-      <option [ngValue]="undefined">Alle</option>
-      <option [ngValue]="true">Aktiv</option>
-      <option [ngValue]="false">Inaktiv</option>
+      <option [ngValue]="undefined">{{ 'COMMON.ALL' | translate }}</option>
+      <option [ngValue]="true">{{ 'DASHBOARD.ACTIVE' | translate }}</option>
+      <option [ngValue]="false">{{ 'ADMIN.STATUS.BLOCKED' | translate }}</option>
     </select>
   </div> -->
 
@@ -45,10 +45,10 @@
       </div>
 
       <div class="actions">
-        <button class="edit" (click)="edit.emit(s)" title="Bearbeiten">
+        <button class="edit" (click)="edit.emit(s)" [title]="'COMMON.EDIT' | translate">
           <i class="fas fa-edit"></i>
         </button>
-        <button *ngIf="s.isActive" class="danger" (click)="delete.emit(s._id)" title="Löschen">
+        <button *ngIf="s.isActive" class="danger" (click)="delete.emit(s._id)" [title]="'COMMON.DELETE' | translate">
           <i class="fas fa-trash"></i>
         </button>
       </div>

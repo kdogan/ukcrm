@@ -1,7 +1,9 @@
 <div class="page-container" (click)="closeActionMenu.emit()">
   <div class="page-header">
-    <h1>Verträge</h1>
-    <button class="btn-primary" (click)="create.emit(); $event.stopPropagation()">+ Neuer Vertrag</button>
+    <h1>{{ 'CONTRACTS.TITLE' | translate }}</h1>
+    <button class="btn-primary" (click)="create.emit(); $event.stopPropagation()">
+      <i class="fas fa-plus"></i> {{ 'CONTRACTS.NEW' | translate }}
+    </button>
   </div>
   <div class="filters">
     <app-search-input
@@ -26,14 +28,14 @@
     <table class="data-table" (click)="$event.stopPropagation()">
       <thead>
         <tr>
-          <th>Vertragsnummer</th>
-          <th>Kunde</th>
-          <th>Zähler</th>
-          <th>Anbieter</th>
-          <th>Startdatum</th>
-          <th>Enddatum</th>
-          <th>Status</th>
-          <th>Aktionen</th>
+          <th>{{ 'CONTRACTS.FIELDS.CONTRACT_NUMBER' | translate }}</th>
+          <th>{{ 'CONTRACTS.FIELDS.CUSTOMER' | translate }}</th>
+          <th>{{ 'CONTRACTS.FIELDS.METER' | translate }}</th>
+          <th>{{ 'CONTRACTS.FIELDS.SUPPLIER' | translate }}</th>
+          <th>{{ 'CONTRACTS.FIELDS.START_DATE' | translate }}</th>
+          <th>{{ 'CONTRACTS.FIELDS.END_DATE' | translate }}</th>
+          <th>{{ 'CONTRACTS.FIELDS.STATUS' | translate }}</th>
+          <th>{{ 'COMMON.ACTIONS' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -81,13 +83,13 @@
               @if(activeMenuId === contract._id){
               <div class="action-menu" (click)="$event.stopPropagation()">
                 <button class="menu-item" (click)="showDetails.emit(contract); closeActionMenu.emit()">
-                  <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
+                  <i class="fas fa-info-circle fa-lg"></i> {{ 'COMMON.SHOW_DETAILS' | translate}}
                 </button>
                 <button class="menu-item" (click)="edit.emit(contract); closeActionMenu.emit()">
-                  ✏️ Bearbeiten
+                  <i class="fas fa-edit"></i> {{ 'COMMON.EDIT' | translate}}
                 </button>
                 <button class="menu-item menu-item-danger" (click)="delete.emit(contract._id); closeActionMenu.emit()">
-                  🗑️ Löschen
+                  <i class="fas fa-trash"></i> {{ 'COMMON.DELETE' | translate}}
                 </button>
               </div>
             }

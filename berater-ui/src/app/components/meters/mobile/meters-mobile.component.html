@@ -1,7 +1,7 @@
 <div class="mobile-page">
   <!-- HEADER -->
   <div class="mobile-header">
-    <h1>Zähler</h1>
+    <h1>{{ 'METERS.TITLE' | translate }}</h1>
     <button class="fab" (click)="create.emit()">
       <i class="fas fa-plus"></i>
     </button>
@@ -11,18 +11,18 @@
   <div class="mobile-filters">
     <input
       type="search"
-      placeholder="Suche: Zählernr..."
+      [placeholder]="'METERS.SEARCH' | translate"
       [ngModel]="searchTerm"
       (ngModelChange)="searchTermChange.emit($event)"
     />
     <div class="filter-row">
       <select [ngModel]="statusFilterTerm" (ngModelChange)="filterStatusChange.emit($event)">
-        <option value="">Alle Zustände</option>
-        <option value="free">Frei</option>
-        <option value="occupied">Belegt</option>
+        <option value="">{{ 'COMMON.ALL' | translate }}</option>
+        <option value="free">{{ 'METERS.STATUS.FREE' | translate }}</option>
+        <option value="occupied">{{ 'METERS.STATUS.OCCUPIED' | translate }}</option>
       </select>
       <select [ngModel]="typeFilterTerm" (ngModelChange)="filterTypeChange.emit($event)">
-        <option value="">Alle Typen</option>
+        <option value="">{{ 'COMMON.ALL' | translate }}</option>
         @for(type of getMeterTypeWithLabel(); track type){
           <option [value]=type.key>{{type.value}}</option>
         }
@@ -58,16 +58,16 @@
         </div>
 
       <div class="actions">
-        <button class="details" (click)="showDetails.emit(meter)" title="Details anzeigen">
+        <button class="details" (click)="showDetails.emit(meter)" [title]="'COMMON.DETAILS' | translate">
           <i class="fas fa-info-circle"></i>
         </button>
-        <button class="edit" (click)="edit.emit(meter)" title="Bearbeiten">
+        <button class="edit" (click)="edit.emit(meter)" [title]="'COMMON.EDIT' | translate">
           <i class="fas fa-edit"></i>
         </button>
-        <button class="complete" (click)="addReading.emit(meter)" title="Ablesung hinzufügen">
+        <button class="complete" (click)="addReading.emit(meter)" [title]="'METERS.ADD_READING' | translate">
           <i class="fas fa-plus-circle"></i>
         </button>
-        <button class="view" (click)="viewReadings.emit(meter)" title="Ablesungen anzeigen">
+        <button class="view" (click)="viewReadings.emit(meter)" [title]="'METERS.VIEW_READINGS' | translate">
           <i class="fas fa-eye"></i>
         </button>
       </div>

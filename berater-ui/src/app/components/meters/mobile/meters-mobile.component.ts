@@ -3,10 +3,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Util } from '../../util/util';
 import { Meter } from 'src/app/models/meter.model';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-meters-mobile',
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, TranslateModule],
     templateUrl: './meters-mobile.component.html',
     styleUrl: './meters-mobile.component.scss'
 })

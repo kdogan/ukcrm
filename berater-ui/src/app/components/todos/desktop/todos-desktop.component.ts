@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { Todo } from 'src/app/services/todo.service';
 import { TodoComponent } from '../todo.component';
 import { SearchInputComponent } from '../../shared/search-input.component';
@@ -8,7 +9,7 @@ import { SearchInputComponent } from '../../shared/search-input.component';
 @Component({
   selector: 'app-todos-desktop',
   standalone: true,
-  imports: [CommonModule, FormsModule, TodoComponent, SearchInputComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, TodoComponent, SearchInputComponent],
   templateUrl: './todos-desktop.component.html',
   styleUrls: ['./todos-desktop.component.scss']
 })

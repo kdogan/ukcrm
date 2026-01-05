@@ -17,6 +17,7 @@ import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 import { Util } from '../util/util';
 import { Address, MeterType, meterTypes } from 'src/app/models/meter.model';
 import { MeterCreateComponent } from '../shared/meter-create.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -30,7 +31,8 @@ import { MeterCreateComponent } from '../shared/meter-create.component';
         ContractsMobileComponent,
         OverlayModalComponent,
         MeterCreateComponent,
-        CustomerDetailComponent
+        CustomerDetailComponent,
+        TranslateModule
       ]
 })
 export class ContractsComponent implements OnInit {

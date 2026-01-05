@@ -10,12 +10,13 @@ import { RouterLink } from '@angular/router';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { DashboardMobileComponent } from './mobile/dashboard-mobile.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
-    imports: [CommonModule, FormsModule, RouterLink, TableContainerComponent, DashboardMobileComponent],
+    imports: [CommonModule, FormsModule, RouterLink, TableContainerComponent, DashboardMobileComponent, TranslateModule],
     standalone: true
 })
 export class DashboardComponent implements OnInit, OnDestroy {

@@ -1,7 +1,7 @@
 <div class="mobile-page">
   <!-- HEADER -->
   <div class="mobile-header">
-    <h1>TODOs</h1>
+    <h1>{{ 'TODOS.TITLE' | translate }}</h1>
     <button class="fab" (click)="create.emit()">
       <i class="fas fa-plus"></i>
     </button>
@@ -13,13 +13,13 @@
       class="switch-btn"
       [class.active]="mainView === 'list'"
       (click)="mainViewChange.emit('list')">
-      <i class="fas fa-list"></i> Liste
+      <i class="fas fa-list"></i> {{ 'TODOS.LIST_VIEW' | translate }}
     </button>
     <button
       class="switch-btn"
       [class.active]="mainView === 'calendar'"
       (click)="mainViewChange.emit('calendar')">
-      <i class="fas fa-calendar"></i> Kalender
+      <i class="fas fa-calendar"></i> {{ 'TODOS.CALENDAR_VIEW' | translate }}
     </button>
   </div>
 
@@ -28,7 +28,7 @@
     <div class="mobile-filters">
       <input
         type="search"
-        placeholder="Suchen..."
+        [placeholder]="'COMMON.SEARCH' | translate"
         [(ngModel)]="searchTerm"
         (ngModelChange)="onFilterChange()"
         class="search-input"
@@ -38,18 +38,18 @@
           [(ngModel)]="statusFilter"
           (ngModelChange)="onFilterChange()"
           class="filter-select">
-          <option value="">Alle offenen</option>
-          <option value="open">Offen</option>
-          <option value="in_progress">In Bearbeitung</option>
+          <option value="">{{ 'TODOS.ALL_OPEN' | translate }}</option>
+          <option value="open">{{ 'TODOS.STATUS.OPEN' | translate }}</option>
+          <option value="in_progress">{{ 'TODOS.STATUS.IN_PROGRESS' | translate }}</option>
         </select>
         <select
           [(ngModel)]="priorityFilter"
           (ngModelChange)="onFilterChange()"
           class="filter-select">
-          <option value="">Alle Prioritäten</option>
-          <option value="high">Hoch</option>
-          <option value="medium">Mittel</option>
-          <option value="low">Niedrig</option>
+          <option value="">{{ 'TODOS.ALL_PRIORITIES' | translate }}</option>
+          <option value="high">{{ 'TODOS.PRIORITY.HIGH' | translate }}</option>
+          <option value="medium">{{ 'TODOS.PRIORITY.MEDIUM' | translate }}</option>
+          <option value="low">{{ 'TODOS.PRIORITY.LOW' | translate }}</option>
         </select>
       </div>
       <label class="checkbox-filter">
@@ -58,7 +58,7 @@
           [(ngModel)]="showCompleted"
           (ngModelChange)="onFilterChange()"
         />
-        <span>Abgeschlossene anzeigen</span>
+        <span>{{ 'TODOS.SHOW_COMPLETED' | translate }}</span>
       </label>
     </div>
 
@@ -76,12 +76,12 @@
 
         <div *ngIf="filteredTodos.length === 0" class="no-data">
           <i class="fas fa-tasks"></i>
-          <p>Keine TODOs gefunden</p>
+          <p>{{ 'TODOS.NO_TODOS' | translate }}</p>
         </div>
       </div>
 
       <button class="btn-auto-generate" (click)="generateAuto.emit()">
-        <i class="fas fa-magic"></i> Automatische TODOs generieren
+        <i class="fas fa-magic"></i> {{ 'TODOS.GENERATE_AUTO' | translate }}
       </button>
     </div>
   }
@@ -123,7 +123,7 @@
     @if(calendarView === 'day') {
       <div class="day-view-header">
         <button class="btn-back" (click)="backToMonthEvent.emit()">
-          <i class="fas fa-arrow-left"></i> Zurück
+          <i class="fas fa-arrow-left"></i> {{ 'TODOS.BACK' | translate }}
         </button>
         <h2>{{ selectedDay | date:'fullDate' }}</h2>
       </div>
@@ -142,7 +142,7 @@
 
           <div *ngIf="todosForDate(selectedDay!).length === 0" class="no-data">
             <i class="fas fa-calendar-day"></i>
-            <p>Keine TODOs für diesen Tag</p>
+            <p>{{ 'TODOS.NO_TODOS_FOR_DAY' | translate }}</p>
           </div>
         </div>
       </div>

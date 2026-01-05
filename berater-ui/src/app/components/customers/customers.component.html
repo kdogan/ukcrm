@@ -12,17 +12,17 @@
 } @else {
 <div class="page-container" (click)="closeActionMenu()">
   <div class="page-header">
-    <h1>Kunden</h1>
-    <button class="btn-primary" (click)="showCreateModal()">+ Neuer Kunde</button>
+    <h1>{{ 'CUSTOMERS.TITLE' | translate }}</h1>
+    <button class="btn-primary" (click)="showCreateModal()">+ {{ 'CUSTOMERS.NEW' | translate }}</button>
   </div>
 
   <div class="filters">
-    <input type="search" placeholder="Suche nach Name, E-Mail..." [(ngModel)]="searchTerm"
+    <input type="search" [placeholder]="'CUSTOMERS.SEARCH' | translate" [(ngModel)]="searchTerm"
       (ngModelChange)="onSearchChange()" class="search-input" />
     <select [(ngModel)]="filterActive" (ngModelChange)="loadCustomers()" class="filter-select">
-      <option [ngValue]="undefined">Alle</option>
-      <option [ngValue]="true">Aktiv</option>
-      <option [ngValue]="false">Inaktiv</option>
+      <option [ngValue]="undefined">{{ 'COMMON.ALL' | translate }}</option>
+      <option [ngValue]="true">{{ 'DASHBOARD.ACTIVE' | translate }}</option>
+      <option [ngValue]="false">{{ 'ADMIN.STATUS.BLOCKED' | translate }}</option>
     </select>
   </div>
 
@@ -31,35 +31,35 @@
       <thead>
         <tr>
           <!-- <th>Kundennr.</th> -->
-          <th>Name</th>
-          <th>E-Mail</th>
-          <th>Telefon</th>
-          <th>Status</th>
-          <th>Aktionen</th>
+          <th>{{ 'COMMON.NAME' | translate }}</th>
+          <th>{{ 'COMMON.EMAIL' | translate }}</th>
+          <th>{{ 'COMMON.PHONE' | translate }}</th>
+          <th>{{ 'COMMON.STATUS' | translate }}</th>
+          <th>{{ 'COMMON.ACTIONS' | translate }}</th>
         </tr>
       </thead>
       <tbody>
         @for(customer of customers; track customer){
         <tr>
           <!-- <td data-label="Kundennr.">{{ customer.customerNumber }}</td> -->
-          <td data-label="Name">{{ customer.firstName }} {{ customer.lastName }}</td>
-          <td data-label="E-Mail">{{ customer.email || '-' }}</td>
-          <td data-label="Telefon">
+          <td [attr.data-label]="'COMMON.NAME' | translate">{{ customer.firstName }} {{ customer.lastName }}</td>
+          <td [attr.data-label]="'COMMON.EMAIL' | translate">{{ customer.email || '-' }}</td>
+          <td [attr.data-label]="'COMMON.PHONE' | translate">
             @if(customer.phone){
             <span class="phone-container">
               {{ customer.phone }}
-              <a [href]="'tel:' + customer.phone" class="phone-icon" title="Anrufen">📞</a>
+              <a [href]="'tel:' + customer.phone" class="phone-icon" [title]="'COMMON.PHONE' | translate">📞</a>
             </span>
           }@else{
             <span>-</span>
           }
           </td>
-          <td data-label="Status">
+          <td [attr.data-label]="'COMMON.STATUS' | translate">
             <span class="badge" [class.badge-active]="customer.isActive" [class.badge-inactive]="!customer.isActive">
-              {{ customer.isActive ? 'Aktiv' : 'Inaktiv' }}
+              {{ customer.isActive ? ('DASHBOARD.ACTIVE' | translate) : ('ADMIN.STATUS.BLOCKED' | translate) }}
             </span>
           </td>
-          <td class="actions-cell" data-label="Aktionen">
+          <td class="actions-cell" [attr.data-label]="'COMMON.ACTIONS' | translate">
             <div class="action-menu-container">
               <button class="action-menu-btn" (click)="toggleActionMenu(customer._id); $event.stopPropagation()">
                 <i class="fas fa-ellipsis-v"></i>
@@ -67,14 +67,14 @@
               @if(activeMenuId === customer._id){
                 <div class="action-menu" (click)="$event.stopPropagation()">
                   <button class="menu-item" (click)="showCustomerDetails(customer); closeActionMenu()">
-                    <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
+                    <i class="fas fa-info-circle fa-lg"></i> {{ 'COMMON.DETAILS' | translate }}
                   </button>
                   <button class="menu-item" (click)="editCustomer(customer); closeActionMenu()">
-                    <i class="fas fa-edit fa-lg"></i> Bearbeiten
+                    <i class="fas fa-edit fa-lg"></i> {{ 'COMMON.EDIT' | translate }}
                   </button>
                   <button class="menu-item menu-item-danger"
                     (click)="deleteCustomer(customer._id); closeActionMenu()">
-                    <i class="fas fa-trash fa-lg"></i> Löschen
+                    <i class="fas fa-trash fa-lg"></i> {{ 'COMMON.DELETE' | translate }}
                   </button>
                 </div>
               }
@@ -91,62 +91,62 @@
 <!-- Modal for Create/Edit Customer -->
  @if(showModal){
 <app-overlay-modal (close)="closeModal()">
-  <h2>{{ editMode ? 'Kunde bearbeiten' : 'Neuer Kunde' }}</h2>
+  <h2>{{ editMode ? ('CUSTOMERS.EDIT' | translate) : ('CUSTOMERS.NEW' | translate) }}</h2>
   <form (ngSubmit)="saveCustomer()">
     <div class="form-group">
-      <label>Anrede</label>
+      <label>{{ 'CUSTOMERS.FIELDS.SALUTATION' | translate }}</label>
       <select [(ngModel)]="currentCustomer.anrede" name="anrede">
-        <option [ngValue]="undefined">Bitte wählen</option>
-        <option value="Herr">Herr</option>
-        <option value="Frau">Frau</option>
+        <option [ngValue]="undefined">{{ 'COMMON.SELECT' | translate }}</option>
+        <option value="Herr">{{ 'CUSTOMERS.FIELDS.MR' | translate }}</option>
+        <option value="Frau">{{ 'CUSTOMERS.FIELDS.MRS' | translate }}</option>
       </select>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Vorname*</label>
+        <label>{{ 'CUSTOMERS.FIELDS.FIRST_NAME' | translate }}*</label>
         <input type="text" [(ngModel)]="currentCustomer.firstName" name="firstName" required />
       </div>
       <div class="form-group">
-        <label>Nachname*</label>
+        <label>{{ 'CUSTOMERS.FIELDS.LAST_NAME' | translate }}*</label>
         <input type="text" [(ngModel)]="currentCustomer.lastName" name="lastName" required />
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>E-Mail</label>
+        <label>{{ 'COMMON.EMAIL' | translate }}</label>
         <input type="email" [(ngModel)]="currentCustomer.email" name="email" />
       </div>
       <div class="form-group">
-        <label>Telefon</label>
+        <label>{{ 'COMMON.PHONE' | translate }}</label>
         <input type="tel" [(ngModel)]="currentCustomer.phone" name="phone" />
       </div>
 </div>
     @if(currentCustomer.address){
-      <label>Adresse:</label>
+      <label>{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}:</label>
       <hr/>
       <div class="form-group">
-          <label>Strasse</label>
-          <input type="text" 
-              name="street" 
-              [(ngModel)]="currentCustomer.address.street" 
-              placeholder="Straße und Hausnummer"
+          <label>{{ 'CUSTOMERS.FIELDS.STREET' | translate }}</label>
+          <input type="text"
+              name="street"
+              [(ngModel)]="currentCustomer.address.street"
+              [placeholder]="'CUSTOMERS.FIELDS.STREET' | translate"
               class="form-control" />
           <div class="form-row">
               <div class="form-group">
-                <label>PLZ</label>
-                <input type="text" 
-                    name="zip" 
-                    [(ngModel)]="currentCustomer.address.zip" 
-                    placeholder="PLZ" 
+                <label>{{ 'CUSTOMERS.FIELDS.ZIP' | translate }}</label>
+                <input type="text"
+                    name="zip"
+                    [(ngModel)]="currentCustomer.address.zip"
+                    [placeholder]="'CUSTOMERS.FIELDS.ZIP' | translate"
                     class="form-control"
                 />
               </div>
               <div class="form-group">
-                <label>Ort</label>
-                  <input type="text" 
-                      name="city" 
-                      [(ngModel)]="currentCustomer.address.city" 
-                      placeholder="Ort"
+                <label>{{ 'CUSTOMERS.FIELDS.CITY' | translate }}</label>
+                  <input type="text"
+                      name="city"
+                      [(ngModel)]="currentCustomer.address.city"
+                      [placeholder]="'CUSTOMERS.FIELDS.CITY' | translate"
                       class="form-control"
                   />
               </div>
@@ -154,12 +154,12 @@
         </div>
     }
     <div class="form-group">
-      <label>Notizen</label>
+      <label>{{ 'COMMON.NOTES' | translate }}</label>
       <textarea [(ngModel)]="currentCustomer.notes" name="notes" rows="3"></textarea>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeModal()">Abbrechen</button>
-      <button type="submit" class="btn-primary">Speichern</button>
+      <button type="button" class="btn-secondary" (click)="closeModal()">{{ 'COMMON.CANCEL' | translate }}</button>
+      <button type="submit" class="btn-primary">{{ 'COMMON.SAVE' | translate }}</button>
     </div>
   </form>
 </app-overlay-modal>
@@ -181,7 +181,7 @@
       (contractClick)="onContractClick($event)"
     />
     <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeCustomerDetailsModal()">Schließen</button>
+      <button type="button" class="btn-secondary" (click)="closeCustomerDetailsModal()">{{ 'COMMON.CLOSE' | translate }}</button>
     </div>
   </app-overlay-modal>
 }
