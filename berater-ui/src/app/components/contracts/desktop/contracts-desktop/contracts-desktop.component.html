@@ -12,13 +12,13 @@
       placeholder="Suche nach Vertragsnr., Kunde oder Zähler...">
     </app-search-input>
     <select [ngModel]="statusFilter" (ngModelChange)="statusFilterChange.emit($event)" (click)="$event.stopPropagation()">
-      <option value="">Alle Status</option>
+      <option value="">{{ 'CONTRACTS.FILTER.ALL' | translate }} {{ 'CONTRACTS.FIELDS.STATUS' | translate }}</option>
       @for(state of contractState; track state){
         <option [value]="state.key">{{state.value}}</option>
       }
     </select>
     <select [ngModel]="daysFilter" (ngModelChange)="daysFilterChange.emit($event)" (click)="$event.stopPropagation()">
-      <option value="">Alle Laufzeiten</option>
+      <option value="">{{ 'CONTRACTS.FILTER.ALL' | translate }}</option>
       <option value="30">Nächste 30 Tage</option>
       <option value="60">Nächste 60 Tage</option>
       <option value="90">Nächste 90 Tage</option>
