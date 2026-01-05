@@ -47,10 +47,9 @@
         <div class="filter-group">
           <label>Status</label>
           <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
-            <option value="">Alle</option>
+            <option value="">Alle offenen</option>
             <option value="open">Offen</option>
             <option value="in_progress">In Bearbeitung</option>
-            <option value="completed">Erledigt</option>
           </select>
         </div>
 
@@ -62,6 +61,13 @@
             <option value="medium">Mittel</option>
             <option value="low">Niedrig</option>
           </select>
+        </div>
+
+        <div class="filter-group checkbox-filter">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="showCompleted" (ngModelChange)="onFilterChange()">
+            <span>Abgeschlossene anzeigen</span>
+          </label>
         </div>
 
         <button class="btn-reset" (click)="resetFilters()" title="Filter zurücksetzen">

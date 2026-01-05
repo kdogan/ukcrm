@@ -46,10 +46,9 @@
       <div class="filter-group">
         <label>Status</label>
         <select [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
-          <option value="all">Alle</option>
+          <option value="all">Alle offenen</option>
           <option value="open">Offen</option>
           <option value="in_progress">In Bearbeitung</option>
-          <option value="completed">Abgeschlossen</option>
         </select>
       </div>
 
@@ -70,6 +69,13 @@
           <option value="answered">Beantwortet</option>
           <option value="unanswered">Unbeantwortet</option>
         </select>
+      </div>
+
+      <div class="filter-group checkbox-filter">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="showCompleted" (ngModelChange)="onFilterChange()">
+          <span>Abgeschlossene anzeigen</span>
+        </label>
       </div>
 
       <button class="btn-reset" (click)="resetFilters()" title="Filter zurücksetzen">
@@ -139,7 +145,7 @@
       </div>
     }@empty{
       <div class="no-data">
-        @if(searchQuery || filterStatus !== 'all' || filterPriority !== 'all' || filterAnswered !== 'all'){
+        @if(searchQuery || filterStatus !== 'all' || filterPriority !== 'all' || filterAnswered !== 'all' || showCompleted){
           <i class="fas fa-search"></i>
           <p>Keine Tickets gefunden, die den Suchkriterien entsprechen.</p>
           <button class="btn-secondary" (click)="resetFilters()">Filter zurücksetzen</button>

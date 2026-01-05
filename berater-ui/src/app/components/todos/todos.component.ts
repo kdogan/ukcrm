@@ -26,8 +26,9 @@ export class TodosComponent implements OnInit {
   todos: Todo[] = [];
   filteredTodos: Todo[] = [];
   searchTerm = '';
-  statusFilter = 'open';
+  statusFilter = '';
   priorityFilter = '';
+  showCompleted = false;
   showModal = false;
   isEditMode = false;
   currentTodo: any = this.getEmptyTodo();
@@ -108,14 +109,18 @@ export class TodosComponent implements OnInit {
       const matchesStatus = !this.statusFilter || todo.status === this.statusFilter;
       const matchesPriority = !this.priorityFilter || todo.priority === this.priorityFilter;
 
-      return matchesSearch && matchesStatus && matchesPriority;
+      // Hide completed todos unless showCompleted is true
+      const matchesCompleted = this.showCompleted || todo.status !== 'completed';
+
+      return matchesSearch && matchesStatus && matchesPriority && matchesCompleted;
     });
   }
 
-  onFilterChange(filters: { status: string; priority: string; search: string }): void {
+  onFilterChange(filters: { status: string; priority: string; search: string; showCompleted: boolean }): void {
     this.searchTerm = filters.search;
     this.statusFilter = filters.status;
     this.priorityFilter = filters.priority;
+    this.showCompleted = filters.showCompleted;
     this.filterTodos();
   }
 

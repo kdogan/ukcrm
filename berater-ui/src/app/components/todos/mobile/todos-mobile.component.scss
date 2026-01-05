@@ -41,6 +41,26 @@
   gap: 1rem;
 }
 
+.checkbox-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  span {
+    user-select: none;
+  }
+}
+
 .btn-auto-generate {
   width: 100%;
   padding: 1rem;

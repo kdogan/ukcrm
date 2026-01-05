@@ -38,10 +38,9 @@
           [(ngModel)]="statusFilter"
           (ngModelChange)="onFilterChange()"
           class="filter-select">
-          <option value="">Alle Status</option>
+          <option value="">Alle offenen</option>
           <option value="open">Offen</option>
           <option value="in_progress">In Bearbeitung</option>
-          <option value="completed">Erledigt</option>
         </select>
         <select
           [(ngModel)]="priorityFilter"
@@ -53,6 +52,14 @@
           <option value="low">Niedrig</option>
         </select>
       </div>
+      <label class="checkbox-filter">
+        <input
+          type="checkbox"
+          [(ngModel)]="showCompleted"
+          (ngModelChange)="onFilterChange()"
+        />
+        <span>Abgeschlossene anzeigen</span>
+      </label>
     </div>
 
     <div class="mobile-content">

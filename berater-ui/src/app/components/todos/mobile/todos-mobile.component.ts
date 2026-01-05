@@ -25,7 +25,7 @@ export class TodosMobileComponent {
   @Output() complete = new EventEmitter<string>();
   @Output() generateAuto = new EventEmitter<void>();
   @Output() mainViewChange = new EventEmitter<'list' | 'calendar'>();
-  @Output() filterChange = new EventEmitter<{ status: string; priority: string; search: string }>();
+  @Output() filterChange = new EventEmitter<{ status: string; priority: string; search: string; showCompleted: boolean }>();
   @Output() navigateToCustomer = new EventEmitter<string>();
   @Output() navigateToContract = new EventEmitter<string>();
   @Output() navigateToMeter = new EventEmitter<string>();
@@ -33,16 +33,26 @@ export class TodosMobileComponent {
   @Output() openDayEvent = new EventEmitter<Date>();
   @Output() backToMonthEvent = new EventEmitter<void>();
 
-  statusFilter = 'open';
+  statusFilter = '';
   priorityFilter = '';
   searchTerm = '';
+  showCompleted = false;
 
   onFilterChange(): void {
     this.filterChange.emit({
       status: this.statusFilter,
       priority: this.priorityFilter,
-      search: this.searchTerm
+      search: this.searchTerm,
+      showCompleted: this.showCompleted
     });
+  }
+
+  resetFilters(): void {
+    this.searchTerm = '';
+    this.statusFilter = '';
+    this.priorityFilter = '';
+    this.showCompleted = false;
+    this.onFilterChange();
   }
 
   todosForDate(date: Date): Todo[] {

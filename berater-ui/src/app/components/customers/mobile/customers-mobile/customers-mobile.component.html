@@ -46,9 +46,15 @@
       </div>
 
       <div class="actions">
-        <button (click)="showDetails.emit(c)"><i class="fas fa-info-circle"></i>Details</button>
-        <button (click)="edit.emit(c)"><i class="fas fa-edit"></i>Bearbeiten</button>
-        <button class="danger" (click)="delete.emit(c._id)"><i class="fas fa-trash"></i>Löschen</button>
+        <button class="details" (click)="showDetails.emit(c)" title="Details anzeigen">
+          <i class="fas fa-info-circle"></i>
+        </button>
+        <button class="edit" (click)="edit.emit(c)" title="Bearbeiten">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="danger" (click)="delete.emit(c._id)" title="Löschen">
+          <i class="fas fa-trash"></i>
+        </button>
       </div>
 
     </div>

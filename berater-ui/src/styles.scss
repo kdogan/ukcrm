@@ -359,7 +359,7 @@ body {
   }
 }
 
-/* ACTIONS */
+/* ACTIONS - Icon buttons like TODO footer */
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -368,26 +368,27 @@ body {
   flex-wrap: wrap;
 
   button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.4rem 0.75rem;
+    width: 36px;
+    height: 36px;
     border: none;
-    border-radius: 6px;
-    background: var(--btn-bg-light);
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    font-weight: 500;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
+    font-size: 0.9rem;
+    background: var(--info-bg);
+    color: var(--info-color);
 
     i {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
     &:hover {
-      background: var(--btn-bg-hover);
-      transform: translateY(-1px);
+      background: var(--info-color);
+      color: white;
+      transform: translateY(-2px);
     }
 
     &:active {
@@ -395,20 +396,69 @@ body {
     }
   }
 
+  /* View/Details button - blue */
+  .view, .details {
+    background: var(--info-bg);
+    color: var(--info-color);
+
+    &:hover {
+      background: var(--info-color);
+      color: white;
+    }
+  }
+
+  /* Edit button - blue/info */
+  .edit {
+    background: var(--info-bg);
+    color: var(--info-color);
+
+    &:hover {
+      background: var(--info-color);
+      color: white;
+    }
+  }
+
+  /* Complete button - green */
+  .complete {
+    background: var(--success-bg);
+    color: var(--success-color);
+
+    &:hover {
+      background: var(--success-color);
+      color: white;
+    }
+  }
+
+  /* Danger/Delete button - red */
   .danger {
     background: var(--danger-bg);
     color: var(--danger-color);
 
     &:hover {
-      background: var(--danger-hover);
+      background: var(--danger-color);
+      color: white;
     }
   }
+
+  /* Update button - cyan */
   .update {
-    background: var(--danger-bg);
+    background: var(--info-bg);
     color: var(--cyan);
 
     &:hover {
-      background: var(--danger-hover);
+      background: var(--cyan);
+      color: white;
+    }
+  }
+
+  /* Warning button - orange */
+  .warning {
+    background: var(--warning-bg);
+    color: var(--warning-color);
+
+    &:hover {
+      background: var(--warning-color);
+      color: white;
     }
   }
 }
@@ -761,6 +811,96 @@ body {
   &.fa-times {
     transition: color 0.2s;
   }
+}
+
+/* =========================
+   ACTION BUTTON STYLES (like TODO footer)
+========================= */
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+
+  &.complete-btn,
+  &.btn-complete {
+    background: var(--success-bg);
+    color: var(--success-color);
+
+    &:hover {
+      background: var(--success-color);
+      color: white;
+    }
+  }
+
+  &.edit-btn,
+  &.btn-edit {
+    background: var(--info-bg);
+    color: var(--info-color);
+
+    &:hover {
+      background: var(--info-color);
+      color: white;
+    }
+  }
+
+  &.delete-btn,
+  &.btn-delete {
+    background: var(--danger-bg);
+    color: var(--danger-color);
+
+    &:hover {
+      background: var(--danger-color);
+      color: white;
+    }
+  }
+
+  &.view-btn,
+  &.btn-view {
+    background: var(--primary-light);
+    color: var(--primary-color);
+
+    &:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+  }
+
+  &.warning-btn,
+  &.btn-warning {
+    background: var(--warning-bg);
+    color: var(--warning-color);
+
+    &:hover {
+      background: var(--warning-color);
+      color: white;
+    }
+  }
+
+  &.default-btn,
+  &.btn-default {
+    background: var(--btn-bg-light);
+    color: var(--text-secondary);
+
+    &:hover {
+      background: var(--btn-bg-hover);
+      color: var(--text-primary);
+    }
+  }
+}
+
+/* Action buttons container */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 /* =========================

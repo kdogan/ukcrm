@@ -23,9 +23,10 @@ export class SupportComponent implements OnInit {
 
   // Search and Filter
   searchQuery = '';
-  filterStatus: 'all' | 'open' | 'in_progress' | 'completed' = 'open'; // Default: show open tickets
+  filterStatus: 'all' | 'open' | 'in_progress' = 'all'; // Default: show all open tickets
   filterPriority: 'all' | 'low' | 'medium' | 'high' = 'all';
   filterAnswered: 'all' | 'answered' | 'unanswered' = 'all';
+  showCompleted = false; // Hide completed tickets by default
 
   // Create Ticket Form
   newTicket = {
@@ -102,6 +103,11 @@ export class SupportComponent implements OnInit {
       filtered = filtered.filter(ticket => ticket.status === this.filterStatus);
     }
 
+    // Hide completed tickets unless showCompleted is checked
+    if (!this.showCompleted) {
+      filtered = filtered.filter(ticket => ticket.status !== 'completed');
+    }
+
     // Priority filter
     if (this.filterPriority !== 'all') {
       filtered = filtered.filter(ticket => ticket.priority === this.filterPriority);
@@ -132,6 +138,7 @@ export class SupportComponent implements OnInit {
     this.filterStatus = 'all';
     this.filterPriority = 'all';
     this.filterAnswered = 'all';
+    this.showCompleted = false;
     this.applyFilters();
   }
 
