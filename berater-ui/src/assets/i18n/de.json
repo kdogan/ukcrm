@@ -253,7 +253,8 @@
     "NO_CONTRACTS": "Keine Verträge gefunden",
     "NO_CONTRACTS_DESC": "Erstellen Sie Ihren ersten Vertrag",
     "DAYS_LEFT": "Tage verbleibend",
-    "DAYS_OVERDUE": "Tage überfällig"
+    "DAYS_OVERDUE": "Tage überfällig",
+    "CONTRACTS_LIST": "Vertragsverlauf"
   },
   "CUSTOMERS": {
     "TITLE": "Kunden",

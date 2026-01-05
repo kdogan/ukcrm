@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Customer } from '../../services/customer.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface CustomerContract {
   _id: string;
@@ -14,7 +15,7 @@ export interface CustomerContract {
 @Component({
   selector: 'app-customer-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   template: `
     <div class="customer-detail">
       <!-- <div class="detail-row" *ngIf="customer?.customerNumber">
@@ -23,24 +24,24 @@ export interface CustomerContract {
       </div> -->
 
       <div class="detail-row">
-        <span class="detail-label">Name:</span>
+        <span class="detail-label">{{ 'COMMON.NAME' | translate }}:</span>
         <span class="detail-value">{{ customer?.firstName }} {{ customer?.lastName }}</span>
       </div>
       @if(customer?.anrede){
         <div class="detail-row">
-          <span class="detail-label">Anrede:</span>
+          <span class="detail-label">{{ 'CUSTOMERS.FIELDS.SALUTATION' | translate }}:</span>
           <span class="detail-value">{{ customer?.anrede }}</span>
         </div>
       }
       @if(customer?.email){
         <div class="detail-row">
-          <span class="detail-label">E-Mail:</span>
+          <span class="detail-label">{{ 'CUSTOMERS.FIELDS.EMAIL' | translate }}:</span>
           <span class="detail-value">{{ customer?.email }}</span>
         </div>
       }
       @if(customer?.phone){
         <div class="detail-row">
-          <span class="detail-label">Telefon:</span>
+          <span class="detail-label">{{ 'CUSTOMERS.FIELDS.PHONE' | translate }}:</span>
           <span class="detail-value">
             {{ customer?.phone }}
             <a [href]="'tel:' + customer?.phone" class="phone-link" title="Anrufen">📞</a>
@@ -49,7 +50,7 @@ export interface CustomerContract {
       }
       @if(customer?.address?.street || customer?.address?.city){
         <div class="detail-row">
-          <span class="detail-label">Adresse:</span>
+          <span class="detail-label">{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}:</span>
           <span class="detail-value">
             @if(customer?.address?.street){
               <span>{{ customer?.address?.street }}<br></span>
@@ -62,7 +63,7 @@ export interface CustomerContract {
       }
       @if(customer?.notes){
         <div class="detail-row">
-          <span class="detail-label">Notizen:</span>
+          <span class="detail-label">{{ 'CUSTOMERS.FIELDS.NOTES' | translate }}:</span>
           <span class="detail-value">{{ customer?.notes }}</span>
         </div>
       }
@@ -70,17 +71,17 @@ export interface CustomerContract {
        @if(showContracts){
         <ng-container>
           <hr class="section-divider" />
-          <h3 class="section-title">Vertragsverlauf</h3>
+          <h3 class="section-title">{{ 'CONTRACTS.CONTRACTS_LIST' | translate }}</h3>
           @if(contracts.length === 0){
-            <div class="no-data">Keine Verträge vorhanden</div>
+            <div class="no-data">{{ 'CONTRACTS.NO_CONTRACTS' | translate }}</div>
           }
           @if(contracts.length > 0){
           <table class="contracts-table">
             <thead>
               <tr>
-                <th>Vertragsnummer</th>
-                <th>Anbieter</th>
-                <th>Status</th>
+                <th>{{ 'CONTRACTS.FIELDS.CONTRACT_NUMBER' | translate }}</th>
+                <th>{{ 'CONTRACTS.FIELDS.SUPPLIER' | translate }}</th>
+                <th>{{ 'CONTRACTS.FIELDS.STATUS' | translate }}</th>
               </tr>
             </thead>
             <tbody>

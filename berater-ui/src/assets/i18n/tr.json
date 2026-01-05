@@ -253,7 +253,8 @@
     "NO_CONTRACTS": "Sözleşme bulunamadı",
     "NO_CONTRACTS_DESC": "İlk sözleşmenizi oluşturun",
     "DAYS_LEFT": "gün kaldı",
-    "DAYS_OVERDUE": "gün gecikmiş"
+    "DAYS_OVERDUE": "gün gecikmiş",
+    "CONTRACTS_LIST": "Kendisine ait Sözleşmeler"
   },
   "CUSTOMERS": {
     "TITLE": "Müşteriler",

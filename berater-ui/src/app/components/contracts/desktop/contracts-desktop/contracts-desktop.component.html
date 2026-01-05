@@ -83,7 +83,7 @@
               @if(activeMenuId === contract._id){
               <div class="action-menu" (click)="$event.stopPropagation()">
                 <button class="menu-item" (click)="showDetails.emit(contract); closeActionMenu.emit()">
-                  <i class="fas fa-info-circle fa-lg"></i> {{ 'COMMON.SHOW_DETAILS' | translate}}
+                  <i class="fas fa-info-circle fa-lg"></i> {{ 'COMMON.DETAILS' | translate}}
                 </button>
                 <button class="menu-item" (click)="edit.emit(contract); closeActionMenu.emit()">
                   <i class="fas fa-edit"></i> {{ 'COMMON.EDIT' | translate}}
