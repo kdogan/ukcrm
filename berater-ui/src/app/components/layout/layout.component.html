@@ -24,40 +24,40 @@
             <li>
                 <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-dashboard fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.dashboard || ('NAV.DASHBOARD' | translate) }}</span>
+                    <span class="nav-text">{{ 'NAV.DASHBOARD' | translate }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
             <li>
                 <a routerLink="/contracts" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-file-contract fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.contracts || ('NAV.CONTRACTS' | translate) }}</span>
+                    <span class="nav-text">{{ 'NAV.CONTRACTS' | translate }}</span>
                 </a>
             </li>
             <li>
                 <a routerLink="/customers" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-users fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.customers || ('NAV.CUSTOMERS' | translate) }}</span>
+                    <span class="nav-text">{{ 'NAV.CUSTOMERS' | translate }}</span>
                 </a>
             </li>
             <li>
                 <a routerLink="/meters" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-bolt fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.meters || ('NAV.METERS' | translate) }}</span>
+                    <span class="nav-text">{{ 'NAV.METERS' | translate }}</span>
                 </a>
             </li>
             }
             <li>
                 <a routerLink="/todos" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-tasks fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.todos || ('NAV.TODOS' | translate) }}</span>
+                    <span class="nav-text">{{ 'NAV.TODOS' | translate }}</span>
                 </a>
             </li>
             @if(currentUser?.role !== 'superadmin'){
             <li>
                 <a routerLink="/suppliers" routerLinkActive="active" (click)="closeMenusAndSidebar()">
                     <i class="fas fa-truck fa-lg"></i>
-                    <span class="nav-text">{{ settings.sidebarLabels.suppliers || ('NAV.SUPPLIERS' | translate) }}</span>
+                    <span class="nav-text">{{ 'NAV.SUPPLIERS' | translate }}</span>
                 </a>
             </li>
             <li>

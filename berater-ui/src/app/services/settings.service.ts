@@ -11,15 +11,6 @@ export interface UserSettings {
     custom?: number;
     sendEmail?: boolean;
   };
-  sidebarLabels: {
-    dashboard: string;
-    customers: string;
-    meters: string;
-    contracts: string;
-    todos: string;
-    suppliers: string;
-    settings?: string;
-  };
   notifications: {
     email: boolean;
     browser: boolean;
@@ -38,14 +29,6 @@ const DEFAULT_SETTINGS: UserSettings = {
     days30: true,
     custom: 30,
     sendEmail: false
-  },
-  sidebarLabels: {
-    dashboard: 'Dashboard',
-    customers: 'Kunden',
-    meters: 'Zähler',
-    contracts: 'Verträge',
-    todos: 'TODOs',
-    suppliers: 'Anbieter'
   },
   notifications: {
     email: true,
