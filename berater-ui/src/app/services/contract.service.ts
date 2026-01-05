@@ -43,10 +43,6 @@ export class ContractService {
     return this.http.put(`${this.apiUrl}/${id}`, contract);
   }
 
-  updateStatus(id: string, status: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/status`, { status });
-  }
-
   deleteContract(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }

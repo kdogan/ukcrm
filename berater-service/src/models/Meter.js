@@ -10,7 +10,6 @@ const meterSchema = new mongoose.Schema({
   meterNumber: {
     type: String,
     required: [true, 'Zählernummer ist erforderlich'],
-    unique: true,
     trim: true
   },
   type: {
@@ -32,10 +31,16 @@ const meterSchema = new mongoose.Schema({
     min: 1950,
     max: new Date().getFullYear()
   },
+
+  /**
+   * Aktueller Kunde (NULL = frei)
+   * → NICHT historisch, nur aktueller Status
+   */
   currentCustomerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer',
-    default: null
+    default: null,
+    index: true
   },
   maloId: {
     type: String,
@@ -50,20 +55,21 @@ const meterSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Indizes
-// meterNumber has unique: true, so no need for explicit index
+
+// ✅ WICHTIG: Compound Unique Index
+// Ein Zähler ist NUR pro Berater eindeutig
+meterSchema.index(
+  { beraterId: 1, meterNumber: 1 },
+  { unique: true }
+);
+
+// Weitere Indizes
 meterSchema.index({ beraterId: 1, currentCustomerId: 1 });
 
 // Virtuelles Feld für Status
 meterSchema.virtual('isFree').get(function() {
   return this.currentCustomerId === null;
 });
-
-// Virtuelles Feld für aktuellen Ablesewert (wird auf Anwendungsebene gesetzt)
-meterSchema.virtual('currentReading');
-
-// Virtuelles Feld für letzte Ablesung (wird auf Anwendungsebene gesetzt)
-meterSchema.virtual('lastReadingDate');
 
 meterSchema.set('toJSON', { virtuals: true });
 meterSchema.set('toObject', { virtuals: true });

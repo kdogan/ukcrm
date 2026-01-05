@@ -127,6 +127,14 @@ contractSchema.index(
   { beraterId: 1, contractNumber: 1 },
   { unique: true }
 );
+// Ein Zähler darf nur EINEN aktiven Vertrag haben
+contractSchema.index(
+  { meterId: 1, status: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: 'active' }
+  }
+);
 
 // Weitere Indizes
 contractSchema.index({ beraterId: 1, status: 1, endDate: 1 });

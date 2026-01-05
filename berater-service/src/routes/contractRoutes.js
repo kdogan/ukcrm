@@ -5,7 +5,6 @@ const {
   getContract,
   createContract,
   updateContract,
-  updateContractStatus,
   deleteContract,
   uploadAttachment,
   deleteAttachment,
@@ -26,8 +25,6 @@ router.route('/:id')
   .get(getContract)
   .put(updateContract)
   .delete(deleteContract);
-
-router.patch('/:id/status', updateContractStatus);
 
 // File upload routes (mit Package-Feature-Prüfung)
 router.post('/:id/attachments', checkFileUploadPermission, upload.single('file'), uploadAttachment);
