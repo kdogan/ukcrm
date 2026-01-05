@@ -12,6 +12,7 @@ import { ViewportService, ViewportType } from 'src/app/services/viewport.service
 import { ContractsMobileComponent } from './mobile/contracts-mobile/contracts-mobile.component';
 import { ContractsDesktopComponent } from './desktop/contracts-desktop/contracts-desktop.component';
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
+import { CustomerDetailComponent, CustomerContract } from "../shared/customer-detail.component";
 import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 import { Util } from '../util/util';
 import { Address, MeterType, meterTypes } from 'src/app/models/meter.model';
@@ -28,7 +29,8 @@ import { MeterCreateComponent } from '../shared/meter-create.component';
         ContractsDesktopComponent,
         ContractsMobileComponent,
         OverlayModalComponent,
-        MeterCreateComponent
+        MeterCreateComponent,
+        CustomerDetailComponent
       ]
 })
 export class ContractsComponent implements OnInit {
@@ -61,6 +63,7 @@ export class ContractsComponent implements OnInit {
   selectedSupplierDetails: any = null;
   selectedMeterDetails: any = null;
   selectedContractDetails: any = null;
+  customerContracts: any[] = []; // Verträge des ausgewählten Kunden
   showImageViewer = false;
   viewingImage: any = null;
   imageViewerUrl: string = '';
@@ -594,6 +597,7 @@ export class ContractsComponent implements OnInit {
         next: (response) => {
           if (response.success) {
             this.selectedCustomerDetails = response.data;
+            this.loadCustomerContracts(id);
             this.showCustomerDetailsModal = true;
           }
         },
@@ -604,13 +608,30 @@ export class ContractsComponent implements OnInit {
       });
     } else {
       this.selectedCustomerDetails = null;
+      this.customerContracts = [];
       this.showCustomerDetailsModal = true;
     }
+  }
+
+  loadCustomerContracts(customerId: string): void {
+    this.customerContracts = this.contracts.filter(
+      (contract: any) => contract.customerId?._id === customerId || contract.customerId === customerId
+    );
   }
 
   closeCustomerDetails(): void {
     this.showCustomerDetailsModal = false;
     this.selectedCustomerDetails = null;
+    this.customerContracts = [];
+  }
+
+  onContractClick(contract: CustomerContract): void {
+    this.closeCustomerDetails();
+    // Finde den vollständigen Vertrag aus der Liste
+    const fullContract = this.contracts.find(c => c._id === contract._id);
+    if (fullContract) {
+      this.editContract(fullContract);
+    }
   }
 
   showSupplierDetails(id: string): void {

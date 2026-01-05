@@ -8,11 +8,12 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService, ViewportType } from 'src/app/services/viewport.service';
 import { CustomersMobileComponent } from "./mobile/customers-mobile/customers-mobile.component";
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
+import { CustomerDetailComponent, CustomerContract } from "../shared/customer-detail.component";
 import { Contract } from 'src/app/models/contract.model';
 
 @Component({
     selector: 'app-customers',
-    imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent],
+    imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent, CustomerDetailComponent],
     templateUrl: './customers.component.html',
     styleUrls: ['./customers.component.scss']
 })
@@ -199,13 +200,7 @@ export class CustomersComponent implements OnInit {
     this.router.navigate(['/contracts', contractId]);
   }
 
-  getContractStatusLabel(status: string): string {
-    const statusLabels: { [key: string]: string } = {
-      'draft': 'Entwurf',
-      'active': 'Aktiv',
-      'ended': 'Beendet',
-      'archived': 'Archiviert'
-    };
-    return statusLabels[status] || status;
+  onContractClick(contract: CustomerContract): void {
+    this.navigateToContract(contract._id);
   }
 }

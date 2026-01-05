@@ -203,14 +203,21 @@
   opacity: 1;
 }
 
-/* User Dropdown Menu */
+/* User Dropdown Menu - öffnet nach oben */
 .user-dropdown {
   list-style: none;
   padding: 0.5rem 0;
-  margin: 0.5rem 0 0 0;
-  background: rgba(0, 0, 0, 0.2);
+  margin: 0;
+  background: rgba(0, 0, 0, 0.85);
   border-radius: 8px;
   overflow: hidden;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
 }
 
 .user-dropdown li {

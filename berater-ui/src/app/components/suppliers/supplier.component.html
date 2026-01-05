@@ -64,26 +64,23 @@
               <td class="actions-cell">
                 <div class="action-menu-container">
                   <button class="action-menu-btn" (click)="toggleActionMenu(supplier._id); $event.stopPropagation()">
-                    ⋮
+                   <i class="fas fa-ellipsis-v"></i>
                   </button>
-                  <div class="action-menu" *ngIf="activeMenuId === supplier._id" (click)="$event.stopPropagation()">
-                    <button class="menu-item" (click)="showSupplierDetails(supplier); closeActionMenu()">
-                      <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
-                    </button>
-                    <button class="menu-item" (click)="editSupplier(supplier); closeActionMenu()">
-                      <i class="fas fa-edit fa-lg"></i> Bearbeiten
-                    </button>
-                    <button
-                      class="menu-item menu-item-danger"
-                      *ngIf="supplier.isActive"
-                      (click)="deleteSupplier(supplier._id); closeActionMenu()"
-                    >
-                      <i class="fas fa-trash fa-lg"></i> Löschen
-                    </button>
-                    <button class="menu-item menu-item-danger" (click)="deleteSupplier(supplier._id); closeActionMenu()">
-                        <i class="fas fa-trash fa-lg"></i> Löschen
-                    </button>
-                  </div>
+                    @if(activeMenuId === supplier._id){
+                    <div class="action-menu" (click)="$event.stopPropagation()">
+                        <button class="menu-item" (click)="showSupplierDetails(supplier); closeActionMenu()">
+                        <i class="fas fa-info-circle fa-lg"></i> Details anzeigen
+                        </button>
+                        <button class="menu-item" (click)="editSupplier(supplier); closeActionMenu()">
+                        <i class="fas fa-edit fa-lg"></i> Bearbeiten
+                        </button>
+                        @if(supplier.isActive){
+                            <button class="menu-item menu-item-danger" (click)="deleteSupplier(supplier._id); closeActionMenu()">
+                            <i class="fas fa-trash fa-lg"></i> Löschen
+                            </button>
+                        }
+                    </div>
+                    }
                 </div>
               </td>
             </tr>

@@ -166,72 +166,22 @@
 }
 
 <!-- Modal for Customer Details -->
- @if(showCustomerDetailsModal){
-<app-overlay-modal (close)="closeCustomerDetailsModal()">
-  <div class="modal-header">
-    <h2>{{ selectedCustomer?.fullName }}</h2>
-    <button class="btn-close" (click)="closeCustomerDetailsModal()">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
-
-  <div class="modal-body">
-    <div class="info-row">
-      <span class="label">Kundennummer</span>
-      <span class="value">{{ selectedCustomer?.customerNumber }}</span>
+@if(showCustomerDetailsModal){
+  <app-overlay-modal (close)="closeCustomerDetailsModal()">
+    <div class="modal-header">
+      <h2>{{ selectedCustomer?.fullName }}</h2>
+      <button class="btn-close" (click)="closeCustomerDetailsModal()">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
-
-    <div class="info-row" *ngIf="selectedCustomer?.anrede">
-      <span class="label">Anrede</span>
-      <span class="value">{{ selectedCustomer?.anrede }}</span>
+    <app-customer-detail
+      [customer]="selectedCustomer"
+      [contracts]="customerContracts"
+      [showContracts]="true"
+      (contractClick)="onContractClick($event)"
+    />
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeCustomerDetailsModal()">Schließen</button>
     </div>
-
-    <div class="info-row" *ngIf="selectedCustomer?.phone">
-      <span class="label">Telefonnummer</span>
-      <span class="value">
-        {{ selectedCustomer?.phone }}
-      </span>
-    </div>
-
-    <div class="info-row address" *ngIf="selectedCustomer?.address">
-      <span class="label">Adresse</span>
-      <span class="value">
-        {{ selectedCustomer?.address?.street }}<br />
-        {{ selectedCustomer?.address?.zip }} {{ selectedCustomer?.address?.city }}
-      </span>
-    </div>
-
-    <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #e0e0e0;" />
-
-    <h3 style="margin-bottom: 1rem;">Vertragsverlauf</h3>
-
-    <div *ngIf="customerContracts.length === 0" class="no-data">
-      Keine Verträge vorhanden
-    </div>
-
-    <table class="data-table" *ngIf="customerContracts.length > 0">
-      <thead>
-        <tr>
-          <th>Vertragsnummer</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let contract of customerContracts" class="clickable-row" (click)="navigateToContract(contract._id)">
-          <td>{{ contract.contractNumber }}</td>
-          <td>
-            <span class="badge" [class.badge-active]="contract.status === 'active'"
-              [class.badge-inactive]="contract.status === 'ended' || contract.status === 'archived'">
-              {{ getContractStatusLabel(contract.status) }}
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="modal-footer">
-    <button type="button" class="btn-secondary" (click)="closeCustomerDetailsModal()">Schließen</button>
-  </div>
-</app-overlay-modal>
+  </app-overlay-modal>
 }
