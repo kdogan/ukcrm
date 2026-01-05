@@ -53,21 +53,22 @@
 
       <div class="form-group">
         <label for="customerId">Kunde *</label>
-        <input type="text" 
-              placeholder="Suche nach Kunden..." 
+        <input type="text"
+              placeholder="Suche nach Kunden..."
               [(ngModel)]="customerSearch"
-              (ngModelChange)="filterCustomers()" 
-              (focus)="showCustomerDropdown = true" 
+              (input)="filterCustomers()"
+              (focus)="showCustomerDropdown = true; filterCustomers()"
+              (blur)="closeCustomerDropdownDelayed()"
               class="form-control search-input"
-              [ngModelOptions]="{standalone: true}" 
+              [ngModelOptions]="{standalone: true}"
               autocomplete="off" />
               @if(showCustomerDropdown) {
                 <div class="dropdown-list">
-                @for(customer of filteredCustomers; track customer){
-                  <div class="dropdown-item" 
-                      [class.selected]="currentContract.customerId === customer._id" 
+                @for(customer of filteredCustomers; track customer._id){
+                  <div class="dropdown-item"
+                      [class.selected]="currentContract.customerId === customer._id"
                       (click)="selectCustomer(customer)">
-                    {{ customer.fullName }}
+                    {{ customer.firstName }} {{ customer.lastName }}
                     @if(customer.address){
                       <span style="font-size: 12px;"> ({{formatAddress(customer.address)}})</span>
                     }
@@ -119,19 +120,20 @@
 
       <div class="form-group">
         <label for="meterId">Zähler *</label>
-        <input type="text" placeholder="Suche nach Zählernummer..." 
+        <input type="text" placeholder="Suche nach Zählernummer..."
           [(ngModel)]="meterSearch"
-          (ngModelChange)="filterMeters()" 
-          (focus)="showMeterDropdown = true" 
+          (input)="filterMeters()"
+          (focus)="showMeterDropdown = true; filterMeters()"
+          (blur)="closeMeterDropdownDelayed()"
           class="form-control search-input"
-          [ngModelOptions]="{standalone: true}" 
+          [ngModelOptions]="{standalone: true}"
           autocomplete="off" />
         @if(showMeterDropdown){
         <div class="dropdown-list">
-          @for(meter of filteredFreeMeters; track meter){
+          @for(meter of filteredFreeMeters; track meter._id){
             <div class="dropdown-item"
               [class.selected]="currentContract.meterId === meter._id" [class.occupied]="!isMeterFree(meter)"
-              [class.disabled]="!isMeterFree(meter)" 
+              [class.disabled]="!isMeterFree(meter)"
               (click)="isMeterFree(meter) && selectMeter(meter)"
               [style.cursor]="isMeterFree(meter) ? 'pointer' : 'not-allowed'">
               {{ meter.meterNumber }} ({{ getTypeLabel(meter.type) }})

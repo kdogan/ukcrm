@@ -361,6 +361,18 @@ export class ContractsComponent implements OnInit {
     this.filteredFreeMeters = this.freeMeters;
   }
 
+  closeCustomerDropdownDelayed(): void {
+    setTimeout(() => {
+      this.showCustomerDropdown = false;
+    }, 200);
+  }
+
+  closeMeterDropdownDelayed(): void {
+    setTimeout(() => {
+      this.showMeterDropdown = false;
+    }, 200);
+  }
+
   showCreateModal(): void {
     // Prüfe zuerst die Paket-Limits
     this.packageService.getUserLimits().subscribe({
