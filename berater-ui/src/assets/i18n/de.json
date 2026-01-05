@@ -491,7 +491,7 @@
       "CONNECT_DESC": "Geben Sie den Token Ihres Master Beraters ein, um dessen Materialien zu sehen.",
       "ENTER_TOKEN": "Token eingeben",
       "CONNECT_BTN": "Verbinden",
-      "CONNECTED": "Verbunden mit",
+      "CONNECTED": "Sie erhalten jetzt Bildungsmaterialien von",
       "DISCONNECT": "Verbindung trennen",
       "DISCONNECTED": "Verbindung erfolgreich getrennt",
       "INVALID_TOKEN": "Ungültiger Token",

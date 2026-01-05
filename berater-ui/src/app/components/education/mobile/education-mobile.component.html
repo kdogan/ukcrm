@@ -49,10 +49,10 @@
     <div class="connected-info" *ngIf="connectedMasterBerater">
       <div class="connected-badge">
         <i class="fas fa-check-circle"></i>
-        <span>{{ connectedMasterBerater.firstName }} {{ connectedMasterBerater.lastName }}</span>
+        <span>{{ 'EDUCATION.TOKEN.CONNECTED' | translate }} <strong>{{ connectedMasterBerater.firstName }} {{ connectedMasterBerater.lastName }}</strong></span>
       </div>
       <button class="btn btn-outline btn-sm btn-danger-outline" (click)="disconnectFromMaster.emit()">
-        <i class="fas fa-unlink"></i> Trennen
+        <i class="fas fa-unlink"></i> {{ 'EDUCATION.TOKEN.DISCONNECT' | translate }}
       </button>
     </div>
     <div class="token-input-group" *ngIf="!connectedMasterBerater">

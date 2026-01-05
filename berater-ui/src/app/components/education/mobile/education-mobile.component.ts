@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { EducationMaterial, EducationStats } from '../../../services/education.service';
 
 @Component({
   selector: 'app-education-mobile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './education-mobile.component.html',
   styleUrls: ['./education-mobile.component.scss']
 })

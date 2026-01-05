@@ -491,7 +491,7 @@
       "CONNECT_DESC": "Master danışmanınızın tokenini girerek materyallerini görün.",
       "ENTER_TOKEN": "Token girin",
       "CONNECT_BTN": "Bağlan",
-      "CONNECTED": "Bağlandı:",
+      "CONNECTED": "Artık eğitim materyallerini alıyorsunuz:",
       "DISCONNECT": "Bağlantıyı Kes",
       "DISCONNECTED": "Bağlantı başarıyla kesildi",
       "INVALID_TOKEN": "Geçersiz token",
