@@ -28,7 +28,6 @@
     <table class="data-table" (click)="$event.stopPropagation()">
       <thead>
         <tr>
-          <th>{{ 'CONTRACTS.FIELDS.CONTRACT_NUMBER' | translate }}</th>
           <th>{{ 'CONTRACTS.FIELDS.CUSTOMER' | translate }}</th>
           <th>{{ 'CONTRACTS.FIELDS.METER' | translate }}</th>
           <th>{{ 'CONTRACTS.FIELDS.SUPPLIER' | translate }}</th>
@@ -39,63 +38,64 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let contract of contracts">
-          <td>{{ contract.supplierContractNumber || '-' }}</td>
-          <td>
-            @if(contract.customerId){
-            <a class="clickable-link"
-              (click)="showCustomer.emit(contract.customerId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Kunde anzeigen">
-              {{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}
-            </a>
-          } @else{
-            <span>-</span>
-          }
-          </td>
-          <td>
-            @if(contract.meterId){
-            <a class="clickable-link"
-              (click)="showMeter.emit(contract.meterId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Zähler anzeigen">
-              {{ contract.meterId?.meterNumber }}
-            </a>
-          } @else {
-            <span>-</span>
-          }
-          </td>
-          <td>
-            @if(contract.supplierId){
-            <a class="clickable-link"
-              (click)="showSupplier.emit(contract.supplierId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Anbieter anzeigen">
-              {{ contract.supplierId?.name }}
-            </a>
-          }@else{
-            <span>-</span>
-          }
-          </td>
-          <td>{{ contract.startDate | date:'dd.MM.yyyy' }}</td>
-          <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
-          <td><span class="badge" [class.badge-active]="contract.status === 'active'">{{ getStatusLabel(contract.status)
-              }}</span></td>
-          <td class="actions-cell">
-            <div class="action-menu-container">
-              <button class="action-menu-btn" (click)="emitActionMenuId(contract._id); $event.stopPropagation()">
-                <i class="fas fa-ellipsis-v"></i>
-              </button>
-              @if(activeMenuId === contract._id){
-              <div class="action-menu" (click)="$event.stopPropagation()">
-                <button class="menu-item" (click)="showDetails.emit(contract); closeActionMenu.emit()">
-                  <i class="fas fa-info-circle fa-lg"></i> {{ 'COMMON.DETAILS' | translate}}
-                </button>
-                <button class="menu-item" (click)="edit.emit(contract); closeActionMenu.emit()">
-                  <i class="fas fa-edit"></i> {{ 'COMMON.EDIT' | translate}}
-                </button>
-                <button class="menu-item menu-item-danger" (click)="delete.emit(contract._id); closeActionMenu.emit()">
-                  <i class="fas fa-trash"></i> {{ 'COMMON.DELETE' | translate}}
-                </button>
-              </div>
+        @for(contract of contracts; track contract){
+          <tr>
+            <td>
+              @if(contract.customerId){
+              <a class="clickable-link"
+                (click)="showCustomer.emit(contract.customerId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Kunde anzeigen">
+                {{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}
+              </a>
+            } @else{
+              <span>-</span>
             }
-            </div>
-          </td>
-        </tr>
+            </td>
+            <td>
+              @if(contract.meterId){
+              <a class="clickable-link"
+                (click)="showMeter.emit(contract.meterId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Zähler anzeigen">
+                {{ contract.meterId?.meterNumber }}
+              </a>
+            } @else {
+              <span>-</span>
+            }
+            </td>
+            <td>
+              @if(contract.supplierId){
+              <a class="clickable-link"
+                (click)="showSupplier.emit(contract.supplierId._id); closeActionMenu.emit(); $event.stopPropagation()" title="Anbieter anzeigen">
+                {{ contract.supplierId?.name }}
+              </a>
+            }@else{
+              <span>-</span>
+            }
+            </td>
+            <td>{{ contract.startDate | date:'dd.MM.yyyy' }}</td>
+            <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
+            <td><span class="badge" [class.badge-active]="contract.status === 'active'">{{ getStatusLabel(contract.status)
+                }}</span></td>
+            <td class="actions-cell">
+              <div class="action-menu-container">
+                <button class="action-menu-btn" (click)="emitActionMenuId(contract._id); $event.stopPropagation()">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                @if(activeMenuId === contract._id){
+                <div class="action-menu" (click)="$event.stopPropagation()">
+                  <button class="menu-item" (click)="showDetails.emit(contract); closeActionMenu.emit()">
+                    <i class="fas fa-info-circle fa-lg"></i> {{ 'COMMON.DETAILS' | translate}}
+                  </button>
+                  <button class="menu-item" (click)="edit.emit(contract); closeActionMenu.emit()">
+                    <i class="fas fa-edit"></i> {{ 'COMMON.EDIT' | translate}}
+                  </button>
+                  <button class="menu-item menu-item-danger" (click)="delete.emit(contract._id); closeActionMenu.emit()">
+                    <i class="fas fa-trash"></i> {{ 'COMMON.DELETE' | translate}}
+                  </button>
+                </div>
+              }
+              </div>
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
   </app-table-container>

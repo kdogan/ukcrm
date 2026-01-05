@@ -227,8 +227,10 @@
       "UNIT": "Einheit",
       "IS_COMMERCIAL": "Handelt es sich um ein Gewerbe?",
       "COMMERCIAL_NAME": "Gewerbename",
+      "COMMERCIAL": "Gewerbe",
       "DURATION": "Laufzeit (Monate)",
-      "ATTACHMENTS": "Anhänge"
+      "ATTACHMENTS": "Anhänge",
+      "CONTRACT_DETAILS":"Vertragsdetails"
     },
     "STATUS": {
       "ACTIVE": "Aktiv",
@@ -667,7 +669,9 @@
     "DESCRIPTION": "Beschreibung",
     "NOTES": "Notizen",
     "EMAIL": "E-Mail",
-    "PHONE": "Telefon"
+    "PHONE": "Telefon",
+    "MONTH": "Monate",
+    "MONTHS": "Monaten"
   },
   "ERRORS": {
     "GENERIC": "Ein Fehler ist aufgetreten",

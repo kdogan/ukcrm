@@ -644,7 +644,7 @@ export class ContractsComponent implements OnInit {
     // Finde den vollständigen Vertrag aus der Liste
     const fullContract = this.contracts.find(c => c._id === contract._id);
     if (fullContract) {
-      this.editContract(fullContract);
+      this.showContractDetails(fullContract);
     }
   }
 

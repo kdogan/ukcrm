@@ -396,7 +396,7 @@
  @if(showContractDetailsModal){
   <app-overlay-modal (close)="closeContractDetails()">
     <div class="modal-header">
-      <h2>Vertragsdetails</h2>
+      <h2>{{'CONTRACTS.FIELDS.CONTRACT_DETAILS' | translate}}</h2>
       <button class="btn-close" (click)="closeContractDetails()">&times;</button>
     </div>
     @if(selectedContractDetails){
@@ -407,19 +407,19 @@
         </div>
         @if(selectedContractDetails.supplierContractNumber){
           <div class="detail-row">
-            <span class="detail-label">Vertragsnummer:</span>
+            <span class="detail-label">{{'CONTRACTS.FIELDS.CONTRACT_NUMBER' | translate}}:</span>
             <span class="detail-value">{{ selectedContractDetails.supplierContractNumber }}</span>
           </div>
         }
         @if(selectedContractDetails.customerId){
           <div class="detail-row">
-            <span class="detail-label">Kunde:</span>
+            <span class="detail-label">{{'CONTRACTS.FIELDS.CUSTOMER' | translate}}:</span>
             <span class="detail-value">{{ selectedContractDetails.customerId.fullName }}</span>
           </div>
         }
         @if(selectedContractDetails.meterId){
           <div class="detail-row">
-            <span class="detail-label">Zähler:</span>
+            <span class="detail-label">{{'CONTRACTS.FIELDS.METER' | translate}}:</span>
             <span class="detail-value">
               {{ selectedContractDetails.meterId.meterNumber }}
               @if(selectedContractDetails.meterId.type){
@@ -430,15 +430,15 @@
         }
         @if(selectedContractDetails.supplierId){
           <div class="detail-row">
-            <span class="detail-label">Anbieter:</span>
+            <span class="detail-label">{{'CONTRACTS.FIELDS.SUPPLIERT' | translate}}:</span>
             <span class="detail-value">{{ selectedContractDetails.supplierId.name }}</span>
           </div>
         }
         @if(selectedContractDetails.isCommercial){
           <div class="detail-row">
-            <span class="detail-label">Gewerbe:</span>
+            <span class="detail-label">{{'CONTRACTS.FIELDS.COMMERCIAL' | translate}}:</span>
             <span class="detail-value">
-              <span class="badge badge-active">Ja</span>
+              <span class="badge badge-active">{{'COMMON.YES' | translate}}</span>
               @if(selectedContractDetails.commercialName){
                 <span> - {{ selectedContractDetails.commercialName }}</span>
               }
@@ -447,19 +447,19 @@
         }
         @if(selectedContractDetails.startDate){
           <div class="detail-row">
-            <span class="detail-label">Startdatum:</span>
+            <span class="detail-label">{{'CONTRACTS.FIELDS.START_DATE' | translate}}:</span>
             <span class="detail-value">{{ formatDate(selectedContractDetails.startDate) }}</span>
           </div>
         }
         @if(selectedContractDetails.endDate){
           <div class="detail-row">
-            <span class="detail-label">Enddatum:</span>
+            <span class="detail-label">{{'CONTRACTS.FIELDS.END_DATE' | translate}}:</span>
             <span class="detail-value">{{ formatDate(selectedContractDetails.endDate) }}</span>
           </div>
         }
         @if(selectedContractDetails.durationMonths){
           <div class="detail-row">
-            <span class="detail-label">Laufzeit:</span>
+            <span class="detail-label">{{'CONTRACTS.FIELDS.DURATION' | translate}}:</span>
             <span class="detail-value">{{ selectedContractDetails.durationMonths }} Monate</span>
           </div>
         }

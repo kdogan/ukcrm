@@ -227,8 +227,10 @@
       "UNIT": "Birim",
       "IS_COMMERCIAL": "Bu bir işyeri mi?",
       "COMMERCIAL_NAME": "İşyeri Adı",
+      "COMMERCIAL": "İşyeri",
       "DURATION": "Süre (Ay)",
-      "ATTACHMENTS": "Ekler"
+      "ATTACHMENTS": "Ekler",
+      "CONTRACT_DETAILS":"Sözleşme detayı"
     },
     "STATUS": {
       "ACTIVE": "Aktif",
@@ -667,7 +669,9 @@
     "DESCRIPTION": "Açıklama",
     "NOTES": "Notlar",
     "EMAIL": "E-posta",
-    "PHONE": "Telefon"
+    "PHONE": "Telefon",
+    "MONTH": "Ay",
+    "MONTHS": "Ay"
   },
   "ERRORS": {
     "GENERIC": "Bir hata oluştu",
