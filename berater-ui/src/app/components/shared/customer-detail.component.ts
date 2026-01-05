@@ -26,74 +26,82 @@ export interface CustomerContract {
         <span class="detail-label">Name:</span>
         <span class="detail-value">{{ customer?.firstName }} {{ customer?.lastName }}</span>
       </div>
-
-      <div class="detail-row" *ngIf="customer?.anrede">
-        <span class="detail-label">Anrede:</span>
-        <span class="detail-value">{{ customer?.anrede }}</span>
-      </div>
-
-      <div class="detail-row" *ngIf="customer?.email">
-        <span class="detail-label">E-Mail:</span>
-        <span class="detail-value">{{ customer?.email }}</span>
-      </div>
-
-      <div class="detail-row" *ngIf="customer?.phone">
-        <span class="detail-label">Telefon:</span>
-        <span class="detail-value">
-          {{ customer?.phone }}
-          <a [href]="'tel:' + customer?.phone" class="phone-link" title="Anrufen">📞</a>
-        </span>
-      </div>
-
-      <div class="detail-row" *ngIf="customer?.address?.street || customer?.address?.city">
-        <span class="detail-label">Adresse:</span>
-        <span class="detail-value">
-          <span *ngIf="customer?.address?.street">{{ customer?.address?.street }}<br></span>
-          <span *ngIf="customer?.address?.zip || customer?.address?.city">
-            {{ customer?.address?.zip }} {{ customer?.address?.city }}
-          </span>
-        </span>
-      </div>
-
-      <div class="detail-row" *ngIf="customer?.notes">
-        <span class="detail-label">Notizen:</span>
-        <span class="detail-value">{{ customer?.notes }}</span>
-      </div>
-
-      <!-- Vertragsverlauf -->
-      <ng-container *ngIf="showContracts">
-        <hr class="section-divider" />
-        <h3 class="section-title">Vertragsverlauf</h3>
-
-        <div *ngIf="contracts.length === 0" class="no-data">
-          Keine Verträge vorhanden
+      @if(customer?.anrede){
+        <div class="detail-row">
+          <span class="detail-label">Anrede:</span>
+          <span class="detail-value">{{ customer?.anrede }}</span>
         </div>
-
-        <table class="contracts-table" *ngIf="contracts.length > 0">
-          <thead>
-            <tr>
-              <th>Vertragsnummer</th>
-              <th>Anbieter</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let contract of contracts"
-                class="clickable-row"
-                (click)="contractClick.emit(contract)">
-              <td>{{ contract.contractNumber }}</td>
-              <td>{{ contract.supplierId?.name || '-' }}</td>
-              <td>
-                <span class="badge"
-                      [class.badge-active]="contract.status === 'active'"
-                      [class.badge-inactive]="contract.status === 'ended' || contract.status === 'archived'">
-                  {{ getStatusLabel(contract.status) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </ng-container>
+      }
+      @if(customer?.email){
+        <div class="detail-row">
+          <span class="detail-label">E-Mail:</span>
+          <span class="detail-value">{{ customer?.email }}</span>
+        </div>
+      }
+      @if(customer?.phone){
+        <div class="detail-row">
+          <span class="detail-label">Telefon:</span>
+          <span class="detail-value">
+            {{ customer?.phone }}
+            <a [href]="'tel:' + customer?.phone" class="phone-link" title="Anrufen">📞</a>
+          </span>
+        </div>
+      }
+      @if(customer?.address?.street || customer?.address?.city){
+        <div class="detail-row">
+          <span class="detail-label">Adresse:</span>
+          <span class="detail-value">
+            @if(customer?.address?.street){
+              <span>{{ customer?.address?.street }}<br></span>
+            }
+            @if(customer?.address?.zip || customer?.address?.city){
+              <span>{{ customer?.address?.zip }} {{ customer?.address?.city }}</span>
+            }
+          </span>
+        </div>
+      }
+      @if(customer?.notes){
+        <div class="detail-row">
+          <span class="detail-label">Notizen:</span>
+          <span class="detail-value">{{ customer?.notes }}</span>
+        </div>
+      }
+      <!-- Vertragsverlauf -->
+       @if(showContracts){
+        <ng-container>
+          <hr class="section-divider" />
+          <h3 class="section-title">Vertragsverlauf</h3>
+          @if(contracts.length === 0){
+            <div class="no-data">Keine Verträge vorhanden</div>
+          }
+          @if(contracts.length > 0){
+          <table class="contracts-table">
+            <thead>
+              <tr>
+                <th>Vertragsnummer</th>
+                <th>Anbieter</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(contract of contracts; track contract){
+              <tr class="clickable-row" (click)="contractClick.emit(contract)">
+                <td>{{ contract.contractNumber }}</td>
+                <td>{{ contract.supplierId?.name || '-' }}</td>
+                <td>
+                  <span class="badge"
+                        [class.badge-active]="contract.status === 'active'"
+                        [class.badge-inactive]="contract.status === 'ended' || contract.status === 'archived'">
+                    {{ getStatusLabel(contract.status) }}
+                  </span>
+                </td>
+              </tr>
+            }
+            </tbody>
+          </table>
+        }
+        </ng-container>
+      }
     </div>
   `,
   styles: [`
