@@ -1,5 +1,43 @@
 /* Contract-specific styles */
 
+/* Search input with inline add button */
+.search-with-add {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  position: relative;
+
+  .search-input {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
+
+.btn-add-inline {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--success-color, #4caf50);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
+
+  &:hover {
+    background: #43a047;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
 /* Dropdown for customer/meter selection */
 .search-input {
   margin-bottom: 0.5rem;
