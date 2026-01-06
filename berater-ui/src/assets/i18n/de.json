@@ -205,7 +205,12 @@
       "REMINDER": "Paket-Erinnerung",
       "INFO": "Paket-Information",
       "RENEW": "Paket verlängern"
-    }
+    },
+    "NEW_CUSTOMERS": "Neue Kunden",
+    "LAST_MONTH": "Letzter Monat",
+    "METER_READINGS": "Zählerablesungen",
+    "RECENT": "Aktuell",
+    "MONTHLY_TRENDS": "Monatliche Entwicklung"
   },
   "CONTRACTS": {
     "TITLE": "Verträge",

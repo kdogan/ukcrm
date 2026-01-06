@@ -205,7 +205,12 @@
       "REMINDER": "Paket Hatırlatma",
       "INFO": "Paket Bilgisi",
       "RENEW": "Paketi Yenile"
-    }
+    },
+    "NEW_CUSTOMERS": "Yeni Müşteriler",
+    "LAST_MONTH": "Son Ay",
+    "METER_READINGS": "Sayaç Okumaları",
+    "RECENT": "Güncel",
+    "MONTHLY_TRENDS": "Aylık Gelişim"
   },
   "CONTRACTS": {
     "TITLE": "Sözleşmeler",

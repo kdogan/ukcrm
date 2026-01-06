@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DashboardService } from '../../services/dashboard.service';
+import { DashboardService, ChartData } from '../../services/dashboard.service';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { SubscriptionService, SubscriptionInfo, ExpiringSubscriptionsResponse, ExpiringUser } from '../../services/subscription.service';
@@ -30,6 +30,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   expiringSubscriptions: ExpiringUser[] = [];
   expiredSubscriptions: ExpiringUser[] = [];
   expiringDaysThreshold = 30;
+  chartData: ChartData | null = null;
+  chartMonths = 6;
+  maxChartValue = 1;
   private subscription: Subscription = new Subscription();
 
   get isMobile() {
@@ -57,6 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadExpiringSubscriptions(); // Load expiring subscriptions for Superadmin
       } else {
         this.loadStats();
+        this.loadChartData(); // Load chart data for Berater
         this.loadSubscriptionInfo(); // Load subscription info for Berater
       }
     });
@@ -158,6 +162,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       error: (error: any) => console.error('Error loading stats:', error)
     });
+  }
+
+  loadChartData(): void {
+    this.dashboardService.getCharts(this.chartMonths).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.chartData = response.data;
+          // Berechne den maximalen Wert für die Balkenhöhe
+          const allValues = [
+            ...this.chartData!.contracts,
+            ...this.chartData!.customers,
+            ...this.chartData!.meters
+          ];
+          this.maxChartValue = Math.max(...allValues, 1);
+        }
+      },
+      error: (error: any) => console.error('Error loading chart data:', error)
+    });
+  }
+
+  onChartMonthsChange(): void {
+    this.loadChartData();
+  }
+
+  getBarHeight(value: number): number {
+    if (this.maxChartValue === 0) return 0;
+    return (value / this.maxChartValue) * 100;
   }
 
   loadUserStats(): void {

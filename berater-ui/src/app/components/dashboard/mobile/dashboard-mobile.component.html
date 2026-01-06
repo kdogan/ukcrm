@@ -198,6 +198,43 @@
           </div>
         </div>
       </div>
+
+      <!-- Verträge -->
+      <div class="stat-card">
+        <div class="stat-icon">📄</div>
+        <div class="meter-values">
+          <div class="meter-free">
+            <span class="count">{{ stats.contracts?.active || 0 }}</span>
+            <span class="label">Aktiv</span>
+          </div>
+          <div class="meter-occupied">
+            <span class="count">{{ stats.contracts?.total || 0 }}</span>
+            <span class="label">Gesamt</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Neue Kunden -->
+      <div class="stat-card">
+        <div class="stat-icon">👤+</div>
+        <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
+        <div class="stat-label">Neue Kunden</div>
+      </div>
+
+      <!-- Zählerablesungen -->
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="meter-values">
+          <div class="meter-free">
+            <span class="count">{{ stats.meterReadings?.recentReadings || 0 }}</span>
+            <span class="label">Aktuell</span>
+          </div>
+          <div class="meter-occupied">
+            <span class="count">{{ stats.meterReadings?.pendingReadings || 0 }}</span>
+            <span class="label">Ausstehend</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Auslaufende Verträge -->
@@ -228,6 +265,58 @@
             <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
             <span class="bar-value">{{ item.count }}</span>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monatliche Trends Chart -->
+    <div class="section-card" *ngIf="chartData">
+      <div class="trends-header">
+        <h2>📈 Monatliche Entwicklung</h2>
+        <select [(ngModel)]="chartMonths" (change)="onChartMonthsChange()" class="months-select">
+          <option [value]="3">3 Monate</option>
+          <option [value]="6">6 Monate</option>
+          <option [value]="12">12 Monate</option>
+        </select>
+      </div>
+
+      <!-- Legende -->
+      <div class="chart-legend">
+        <div class="legend-item">
+          <span class="legend-color contracts"></span>
+          <span>Verträge</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color customers"></span>
+          <span>Kunden</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color meters"></span>
+          <span>Zähler</span>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="bar-chart">
+        <div *ngFor="let label of chartData.labels; let i = index" class="chart-column">
+          <div class="bars-group">
+            <div class="vertical-bar contracts"
+                 [style.height.%]="getBarHeight(chartData.contracts[i])"
+                 [title]="'Verträge: ' + chartData.contracts[i]">
+              <span *ngIf="chartData.contracts[i] > 0" class="bar-value-top">{{ chartData.contracts[i] }}</span>
+            </div>
+            <div class="vertical-bar customers"
+                 [style.height.%]="getBarHeight(chartData.customers[i])"
+                 [title]="'Kunden: ' + chartData.customers[i]">
+              <span *ngIf="chartData.customers[i] > 0" class="bar-value-top">{{ chartData.customers[i] }}</span>
+            </div>
+            <div class="vertical-bar meters"
+                 [style.height.%]="getBarHeight(chartData.meters[i])"
+                 [title]="'Zähler: ' + chartData.meters[i]">
+              <span *ngIf="chartData.meters[i] > 0" class="bar-value-top">{{ chartData.meters[i] }}</span>
+            </div>
+          </div>
+          <div class="chart-label">{{ label }}</div>
         </div>
       </div>
     </div>

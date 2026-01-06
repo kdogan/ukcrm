@@ -182,6 +182,35 @@ exports.getDashboardStats = async (req, res, next) => {
       dueDate: { $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) }
     });
 
+    // Verträge Statistik (aktiv/gesamt)
+    const contractStats = await Contract.aggregate([
+      { $match: { beraterId } },
+      { $group: {
+        _id: null,
+        total: { $sum: 1 },
+        active: { $sum: { $cond: [{ $eq: ['$status', 'active'] }, 1, 0] } }
+      }}
+    ]);
+
+    // Neue Kunden (letzter Monat)
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const newCustomersCount = await Customer.countDocuments({
+      beraterId,
+      createdAt: { $gte: oneMonthAgo }
+    });
+
+    // Zählerablesungen Statistik
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const metersWithRecentReadings = await Meter.countDocuments({
+      beraterId,
+      lastReadingDate: { $gte: thirtyDaysAgo }
+    });
+
+    const metersWithoutRecentReadings = totalMeters - metersWithRecentReadings;
+
     // Upgrade-Anfragen (nur für Superadmin)
     let upgradeRequests = null;
     if (req.user.role === 'superadmin') {
@@ -227,6 +256,19 @@ exports.getDashboardStats = async (req, res, next) => {
       reminders: {
         total: openReminders,
         urgent: urgentReminders
+      },
+      contracts: {
+        total: contractStats[0]?.total || 0,
+        active: contractStats[0]?.active || 0
+      },
+      newCustomers: {
+        count: newCustomersCount,
+        period: 'lastMonth'
+      },
+      meterReadings: {
+        total: totalMeters,
+        recentReadings: metersWithRecentReadings,
+        pendingReadings: metersWithoutRecentReadings
       }
     };
 
@@ -238,6 +280,117 @@ exports.getDashboardStats = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: dashboardData
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get dashboard chart data (monthly trends)
+// @route   GET /api/dashboard/charts
+// @access  Private
+exports.getDashboardCharts = async (req, res, next) => {
+  try {
+    const beraterId = req.user._id;
+    const { months = 6 } = req.query;
+    const monthsCount = Math.min(parseInt(months), 12);
+
+    // Erstelle Array der letzten X Monate
+    const monthsArray = [];
+    for (let i = monthsCount - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+      monthsArray.push({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        label: date.toLocaleDateString('de-DE', { month: 'short', year: '2-digit' })
+      });
+    }
+
+    // Verträge pro Monat (nach Erstellungsdatum)
+    const contractsByMonth = await Contract.aggregate([
+      {
+        $match: {
+          beraterId,
+          createdAt: {
+            $gte: new Date(new Date().setMonth(new Date().getMonth() - monthsCount))
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]);
+
+    // Kunden pro Monat (nach Erstellungsdatum)
+    const customersByMonth = await Customer.aggregate([
+      {
+        $match: {
+          beraterId,
+          createdAt: {
+            $gte: new Date(new Date().setMonth(new Date().getMonth() - monthsCount))
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]);
+
+    // Zähler pro Monat (nach Erstellungsdatum)
+    const metersByMonth = await Meter.aggregate([
+      {
+        $match: {
+          beraterId,
+          createdAt: {
+            $gte: new Date(new Date().setMonth(new Date().getMonth() - monthsCount))
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]);
+
+    // Mappe Daten auf Monate
+    const mapDataToMonths = (data, monthsArr) => {
+      return monthsArr.map(m => {
+        const found = data.find(d => d._id.year === m.year && d._id.month === m.month);
+        return found ? found.count : 0;
+      });
+    };
+
+    const chartData = {
+      labels: monthsArray.map(m => m.label),
+      contracts: mapDataToMonths(contractsByMonth, monthsArray),
+      customers: mapDataToMonths(customersByMonth, monthsArray),
+      meters: mapDataToMonths(metersByMonth, monthsArray)
+    };
+
+    res.status(200).json({
+      success: true,
+      data: chartData
     });
   } catch (error) {
     next(error);

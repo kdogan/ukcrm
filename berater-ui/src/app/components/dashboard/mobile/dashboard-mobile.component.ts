@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { SubscriptionInfo } from '../../../services/subscription.service';
+import { ChartData } from '../../../services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard-mobile',
@@ -20,9 +21,14 @@ export class DashboardMobileComponent {
   @Input() subscriptionInfo: SubscriptionInfo | null = null;
   @Input() subscriptionWarningMessage: string | null = null;
   @Input() subscriptionWarningLevel: 'expired' | 'danger' | 'warning' | 'info' | null = null;
+  @Input() chartData: ChartData | null = null;
+  @Input() maxChartValue: number = 1;
 
   @Output() approveUpgradeEvent = new EventEmitter<string>();
   @Output() rejectUpgradeEvent = new EventEmitter<string>();
+  @Output() chartMonthsChange = new EventEmitter<number>();
+
+  chartMonths = 6;
 
   shouldShowSubscriptionWarning(): boolean {
     return this.subscriptionInfo !== null &&
@@ -88,5 +94,14 @@ export class DashboardMobileComponent {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  onChartMonthsChange(): void {
+    this.chartMonthsChange.emit(this.chartMonths);
+  }
+
+  getBarHeight(value: number): number {
+    if (this.maxChartValue === 0) return 0;
+    return (value / this.maxChartValue) * 100;
   }
 }

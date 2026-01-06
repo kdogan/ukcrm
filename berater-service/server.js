@@ -32,7 +32,7 @@ const educationRoutes = require('./src/routes/education.routes');
 const importRoutes = require('./src/routes/importRoutes');
 
 const { initializeJobs } = require('./src/jobs/todoJobs');
-const { getDashboardStats } = require('./src/controllers/reminderController');
+const { getDashboardStats, getDashboardCharts } = require('./src/controllers/reminderController');
 const { authenticate } = require('./src/middleware/auth');
 
 const app = express();
@@ -124,8 +124,9 @@ app.use('/api/paypal', apiLimiter, paypalRoutes);
 app.use('/api/education', apiLimiter, educationRoutes);
 app.use('/api/import', apiLimiter, importRoutes);
 
-// 📊 Dashboard Route
+// 📊 Dashboard Routes
 app.get('/api/dashboard/stats', authenticate, getDashboardStats);
+app.get('/api/dashboard/charts', authenticate, getDashboardCharts);
 
 // ❤️ Health Check
 app.get('/health', (req, res) => {

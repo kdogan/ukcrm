@@ -3,6 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export interface ChartData {
+  labels: string[];
+  contracts: number[];
+  customers: number[];
+  meters: number[];
+}
+
 export interface DashboardStats {
   expiringContracts: any[];
   contractsBySupplier: Array<{
@@ -24,6 +31,19 @@ export interface DashboardStats {
     total: number;
     urgent: number;
   };
+  contracts: {
+    total: number;
+    active: number;
+  };
+  newCustomers: {
+    count: number;
+    period: string;
+  };
+  meterReadings: {
+    total: number;
+    recentReadings: number;
+    pendingReadings: number;
+  };
   upgradeRequests?: {
     pending: any[];
     counts: {
@@ -44,5 +64,9 @@ export class DashboardService {
 
   getStats(): Observable<{ success: boolean; data: DashboardStats }> {
     return this.http.get<{ success: boolean; data: DashboardStats }>(`${this.apiUrl}/stats`);
+  }
+
+  getCharts(months: number = 6): Observable<{ success: boolean; data: ChartData }> {
+    return this.http.get<{ success: boolean; data: ChartData }>(`${this.apiUrl}/charts?months=${months}`);
   }
 }
