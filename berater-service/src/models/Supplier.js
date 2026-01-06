@@ -40,7 +40,7 @@ const supplierSchema = new mongoose.Schema({
     type: String,
     trim: true,
     lowercase: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Bitte gültige E-Mail eingeben']
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,20})+$/, 'Bitte gültige E-Mail eingeben']
   },
   contactPhone: {
     type: String,
