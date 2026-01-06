@@ -31,6 +31,7 @@ import { LanguageService, Language } from '../../services/language.service';
         [profileLastName]="profileLastName"
         [isSavingProfile]="isSavingProfile"
         [currentUserEmail]="currentUser?.email || ''"
+        [currentLanguage]="currentLanguage"
         (saveSettingsEvent)="saveSettings()"
         (resetToDefaultsEvent)="resetToDefaults()"
         (changePackageEvent)="changePackage($event.packageName, $event.order)"
@@ -42,6 +43,7 @@ import { LanguageService, Language } from '../../services/language.service';
         (saveProfileEvent)="saveProfile()"
         (profileFirstNameChange)="profileFirstName = $event"
         (profileLastNameChange)="profileLastName = $event"
+        (languageChange)="currentLanguage = $event; changeLanguage()"
       ></app-settings-mobile>
     } @else {
     <div class="page-container">

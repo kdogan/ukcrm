@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UserSettings } from 'src/app/services/settings.service';
 import { Package, UserLimits } from 'src/app/services/package.service';
+import { Language } from 'src/app/services/language.service';
 
 @Component({
   selector: 'app-settings-mobile',
@@ -25,6 +26,7 @@ export class SettingsMobileComponent {
   @Input() profileLastName = '';
   @Input() isSavingProfile = false;
   @Input() currentUserEmail = '';
+  @Input() currentLanguage: Language = 'de';
 
   // Tab navigation
   activeTab: 'profile' | 'notifications' | 'appearance' | 'package' = 'profile';
@@ -40,6 +42,11 @@ export class SettingsMobileComponent {
   @Output() currentPasswordChange = new EventEmitter<string>();
   @Output() newPasswordChange = new EventEmitter<string>();
   @Output() confirmPasswordChange = new EventEmitter<string>();
+  @Output() languageChange = new EventEmitter<Language>();
+
+  onLanguageChange(lang: Language): void {
+    this.languageChange.emit(lang);
+  }
 
   getUsagePercentage(type: 'contracts' | 'customers' | 'meters'): number {
     if (!this.userLimits) return 0;

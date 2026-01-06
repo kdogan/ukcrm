@@ -162,7 +162,8 @@ export class AuthService {
 
   private loadUserFromStorage(): void {
     const userStr = localStorage.getItem('user');
-    if (userStr) {
+    const token = localStorage.getItem('token');
+    if (userStr && token) {
       try {
         const user = JSON.parse(userStr);
         this.currentUserSubject.next(user);
@@ -172,10 +173,36 @@ export class AuthService {
           // Apply theme colors on initial load
           this.settingsService.applyThemeColors();
         }
+        // Aktualisiere User-Daten vom Server (packageFeatures könnten sich geändert haben)
+        this.refreshUserData();
       } catch (e) {
         this.clearSession();
       }
     }
+  }
+
+  /**
+   * Lädt aktuelle User-Daten vom Server und aktualisiert localStorage
+   * Wichtig um Änderungen an Package-Features zu erhalten
+   */
+  private refreshUserData(): void {
+    this.http.get<any>(`${this.apiUrl}/me`).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          const updatedUser = response.data;
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          this.currentUserSubject.next(updatedUser);
+          // Update settings if changed
+          if (updatedUser.settings) {
+            this.settingsService.initializeSettings(updatedUser.settings);
+          }
+        }
+      },
+      error: (err) => {
+        // Bei 401 (Token abgelaufen) wird der Auth-Interceptor das handlen
+        console.error('Fehler beim Aktualisieren der User-Daten:', err);
+      }
+    });
   }
 
   get currentUser(): User | null {

@@ -261,6 +261,27 @@
         </div>
       </div>
     </div>
+
+    <!-- Sprache -->
+    <div class="section-card">
+      <h2>🌐 Sprache</h2>
+      <p class="section-description">
+        Wählen Sie Ihre bevorzugte Sprache
+      </p>
+
+      <div class="input-list">
+        <div class="input-item">
+          <label>Sprache auswählen:</label>
+          <select
+            [ngModel]="currentLanguage"
+            (ngModelChange)="onLanguageChange($event)"
+          >
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+          </select>
+        </div>
+      </div>
+    </div>
     }
 
     <!-- PAKET TAB -->
