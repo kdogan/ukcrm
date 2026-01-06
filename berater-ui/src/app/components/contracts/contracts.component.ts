@@ -52,10 +52,14 @@ export class ContractsComponent implements OnInit {
   currentContract: any = this.getEmptyContract();
   customerSearch = '';
   meterSearch = '';
+  supplierSearch = '';
   showCustomerDropdown = false;
   showMeterDropdown = false;
+  showSupplierDropdown = false;
   selectedCustomer: any = null;
   selectedMeter: any = null;
+  selectedSupplier: any = null;
+  filteredSuppliers: any[] = [];
   activeMenuId: string | null = null;
   showCustomerDetailsModal = false;
   showSupplierDetailsModal = false;
@@ -71,11 +75,13 @@ export class ContractsComponent implements OnInit {
   imageViewerUrl: string = '';
   viewport: ViewportType = ViewportType.Desktop;
 
-  // Customer/Meter creation modals
+  // Customer/Meter/Supplier creation modals
   showCustomerCreationModal = false;
   showMeterCreationModal = false;
+  showSupplierCreationModal = false;
   newCustomer: any = this.getEmptyCustomer();
   newMeter: any = this.getEmptyMeter();
+  newSupplier: any = this.getEmptySupplier();
   meterTypes = meterTypes;
 
   // Pagination
@@ -403,6 +409,40 @@ export class ContractsComponent implements OnInit {
     }, 200);
   }
 
+  filterSuppliers(): void {
+    const search = this.supplierSearch.toLowerCase().trim();
+    if (!search) {
+      this.filteredSuppliers = this.suppliers;
+    } else {
+      this.filteredSuppliers = this.suppliers.filter(supplier => {
+        const name = supplier.name?.toLowerCase() || '';
+        const shortName = supplier.shortName?.toLowerCase() || '';
+        return name.includes(search) || shortName.includes(search);
+      });
+    }
+    this.showSupplierDropdown = true;
+  }
+
+  selectSupplier(supplier: any): void {
+    this.selectedSupplier = supplier;
+    this.currentContract.supplierId = supplier._id;
+    this.supplierSearch = supplier.name;
+    this.showSupplierDropdown = false;
+  }
+
+  clearSupplier(): void {
+    this.selectedSupplier = null;
+    this.currentContract.supplierId = '';
+    this.supplierSearch = '';
+    this.filteredSuppliers = this.suppliers;
+  }
+
+  closeSupplierDropdownDelayed(): void {
+    setTimeout(() => {
+      this.showSupplierDropdown = false;
+    }, 200);
+  }
+
   showCreateModal(): void {
     // Prüfe zuerst die Paket-Limits
     this.packageService.getUserLimits().subscribe({
@@ -429,12 +469,16 @@ export class ContractsComponent implements OnInit {
         this.currentContract = this.getEmptyContract();
         this.customerSearch = '';
         this.meterSearch = '';
+        this.supplierSearch = '';
         this.selectedCustomer = null;
         this.selectedMeter = null;
+        this.selectedSupplier = null;
         this.showCustomerDropdown = false;
         this.showMeterDropdown = false;
+        this.showSupplierDropdown = false;
         this.filteredCustomers = this.customers;
         this.filteredFreeMeters = this.freeMeters;
+        this.filteredSuppliers = this.suppliers;
         this.showModal = true;
       },
       error: (err) => {
@@ -444,12 +488,16 @@ export class ContractsComponent implements OnInit {
         this.currentContract = this.getEmptyContract();
         this.customerSearch = '';
         this.meterSearch = '';
+        this.supplierSearch = '';
         this.selectedCustomer = null;
         this.selectedMeter = null;
+        this.selectedSupplier = null;
         this.showCustomerDropdown = false;
         this.showMeterDropdown = false;
+        this.showSupplierDropdown = false;
         this.filteredCustomers = this.customers;
         this.filteredFreeMeters = this.freeMeters;
+        this.filteredSuppliers = this.suppliers;
         this.showModal = true;
       }
     });
@@ -465,16 +513,20 @@ export class ContractsComponent implements OnInit {
       startDate: contract.startDate ? new Date(contract.startDate).toISOString().split('T')[0] : ''
     };
 
-    // Set selected customer and meter for editing
+    // Set selected customer, meter and supplier for editing
     this.selectedCustomer = contract.customerId;
     this.selectedMeter = contract.meterId;
+    this.selectedSupplier = contract.supplierId;
 
     this.customerSearch = '';
     this.meterSearch = '';
+    this.supplierSearch = '';
     this.showCustomerDropdown = false;
     this.showMeterDropdown = false;
+    this.showSupplierDropdown = false;
     this.filteredCustomers = this.customers;
     this.filteredFreeMeters = this.freeMeters;
+    this.filteredSuppliers = this.suppliers;
     this.showModal = true;
   }
 
@@ -967,6 +1019,22 @@ export class ContractsComponent implements OnInit {
     };
   }
 
+  getEmptySupplier(): any {
+    return {
+      name: '',
+      address: {
+        street: '',
+        zipCode: '',
+        city: '',
+        country: 'Deutschland'
+      },
+      contactEmail: '',
+      contactPhone: '',
+      website: '',
+      notes: ''
+    };
+  }
+
   openCustomerCreationModal(): void {
     this.newCustomer = this.getEmptyCustomer();
     this.showCustomerCreationModal = true;
@@ -987,6 +1055,42 @@ export class ContractsComponent implements OnInit {
   closeMeterCreationModal(): void {
     this.showMeterCreationModal = false;
     this.newMeter = this.getEmptyMeter();
+  }
+
+  openSupplierCreationModal(): void {
+    this.newSupplier = this.getEmptySupplier();
+    this.showSupplierCreationModal = true;
+    this.showSupplierDropdown = false;
+  }
+
+  closeSupplierCreationModal(): void {
+    this.showSupplierCreationModal = false;
+    this.newSupplier = this.getEmptySupplier();
+  }
+
+  saveNewSupplier(): void {
+    this.supplierService.createSupplier(this.newSupplier).subscribe({
+      next: (response) => {
+        if (response.success) {
+          const createdSupplier = response.data;
+
+          // Füge den neuen Anbieter zur Liste hinzu
+          this.suppliers.push(createdSupplier);
+          this.filteredSuppliers = this.suppliers;
+
+          // Wähle den neu erstellten Anbieter automatisch aus
+          this.selectSupplier(createdSupplier);
+
+          // Schließe das Modal
+          this.closeSupplierCreationModal();
+
+          alert('Anbieter erfolgreich erstellt!');
+        }
+      },
+      error: (error) => {
+        alert('Fehler beim Erstellen des Anbieters: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
   }
 
   saveNewCustomer(): void {
