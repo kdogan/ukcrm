@@ -4,6 +4,56 @@ const { generateToken, generateRefreshToken } = require('../middleware/auth');
 const emailService = require('../services/emailService');
 const crypto = require('crypto');
 
+// @desc    Test email sending for contract expiration reminder
+// @route   POST /api/auth/test-email
+// @access  Public (only in development)
+exports.testEmail = async (req, res, next) => {
+  try {
+    // Nur in Development-Umgebung erlauben
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(403).json({
+        success: false,
+        message: 'Nicht verfügbar in Produktionsumgebung'
+      });
+    }
+
+    const { email } = req.body;
+    const targetEmail = email || 'kamuran1905@yahoo.de';
+
+    // Mock-Daten für Test
+    const mockBerater = {
+      email: targetEmail,
+      firstName: 'Test',
+      lastName: 'Berater'
+    };
+
+    const mockContract = {
+      contractNumber: 'TEST-001',
+      customerId: {
+        firstName: 'Max',
+        lastName: 'Mustermann'
+      },
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 Tage ab jetzt
+    };
+
+    const daysUntilExpiry = 30;
+
+    // E-Mail senden
+    await emailService.sendContractExpirationReminder(mockBerater, mockContract, daysUntilExpiry);
+
+    res.status(200).json({
+      success: true,
+      message: `Test-E-Mail wurde an ${targetEmail} gesendet`
+    });
+  } catch (error) {
+    console.error('Fehler beim Senden der Test-E-Mail:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Senden der E-Mail: ' + error.message
+    });
+  }
+};
+
 // @desc    Get test users for development
 // @route   GET /api/auth/test-users
 // @access  Public (only in development)

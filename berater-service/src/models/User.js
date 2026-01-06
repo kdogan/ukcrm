@@ -137,7 +137,8 @@ const userSchema = new mongoose.Schema({
       days90: { type: Boolean, default: true },
       days60: { type: Boolean, default: true },
       days30: { type: Boolean, default: true },
-      custom: { type: Number }
+      custom: { type: Number },
+      sendEmail: { type: Boolean, default: false }
     },
     sidebarLabels: {
       dashboard: { type: String, default: 'Dashboard' },

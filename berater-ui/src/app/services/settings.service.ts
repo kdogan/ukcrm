@@ -55,10 +55,15 @@ export class SettingsService {
     return this.http.get<any>(`${this.apiUrl}/settings`).pipe(
       tap(response => {
         if (response.success && response.data) {
-          // Sicherstellen, dass custom einen gültigen Wert hat
           const settings = response.data;
-          if (settings.reminderDays && (settings.reminderDays.custom === undefined || settings.reminderDays.custom === null)) {
-            settings.reminderDays.custom = 30;
+          // Sicherstellen, dass reminderDays Werte gültig sind
+          if (settings.reminderDays) {
+            if (settings.reminderDays.custom === undefined || settings.reminderDays.custom === null) {
+              settings.reminderDays.custom = 30;
+            }
+            if (settings.reminderDays.sendEmail === undefined || settings.reminderDays.sendEmail === null) {
+              settings.reminderDays.sendEmail = false;
+            }
           }
           this.settingsSubject.next(settings);
         }
@@ -68,9 +73,14 @@ export class SettingsService {
 
   initializeSettings(settings: UserSettings): void {
     if (settings) {
-      // Sicherstellen, dass custom einen gültigen Wert hat
-      if (settings.reminderDays && (settings.reminderDays.custom === undefined || settings.reminderDays.custom === null)) {
-        settings.reminderDays.custom = 30;
+      // Sicherstellen, dass reminderDays Werte gültig sind
+      if (settings.reminderDays) {
+        if (settings.reminderDays.custom === undefined || settings.reminderDays.custom === null) {
+          settings.reminderDays.custom = 30;
+        }
+        if (settings.reminderDays.sendEmail === undefined || settings.reminderDays.sendEmail === null) {
+          settings.reminderDays.sendEmail = false;
+        }
       }
       this.settingsSubject.next(settings);
     } else {
