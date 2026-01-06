@@ -133,7 +133,12 @@
       "STATUS": "Durum",
       "CREATED": "Oluşturuldu",
       "FREE_UNTIL": "Tam özellikli ücretsiz paketi şu tarihe kadar kullanabilirsiniz:",
-      "FREE_UNTIL_2": "Bundan sonra paket otomatik olarak 30 sözleşme ve dosya yükleme olmadan değiştirilecektir. Ardından istediğiniz paketi kendiniz seçebilirsiniz."
+      "FREE_UNTIL_2": "Bundan sonra paket otomatik olarak 30 sözleşme ve dosya yükleme olmadan değiştirilecektir. Ardından istediğiniz paketi kendiniz seçebilirsiniz.",
+      "BILLING_INTERVAL": "Ödeme Aralığı",
+      "EXPIRES_ON": "Bitiş Tarihi",
+      "DAYS_LEFT": "Gün kaldı",
+      "EXPIRED": "Süresi doldu",
+      "AUTO_RENEW": "Otomatik Yenileme"
     },
     "PASSWORD": {
       "TITLE": "Şifre Değiştir",

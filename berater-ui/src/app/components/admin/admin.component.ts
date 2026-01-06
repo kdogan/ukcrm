@@ -215,6 +215,20 @@ import { AdminMobileComponent } from './mobile/admin-mobile.component';
               </div>
             </div>
 
+            <div class="form-row">
+              <div class="form-group">
+                <label>Zahlungsintervall*</label>
+                <select [(ngModel)]="currentUser.billingInterval" name="billingInterval" required>
+                  <option value="monthly">Monatlich</option>
+                  <option value="yearly">Jährlich</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Paket-Ablaufdatum*</label>
+                <input type="date" [(ngModel)]="currentUser.subscriptionEndDate" name="subscriptionEndDate" required />
+              </div>
+            </div>
+
             <div class="form-group" *ngIf="editMode">
               <label class="checkbox-label">
                 <input type="checkbox" [(ngModel)]="currentUser.isActive" name="isActive" />
@@ -592,19 +606,47 @@ export class AdminComponent implements OnInit {
 
   showCreateModal(): void {
     this.editMode = false;
+    // Standard-Enddatum: 1 Monat ab heute
+    const defaultEndDate = new Date();
+    defaultEndDate.setMonth(defaultEndDate.getMonth() + 1);
+
     this.currentUser = {
       role: 'berater',
       package: 'basic',
       isActive: true,
-      isMasterBerater: false
+      isMasterBerater: false,
+      billingInterval: 'monthly',
+      subscriptionEndDate: this.formatDateForInput(defaultEndDate)
     };
     this.showModal = true;
   }
 
   editUser(user: AppUser): void {
     this.editMode = true;
-    this.currentUser = { ...user };
+    // Formatiere das Enddatum für das Input-Feld
+    let endDate = '';
+    if (user.subscription?.endDate) {
+      endDate = this.formatDateForInput(new Date(user.subscription.endDate));
+    } else {
+      // Fallback: 1 Monat ab heute
+      const defaultEndDate = new Date();
+      defaultEndDate.setMonth(defaultEndDate.getMonth() + 1);
+      endDate = this.formatDateForInput(defaultEndDate);
+    }
+
+    this.currentUser = {
+      ...user,
+      billingInterval: user.subscription?.billingInterval || 'monthly',
+      subscriptionEndDate: endDate
+    };
     this.showModal = true;
+  }
+
+  formatDateForInput(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   closeModal(): void {

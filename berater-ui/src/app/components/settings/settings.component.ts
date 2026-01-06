@@ -427,6 +427,30 @@ import { LanguageService, Language } from '../../services/language.service';
                   </div>
                 </div> -->
               </div>
+
+              <!-- Subscription Info: Ablaufdatum -->
+              <div *ngIf="subscriptionInfo?.subscription?.endDate" class="subscription-info">
+                <div class="subscription-item">
+                  <div class="subscription-label">📅 {{ 'SETTINGS.PACKAGE.BILLING_INTERVAL' | translate }}:</div>
+                  <div class="subscription-value">{{ subscriptionInfo.subscription.billingIntervalText }}</div>
+                </div>
+                <div class="subscription-item">
+                  <div class="subscription-label">⏰ {{ 'SETTINGS.PACKAGE.EXPIRES_ON' | translate }}:</div>
+                  <div class="subscription-value" [class.expiring-soon]="isExpiringSoon()">
+                    {{ formatSubscriptionDate(subscriptionInfo.subscription.endDate) }}
+                    <span *ngIf="getDaysUntilExpiry() <= 30 && getDaysUntilExpiry() > 0" class="expiry-warning">
+                      ({{ getDaysUntilExpiry() }} {{ 'SETTINGS.PACKAGE.DAYS_LEFT' | translate }})
+                    </span>
+                    <span *ngIf="getDaysUntilExpiry() <= 0" class="expiry-danger">
+                      ({{ 'SETTINGS.PACKAGE.EXPIRED' | translate }})
+                    </span>
+                  </div>
+                </div>
+                <div class="subscription-item" *ngIf="subscriptionInfo.subscription.autoRenew">
+                  <div class="subscription-label">🔄 {{ 'SETTINGS.PACKAGE.AUTO_RENEW' | translate }}:</div>
+                  <div class="subscription-value">{{ subscriptionInfo.subscription.autoRenew ? ('COMMON.YES' | translate) : ('COMMON.NO' | translate) }}</div>
+                </div>
+              </div>
             </div>
 
             <div class="available-packages">
@@ -931,6 +955,50 @@ import { LanguageService, Language } from '../../services/language.service';
       color: #555;
     }
 
+    /* Subscription Info Styles */
+    .subscription-info {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .subscription-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .subscription-label {
+      font-weight: 600;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .subscription-value {
+      color: #333;
+      font-size: 0.95rem;
+    }
+
+    .subscription-value.expiring-soon {
+      color: #f59e0b;
+      font-weight: 600;
+    }
+
+    .expiry-warning {
+      color: #f59e0b;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .expiry-danger {
+      color: #ef4444;
+      font-weight: 700;
+      margin-left: 0.5rem;
+    }
+
     .available-packages {
       margin-top: 1rem;
     }
@@ -1284,6 +1352,7 @@ export class SettingsComponent implements OnInit {
   userLimits: UserLimits | null = null;
   packages: Package[] = [];
   pendingUpgradeRequest: any = null;
+  subscriptionInfo: any = null;
   selectedBillingInterval: { [packageName: string]: 'monthly' | 'yearly' } = {};
 
   // Tab navigation
@@ -1339,7 +1408,21 @@ export class SettingsComponent implements OnInit {
       this.loadUserLimits();
       this.loadPackages();
       this.loadPendingUpgradeRequest();
+      this.loadSubscriptionInfo();
     }
+  }
+
+  loadSubscriptionInfo(): void {
+    this.packageService.getSubscriptionInfo().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.subscriptionInfo = response.data;
+        }
+      },
+      error: (err) => {
+        console.error('Error loading subscription info:', err);
+      }
+    });
   }
 
   changeLanguage(): void {
@@ -1515,6 +1598,31 @@ export class SettingsComponent implements OnInit {
       month: '2-digit',
       year: 'numeric'
     });
+  }
+
+  formatSubscriptionDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
+  getDaysUntilExpiry(): number {
+    if (!this.subscriptionInfo?.subscription?.endDate) {
+      return -1;
+    }
+    const endDate = new Date(this.subscriptionInfo.subscription.endDate);
+    const today = new Date();
+    const diffTime = endDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+
+  isExpiringSoon(): boolean {
+    const daysLeft = this.getDaysUntilExpiry();
+    return daysLeft >= 0 && daysLeft <= 30;
   }
 
   saveSettings(): void {

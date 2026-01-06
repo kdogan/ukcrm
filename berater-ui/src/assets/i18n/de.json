@@ -133,7 +133,12 @@
       "STATUS": "Status",
       "CREATED": "Erstellt",
       "FREE_UNTIL": "Sie können das kostenlose Paket mit vollem Funktionsumfang bis",
-      "FREE_UNTIL_2": "nutzen. Danach wird das Paket automatisch auf 30 Verträge und ohne Dateiupload umgestellt. Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst zu wählen."
+      "FREE_UNTIL_2": "nutzen. Danach wird das Paket automatisch auf 30 Verträge und ohne Dateiupload umgestellt. Im Anschluss haben Sie jederzeit die Möglichkeit, Ihr gewünschtes Paket selbst zu wählen.",
+      "BILLING_INTERVAL": "Zahlungsintervall",
+      "EXPIRES_ON": "Läuft ab am",
+      "DAYS_LEFT": "Tage verbleibend",
+      "EXPIRED": "Abgelaufen",
+      "AUTO_RENEW": "Automatische Verlängerung"
     },
     "PASSWORD": {
       "TITLE": "Passwort ändern",

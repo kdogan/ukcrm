@@ -22,6 +22,16 @@ export interface AppUser {
     maxContracts: number;
     maxMeters: number;
   };
+  subscription?: {
+    billingInterval: 'monthly' | 'yearly';
+    startDate?: Date;
+    endDate?: Date;
+    nextPaymentDate?: Date;
+    autoRenew?: boolean;
+    status?: 'active' | 'cancelled' | 'expired' | 'pending';
+  };
+  billingInterval?: 'monthly' | 'yearly';
+  subscriptionEndDate?: string;
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;

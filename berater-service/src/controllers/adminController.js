@@ -179,6 +179,54 @@ exports.updateUser = async (req, res, next) => {
       user.packageLimits = PACKAGE_LIMITS[packageType];
     }
 
+    // Update Subscription-Daten (billingInterval und/oder subscriptionEndDate)
+    const billingInterval = req.body.billingInterval;
+    const subscriptionEndDate = req.body.subscriptionEndDate;
+
+    if (billingInterval || subscriptionEndDate) {
+      const now = new Date();
+
+      // Bestimme das Enddatum
+      let endDate;
+      if (subscriptionEndDate) {
+        // Verwende das vom Admin eingegebene Datum
+        endDate = new Date(subscriptionEndDate);
+      } else if (billingInterval) {
+        // Berechne basierend auf billingInterval
+        endDate = new Date(now);
+        if (billingInterval === 'yearly') {
+          endDate.setFullYear(endDate.getFullYear() + 1);
+        } else {
+          endDate.setMonth(endDate.getMonth() + 1);
+        }
+      }
+
+      // Erstelle oder aktualisiere Subscription
+      if (!user.subscription) {
+        user.subscription = {
+          billingInterval: billingInterval || 'monthly',
+          startDate: now,
+          endDate: endDate,
+          lastPaymentDate: now,
+          nextPaymentDate: endDate,
+          autoRenew: true,
+          status: 'active'
+        };
+      } else {
+        if (billingInterval) {
+          user.subscription.billingInterval = billingInterval;
+        }
+        if (endDate) {
+          user.subscription.endDate = endDate;
+          user.subscription.nextPaymentDate = endDate;
+        }
+        // Status auf active setzen wenn Enddatum in der Zukunft liegt
+        if (endDate && endDate > now) {
+          user.subscription.status = 'active';
+        }
+      }
+    }
+
     await user.save();
     console.log('User saved. isMasterBerater is now:', user.isMasterBerater);
 

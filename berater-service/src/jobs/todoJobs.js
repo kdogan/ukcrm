@@ -3,7 +3,7 @@ const Todo = require('../models/Todo');
 const Contract = require('../models/Contract');
 const User = require('../models/User');
 const { cleanupOldAttachments } = require('./attachmentCleanup');
-const { sendContractExpirationReminder } = require('../services/emailService');
+const { sendContractExpirationReminder, sendPackageExpirationReminder } = require('../services/emailService');
 
 /**
  * Generiert automatisch TODOs für ablaufende Verträge
@@ -88,6 +88,57 @@ const generateExpiringContractTodos = async () => {
 };
 
 /**
+ * Sendet Erinnerungs-E-Mails für ablaufende Pakete
+ * Läuft täglich um 3:00 Uhr morgens
+ * Sendet Erinnerungen bei 30, 14, 7, 3 und 1 Tag vor Ablauf
+ */
+const checkExpiringPackages = async () => {
+  try {
+    console.log('Prüfe ablaufende Pakete...');
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Erinnerungstage vor Ablauf
+    const reminderDays = [30, 14, 7, 3, 1];
+    let emailsSent = 0;
+
+    // Finde alle Benutzer mit aktivem Paket und Ablaufdatum
+    const usersWithSubscription = await User.find({
+      'subscription.endDate': { $exists: true, $ne: null },
+      'subscription.status': 'active',
+      isActive: true,
+      isBlocked: false
+    });
+
+    for (const user of usersWithSubscription) {
+      if (!user.subscription?.endDate) continue;
+
+      const endDate = new Date(user.subscription.endDate);
+      endDate.setHours(0, 0, 0, 0);
+
+      const diffTime = endDate.getTime() - today.getTime();
+      const daysUntilExpiry = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // Prüfe ob heute ein Erinnerungstag ist
+      if (reminderDays.includes(daysUntilExpiry)) {
+        try {
+          await sendPackageExpirationReminder(user, daysUntilExpiry);
+          emailsSent++;
+          console.log(`Paket-Ablauf-Erinnerung gesendet an ${user.email} (${daysUntilExpiry} Tage verbleibend)`);
+        } catch (emailError) {
+          console.error(`Fehler beim Senden der Paket-Ablauf-E-Mail an ${user.email}:`, emailError.message);
+        }
+      }
+    }
+
+    console.log(`${emailsSent} Paket-Ablauf-Erinnerung(en) versendet`);
+  } catch (error) {
+    console.error('Fehler bei Paket-Ablauf-Prüfung:', error);
+  }
+};
+
+/**
  * Initialisiert alle Cron-Jobs
  */
 const initializeJobs = () => {
@@ -97,12 +148,17 @@ const initializeJobs = () => {
   // Täglich um 2:00 Uhr morgens - Anhänge-Cleanup
   cron.schedule('0 2 * * *', cleanupOldAttachments);
 
+  // Täglich um 3:00 Uhr morgens - Paket-Ablauf-Prüfung
+  cron.schedule('0 3 * * *', checkExpiringPackages);
+
   console.log('Cron-Jobs initialisiert:');
   console.log('- Ablaufende Verträge: Täglich um 2:00 Uhr');
   console.log('- Anhänge-Cleanup (>3 Jahre): Täglich um 2:00 Uhr');
+  console.log('- Paket-Ablauf-Erinnerungen: Täglich um 3:00 Uhr');
 };
 
 module.exports = {
   initializeJobs,
-  generateExpiringContractTodos
+  generateExpiringContractTodos,
+  checkExpiringPackages
 };
