@@ -97,6 +97,11 @@ const todoSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     default: null
+  },
+  // Flag ob Berater die Admin-Antwort gelesen hat (für Badge-Zähler)
+  adminResponseReadByBerater: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

@@ -15,7 +15,9 @@ const {
   getMySupportTickets,
   getSupportTickets,
   respondToSupportTicket,
-  getSupportTicketImage
+  getSupportTicketImage,
+  getSupportTicketBadgeCount,
+  markSupportTicketAsRead
 } = require('../controllers/todoController');
 const { authenticate, requireSuperAdmin, authenticateFromQuery } = require('../middleware/auth');
 
@@ -71,8 +73,10 @@ router.post('/generate-expiring', generateExpiringContractTodos);
 router.post('/support-ticket', upload.array('images', 5), createSupportTicket);
 router.get('/my-support-tickets', getMySupportTickets);
 router.get('/support-tickets', requireSuperAdmin, getSupportTickets);
+router.get('/support-ticket-count', getSupportTicketBadgeCount);
 // Berater can close their own tickets, Superadmin can respond and change any status
 router.put('/support-ticket/:id/respond', respondToSupportTicket);
+router.put('/support-ticket/:id/mark-read', markSupportTicketAsRead);
 
 router.route('/:id')
   .get(getTodo)

@@ -68,9 +68,12 @@
             </li>
             }
             <li>
-                <a routerLink="/support" routerLinkActive="active" (click)="closeMenusAndSidebar()">
+                <a routerLink="/support" routerLinkActive="active" (click)="closeMenusAndSidebar()" class="support-link">
                     <i class="fas fa-life-ring fa-lg"></i>
                     <span class="nav-text">{{ 'NAV.SUPPORT' | translate }}</span>
+                    @if(supportBadgeCount > 0){
+                      <span class="support-badge">{{ supportBadgeCount }}</span>
+                    }
                 </a>
             </li>
             @if(currentUser?.role === 'superadmin'){

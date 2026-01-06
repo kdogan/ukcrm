@@ -805,6 +805,72 @@ exports.respondToSupportTicket = async (req, res, next) => {
   }
 };
 
+// @desc    Get unread support ticket count for badge
+// @route   GET /api/todos/support-ticket-count
+// @access  Private
+exports.getSupportTicketBadgeCount = async (req, res, next) => {
+  try {
+    const isSuperAdmin = req.user.role === 'superadmin';
+    let count = 0;
+
+    if (isSuperAdmin) {
+      // Superadmin: Zähle offene Tickets ohne Admin-Antwort (noch zu bearbeiten)
+      count = await Todo.countDocuments({
+        isSupportTicket: true,
+        status: { $in: ['open', 'in_progress'] },
+        adminResponse: { $in: [null, ''] }
+      });
+    } else {
+      // Berater: Zähle eigene Tickets mit Admin-Antwort, die noch nicht als gelesen markiert wurden
+      // (status ist nicht completed und adminResponse existiert)
+      count = await Todo.countDocuments({
+        beraterId: req.user._id,
+        isSupportTicket: true,
+        status: { $ne: 'completed' },
+        adminResponse: { $nin: [null, ''] },
+        adminResponseReadByBerater: { $ne: true }
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark admin response as read by berater
+// @route   PUT /api/todos/support-ticket/:id/mark-read
+// @access  Private (Berater only)
+exports.markSupportTicketAsRead = async (req, res, next) => {
+  try {
+    const ticket = await Todo.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id,
+      isSupportTicket: true
+    });
+
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: 'Support-Ticket nicht gefunden'
+      });
+    }
+
+    ticket.adminResponseReadByBerater = true;
+    await ticket.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Ticket als gelesen markiert'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get support ticket image
 // @route   GET /api/todos/support-ticket/image/:ticketId/:filename
 // @access  Private

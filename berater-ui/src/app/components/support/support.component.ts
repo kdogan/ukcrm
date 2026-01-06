@@ -203,6 +203,13 @@ export class SupportComponent implements OnInit {
     this.adminResponse = '';
     // Set current ticket status
     this.responseStatus = ticket.status;
+
+    // Mark as read if Berater opens a ticket with admin response
+    if (!this.isSuperAdmin && ticket.adminResponse) {
+      this.todoService.markSupportTicketAsRead(ticket._id).subscribe({
+        error: (error) => console.error('Fehler beim Markieren als gelesen:', error)
+      });
+    }
   }
 
   submitResponse(): void {

@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { Subscription, interval } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { SettingsService, UserSettings } from '../../services/settings.service';
+import { TodoService } from '../../services/todo.service';
 
 @Component({
     selector: 'app-layout',
@@ -11,19 +13,26 @@ import { SettingsService, UserSettings } from '../../services/settings.service';
     templateUrl: './layout.component.html',
     styleUrls: ['./layout.component.scss']
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent implements OnInit, OnDestroy {
   currentUser: any = null;
   settings!: UserSettings;
   sidebarColor: string = '';
   sidebarOpen = false;
   userMenuOpen = false;
+  supportBadgeCount = 0;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private authService: AuthService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private todoService: TodoService
   ) {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
+      // Refresh badge count when user changes
+      if (user) {
+        this.todoService.refreshSupportBadgeCount();
+      }
     });
   }
 
@@ -35,13 +44,38 @@ export class LayoutComponent implements OnInit {
     this.settingsService.applyThemeColors();
 
     // Subscribe to settings changes
-    this.settingsService.settings$.subscribe(settings => {
-      this.settings = settings;
-      this.sidebarColor = this.settingsService.getSidebarColor();
+    this.subscriptions.push(
+      this.settingsService.settings$.subscribe(settings => {
+        this.settings = settings;
+        this.sidebarColor = this.settingsService.getSidebarColor();
 
-      // Apply theme colors when settings change
-      this.settingsService.applyThemeColors();
-    });
+        // Apply theme colors when settings change
+        this.settingsService.applyThemeColors();
+      })
+    );
+
+    // Subscribe to support badge count
+    this.subscriptions.push(
+      this.todoService.supportBadgeCount$.subscribe(count => {
+        this.supportBadgeCount = count;
+      })
+    );
+
+    // Initial badge count fetch
+    this.todoService.refreshSupportBadgeCount();
+
+    // Refresh badge count every 60 seconds
+    this.subscriptions.push(
+      interval(60000).subscribe(() => {
+        if (this.currentUser) {
+          this.todoService.refreshSupportBadgeCount();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   getUserInitials(): string {

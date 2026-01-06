@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Todo {
@@ -126,5 +126,33 @@ export class TodoService {
   getSupportTicketImageUrl(ticketId: string, filename: string): string {
     const token = localStorage.getItem('token');
     return `${this.apiUrl}/support-ticket/image/${ticketId}/${filename}?token=${token}`;
+  }
+
+  // Support Badge Count
+  private supportBadgeCountSubject = new BehaviorSubject<number>(0);
+  public supportBadgeCount$ = this.supportBadgeCountSubject.asObservable();
+
+  getSupportTicketBadgeCount(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/support-ticket-count`).pipe(
+      tap(response => {
+        if (response.success) {
+          this.supportBadgeCountSubject.next(response.count);
+        }
+      })
+    );
+  }
+
+  markSupportTicketAsRead(id: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/support-ticket/${id}/mark-read`, {}).pipe(
+      tap(() => {
+        // Refresh badge count after marking as read
+        this.getSupportTicketBadgeCount().subscribe();
+      })
+    );
+  }
+
+  // Refresh badge count (call this after ticket operations)
+  refreshSupportBadgeCount(): void {
+    this.getSupportTicketBadgeCount().subscribe();
   }
 }
