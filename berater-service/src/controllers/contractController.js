@@ -214,6 +214,7 @@ exports.updateContract = async (req, res, next) => {
       'notes',
       'status',
       'endDate',
+      'startDate',
       'supplierContractNumber'
     ];
 
