@@ -184,9 +184,13 @@ router.get('/pdf/:id', authenticate, async (req, res) => {
       await material.registerView(userId);
     }
 
+    // Dateinamen für Header sicher kodieren (RFC 5987)
+    const filename = material.pdfName || 'document.pdf';
+    const encodedFilename = encodeURIComponent(filename).replace(/['()]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
+
     res.set({
       'Content-Type': material.pdfMimeType || 'application/pdf',
-      'Content-Disposition': `inline; filename="${material.pdfName || 'document.pdf'}"`,
+      'Content-Disposition': `inline; filename="document.pdf"; filename*=UTF-8''${encodedFilename}`,
       'Content-Length': material.pdfData.length
     });
 
