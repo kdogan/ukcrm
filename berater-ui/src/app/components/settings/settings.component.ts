@@ -49,7 +49,29 @@ import { LanguageService, Language } from '../../services/language.service';
         <h1>{{ 'SETTINGS.TITLE' | translate }}</h1>
       </div>
 
+      <!-- Tab Navigation -->
+      <div class="tabs-container">
+        <button class="tab-btn" [class.active]="activeTab === 'profile'" (click)="activeTab = 'profile'">
+          <i class="fas fa-user"></i>
+          <span>{{ 'SETTINGS.TABS.PROFILE' | translate }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'notifications'" (click)="activeTab = 'notifications'">
+          <i class="fas fa-bell"></i>
+          <span>{{ 'SETTINGS.TABS.NOTIFICATIONS' | translate }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'appearance'" (click)="activeTab = 'appearance'">
+          <i class="fas fa-palette"></i>
+          <span>{{ 'SETTINGS.TABS.APPEARANCE' | translate }}</span>
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'package'" (click)="activeTab = 'package'">
+          <i class="fas fa-box"></i>
+          <span>{{ 'SETTINGS.TABS.PACKAGE' | translate }}</span>
+        </button>
+      </div>
+
       <div class="settings-content">
+        <!-- PROFIL TAB -->
+        @if(activeTab === 'profile') {
         <!-- Profil -->
         <div class="settings-section">
           <h2>👤 {{ 'SETTINGS.PROFILE.TITLE' | translate }}</h2>
@@ -99,6 +121,60 @@ import { LanguageService, Language } from '../../services/language.service';
           </div>
         </div>
 
+        <!-- Passwort ändern (im Profil Tab) -->
+        <div class="settings-section">
+          <h2>🔒 {{ 'SETTINGS.PASSWORD.TITLE' | translate }}</h2>
+          <p class="section-description">
+            {{ 'SETTINGS.PASSWORD.DESCRIPTION' | translate }}
+          </p>
+
+          <div class="setting-group">
+            <div class="input-group">
+              <label>{{ 'SETTINGS.PASSWORD.CURRENT' | translate }} *</label>
+              <input
+                type="password"
+                [(ngModel)]="currentPassword"
+                [placeholder]="'SETTINGS.PASSWORD.CURRENT' | translate"
+                class="input-field"
+                autocomplete="current-password"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>{{ 'SETTINGS.PASSWORD.NEW' | translate }} *</label>
+              <input
+                type="password"
+                [(ngModel)]="newPassword"
+                [placeholder]="('SETTINGS.PASSWORD.NEW' | translate) + ' (' + ('SETTINGS.PASSWORD.MIN_CHARS' | translate) + ')'"
+                class="input-field"
+                autocomplete="new-password"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>{{ 'SETTINGS.PASSWORD.CONFIRM' | translate }} *</label>
+              <input
+                type="password"
+                [(ngModel)]="confirmPassword"
+                [placeholder]="'SETTINGS.PASSWORD.CONFIRM' | translate"
+                class="input-field"
+                autocomplete="new-password"
+              />
+            </div>
+
+            <button
+              class="btn-primary"
+              (click)="changePassword()"
+              [disabled]="isChangingPassword || !currentPassword || !newPassword || !confirmPassword">
+              <i class="fas" [class.fa-spinner]="isChangingPassword" [class.fa-spin]="isChangingPassword" [class.fa-key]="!isChangingPassword"></i>
+              {{ isChangingPassword ? ('SETTINGS.PASSWORD.CHANGING' | translate) : ('SETTINGS.PASSWORD.CHANGE' | translate) }}
+            </button>
+          </div>
+        </div>
+        }
+
+        <!-- BENACHRICHTIGUNGEN TAB -->
+        @if(activeTab === 'notifications') {
         <!-- Erinnerungen für Vertragsablauf -->
         <div class="settings-section">
           <h2>📅 {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h2>
@@ -189,7 +265,10 @@ import { LanguageService, Language } from '../../services/language.service';
             </label>
           </div>
         </div>
+        }
 
+        <!-- DARSTELLUNG TAB -->
+        @if(activeTab === 'appearance') {
         <!-- Theme/Farben -->
         <div class="settings-section">
           <h2>🎨 {{ 'SETTINGS.APPEARANCE.TITLE' | translate }}</h2>
@@ -282,7 +361,10 @@ import { LanguageService, Language } from '../../services/language.service';
             </div>
           </div>
         </div>
+        }
 
+        <!-- PAKET TAB -->
+        @if(activeTab === 'package') {
         <!-- Paket-Verwaltung -->
         <div class="settings-section">
                       <div class="info-box">
@@ -436,67 +518,7 @@ import { LanguageService, Language } from '../../services/language.service';
             </div>
           </div>
         </div>
-
-        <!-- Passwort ändern -->
-        <div class="settings-section">
-          <h2>🔒 {{ 'SETTINGS.PASSWORD.TITLE' | translate }}</h2>
-          <p class="section-description">
-            {{ 'SETTINGS.PASSWORD.DESCRIPTION' | translate }}
-          </p>
-
-          <div class="setting-group">
-            <div class="input-group">
-              <label>{{ 'SETTINGS.PASSWORD.CURRENT' | translate }} *</label>
-              <input
-                type="password"
-                [(ngModel)]="currentPassword"
-                [placeholder]="'SETTINGS.PASSWORD.CURRENT' | translate"
-                class="input-field"
-                autocomplete="current-password"
-              />
-            </div>
-
-            <div class="input-group">
-              <label>{{ 'SETTINGS.PASSWORD.NEW' | translate }} *</label>
-              <input
-                type="password"
-                [(ngModel)]="newPassword"
-                [placeholder]="('SETTINGS.PASSWORD.NEW' | translate) + ' (' + ('SETTINGS.PASSWORD.MIN_CHARS' | translate) + ')'"
-                class="input-field"
-                autocomplete="new-password"
-              />
-            </div>
-
-            <div class="input-group">
-              <label>{{ 'SETTINGS.PASSWORD.CONFIRM' | translate }} *</label>
-              <input
-                type="password"
-                [(ngModel)]="confirmPassword"
-                [placeholder]="'SETTINGS.PASSWORD.CONFIRM' | translate"
-                class="input-field"
-                autocomplete="new-password"
-              />
-            </div>
-
-            <button
-              class="btn-primary"
-              (click)="changePassword()"
-              [disabled]="isChangingPassword || !currentPassword || !newPassword || !confirmPassword">
-              <i class="fas" [class.fa-spinner]="isChangingPassword" [class.fa-spin]="isChangingPassword" [class.fa-key]="!isChangingPassword"></i>
-              {{ isChangingPassword ? ('SETTINGS.PASSWORD.CHANGING' | translate) : ('SETTINGS.PASSWORD.CHANGE' | translate) }}
-            </button>
-          </div>
-        </div>
-
-        <!-- Aktionen -->
-        <div class="settings-actions">
-          <button class="btn-secondary" (click)="resetToDefaults()">
-            {{ 'SETTINGS.ACTIONS.RESET' | translate }}
-          </button>
-          <button class="btn-primary" (click)="saveSettings()">
-            {{ 'SETTINGS.ACTIONS.SAVE' | translate }}
-          </button>
-        </div>
+        }
 
         <div class="save-indicator" *ngIf="showSaveIndicator">
           ✓ {{ 'SETTINGS.ACTIONS.SAVED' | translate }}
@@ -513,13 +535,56 @@ import { LanguageService, Language } from '../../services/language.service';
     }
 
     .page-header {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     h1 {
       font-size: 2rem;
       color: #333;
       margin: 0;
+    }
+
+    /* Tab Navigation */
+    .tabs-container {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      background: #f8f9fa;
+      padding: 0.5rem;
+      border-radius: 12px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.7);
+      color: #333;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: #34d399;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .tab-btn i {
+      font-size: 1rem;
     }
 
     .settings-content {
@@ -1218,6 +1283,9 @@ export class SettingsComponent implements OnInit {
   packages: Package[] = [];
   pendingUpgradeRequest: any = null;
   selectedBillingInterval: { [packageName: string]: 'monthly' | 'yearly' } = {};
+
+  // Tab navigation
+  activeTab: 'profile' | 'notifications' | 'appearance' | 'package' = 'profile';
 
   // Password change properties
   currentPassword = '';

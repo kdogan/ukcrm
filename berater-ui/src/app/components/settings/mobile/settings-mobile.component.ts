@@ -26,6 +26,9 @@ export class SettingsMobileComponent {
   @Input() isSavingProfile = false;
   @Input() currentUserEmail = '';
 
+  // Tab navigation
+  activeTab: 'profile' | 'notifications' | 'appearance' | 'package' = 'profile';
+
   @Output() saveSettingsEvent = new EventEmitter<void>();
   @Output() saveProfileEvent = new EventEmitter<void>();
   @Output() profileFirstNameChange = new EventEmitter<string>();

@@ -50,6 +50,12 @@
   },
   "SETTINGS": {
     "TITLE": "Einstellungen",
+    "TABS": {
+      "PROFILE": "Profil & Konto",
+      "NOTIFICATIONS": "Benachrichtigungen",
+      "APPEARANCE": "Darstellung",
+      "PACKAGE": "Paket"
+    },
     "PROFILE": {
       "TITLE": "Profil",
       "DESCRIPTION": "Ändern Sie Ihren Namen und verwalten Sie Ihre Kontodaten.",

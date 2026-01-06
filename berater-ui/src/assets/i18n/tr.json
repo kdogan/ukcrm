@@ -50,6 +50,12 @@
   },
   "SETTINGS": {
     "TITLE": "Ayarlar",
+    "TABS": {
+      "PROFILE": "Profil & Hesap",
+      "NOTIFICATIONS": "Bildirimler",
+      "APPEARANCE": "Görünüm",
+      "PACKAGE": "Paket"
+    },
     "PROFILE": {
       "TITLE": "Profil",
       "DESCRIPTION": "Adınızı değiştirin ve hesap bilgilerinizi yönetin.",

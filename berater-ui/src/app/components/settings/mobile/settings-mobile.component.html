@@ -5,8 +5,30 @@
     <h1>Einstellungen</h1>
   </div>
 
+  <!-- Tab Navigation -->
+  <div class="tabs-container">
+    <button class="tab-btn" [class.active]="activeTab === 'profile'" (click)="activeTab = 'profile'">
+      <i class="fas fa-user"></i>
+      <span>Profil</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'notifications'" (click)="activeTab = 'notifications'">
+      <i class="fas fa-bell"></i>
+      <span>Meldungen</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'appearance'" (click)="activeTab = 'appearance'">
+      <i class="fas fa-palette"></i>
+      <span>Design</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'package'" (click)="activeTab = 'package'">
+      <i class="fas fa-box"></i>
+      <span>Paket</span>
+    </button>
+  </div>
+
   <div class="mobile-content">
 
+    <!-- PROFIL TAB -->
+    @if(activeTab === 'profile') {
     <!-- Profil -->
     <div class="section-card">
       <h2>👤 Profil</h2>
@@ -55,6 +77,60 @@
       </button>
     </div>
 
+    <!-- Passwort ändern -->
+    <div class="section-card">
+      <h2>🔒 Passwort ändern</h2>
+      <p class="section-description">
+        Ändern Sie Ihr Passwort für mehr Sicherheit
+      </p>
+
+      <div class="input-list">
+        <div class="input-item">
+          <label>Aktuelles Passwort *</label>
+          <input
+            type="password"
+            [ngModel]="currentPassword"
+            (ngModelChange)="currentPasswordChange.emit($event)"
+            placeholder="Aktuelles Passwort"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>Neues Passwort *</label>
+          <input
+            type="password"
+            [ngModel]="newPassword"
+            (ngModelChange)="newPasswordChange.emit($event)"
+            placeholder="Neues Passwort (min. 8 Zeichen)"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <div class="input-item">
+          <label>Passwort bestätigen *</label>
+          <input
+            type="password"
+            [ngModel]="confirmPassword"
+            (ngModelChange)="confirmPasswordChange.emit($event)"
+            placeholder="Neues Passwort wiederholen"
+            autocomplete="new-password"
+          />
+        </div>
+      </div>
+
+      <button
+        class="btn-primary password-btn"
+        (click)="changePasswordEvent.emit()"
+        [disabled]="isChangingPassword || !currentPassword || !newPassword || !confirmPassword">
+        <i class="fas" [class.fa-spinner]="isChangingPassword" [class.fa-spin]="isChangingPassword" [class.fa-key]="!isChangingPassword"></i>
+        {{ isChangingPassword ? 'Wird geändert...' : 'Passwort ändern' }}
+      </button>
+    </div>
+    }
+
+    <!-- BENACHRICHTIGUNGEN TAB -->
+    @if(activeTab === 'notifications') {
     <!-- Erinnerungen für Vertragsablauf -->
     <div class="section-card">
       <h2>📅 Erinnerungen</h2>
@@ -62,50 +138,22 @@
         Wann Sie vor Vertragsablauf benachrichtigt werden möchten
       </p>
 
-      <!-- <div class="checkbox-list">
-        <label class="checkbox-item">
+      <div class="custom-days">
+        <label>Benutzerdefiniert: {{ settings.reminderDays.custom || 1 }} Tage vor Ablauf</label>
+        <div class="slider-container">
+          <span class="slider-label">1</span>
           <input
-            type="checkbox"
-            [(ngModel)]="settings.reminderDays.days90"
+            type="range"
+            [(ngModel)]="settings.reminderDays.custom"
             (change)="onSaveSettings()"
+            min="1"
+            max="90"
+            step="1"
+            class="slider"
           />
-          <span>90 Tage vor Ablauf</span>
-        </label>
-
-        <label class="checkbox-item">
-          <input
-            type="checkbox"
-            [(ngModel)]="settings.reminderDays.days60"
-            (change)="onSaveSettings()"
-          />
-          <span>60 Tage vor Ablauf</span>
-        </label>
-
-        <label class="checkbox-item">
-          <input
-            type="checkbox"
-            [(ngModel)]="settings.reminderDays.days30"
-            (change)="onSaveSettings()"
-          />
-          <span>30 Tage vor Ablauf</span>
-        </label>
-      </div> -->
-            <div class="custom-days">
-              <label>Benutzerdefiniert: {{ settings.reminderDays.custom || 1 }} Tage vor Ablauf</label>
-              <div class="slider-container">
-                <span class="slider-label">1</span>
-                <input
-                  type="range"
-                  [(ngModel)]="settings.reminderDays.custom"
-                  (change)="onSaveSettings()"
-                  min="1"
-                  max="90"
-                  step="1"
-                  class="slider"
-                />
-                <span class="slider-label">90</span>
-              </div>
-            </div>
+          <span class="slider-label">90</span>
+        </div>
+      </div>
 
       <label class="checkbox-item email-reminder">
         <input
@@ -144,7 +192,10 @@
         </label>
       </div>
     </div>
+    }
 
+    <!-- DARSTELLUNG TAB -->
+    @if(activeTab === 'appearance') {
     <!-- Theme/Farben -->
     <div class="section-card">
       <h2>🎨 Erscheinungsbild</h2>
@@ -210,7 +261,10 @@
         </div>
       </div>
     </div>
+    }
 
+    <!-- PAKET TAB -->
+    @if(activeTab === 'package') {
     <!-- Paket-Verwaltung -->
     <div class="section-card" *ngIf="userLimits">
       <h2>📦 Ihr Paket</h2>
@@ -237,32 +291,6 @@
                    [style.width.%]="getUsagePercentage('contracts')"
                    [class.warning]="getUsagePercentage('contracts') >= 80"
                    [class.danger]="getUsagePercentage('contracts') >= 100"></div>
-            </div>
-          </div>
-
-          <div class="usage-item">
-            <div class="usage-header">
-              <span class="usage-label">Kunden</span>
-              <span class="usage-value">{{ userLimits.usage.customers }} / {{ userLimits.limits.maxCustomers === -1 ? '∞' : userLimits.limits.maxCustomers }}</span>
-            </div>
-            <div class="usage-bar-bg">
-              <div class="usage-bar-fill"
-                   [style.width.%]="getUsagePercentage('customers')"
-                   [class.warning]="getUsagePercentage('customers') >= 80"
-                   [class.danger]="getUsagePercentage('customers') >= 100"></div>
-            </div>
-          </div>
-
-          <div class="usage-item">
-            <div class="usage-header">
-              <span class="usage-label">Zähler</span>
-              <span class="usage-value">{{ userLimits.usage.meters }} / {{ userLimits.limits.maxMeters === -1 ? '∞' : userLimits.limits.maxMeters }}</span>
-            </div>
-            <div class="usage-bar-bg">
-              <div class="usage-bar-fill"
-                   [style.width.%]="getUsagePercentage('meters')"
-                   [class.warning]="getUsagePercentage('meters') >= 80"
-                   [class.danger]="getUsagePercentage('meters') >= 100"></div>
             </div>
           </div>
         </div>
@@ -313,7 +341,7 @@
                 class="toggle-btn"
                 [class.active]="selectedBillingInterval[pkg.name] === 'yearly'"
                 (click)="onSelectBillingInterval(pkg.name, 'yearly')">
-                Jährlich <span class="badge-save">2 Monate sparen</span>
+                Jährlich <span class="badge-save">2 Mon. sparen</span>
               </button>
             </div>
 
@@ -356,67 +384,7 @@
         </div>
       </div>
     </div>
-
-    <!-- Passwort ändern -->
-    <div class="section-card">
-      <h2>🔒 Passwort ändern</h2>
-      <p class="section-description">
-        Ändern Sie Ihr Passwort für mehr Sicherheit
-      </p>
-
-      <div class="input-list">
-        <div class="input-item">
-          <label>Aktuelles Passwort *</label>
-          <input
-            type="password"
-            [ngModel]="currentPassword"
-            (ngModelChange)="currentPasswordChange.emit($event)"
-            placeholder="Aktuelles Passwort"
-            autocomplete="current-password"
-          />
-        </div>
-
-        <div class="input-item">
-          <label>Neues Passwort *</label>
-          <input
-            type="password"
-            [ngModel]="newPassword"
-            (ngModelChange)="newPasswordChange.emit($event)"
-            placeholder="Neues Passwort (min. 8 Zeichen)"
-            autocomplete="new-password"
-          />
-        </div>
-
-        <div class="input-item">
-          <label>Passwort bestätigen *</label>
-          <input
-            type="password"
-            [ngModel]="confirmPassword"
-            (ngModelChange)="confirmPasswordChange.emit($event)"
-            placeholder="Neues Passwort wiederholen"
-            autocomplete="new-password"
-          />
-        </div>
-      </div>
-
-      <button
-        class="btn-primary password-btn"
-        (click)="changePasswordEvent.emit()"
-        [disabled]="isChangingPassword || !currentPassword || !newPassword || !confirmPassword">
-        <i class="fas" [class.fa-spinner]="isChangingPassword" [class.fa-spin]="isChangingPassword" [class.fa-key]="!isChangingPassword"></i>
-        {{ isChangingPassword ? 'Wird geändert...' : 'Passwort ändern' }}
-      </button>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="action-buttons">
-      <button class="btn-secondary" (click)="onResetToDefaults()">
-        Zurücksetzen
-      </button>
-      <button class="btn-primary" (click)="onSaveSettings()">
-        Speichern
-      </button>
-    </div>
+    }
 
   </div>
 
