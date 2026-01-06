@@ -209,7 +209,7 @@ exports.updateUser = async (req, res, next) => {
           endDate: endDate,
           lastPaymentDate: now,
           nextPaymentDate: endDate,
-          autoRenew: true,
+          autoRenew: false,
           status: 'active'
         };
       } else {

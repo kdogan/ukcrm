@@ -429,7 +429,7 @@ import { LanguageService, Language } from '../../services/language.service';
               </div>
 
               <!-- Subscription Info: Ablaufdatum -->
-              <div *ngIf="subscriptionInfo?.subscription?.endDate" class="subscription-info">
+              <div *ngIf="subscriptionInfo?.subscription?.endDate && subscriptionInfo?.package?.name !== 'free'" class="subscription-info">
                 <div class="subscription-item">
                   <div class="subscription-label">📅 {{ 'SETTINGS.PACKAGE.BILLING_INTERVAL' | translate }}:</div>
                   <div class="subscription-value">{{ subscriptionInfo.subscription.billingIntervalText }}</div>
@@ -446,9 +446,12 @@ import { LanguageService, Language } from '../../services/language.service';
                     </span>
                   </div>
                 </div>
-                <div class="subscription-item" *ngIf="subscriptionInfo.subscription.autoRenew">
-                  <div class="subscription-label">🔄 {{ 'SETTINGS.PACKAGE.AUTO_RENEW' | translate }}:</div>
-                  <div class="subscription-value">{{ subscriptionInfo.subscription.autoRenew ? ('COMMON.YES' | translate) : ('COMMON.NO' | translate) }}</div>
+
+                <!-- Verlängerungsbutton -->
+                <div class="subscription-actions">
+                  <button class="renew-btn" (click)="openRenewModal()">
+                    🔄 {{ 'SETTINGS.PACKAGE.RENEW_PACKAGE' | translate }}
+                  </button>
                 </div>
               </div>
             </div>
@@ -548,6 +551,64 @@ import { LanguageService, Language } from '../../services/language.service';
 
         <div class="save-indicator" *ngIf="showSaveIndicator">
           ✓ {{ 'SETTINGS.ACTIONS.SAVED' | translate }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Renew Modal -->
+    <div class="modal-overlay" *ngIf="showRenewModal" (click)="closeRenewModal()">
+      <div class="renew-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>🔄 {{ 'SETTINGS.PACKAGE.RENEW_PACKAGE' | translate }}</h3>
+          <button class="close-btn" (click)="closeRenewModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="current-package-info">
+            <div class="package-name">{{ subscriptionInfo?.package?.displayName }}</div>
+            <div class="current-expiry">
+              {{ 'SETTINGS.PACKAGE.CURRENT_EXPIRY' | translate }}:
+              <strong>{{ formatSubscriptionDate(subscriptionInfo?.subscription?.endDate) }}</strong>
+            </div>
+          </div>
+
+          <div class="billing-interval-selection">
+            <label>{{ 'SETTINGS.PACKAGE.BILLING_INTERVAL' | translate }}:</label>
+            <div class="interval-buttons">
+              <button
+                class="interval-btn"
+                [class.active]="renewBillingInterval === 'monthly'"
+                (click)="renewBillingInterval = 'monthly'">
+                {{ 'SETTINGS.PACKAGE.MONTHLY' | translate }}
+              </button>
+              <button
+                class="interval-btn"
+                [class.active]="renewBillingInterval === 'yearly'"
+                (click)="renewBillingInterval = 'yearly'">
+                {{ 'SETTINGS.PACKAGE.YEARLY' | translate }}
+                <span class="savings-badge" *ngIf="getRenewSavings() > 0">-{{ getRenewSavings() }}€</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="renewal-summary">
+            <div class="summary-row">
+              <span>{{ 'SETTINGS.PACKAGE.NEW_EXPIRY' | translate }}:</span>
+              <strong>{{ getNewEndDate() }}</strong>
+            </div>
+            <div class="summary-row price">
+              <span>{{ 'SETTINGS.PACKAGE.PRICE' | translate }}:</span>
+              <strong>{{ getRenewPrice() }} €</strong>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" (click)="closeRenewModal()">
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+          <button class="confirm-btn" (click)="confirmRenewal()" [disabled]="isRenewing">
+            <span *ngIf="!isRenewing">{{ 'SETTINGS.PACKAGE.CONFIRM_RENEWAL' | translate }}</span>
+            <span *ngIf="isRenewing">{{ 'COMMON.LOADING' | translate }}...</span>
+          </button>
         </div>
       </div>
     </div>
@@ -999,6 +1060,222 @@ import { LanguageService, Language } from '../../services/language.service';
       margin-left: 0.5rem;
     }
 
+    .subscription-actions {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .renew-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .renew-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Renew Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .renew-modal {
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .renew-modal .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .renew-modal .modal-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .renew-modal .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .renew-modal .modal-body {
+      padding: 1.5rem;
+    }
+
+    .current-package-info {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .current-package-info .package-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    .current-package-info .current-expiry {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .billing-interval-selection {
+      margin-bottom: 1.5rem;
+    }
+
+    .billing-interval-selection label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .interval-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .interval-btn {
+      flex: 1;
+      padding: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .interval-btn:hover {
+      border-color: #667eea;
+    }
+
+    .interval-btn.active {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #f0f4ff 0%, #f8f0ff 100%);
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .savings-badge {
+      display: inline-block;
+      background: #34d399;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      font-weight: 600;
+    }
+
+    .renewal-summary {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+    }
+
+    .summary-row.price {
+      border-top: 1px solid #e0e0e0;
+      margin-top: 0.5rem;
+      padding-top: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .summary-row.price strong {
+      color: #667eea;
+      font-size: 1.25rem;
+    }
+
+    .renew-modal .modal-footer {
+      display: flex;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      justify-content: flex-end;
+    }
+
+    .cancel-btn {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .cancel-btn:hover {
+      background: #f0f0f0;
+    }
+
+    .confirm-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .confirm-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .confirm-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
     .available-packages {
       margin-top: 1rem;
     }
@@ -1374,6 +1651,11 @@ export class SettingsComponent implements OnInit {
 
   currentUser: any = null;
 
+  // Renew Modal
+  showRenewModal = false;
+  renewBillingInterval: 'monthly' | 'yearly' = 'monthly';
+  isRenewing = false;
+
   constructor(
     private settingsService: SettingsService,
     private packageService: PackageService,
@@ -1623,6 +1905,92 @@ export class SettingsComponent implements OnInit {
   isExpiringSoon(): boolean {
     const daysLeft = this.getDaysUntilExpiry();
     return daysLeft >= 0 && daysLeft <= 30;
+  }
+
+  openRenewModal(): void {
+    // Setze das aktuelle Billing-Interval als Standard
+    this.renewBillingInterval = this.subscriptionInfo?.subscription?.billingInterval || 'monthly';
+    this.showRenewModal = true;
+  }
+
+  closeRenewModal(): void {
+    this.showRenewModal = false;
+  }
+
+  getRenewPrice(): number {
+    if (!this.subscriptionInfo?.package) return 0;
+    // Verwende die Preise direkt aus subscriptionInfo.package
+    const monthlyPrice = this.subscriptionInfo.package.monthlyPrice || 0;
+    const yearlyPrice = this.subscriptionInfo.package.yearlyPrice || 0;
+    return this.renewBillingInterval === 'yearly' ? yearlyPrice : monthlyPrice;
+  }
+
+  getRenewSavings(): number {
+    if (!this.subscriptionInfo?.package) return 0;
+    // Berechne die Ersparnis: 12 * monatlich - jährlich
+    const monthlyPrice = this.subscriptionInfo.package.monthlyPrice || 0;
+    const yearlyPrice = this.subscriptionInfo.package.yearlyPrice || 0;
+    if (this.renewBillingInterval === 'yearly' && monthlyPrice > 0) {
+      const savings = (monthlyPrice * 12) - yearlyPrice;
+      // Runde auf 2 Dezimalstellen und stelle sicher, dass der Wert positiv ist
+      return Math.max(0, Math.round(savings * 100) / 100);
+    }
+    return 0;
+  }
+
+  getNewEndDate(): string {
+    if (!this.subscriptionInfo?.subscription?.endDate) return '';
+    const currentEndDate = new Date(this.subscriptionInfo.subscription.endDate);
+    const now = new Date();
+
+    // Wenn noch nicht abgelaufen, ab Ablaufdatum verlängern
+    const startDate = currentEndDate > now ? currentEndDate : now;
+    const newEndDate = new Date(startDate);
+
+    if (this.renewBillingInterval === 'yearly') {
+      newEndDate.setFullYear(newEndDate.getFullYear() + 1);
+    } else {
+      newEndDate.setMonth(newEndDate.getMonth() + 1);
+    }
+
+    return newEndDate.toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
+  confirmRenewal(): void {
+    if (!this.subscriptionInfo?.package?.name || this.isRenewing) return;
+
+    const packageName = this.subscriptionInfo.package.name;
+    const price = this.getRenewPrice();
+
+    // Schließe das Modal
+    this.showRenewModal = false;
+
+    // Wenn Preis > 0, zur PayPal-Zahlung weiterleiten
+    if (price > 0) {
+      this.purchaseWithPayPal(packageName, this.renewBillingInterval);
+    } else {
+      // Kostenloses Paket oder Preis 0 - direkt verlängern (sollte normalerweise nicht vorkommen)
+      this.isRenewing = true;
+      this.packageService.purchasePackage(packageName, this.renewBillingInterval).subscribe({
+        next: (response) => {
+          this.isRenewing = false;
+          if (response.success) {
+            alert(response.message || 'Paket erfolgreich verlängert!');
+            this.loadSubscriptionInfo();
+            this.loadUserLimits();
+          }
+        },
+        error: (err) => {
+          this.isRenewing = false;
+          console.error('Error renewing package:', err);
+          alert(err.error?.message || 'Fehler bei der Paketverlängerung');
+        }
+      });
+    }
   }
 
   saveSettings(): void {

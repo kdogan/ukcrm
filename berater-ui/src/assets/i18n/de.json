@@ -138,7 +138,11 @@
       "EXPIRES_ON": "Läuft ab am",
       "DAYS_LEFT": "Tage verbleibend",
       "EXPIRED": "Abgelaufen",
-      "AUTO_RENEW": "Automatische Verlängerung"
+      "AUTO_RENEW": "Automatische Verlängerung",
+      "RENEW_PACKAGE": "Paket verlängern",
+      "CURRENT_EXPIRY": "Aktuelles Ablaufdatum",
+      "NEW_EXPIRY": "Neues Ablaufdatum",
+      "CONFIRM_RENEWAL": "Verlängerung bestätigen"
     },
     "PASSWORD": {
       "TITLE": "Passwort ändern",

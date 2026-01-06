@@ -366,11 +366,7 @@ exports.sendPackageExpirationReminder = async (user, daysUntilExpiry) => {
             </div>
           </div>
 
-          ${user.subscription?.autoRenew ? `
-          <p>✅ <strong>Automatische Verlängerung ist aktiviert.</strong> Ihr Paket wird automatisch verlängert, sofern eine gültige Zahlungsmethode hinterlegt ist.</p>
-          ` : `
-          <p>⚠️ <strong>Automatische Verlängerung ist deaktiviert.</strong> Bitte erneuern Sie Ihr Paket rechtzeitig, um eine Unterbrechung zu vermeiden.</p>
-          `}
+          <p>⚠️ <strong>Hinweis:</strong> Nach Ablauf Ihres Pakets werden Sie automatisch auf das kostenlose Paket zurückgestuft. Bitte erneuern Sie Ihr Paket rechtzeitig, um eine Einschränkung Ihrer Funktionen zu vermeiden.</p>
 
           <div style="text-align: center;">
             <a href="${process.env.FRONTEND_URL}/settings" class="button">Paket verwalten</a>
@@ -395,6 +391,327 @@ exports.sendPackageExpirationReminder = async (user, daysUntilExpiry) => {
     return info;
   } catch (error) {
     console.error('Error sending package expiration reminder email:', error);
+    throw error;
+  }
+};
+
+// Paket-Kauf-Bestätigung senden
+exports.sendPackagePurchaseConfirmation = async (user, packageInfo, subscriptionDetails) => {
+  const transporter = createTransporter();
+
+  const packageDisplayName = packageInfo.displayName || packageInfo.name;
+  const billingIntervalText = subscriptionDetails.billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich';
+
+  const startDate = new Date(subscriptionDetails.startDate).toLocaleDateString('de-DE', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  const endDate = new Date(subscriptionDetails.endDate).toLocaleDateString('de-DE', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || 'noreply@berater-app.com',
+    to: user.email,
+    subject: `✅ Ihr ${packageDisplayName}-Paket wurde erfolgreich aktiviert`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .header {
+            background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+          }
+          .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+          }
+          .success-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+          }
+          .info-box {
+            background: white;
+            border: 2px solid #34d399;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+          }
+          .info-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+          }
+          .info-row:last-child {
+            border-bottom: none;
+          }
+          .info-label {
+            font-weight: bold;
+            min-width: 180px;
+            color: #059669;
+          }
+          .info-value {
+            flex: 1;
+          }
+          .price-highlight {
+            background: #ecfdf5;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+          }
+          .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #059669;
+          }
+          .button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #059669;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 12px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="success-icon">✅</div>
+          <h1>Paket erfolgreich aktiviert!</h1>
+        </div>
+        <div class="content">
+          <p>Hallo ${user.firstName},</p>
+
+          <p>vielen Dank für Ihren Kauf! Ihr <strong>${packageDisplayName}</strong>-Paket wurde erfolgreich aktiviert.</p>
+
+          <div class="info-box">
+            <div class="info-row">
+              <div class="info-label">Paket:</div>
+              <div class="info-value"><strong>${packageDisplayName}</strong></div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Zahlungsintervall:</div>
+              <div class="info-value">${billingIntervalText}</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Aktiviert am:</div>
+              <div class="info-value">${startDate}</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Gültig bis:</div>
+              <div class="info-value">${endDate}</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Max. Verträge:</div>
+              <div class="info-value">${packageInfo.maxContracts === -1 ? 'Unbegrenzt' : packageInfo.maxContracts}</div>
+            </div>
+          </div>
+
+          <div class="price-highlight">
+            <div>Bezahlter Betrag</div>
+            <div class="price">${subscriptionDetails.price.toFixed(2)} ${packageInfo.currency || 'EUR'}</div>
+            ${subscriptionDetails.savings > 0 ? `<div style="color: #059669; margin-top: 5px;">Sie sparen ${subscriptionDetails.savings.toFixed(2)} ${packageInfo.currency || 'EUR'} pro Jahr!</div>` : ''}
+          </div>
+
+          <p><strong>Was Sie jetzt tun können:</strong></p>
+          <ul>
+            <li>Nutzen Sie alle Funktionen Ihres neuen Pakets</li>
+            <li>Verwalten Sie Ihr Paket in den Einstellungen</li>
+            <li>Bei Fragen kontaktieren Sie uns über den Support</li>
+          </ul>
+
+          <div style="text-align: center;">
+            <a href="${process.env.FRONTEND_URL}/settings" class="button">Zu den Einstellungen</a>
+          </div>
+
+          <p>Vielen Dank, dass Sie uns vertrauen!</p>
+
+          <p>Mit freundlichen Grüßen,<br>
+          Ihr Berater App Team</p>
+        </div>
+        <div class="footer">
+          <p>Dies ist eine automatisch generierte Bestätigungs-E-Mail.</p>
+        </div>
+      </body>
+      </html>
+    `
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Package purchase confirmation email sent:', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Error sending package purchase confirmation email:', error);
+    throw error;
+  }
+};
+
+// Paket-Downgrade-Benachrichtigung senden
+exports.sendPackageDowngradeNotification = async (user, oldPackage) => {
+  const transporter = createTransporter();
+
+  const oldPackageDisplayName = {
+    basic: 'Basic',
+    professional: 'Professional',
+    enterprise: 'Enterprise'
+  }[oldPackage] || oldPackage;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || 'noreply@berater-app.com',
+    to: user.email,
+    subject: `⚠️ Ihr ${oldPackageDisplayName}-Paket ist abgelaufen`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+          }
+          .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+          }
+          .warning-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+          }
+          .info-box {
+            background: white;
+            border: 2px solid #ef4444;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+          }
+          .info-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+          }
+          .info-row:last-child {
+            border-bottom: none;
+          }
+          .info-label {
+            font-weight: bold;
+            min-width: 180px;
+            color: #ef4444;
+          }
+          .info-value {
+            flex: 1;
+          }
+          .button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 12px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="warning-icon">⚠️</div>
+          <h1>Paket abgelaufen</h1>
+        </div>
+        <div class="content">
+          <p>Hallo ${user.firstName},</p>
+
+          <p>Ihr <strong>${oldPackageDisplayName}</strong>-Paket ist abgelaufen und wurde auf das <strong>Kostenlose Paket</strong> zurückgestuft.</p>
+
+          <div class="info-box">
+            <div class="info-row">
+              <div class="info-label">Vorheriges Paket:</div>
+              <div class="info-value">${oldPackageDisplayName}</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Aktuelles Paket:</div>
+              <div class="info-value">Kostenlos</div>
+            </div>
+          </div>
+
+          <p><strong>Was bedeutet das für Sie?</strong></p>
+          <ul>
+            <li>Ihre bestehenden Daten bleiben erhalten</li>
+            <li>Es gelten nun die Limits des kostenlosen Pakets</li>
+            <li>Einige Funktionen sind möglicherweise eingeschränkt</li>
+          </ul>
+
+          <p>Um wieder alle Funktionen nutzen zu können, können Sie jederzeit ein neues Paket erwerben.</p>
+
+          <div style="text-align: center;">
+            <a href="${process.env.FRONTEND_URL}/settings" class="button">Paket erneuern</a>
+          </div>
+
+          <p>Bei Fragen stehen wir Ihnen gerne zur Verfügung.</p>
+
+          <p>Mit freundlichen Grüßen,<br>
+          Ihr Berater App Team</p>
+        </div>
+        <div class="footer">
+          <p>Dies ist eine automatisch generierte E-Mail.</p>
+        </div>
+      </body>
+      </html>
+    `
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Package downgrade notification email sent:', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Error sending package downgrade notification email:', error);
     throw error;
   }
 };

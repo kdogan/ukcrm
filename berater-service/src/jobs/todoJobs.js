@@ -3,7 +3,8 @@ const Todo = require('../models/Todo');
 const Contract = require('../models/Contract');
 const User = require('../models/User');
 const { cleanupOldAttachments } = require('./attachmentCleanup');
-const { sendContractExpirationReminder, sendPackageExpirationReminder } = require('../services/emailService');
+const Package = require('../models/Package');
+const { sendContractExpirationReminder, sendPackageExpirationReminder, sendPackageDowngradeNotification } = require('../services/emailService');
 
 /**
  * Generiert automatisch TODOs für ablaufende Verträge
@@ -139,6 +140,75 @@ const checkExpiringPackages = async () => {
 };
 
 /**
+ * Downgradet abgelaufene Pakete automatisch auf das kostenlose Paket
+ * Läuft täglich um 4:00 Uhr morgens
+ */
+const downgradeExpiredPackages = async () => {
+  try {
+    console.log('Prüfe abgelaufene Pakete für automatisches Downgrade...');
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Finde alle Benutzer deren Paket abgelaufen ist
+    const expiredUsers = await User.find({
+      'subscription.endDate': { $lt: today },
+      'subscription.status': 'active',
+      package: { $ne: 'free' }, // Nicht bereits auf free
+      isActive: true,
+      isBlocked: false
+    });
+
+    console.log(`${expiredUsers.length} Benutzer mit abgelaufenem Paket gefunden`);
+
+    // Hole das kostenlose Paket
+    const freePackage = await Package.findOne({ name: 'free' });
+    if (!freePackage) {
+      console.error('Kostenloses Paket nicht gefunden!');
+      return;
+    }
+
+    let downgradedCount = 0;
+    let emailsSent = 0;
+
+    for (const user of expiredUsers) {
+      const oldPackage = user.package;
+
+      try {
+        // Benutzer auf kostenloses Paket zurückstufen
+        user.package = 'free';
+        user.packageLimits = {
+          maxCustomers: freePackage.maxCustomers,
+          maxContracts: freePackage.maxContracts,
+          maxMeters: freePackage.maxMeters
+        };
+        user.subscription.status = 'expired';
+
+        await user.save();
+        downgradedCount++;
+
+        console.log(`Benutzer ${user.email} von ${oldPackage} auf free zurückgestuft`);
+
+        // E-Mail-Benachrichtigung senden
+        try {
+          await sendPackageDowngradeNotification(user, oldPackage);
+          emailsSent++;
+        } catch (emailError) {
+          console.error(`Fehler beim Senden der Downgrade-E-Mail an ${user.email}:`, emailError.message);
+        }
+      } catch (updateError) {
+        console.error(`Fehler beim Downgrade für ${user.email}:`, updateError.message);
+      }
+    }
+
+    console.log(`${downgradedCount} Benutzer auf kostenloses Paket zurückgestuft`);
+    console.log(`${emailsSent} Downgrade-Benachrichtigung(en) versendet`);
+  } catch (error) {
+    console.error('Fehler bei automatischem Paket-Downgrade:', error);
+  }
+};
+
+/**
  * Initialisiert alle Cron-Jobs
  */
 const initializeJobs = () => {
@@ -151,14 +221,19 @@ const initializeJobs = () => {
   // Täglich um 3:00 Uhr morgens - Paket-Ablauf-Prüfung
   cron.schedule('0 3 * * *', checkExpiringPackages);
 
+  // Täglich um 4:00 Uhr morgens - Automatisches Downgrade abgelaufener Pakete
+  cron.schedule('0 4 * * *', downgradeExpiredPackages);
+
   console.log('Cron-Jobs initialisiert:');
   console.log('- Ablaufende Verträge: Täglich um 2:00 Uhr');
   console.log('- Anhänge-Cleanup (>3 Jahre): Täglich um 2:00 Uhr');
   console.log('- Paket-Ablauf-Erinnerungen: Täglich um 3:00 Uhr');
+  console.log('- Paket-Downgrade nach Ablauf: Täglich um 4:00 Uhr');
 };
 
 module.exports = {
   initializeJobs,
   generateExpiringContractTodos,
-  checkExpiringPackages
+  checkExpiringPackages,
+  downgradeExpiredPackages
 };

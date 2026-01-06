@@ -1,6 +1,7 @@
 const Package = require('../models/Package');
 const User = require('../models/User');
 const Contract = require('../models/Contract');
+const { sendPackagePurchaseConfirmation } = require('../services/emailService');
 
 // Get all packages
 exports.getAllPackages = async (req, res) => {
@@ -318,9 +319,33 @@ exports.upgradeUserPackage = async (req, res) => {
       }
     }
 
-    // Berechne Subscription-Daten
+    // Berechne Subscription-Daten basierend auf Verlängerungs-Logik
     const now = new Date();
-    const endDate = new Date(now);
+    let startDate = now;
+    let endDate;
+
+    // Prüfe ob es sich um eine Verlängerung des gleichen Pakets handelt
+    const isSamePackageRenewal = currentPackage &&
+                                  currentPackage.name === targetPackage.name &&
+                                  user.subscription?.endDate;
+
+    // Prüfe ob es ein Upgrade ist (höheres Paket)
+    const isUpgrade = currentPackage && targetPackage.order > currentPackage.order;
+
+    if (isSamePackageRenewal && !isUpgrade) {
+      // Gleiches Paket verlängern: Neues Startdatum = altes Ablaufdatum
+      const currentEndDate = new Date(user.subscription.endDate);
+
+      // Wenn das alte Paket noch nicht abgelaufen ist, starte ab dem Ablaufdatum
+      if (currentEndDate > now) {
+        startDate = currentEndDate;
+      }
+      // Wenn bereits abgelaufen, starte ab jetzt (startDate bleibt now)
+    }
+    // Bei Upgrade: Startdatum = sofort (startDate bleibt now)
+
+    // Berechne Enddatum basierend auf Startdatum
+    endDate = new Date(startDate);
     if (billingInterval === 'yearly') {
       endDate.setFullYear(endDate.getFullYear() + 1);
     } else {
@@ -339,24 +364,50 @@ exports.upgradeUserPackage = async (req, res) => {
         },
         subscription: {
           billingInterval: billingInterval,
-          startDate: now,
+          startDate: startDate,
           endDate: endDate,
           lastPaymentDate: now,
           nextPaymentDate: endDate,
-          autoRenew: true,
+          autoRenew: false,
           status: 'active'
         }
       },
       { new: true }
     ).select('-passwordHash');
 
-    const action = currentPackage && targetPackage.order < currentPackage.order ? 'downgegradet' : 'upgegradet';
+    // Bestimme die Nachricht
+    const isRenewal = isSamePackageRenewal && !isUpgrade;
+    const isDowngrade = currentPackage && targetPackage.order < currentPackage.order;
+    let action;
+    if (isRenewal) {
+      action = 'verlängert';
+    } else if (isUpgrade) {
+      action = 'upgegradet';
+    } else if (isDowngrade) {
+      action = 'downgegradet';
+    } else {
+      action = 'gewechselt';
+    }
 
     // Package-Features zum User hinzufügen
     const userWithFeatures = {
       ...updatedUser.toJSON(),
       packageFeatures: targetPackage.features
     };
+
+    // Sende Bestätigungs-E-Mail für Upgrade/Downgrade
+    try {
+      await sendPackagePurchaseConfirmation(updatedUser, targetPackage, {
+        billingInterval: billingInterval,
+        startDate: startDate,
+        endDate: endDate,
+        price: price,
+        savings: savings
+      });
+      console.log(`Paket-Wechsel-Bestätigung gesendet an ${updatedUser.email}`);
+    } catch (emailError) {
+      console.error('Fehler beim Senden der Paket-Wechsel-Bestätigung:', emailError.message);
+    }
 
     res.json({
       success: true,
@@ -367,8 +418,10 @@ exports.upgradeUserPackage = async (req, res) => {
         billingInterval: billingInterval,
         price: price,
         savings: savings,
-        startDate: now,
-        endDate: endDate
+        startDate: startDate,
+        endDate: endDate,
+        isRenewal: isRenewal,
+        isUpgrade: isUpgrade
       }
     });
   } catch (error) {
@@ -410,14 +463,39 @@ exports.purchasePackage = async (req, res) => {
     }
 
     const user = await User.findById(userId);
+    const currentPackage = await Package.findOne({ name: user.package });
 
     // Berechne Preis basierend auf Zahlungsintervall
     const price = targetPackage.calculatePrice(billingInterval);
     const savings = billingInterval === 'yearly' ? targetPackage.yearlySavings : 0;
 
-    // Berechne Subscription-Daten
+    // Berechne Subscription-Daten basierend auf Verlängerungs-Logik
     const now = new Date();
-    const endDate = new Date(now);
+    let startDate = now;
+    let endDate;
+
+    // Prüfe ob es sich um eine Verlängerung des gleichen Pakets handelt
+    const isSamePackageRenewal = currentPackage &&
+                                  currentPackage.name === targetPackage.name &&
+                                  user.subscription?.endDate;
+
+    // Prüfe ob es ein Upgrade ist (höheres Paket)
+    const isUpgrade = currentPackage && targetPackage.order > currentPackage.order;
+
+    if (isSamePackageRenewal && !isUpgrade) {
+      // Gleiches Paket verlängern: Neues Startdatum = altes Ablaufdatum
+      const currentEndDate = new Date(user.subscription.endDate);
+
+      // Wenn das alte Paket noch nicht abgelaufen ist, starte ab dem Ablaufdatum
+      if (currentEndDate > now) {
+        startDate = currentEndDate;
+      }
+      // Wenn bereits abgelaufen, starte ab jetzt (startDate bleibt now)
+    }
+    // Bei Upgrade: Startdatum = sofort (startDate bleibt now)
+
+    // Berechne Enddatum basierend auf Startdatum
+    endDate = new Date(startDate);
     if (billingInterval === 'yearly') {
       endDate.setFullYear(endDate.getFullYear() + 1);
     } else {
@@ -436,11 +514,11 @@ exports.purchasePackage = async (req, res) => {
         },
         subscription: {
           billingInterval: billingInterval,
-          startDate: now,
+          startDate: startDate,
           endDate: endDate,
           lastPaymentDate: now,
           nextPaymentDate: endDate,
-          autoRenew: true,
+          autoRenew: false,
           status: 'active'
         }
       },
@@ -453,18 +531,43 @@ exports.purchasePackage = async (req, res) => {
       packageFeatures: targetPackage.features
     };
 
+    // Bestimme die Nachricht basierend auf der Art des Kaufs
+    const isRenewal = isSamePackageRenewal && !isUpgrade;
+    const message = isRenewal
+      ? `${targetPackage.displayName} erfolgreich verlängert`
+      : isUpgrade
+        ? `Erfolgreich auf ${targetPackage.displayName} upgegradet`
+        : `${targetPackage.displayName} erfolgreich gekauft`;
+
+    // Sende Bestätigungs-E-Mail
+    try {
+      await sendPackagePurchaseConfirmation(updatedUser, targetPackage, {
+        billingInterval: billingInterval,
+        startDate: startDate,
+        endDate: endDate,
+        price: price,
+        savings: savings
+      });
+      console.log(`Paket-Kauf-Bestätigung gesendet an ${updatedUser.email}`);
+    } catch (emailError) {
+      console.error('Fehler beim Senden der Paket-Kauf-Bestätigung:', emailError.message);
+      // Fehler beim E-Mail-Versand sollte den Kauf nicht beeinflussen
+    }
+
     res.json({
       success: true,
       data: userWithFeatures,
-      message: `${targetPackage.displayName} erfolgreich gekauft`,
+      message: message,
       subscription: {
         package: targetPackage.displayName,
         billingInterval: billingInterval,
         billingIntervalText: billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich',
         price: price,
         savings: savings,
-        startDate: now,
+        startDate: startDate,
         endDate: endDate,
+        isRenewal: isRenewal,
+        isUpgrade: isUpgrade,
         priceDetails: {
           monthlyPrice: targetPackage.monthlyPrice,
           yearlyPrice: targetPackage.yearlyPrice,
@@ -528,7 +631,7 @@ exports.getSubscriptionInfo = async (req, res) => {
           startDate: subscription.startDate,
           endDate: subscription.endDate,
           nextPaymentDate: subscription.nextPaymentDate,
-          autoRenew: subscription.autoRenew !== undefined ? subscription.autoRenew : true,
+          autoRenew: false,
           status: subscription.status || 'active'
         },
         limits: {
