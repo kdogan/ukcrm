@@ -27,7 +27,6 @@
           <thead>
             <tr>
               <th>{{ 'COMMON.NAME' | translate }}</th>
-              <th>{{ 'SUPPLIERS.FIELDS.SHORT_NAME' | translate }}</th>
               <th>{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}</th>
               <th>{{ 'COMMON.PHONE' | translate }}</th>
               <th>{{ 'COMMON.EMAIL' | translate }}</th>
@@ -38,7 +37,6 @@
           <tbody>
             <tr *ngFor="let supplier of suppliers">
               <td>{{ supplier.name }}</td>
-              <td>{{ supplier.shortName }}</td>
               <td>
                 <span *ngIf="supplier.address?.street || supplier.address?.city">
                   <span *ngIf="supplier.address?.street">{{ supplier.address?.street }}<br></span>
@@ -95,15 +93,9 @@
     <app-overlay-modal (close)="closeModal()">
         <h2>{{ editMode ? ('SUPPLIERS.EDIT' | translate) : ('SUPPLIERS.NEW' | translate) }}</h2>
         <form (ngSubmit)="saveSupplier()">
-          <div class="form-row">
-            <div class="form-group">
-              <label>{{ 'COMMON.NAME' | translate }}*</label>
-              <input type="text" [(ngModel)]="currentSupplier.name" name="name" required />
-            </div>
-            <div class="form-group">
-              <label>{{ 'SUPPLIERS.FIELDS.SHORT_NAME' | translate }}*</label>
-              <input type="text" [(ngModel)]="currentSupplier.shortName" name="shortName" required />
-            </div>
+          <div class="form-group">
+            <label>{{ 'COMMON.NAME' | translate }}*</label>
+            <input type="text" [(ngModel)]="currentSupplier.name" name="name" required />
           </div>
 
           <h3 class="section-title">{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}</h3>
@@ -169,11 +161,6 @@
         <div class="info-row">
           <span class="label">{{ 'COMMON.NAME' | translate }}</span>
           <span class="value">{{ selectedSupplier?.name }}</span>
-        </div>
-
-        <div class="info-row">
-          <span class="label">{{ 'SUPPLIERS.FIELDS.SHORT_NAME' | translate }}</span>
-          <span class="value">{{ selectedSupplier?.shortName }}</span>
         </div>
 
         <div class="info-row" *ngIf="selectedSupplier?.website">

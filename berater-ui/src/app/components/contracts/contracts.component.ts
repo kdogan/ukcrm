@@ -894,6 +894,48 @@ export class ContractsComponent implements OnInit {
     this.viewingImage = null;
   }
 
+  // Methods for viewing attachments from Details Modal
+  viewImageFromDetails(contractId: string, attachment: any): void {
+    this.viewingImage = attachment;
+    this.showImageViewer = true;
+
+    this.contractService.downloadAttachment(contractId, attachment._id).subscribe({
+      next: (blob) => {
+        this.imageViewerUrl = window.URL.createObjectURL(blob);
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden des Bildes:', error);
+        alert('Fehler beim Laden des Bildes');
+        this.closeImageViewer();
+      }
+    });
+  }
+
+  downloadAttachmentFromDetails(contractId: string, attachment: any): void {
+    this.contractService.downloadAttachment(contractId, attachment._id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = attachment.originalName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (error) => {
+        alert('Fehler beim Herunterladen: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  openAttachment(contractId: string, attachment: any): void {
+    // Bei Bildern: Vorschau öffnen, sonst herunterladen
+    if (this.isImage(attachment.mimetype)) {
+      this.viewImageFromDetails(contractId, attachment);
+    } else {
+      this.downloadAttachmentFromDetails(contractId, attachment);
+    }
+  }
+
   // Customer/Meter Creation Methods
   getEmptyCustomer(): any {
     return {

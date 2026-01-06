@@ -25,7 +25,6 @@
     <div class="eskapp-card" *ngFor="let s of suppliers">
 
       <strong>{{ s.name }}</strong>
-      <div class="short-name">{{ s.shortName }}</div>
 
       <div class="address" *ngIf="s.address?.street || s.address?.city">
         <i class="fas fa-map-marker-alt"></i>

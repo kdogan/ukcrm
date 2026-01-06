@@ -303,29 +303,8 @@
                 </div>
               </div>
             }
-            <!-- Kunden -->
-            <div class="stat-card">
-              <h3><i class="fas fa-users"></i> {{ 'DASHBOARD.CUSTOMERS' | translate }}</h3>
-              <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
-              <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
-            </div>
 
-            <!-- Zähler -->
-            <div class="stat-card">
-              <h3><i class="fas fa-bolt"></i> {{ 'DASHBOARD.METERS' | translate }}</h3>
-              <div class="stat-split">
-                <div>
-                  <div class="stat-number small">{{ stats.meters?.free || 0 }}</div>
-                  <div class="stat-label">{{ 'METERS.STATUS.FREE' | translate }}</div>
-                </div>
-                <div>
-                  <div class="stat-number small">{{ stats.meters?.occupied || 0 }}</div>
-                  <div class="stat-label">{{ 'METERS.STATUS.OCCUPIED' | translate }}</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Verträge -->
+            <!-- Verträge (Hauptstatistik) -->
             <div class="stat-card">
               <h3><i class="fas fa-file-contract"></i> {{ 'DASHBOARD.CONTRACTS' | translate }}</h3>
               <div class="stat-split">
@@ -340,14 +319,7 @@
               </div>
             </div>
 
-            <!-- Neue Kunden -->
-            <div class="stat-card">
-              <h3><i class="fas fa-user-plus"></i> {{ 'DASHBOARD.NEW_CUSTOMERS' | translate }}</h3>
-              <div class="stat-number">{{ stats.newCustomers?.count || 0 }}</div>
-              <div class="stat-label">{{ 'DASHBOARD.LAST_MONTH' | translate }}</div>
-            </div>
-
-            <!-- Zählerablesungen -->
+            <!-- Zählerablesungen (Hauptstatistik) -->
             <div class="stat-card">
               <h3><i class="fas fa-tachometer-alt"></i> {{ 'DASHBOARD.METER_READINGS' | translate }}</h3>
               <div class="stat-split">
@@ -395,22 +367,6 @@
               </app-table-container>
             </div>
           }
-          <!-- Verträge nach Anbieter -->
-           @if(stats?.contractsBySupplier){
-            <div class="supplier-section">
-              <h2><i class="fas fa-chart-pie"></i> {{ 'DASHBOARD.CONTRACTS_BY_SUPPLIER' | translate }}</h2>
-              <div class="chart-container">
-                <div *ngFor="let item of stats.contractsBySupplier" class="chart-bar">
-                  <div class="bar-label">{{ item.name }}</div>
-                  <div class="bar-wrapper">
-                    <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
-                    <span class="bar-value">{{ item.count }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
-
           <!-- Monatliche Trends Chart -->
           @if(chartData){
             <div class="trends-section">
@@ -474,6 +430,66 @@
               </div>
             </div>
           }
+
+          <!-- Weitere Statistiken Accordion -->
+          <div class="more-stats-accordion" *ngIf="stats">
+            <div class="accordion-header" (click)="showMoreStats = !showMoreStats">
+              <h2>
+                <i class="fas fa-ellipsis-h"></i>
+                {{ 'DASHBOARD.MORE_STATS' | translate }}
+              </h2>
+              <i class="fas" [class.fa-chevron-down]="!showMoreStats" [class.fa-chevron-up]="showMoreStats"></i>
+            </div>
+
+            <div class="accordion-content" [class.open]="showMoreStats">
+              <div class="stats-grid">
+                <!-- Kunden -->
+                <div class="stat-card">
+                  <h3><i class="fas fa-users"></i> {{ 'DASHBOARD.CUSTOMERS' | translate }}</h3>
+                  <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
+                  <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
+                </div>
+
+                <!-- Zähler -->
+                <div class="stat-card">
+                  <h3><i class="fas fa-bolt"></i> {{ 'DASHBOARD.METERS' | translate }}</h3>
+                  <div class="stat-split">
+                    <div>
+                      <div class="stat-number small">{{ stats.meters?.free || 0 }}</div>
+                      <div class="stat-label">{{ 'METERS.STATUS.FREE' | translate }}</div>
+                    </div>
+                    <div>
+                      <div class="stat-number small">{{ stats.meters?.occupied || 0 }}</div>
+                      <div class="stat-label">{{ 'METERS.STATUS.OCCUPIED' | translate }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Neue Kunden -->
+                <div class="stat-card">
+                  <h3><i class="fas fa-user-plus"></i> {{ 'DASHBOARD.NEW_CUSTOMERS' | translate }}</h3>
+                  <div class="stat-number">{{ stats.newCustomers?.count || 0 }}</div>
+                  <div class="stat-label">{{ 'DASHBOARD.LAST_MONTH' | translate }}</div>
+                </div>
+              </div>
+
+              <!-- Verträge nach Anbieter -->
+              @if(stats?.contractsBySupplier){
+                <div class="supplier-section">
+                  <h3><i class="fas fa-chart-pie"></i> {{ 'DASHBOARD.CONTRACTS_BY_SUPPLIER' | translate }}</h3>
+                  <div class="chart-container">
+                    <div *ngFor="let item of stats.contractsBySupplier" class="chart-bar">
+                      <div class="bar-label">{{ item.name }}</div>
+                      <div class="bar-wrapper">
+                        <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+                        <span class="bar-value">{{ item.count }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
         </div>
       }
     </div>

@@ -33,6 +33,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   chartData: ChartData | null = null;
   chartMonths = 6;
   maxChartValue = 1;
+  showMoreStats = false;
   private subscription: Subscription = new Subscription();
 
   get isMobile() {

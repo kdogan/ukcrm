@@ -317,3 +317,35 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Attachments Section in Details Modal */
+.detail-section.attachments-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border-light);
+
+  h3 {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i {
+      color: var(--primary-color);
+    }
+  }
+}
+
+.attachment-item.clickable {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--bg-table-header);
+
+    .attachment-name {
+      color: var(--primary-color);
+    }
+  }
+}
