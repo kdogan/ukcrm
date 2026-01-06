@@ -19,6 +19,12 @@ export class ContractsDesktopComponent {
   @Input({ required: true }) contracts!: any[];
   @Input() activeMenuId: string | null = null;
 
+  // Pagination Inputs
+  @Input() currentPage = 1;
+  @Input() pageSize = 10;
+  @Input() totalItems = 0;
+  @Input() totalPages = 0;
+
   @Output() create = new EventEmitter<void>();
   @Output() edit = new EventEmitter<Contract>();
   @Output() delete = new EventEmitter<string>();
@@ -34,6 +40,11 @@ export class ContractsDesktopComponent {
   @Output() showSupplier = new EventEmitter<string>();
 
   @Output() toggleActionMenu = new EventEmitter<string>();
+
+  // Pagination Outputs
+  @Output() pageChange = new EventEmitter<number>();
+  @Output() pageSizeChange = new EventEmitter<number>();
+
   statusFilter = '';
   daysFilter = '';
   searchTerm = '';
@@ -61,5 +72,32 @@ export class ContractsDesktopComponent {
 
     getStatusLabel(status: string): string {
     return this.contractState.find(cs => cs.key == status)?.value || status;
+  }
+
+  // Pagination Methods
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.pageChange.emit(page);
+    }
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSizeChange.emit(size);
+  }
+
+  getVisiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    const end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 }

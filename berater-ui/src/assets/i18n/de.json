@@ -682,7 +682,10 @@
     "EMAIL": "E-Mail",
     "PHONE": "Telefon",
     "MONTH": "Monate",
-    "MONTHS": "Monaten"
+    "MONTHS": "Monaten",
+    "SHOWING": "Zeige",
+    "OF": "von",
+    "PER_PAGE": "pro Seite"
   },
   "ERRORS": {
     "GENERIC": "Ein Fehler ist aufgetreten",

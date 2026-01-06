@@ -63,6 +63,12 @@ meterTypes: any;
   selectedCustomer: Customer | null = null;
   customerContracts: CustomerContract[] = [];
 
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
+
   constructor(
     private meterService: MeterService,
     private meterReadingService: MeterReadingService,
@@ -125,11 +131,15 @@ meterTypes: any;
     };
   }
   filterMeters(): void {
+    this.currentPage = 1;
     this.loadMeters();
   }
 
   loadMeters(): void {
-    const params: any = {};
+    const params: any = {
+      page: this.currentPage,
+      limit: this.pageSize
+    };
     if (this.searchTerm) params.search = this.searchTerm;
     if (this.statusFilter) params.isFree = this.statusFilter === 'free' ? 'true' : 'false';
     if (this.typeFilter) params.type = this.typeFilter;
@@ -139,13 +149,47 @@ meterTypes: any;
         if (response.success) {
           this.meters = response.data;
           this.filteredMeters = response.data;
+          if (response.pagination) {
+            this.totalItems = response.pagination.total;
+            this.totalPages = response.pagination.pages;
+            this.currentPage = response.pagination.page;
+          }
         }
       }
     });
   }
 
   onSearchChange(): void {
+    this.currentPage = 1;
     setTimeout(() => this.loadMeters(), 300);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadMeters();
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.loadMeters();
+  }
+
+  getVisiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    const end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   showCreateModal(): void {

@@ -682,7 +682,10 @@
     "EMAIL": "E-posta",
     "PHONE": "Telefon",
     "MONTH": "Ay",
-    "MONTHS": "Ay"
+    "MONTHS": "Aylar",
+    "SHOWING": "Gösteriliyor",
+    "OF": "/",
+    "PER_PAGE": "sayfa başına"
   },
   "ERRORS": {
     "GENERIC": "Bir hata oluştu",

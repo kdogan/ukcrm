@@ -78,6 +78,12 @@ export class ContractsComponent implements OnInit {
   newMeter: any = this.getEmptyMeter();
   meterTypes = meterTypes;
 
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
+
   contractState = [
     {
       key: ContractState.ACTIVE,
@@ -215,7 +221,10 @@ export class ContractsComponent implements OnInit {
   }
 
   loadContracts(): void {
-    const params: any = {};
+    const params: any = {
+      page: this.currentPage,
+      limit: this.pageSize
+    };
     if (this.statusFilter) params.status = this.statusFilter;
     if (this.daysFilter) params.daysRemaining = this.daysFilter;
 
@@ -223,6 +232,11 @@ export class ContractsComponent implements OnInit {
       next: (response: any) => {
         if (response.success) {
           this.contracts = response.data;
+          if (response.pagination) {
+            this.totalItems = response.pagination.total;
+            this.totalPages = response.pagination.pages;
+            this.currentPage = response.pagination.page;
+          }
           this.applySearchFilter();
         }
       }
@@ -231,7 +245,21 @@ export class ContractsComponent implements OnInit {
 
   onContractSearchChange(searchTerm: string): void {
     this.contractSearchTerm = searchTerm;
+    this.currentPage = 1;
     this.applySearchFilter();
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadContracts();
+    }
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.loadContracts();
   }
 
   applySearchFilter(): void {

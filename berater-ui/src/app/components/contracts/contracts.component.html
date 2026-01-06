@@ -20,6 +20,10 @@
   <app-contracts-desktop
     [contracts]="filteredContracts"
     [activeMenuId]="activeMenuId"
+    [currentPage]="currentPage"
+    [pageSize]="pageSize"
+    [totalItems]="totalItems"
+    [totalPages]="totalPages"
     (create)="showCreateModal()"
     (edit)="editContract($event)"
     (delete)="deleteContract($event)"
@@ -31,7 +35,9 @@
     (showMeter)="showMeterDetails($event)"
     (showSupplier)="showSupplierDetails($event)"
     (closeActionMenu)="closeActionMenu()"
-  (toggleActionMenu)="activeMenuId = $event"
+    (toggleActionMenu)="activeMenuId = $event"
+    (pageChange)="goToPage($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
 />
 }
 

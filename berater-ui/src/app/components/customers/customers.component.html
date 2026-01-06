@@ -85,6 +85,43 @@
       </tbody>
     </table>
   </app-table-container>
+
+  <!-- Pagination -->
+  @if(totalPages > 1){
+    <div class="pagination">
+      <div class="pagination-info">
+        {{ 'COMMON.SHOWING' | translate }} {{ (currentPage - 1) * pageSize + 1 }} - {{ currentPage * pageSize > totalItems ? totalItems : currentPage * pageSize }} {{ 'COMMON.OF' | translate }} {{ totalItems }}
+      </div>
+      <div class="pagination-controls">
+        <button class="pagination-btn" (click)="goToPage(1)" [disabled]="currentPage === 1" title="Erste Seite">
+          <i class="fas fa-angle-double-left"></i>
+        </button>
+        <button class="pagination-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1" title="Vorherige Seite">
+          <i class="fas fa-angle-left"></i>
+        </button>
+        @for(page of getVisiblePages(); track page){
+          <button class="pagination-btn" [class.active]="page === currentPage" (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        }
+        <button class="pagination-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages" title="Nächste Seite">
+          <i class="fas fa-angle-right"></i>
+        </button>
+        <button class="pagination-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages" title="Letzte Seite">
+          <i class="fas fa-angle-double-right"></i>
+        </button>
+      </div>
+      <div class="pagination-size">
+        <select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()" class="page-size-select">
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="100">100</option>
+        </select>
+        <span>{{ 'COMMON.PER_PAGE' | translate }}</span>
+      </div>
+    </div>
+  }
 </div>
 }
 

@@ -27,6 +27,12 @@ export class CustomersComponent implements OnInit {
   currentCustomer: Partial<Customer> = {};
   activeMenuId: string | null = null;
 
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
+
   // Customer Details Modal
   showCustomerDetailsModal = false;
   selectedCustomer: Customer | null = null;
@@ -80,17 +86,53 @@ export class CustomersComponent implements OnInit {
   loadCustomers(): void {
     this.customerService.getCustomers({
       isActive: this.filterActive,
-      search: this.searchTerm
+      search: this.searchTerm,
+      page: this.currentPage,
+      limit: this.pageSize
     }).subscribe({
       next: (response) => {
         if (response.success) {
           this.customers = response.data;
+          if (response.pagination) {
+            this.totalItems = response.pagination.total;
+            this.totalPages = response.pagination.pages;
+            this.currentPage = response.pagination.page;
+          }
         }
       }
     });
   }
 
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadCustomers();
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.loadCustomers();
+  }
+
+  getVisiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    const end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
   onSearchChange(): void {
+    this.currentPage = 1;
     setTimeout(() => this.loadCustomers(), 300);
   }
 
