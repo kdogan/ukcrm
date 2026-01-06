@@ -9,7 +9,6 @@ const supplierSchema = new mongoose.Schema({
   },
   shortName: {
     type: String,
-    required: [true, 'Kurzbezeichnung ist erforderlich'],
     trim: true
   },
   beraterId: {
