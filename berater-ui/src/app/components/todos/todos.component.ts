@@ -39,6 +39,20 @@ export class TodosComponent implements OnInit {
   contracts: any[] = [];
   meters: any[] = [];
 
+  // Suchfelder für Verknüpfungen
+  customerSearch = '';
+  contractSearch = '';
+  meterSearch = '';
+  filteredCustomers: any[] = [];
+  filteredContracts: any[] = [];
+  filteredMeters: any[] = [];
+  showCustomerDropdown = false;
+  showContractDropdown = false;
+  showMeterDropdown = false;
+  selectedCustomer: any = null;
+  selectedContract: any = null;
+  selectedMeter: any = null;
+
   /* 🔹 Views */
   mainView: 'list' | 'calendar' = 'list';
   calendarView: 'month' | 'day' = 'month';
@@ -78,6 +92,7 @@ export class TodosComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.customers = response.data;
+          this.filteredCustomers = this.customers;
         }
       }
     });
@@ -87,6 +102,7 @@ export class TodosComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.contracts = response.data;
+          this.filteredContracts = this.contracts;
         }
       }
     });
@@ -96,6 +112,7 @@ export class TodosComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.meters = response.data;
+          this.filteredMeters = this.meters;
         }
       }
     });
@@ -148,7 +165,131 @@ export class TodosComponent implements OnInit {
   showCreateModal(): void {
     this.currentTodo = this.getEmptyTodo();
     this.isEditMode = false;
+    this.resetSearchFields();
     this.showModal = true;
+  }
+
+  resetSearchFields(): void {
+    this.customerSearch = '';
+    this.contractSearch = '';
+    this.meterSearch = '';
+    this.selectedCustomer = null;
+    this.selectedContract = null;
+    this.selectedMeter = null;
+    this.showCustomerDropdown = false;
+    this.showContractDropdown = false;
+    this.showMeterDropdown = false;
+    this.filteredCustomers = this.customers;
+    this.filteredContracts = this.contracts;
+    this.filteredMeters = this.meters;
+  }
+
+  // Customer-Suche
+  filterCustomers(): void {
+    const search = this.customerSearch.toLowerCase().trim();
+    if (!search) {
+      this.filteredCustomers = this.customers;
+    } else {
+      this.filteredCustomers = this.customers.filter(customer => {
+        const fullName = `${customer.firstName} ${customer.lastName}`.toLowerCase();
+        const customerNumber = customer.customerNumber?.toLowerCase() || '';
+        return fullName.includes(search) || customerNumber.includes(search);
+      });
+    }
+    this.showCustomerDropdown = true;
+  }
+
+  selectCustomer(customer: any): void {
+    this.selectedCustomer = customer;
+    this.currentTodo.relatedCustomerId = customer._id;
+    this.customerSearch = `${customer.firstName} ${customer.lastName}`;
+    this.showCustomerDropdown = false;
+  }
+
+  clearCustomer(): void {
+    this.selectedCustomer = null;
+    this.currentTodo.relatedCustomerId = null;
+    this.customerSearch = '';
+    this.filteredCustomers = this.customers;
+  }
+
+  closeCustomerDropdownDelayed(): void {
+    setTimeout(() => {
+      this.showCustomerDropdown = false;
+    }, 200);
+  }
+
+  // Contract-Suche
+  filterContracts(): void {
+    const search = this.contractSearch.toLowerCase().trim();
+    if (!search) {
+      this.filteredContracts = this.contracts;
+    } else {
+      this.filteredContracts = this.contracts.filter(contract => {
+        const contractNumber = contract.contractNumber?.toLowerCase() || '';
+        const customerName = contract.customerId ?
+          `${contract.customerId.firstName} ${contract.customerId.lastName}`.toLowerCase() : '';
+        return contractNumber.includes(search) || customerName.includes(search);
+      });
+    }
+    this.showContractDropdown = true;
+  }
+
+  selectContract(contract: any): void {
+    this.selectedContract = contract;
+    this.currentTodo.relatedContractId = contract._id;
+    const customerName = contract.customerId ?
+      `${contract.customerId.firstName} ${contract.customerId.lastName}` : '';
+    this.contractSearch = `${contract.contractNumber} - ${customerName}`;
+    this.showContractDropdown = false;
+  }
+
+  clearContract(): void {
+    this.selectedContract = null;
+    this.currentTodo.relatedContractId = null;
+    this.contractSearch = '';
+    this.filteredContracts = this.contracts;
+  }
+
+  closeContractDropdownDelayed(): void {
+    setTimeout(() => {
+      this.showContractDropdown = false;
+    }, 200);
+  }
+
+  // Meter-Suche
+  filterMeters(): void {
+    const search = this.meterSearch.toLowerCase().trim();
+    if (!search) {
+      this.filteredMeters = this.meters;
+    } else {
+      this.filteredMeters = this.meters.filter(meter => {
+        const meterNumber = meter.meterNumber?.toLowerCase() || '';
+        const type = this.getTypeLabel(meter.type).toLowerCase();
+        return meterNumber.includes(search) || type.includes(search);
+      });
+    }
+    this.showMeterDropdown = true;
+  }
+
+  selectMeter(meter: any): void {
+    this.selectedMeter = meter;
+    this.currentTodo.relatedMeterId = meter._id;
+    this.meterSearch = `${meter.meterNumber} (${this.getTypeLabel(meter.type)})`;
+    this.showMeterDropdown = false;
+  }
+
+  clearMeter(): void {
+    this.selectedMeter = null;
+    this.currentTodo.relatedMeterId = null;
+    this.meterSearch = '';
+    this.filteredMeters = this.meters;
+  }
+
+  closeMeterDropdownDelayed(): void {
+    setTimeout(() => {
+      this.showMeterDropdown = false;
+    }, 200);
   }
 
   editTodo(todo: Todo): void {
@@ -163,6 +304,30 @@ export class TodosComponent implements OnInit {
       relatedContractId: todo.relatedContractId?._id || null,
       relatedMeterId: todo.relatedMeterId?._id || null
     };
+
+    // Setze die ausgewählten Werte für die Suchfelder
+    this.resetSearchFields();
+
+    // Kunde
+    if (todo.relatedCustomerId) {
+      this.selectedCustomer = todo.relatedCustomerId;
+      this.customerSearch = `${todo.relatedCustomerId.firstName} ${todo.relatedCustomerId.lastName}`;
+    }
+
+    // Vertrag
+    if (todo.relatedContractId) {
+      this.selectedContract = todo.relatedContractId;
+      const customerName = todo.relatedContractId.customerId ?
+        `${todo.relatedContractId.customerId.firstName} ${todo.relatedContractId.customerId.lastName}` : '';
+      this.contractSearch = `${todo.relatedContractId.contractNumber} - ${customerName}`;
+    }
+
+    // Zähler
+    if (todo.relatedMeterId) {
+      this.selectedMeter = todo.relatedMeterId;
+      this.meterSearch = `${todo.relatedMeterId.meterNumber} (${this.getTypeLabel(todo.relatedMeterId.type)})`;
+    }
+
     this.isEditMode = true;
     this.showModal = true;
   }
@@ -274,6 +439,13 @@ export class TodosComponent implements OnInit {
 
   getTypeLabel(type: string): string {
     return Util.getMeterTypeLabel(type);
+  }
+
+  getCustomerAddress(customer: any): string {
+    if (!customer?.address) return '';
+    const { street, zipCode, city } = customer.address;
+    const parts = [street, zipCode, city].filter(p => p);
+    return parts.join(' ');
   }
   // Kalender-Ansicht Methoden
   get monthDays(): Date[] {

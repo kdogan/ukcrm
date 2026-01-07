@@ -27,6 +27,11 @@ export interface Todo {
     contractNumber: string;
     startDate: Date;
     endDate: Date;
+    customerId?: {
+      _id: string;
+      firstName: string;
+      lastName: string;
+    };
   };
   relatedMeterId?: {
     _id: string;
