@@ -226,7 +226,10 @@
     "METER_READINGS": "Sayaç Okumaları",
     "RECENT": "Güncel",
     "MONTHLY_TRENDS": "Aylık Gelişim",
-    "MORE_STATS": "Daha Fazla İstatistik"
+    "MORE_STATS": "Daha Fazla İstatistik",
+    "RECENT_CONTRACTS_READINGS": "Sözleşmeler (30 Gün)",
+    "WITH_READINGS": "Okumalı",
+    "WITHOUT_READINGS": "Okumasız"
   },
   "CONTRACTS": {
     "TITLE": "Sözleşmeler",

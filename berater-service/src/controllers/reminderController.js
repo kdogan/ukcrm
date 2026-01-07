@@ -2,6 +2,7 @@ const Reminder = require('../models/Reminder');
 const Contract = require('../models/Contract');
 const Customer = require('../models/Customer');
 const Meter = require('../models/Meter');
+const MeterReading = require('../models/MeterReading');
 const PackageUpgradeRequest = require('../models/PackageUpgradeRequest');
 
 // @desc    Get all reminders
@@ -200,16 +201,30 @@ exports.getDashboardStats = async (req, res, next) => {
       createdAt: { $gte: oneMonthAgo }
     });
 
-    // Zählerablesungen Statistik
+    // Verträge der letzten 30 Tage mit Zählerablesung-Statistik
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const metersWithRecentReadings = await Meter.countDocuments({
+    // Verträge der letzten 30 Tage
+    const recentContracts = await Contract.find({
       beraterId,
-      lastReadingDate: { $gte: thirtyDaysAgo }
-    });
+      createdAt: { $gte: thirtyDaysAgo }
+    }).select('_id');
 
-    const metersWithoutRecentReadings = totalMeters - metersWithRecentReadings;
+    const recentContractIds = recentContracts.map(c => c._id);
+    const recentContractsCount = recentContractIds.length;
+
+    // Davon: Verträge mit mindestens einer Zählerablesung
+    let contractsWithReadings = 0;
+    if (recentContractsCount > 0) {
+      const contractsWithReadingsResult = await MeterReading.distinct('contractId', {
+        beraterId,
+        contractId: { $in: recentContractIds }
+      });
+      contractsWithReadings = contractsWithReadingsResult.length;
+    }
+
+    const contractsWithoutReadings = recentContractsCount - contractsWithReadings;
 
     // Upgrade-Anfragen (nur für Superadmin)
     let upgradeRequests = null;
@@ -265,10 +280,10 @@ exports.getDashboardStats = async (req, res, next) => {
         count: newCustomersCount,
         period: 'lastMonth'
       },
-      meterReadings: {
-        total: totalMeters,
-        recentReadings: metersWithRecentReadings,
-        pendingReadings: metersWithoutRecentReadings
+      recentContractsReadings: {
+        totalContracts: recentContractsCount,
+        withReadings: contractsWithReadings,
+        withoutReadings: contractsWithoutReadings
       }
     };
 

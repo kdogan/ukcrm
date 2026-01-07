@@ -221,17 +221,17 @@
         <div class="stat-label">Neue Kunden</div>
       </div>
 
-      <!-- Zählerablesungen -->
-      <div class="stat-card">
+      <!-- Verträge mit Zählerablesungen (30 Tage) -->
+      <div class="stat-card clickable" routerLink="/meters">
         <div class="stat-icon">📊</div>
         <div class="meter-values">
           <div class="meter-free">
-            <span class="count">{{ stats.meterReadings?.recentReadings || 0 }}</span>
-            <span class="label">Aktuell</span>
+            <span class="count">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</span>
+            <span class="label">Mit Ablesung</span>
           </div>
-          <div class="meter-occupied">
-            <span class="count">{{ stats.meterReadings?.pendingReadings || 0 }}</span>
-            <span class="label">Ausstehend</span>
+          <div class="meter-occupied" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">
+            <span class="count">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</span>
+            <span class="label">Ohne Ablesung</span>
           </div>
         </div>
       </div>

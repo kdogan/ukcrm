@@ -226,7 +226,10 @@
     "METER_READINGS": "Zählerablesungen",
     "RECENT": "Aktuell",
     "MONTHLY_TRENDS": "Monatliche Entwicklung",
-    "MORE_STATS": "Weitere Statistiken"
+    "MORE_STATS": "Weitere Statistiken",
+    "RECENT_CONTRACTS_READINGS": "Verträge (30 Tage)",
+    "WITH_READINGS": "Mit Ablesung",
+    "WITHOUT_READINGS": "Ohne Ablesung"
   },
   "CONTRACTS": {
     "TITLE": "Verträge",

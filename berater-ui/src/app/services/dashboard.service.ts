@@ -39,10 +39,10 @@ export interface DashboardStats {
     count: number;
     period: string;
   };
-  meterReadings: {
-    total: number;
-    recentReadings: number;
-    pendingReadings: number;
+  recentContractsReadings: {
+    totalContracts: number;
+    withReadings: number;
+    withoutReadings: number;
   };
   upgradeRequests?: {
     pending: any[];
