@@ -320,7 +320,9 @@
     "NO_CUSTOMERS": "Müşteri bulunamadı",
     "NO_CUSTOMERS_DESC": "İlk müşterinizi oluşturun",
     "CONTRACTS_COUNT": "Sözleşmeler",
-    "DETAILS": "Müşteri Detayları"
+    "DETAILS": "Müşteri Detayları",
+    "ADDRESS_SEARCH": "Adres ara",
+    "ADDRESS_SEARCH_PLACEHOLDER": "Örn: Örnek Sokak 1, 12345 Berlin"
   },
   "METERS": {
     "TITLE": "Sayaçlar",
@@ -709,7 +711,8 @@
     "MONTHS": "Aylar",
     "SHOWING": "Gösteriliyor",
     "OF": "/",
-    "PER_PAGE": "sayfa başına"
+    "PER_PAGE": "sayfa başına",
+    "OR": "veya"
   },
   "ERRORS": {
     "GENERIC": "Bir hata oluştu",

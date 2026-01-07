@@ -320,7 +320,9 @@
     "NO_CUSTOMERS": "Keine Kunden gefunden",
     "NO_CUSTOMERS_DESC": "Erstellen Sie Ihren ersten Kunden",
     "CONTRACTS_COUNT": "Verträge",
-    "DETAILS": "Kundendetails"
+    "DETAILS": "Kundendetails",
+    "ADDRESS_SEARCH": "Adresse suchen",
+    "ADDRESS_SEARCH_PLACEHOLDER": "z.B. Musterstraße 1, 12345 Berlin"
   },
   "METERS": {
     "TITLE": "Zähler",
@@ -709,7 +711,8 @@
     "MONTHS": "Monaten",
     "SHOWING": "Zeige",
     "OF": "von",
-    "PER_PAGE": "pro Seite"
+    "PER_PAGE": "pro Seite",
+    "OR": "oder"
   },
   "ERRORS": {
     "GENERIC": "Ein Fehler ist aufgetreten",

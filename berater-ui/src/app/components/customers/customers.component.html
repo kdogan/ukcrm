@@ -161,34 +161,10 @@
     @if(currentCustomer.address){
       <label>{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}:</label>
       <hr/>
-      <div class="form-group">
-          <label>{{ 'CUSTOMERS.FIELDS.STREET' | translate }}</label>
-          <input type="text"
-              name="street"
-              [(ngModel)]="currentCustomer.address.street"
-              [placeholder]="'CUSTOMERS.FIELDS.STREET' | translate"
-              class="form-control" />
-          <div class="form-row">
-              <div class="form-group">
-                <label>{{ 'CUSTOMERS.FIELDS.ZIP' | translate }}</label>
-                <input type="text"
-                    name="zip"
-                    [(ngModel)]="currentCustomer.address.zip"
-                    [placeholder]="'CUSTOMERS.FIELDS.ZIP' | translate"
-                    class="form-control"
-                />
-              </div>
-              <div class="form-group">
-                <label>{{ 'CUSTOMERS.FIELDS.CITY' | translate }}</label>
-                  <input type="text"
-                      name="city"
-                      [(ngModel)]="currentCustomer.address.city"
-                      [placeholder]="'CUSTOMERS.FIELDS.CITY' | translate"
-                      class="form-control"
-                  />
-              </div>
-          </div>
-        </div>
+      <app-address-autocomplete
+        [address]="addressData"
+        (addressChange)="onAddressChange($event)"
+      />
     }
     <div class="form-group">
       <label>{{ 'COMMON.NOTES' | translate }}</label>

@@ -9,12 +9,13 @@ import { ViewportService, ViewportType } from 'src/app/services/viewport.service
 import { CustomersMobileComponent } from "./mobile/customers-mobile/customers-mobile.component";
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
 import { CustomerDetailComponent, CustomerContract } from "../shared/customer-detail.component";
+import { AddressAutocompleteComponent, AddressData } from '../shared/address-autocomplete.component';
 import { Contract } from 'src/app/models/contract.model';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-customers',
-    imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent, CustomerDetailComponent, TranslateModule],
+    imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent, CustomerDetailComponent, AddressAutocompleteComponent, TranslateModule],
     templateUrl: './customers.component.html',
     styleUrls: ['./customers.component.scss']
 })
@@ -245,5 +246,22 @@ export class CustomersComponent implements OnInit {
 
   onContractClick(contract: CustomerContract): void {
     this.navigateToContract(contract._id);
+  }
+
+  // Address Autocomplete
+  get addressData(): AddressData {
+    return {
+      street: this.currentCustomer.address?.street || '',
+      zipCode: this.currentCustomer.address?.zip || '',
+      city: this.currentCustomer.address?.city || ''
+    };
+  }
+
+  onAddressChange(address: AddressData): void {
+    if (this.currentCustomer.address) {
+      this.currentCustomer.address.street = address.street;
+      this.currentCustomer.address.zip = address.zipCode;
+      this.currentCustomer.address.city = address.city;
+    }
   }
 }

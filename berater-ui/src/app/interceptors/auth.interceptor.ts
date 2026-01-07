@@ -1,32 +1,28 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, filter, take, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-// WebSocket temporarily disabled for performance
-// import { Injector } from '@angular/core';
-// import { WebsocketService } from '../services/websocket.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  // private websocketService?: WebsocketService;
+  private _authService?: AuthService;
 
-  constructor(
-    private authService: AuthService
-    // private injector: Injector // WebSocket temporarily disabled
-  ) {
-    // WebSocket temporarily disabled for performance
-    // Lazy load WebSocket service to avoid circular dependency
-    // setTimeout(() => {
-    //   this.websocketService = this.injector.get(WebsocketService);
-    // });
+  constructor(private injector: Injector) {}
+
+  // Lazy load AuthService to avoid circular dependency
+  private get authService(): AuthService {
+    if (!this._authService) {
+      this._authService = this.injector.get(AuthService);
+    }
+    return this._authService;
   }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Token zu Request hinzufügen
-    const token = this.authService.getToken();
+    // Token zu Request hinzufügen (direkt aus localStorage um zirkuläre Abhängigkeit zu vermeiden)
+    const token = localStorage.getItem('token');
 
     if (token) {
       request = this.addTokenToRequest(request, token);

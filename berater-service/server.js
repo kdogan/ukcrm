@@ -30,6 +30,7 @@ const subscriptionRoutes = require('./src/routes/subscriptionRoutes');
 const paypalRoutes = require('./src/routes/paypalRoutes');
 const educationRoutes = require('./src/routes/education.routes');
 const importRoutes = require('./src/routes/importRoutes');
+const geocodingRoutes = require('./src/routes/geocodingRoutes');
 
 const { initializeJobs } = require('./src/jobs/todoJobs');
 const { getDashboardStats, getDashboardCharts } = require('./src/controllers/reminderController');
@@ -123,6 +124,7 @@ app.use('/api/subscription', apiLimiter, subscriptionRoutes);
 app.use('/api/paypal', apiLimiter, paypalRoutes);
 app.use('/api/education', apiLimiter, educationRoutes);
 app.use('/api/import', apiLimiter, importRoutes);
+app.use('/api/geocoding', apiLimiter, geocodingRoutes);
 
 // 📊 Dashboard Routes
 app.get('/api/dashboard/stats', authenticate, getDashboardStats);

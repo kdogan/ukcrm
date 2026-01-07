@@ -3,10 +3,11 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { meterTypes } from "src/app/models/meter.model";
 import { Util } from "../util/util";
+import { AddressAutocompleteComponent, AddressData } from "./address-autocomplete.component";
 
 @Component({
     selector: 'app-meter-create',
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, AddressAutocompleteComponent],
     standalone:true,
     template: `
       <div class="modal-header">
@@ -51,37 +52,10 @@ import { Util } from "../util/util";
 
             <label>Standort:</label>
              <hr/>
-            <div class="form-group">
-                <label for="meter-street-input">Strasse</label>
-                <input type="text"
-                    id="meter-street-input"
-                    name="street"
-                    [(ngModel)]="meter.location.street"
-                    placeholder="Straße und Hausnummer"
-                    class="form-control" />
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="meter-zip-input">PLZ</label>
-                        <input type="text"
-                            id="meter-zip-input"
-                            name="zip"
-                            [(ngModel)]="meter.location.zip"
-                            placeholder="PLZ"
-                            class="form-control"
-                        />
-                    </div>
-                    <div class="form-group">
-                        <label for="meter-city-input">Ort</label>
-                        <input type="text"
-                            id="meter-city-input"
-                            name="city"
-                            [(ngModel)]="meter.location.city"
-                            placeholder="Ort"
-                            class="form-control"
-                        />
-                    </div>
-                </div>
-            </div>
+            <app-address-autocomplete
+                [address]="locationData"
+                (addressChange)="onLocationChange($event)"
+            />
 
             <div class="modal-footer">
             <button type="button" class="btn-secondary" (click)="close.emit()">Abbrechen</button>
@@ -124,5 +98,19 @@ export class MeterCreateComponent {
         return Util.getMeterTypeLabel(type);
     }
 
+    get locationData(): AddressData {
+        return {
+            street: this.meter?.location?.street || '',
+            zipCode: this.meter?.location?.zip || '',
+            city: this.meter?.location?.city || ''
+        };
+    }
 
+    onLocationChange(address: AddressData): void {
+        if (this.meter?.location) {
+            this.meter.location.street = address.street;
+            this.meter.location.zip = address.zipCode;
+            this.meter.location.city = address.city;
+        }
+    }
 }
