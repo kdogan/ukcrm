@@ -75,7 +75,7 @@ exports.getContracts = async (req, res, next) => {
       .populate('customerId', 'firstName lastName customerNumber')
       .populate('meterId', 'meterNumber type')
       .populate('supplierId', 'name shortName')
-      .sort({ endDate: 1 })
+      .sort({ createdAt: -1 }) // Neueste Verträge zuerst
       .limit(parseInt(limit))
       .skip(skip);
 
