@@ -13,6 +13,7 @@ import { ContractsMobileComponent } from './mobile/contracts-mobile/contracts-mo
 import { ContractsDesktopComponent } from './desktop/contracts-desktop/contracts-desktop.component';
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
 import { CustomerDetailComponent, CustomerContract } from "../shared/customer-detail.component";
+import { CustomerFormComponent, CustomerFormData } from '../shared/customer-form.component';
 import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 import { Util } from '../util/util';
 import { Address, MeterType, meterTypes } from 'src/app/models/meter.model';
@@ -36,6 +37,7 @@ import { SupplierSearchComponent } from '../shared/supplier-search.component';
         OverlayModalComponent,
         MeterCreateComponent,
         CustomerDetailComponent,
+        CustomerFormComponent,
         TranslateModule,
         AddressAutocompleteComponent,
         CustomerSearchComponent,
@@ -87,7 +89,8 @@ export class ContractsComponent implements OnInit {
   showCustomerCreationModal = false;
   showMeterCreationModal = false;
   showSupplierCreationModal = false;
-  newCustomer: any = this.getEmptyCustomer();
+  newCustomer: CustomerFormData = this.getEmptyCustomer();
+  savingNewCustomer = false;
   newMeter: any = this.getEmptyMeter();
   newSupplier: any = this.getEmptySupplier();
   meterTypes = meterTypes;
@@ -1083,7 +1086,7 @@ export class ContractsComponent implements OnInit {
   }
 
   // Customer/Meter Creation Methods
-  getEmptyCustomer(): any {
+  getEmptyCustomer(): CustomerFormData {
     return {
       firstName: '',
       lastName: '',
@@ -1133,23 +1136,6 @@ export class ContractsComponent implements OnInit {
     this.newCustomer = this.getEmptyCustomer();
     this.showCustomerCreationModal = true;
     this.showCustomerDropdown = false;
-  }
-
-  // Address Autocomplete für Kunde
-  get newCustomerAddressData(): AddressData {
-    return {
-      street: this.newCustomer?.address?.street || '',
-      zipCode: this.newCustomer?.address?.zip || '',
-      city: this.newCustomer?.address?.city || ''
-    };
-  }
-
-  onNewCustomerAddressChange(address: AddressData): void {
-    if (this.newCustomer?.address) {
-      this.newCustomer.address.street = address.street;
-      this.newCustomer.address.zip = address.zipCode;
-      this.newCustomer.address.city = address.city;
-    }
   }
 
   // Address Autocomplete für Lieferant
@@ -1221,9 +1207,25 @@ export class ContractsComponent implements OnInit {
     });
   }
 
-  saveNewCustomer(): void {
-    this.customerService.createCustomer(this.newCustomer).subscribe({
+  saveNewCustomer(customerData: CustomerFormData): void {
+    this.savingNewCustomer = true;
+    const customerPayload = {
+      anrede: customerData.anrede,
+      firstName: customerData.firstName,
+      lastName: customerData.lastName,
+      email: customerData.email,
+      phone: customerData.phone,
+      notes: customerData.notes,
+      address: {
+        street: customerData.address?.street || '',
+        zip: customerData.address?.zip || '',
+        city: customerData.address?.city || ''
+      }
+    };
+
+    this.customerService.createCustomer(customerPayload).subscribe({
       next: (response) => {
+        this.savingNewCustomer = false;
         if (response.success) {
           const createdCustomer = response.data;
 
@@ -1236,11 +1238,10 @@ export class ContractsComponent implements OnInit {
 
           // Schließe das Modal
           this.closeCustomerCreationModal();
-
-          alert('Kunde erfolgreich erstellt!');
         }
       },
       error: (error) => {
+        this.savingNewCustomer = false;
         alert('Fehler beim Erstellen des Kunden: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });

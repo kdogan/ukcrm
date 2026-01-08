@@ -126,69 +126,19 @@
 }
 
 <!-- Modal for Create/Edit Customer -->
- @if(showModal){
-<app-overlay-modal (close)="closeModal()">
-  <h2>{{ editMode ? ('CUSTOMERS.EDIT' | translate) : ('CUSTOMERS.NEW' | translate) }}</h2>
-  <form (ngSubmit)="saveCustomer()">
-    <div class="form-group">
-      <label>{{ 'CUSTOMERS.FIELDS.SALUTATION' | translate }}</label>
-      <select [(ngModel)]="currentCustomer.anrede" name="anrede">
-        <option [ngValue]="undefined">{{ 'COMMON.SELECT' | translate }}</option>
-        <option value="Herr">{{ 'CUSTOMERS.FIELDS.MR' | translate }}</option>
-        <option value="Frau">{{ 'CUSTOMERS.FIELDS.MRS' | translate }}</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>{{ 'CUSTOMERS.FIELDS.FIRST_NAME' | translate }}*</label>
-        <input type="text" [(ngModel)]="currentCustomer.firstName" name="firstName" required />
-      </div>
-      <div class="form-group">
-        <label>{{ 'CUSTOMERS.FIELDS.LAST_NAME' | translate }}*</label>
-        <input type="text" [(ngModel)]="currentCustomer.lastName" name="lastName" required />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>{{ 'COMMON.EMAIL' | translate }}</label>
-        <input type="email" [(ngModel)]="currentCustomer.email" name="email" />
-      </div>
-      <div class="form-group">
-        <label>{{ 'COMMON.PHONE' | translate }}</label>
-        <input type="tel" [(ngModel)]="currentCustomer.phone" name="phone" />
-      </div>
-</div>
-    <div class="form-group">
-      <label>{{ 'COMMON.NOTES' | translate }}</label>
-      <textarea [(ngModel)]="currentCustomer.notes" name="notes" rows="3"></textarea>
-    </div>
-
-    <!-- Adresse optional -->
-    <div class="form-group">
-      <div class="checkbox-wrapper">
-        <input
-          type="checkbox"
-          id="showAddress"
-          [(ngModel)]="showAddressFields"
-          [ngModelOptions]="{standalone: true}"
-          class="checkbox-input" />
-        <label for="showAddress" class="checkbox-label">{{ 'CUSTOMERS.WANT_ADDRESS' | translate }}</label>
-      </div>
-    </div>
-
-    @if(showAddressFields && currentCustomer.address){
-      <app-address-autocomplete
-        [address]="addressData"
-        (addressChange)="onAddressChange($event)"
-      />
-    }
-
-    <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeModal()">{{ 'COMMON.CANCEL' | translate }}</button>
-      <button type="submit" class="btn-primary">{{ 'COMMON.SAVE' | translate }}</button>
-    </div>
-  </form>
-</app-overlay-modal>
+@if(showModal){
+  <app-overlay-modal (close)="closeModal()">
+    <h2>{{ editMode ? ('CUSTOMERS.EDIT' | translate) : ('CUSTOMERS.NEW' | translate) }}</h2>
+    <app-customer-form
+      [customer]="customerFormData"
+      [isEditMode]="editMode"
+      [saving]="savingCustomer"
+      [showSalutation]="true"
+      [showAddressToggle]="true"
+      (save)="saveCustomer($event)"
+      (cancel)="closeModal()"
+    />
+  </app-overlay-modal>
 }
 
 <!-- Modal for Customer Details -->

@@ -491,47 +491,16 @@
 <!-- Customer Creation Modal -->
 @if(showCustomerCreationModal){
   <app-overlay-modal (close)="closeCustomerCreationModal()">
-    <div class="modal-header">
-      <h2>Neuen Kunden erstellen</h2>
-      <button class="btn-close" (click)="closeCustomerCreationModal()">&times;</button>
-    </div>
-    <form (ngSubmit)="saveNewCustomer()" #customerForm="ngForm">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Vorname *</label>
-          <input type="text" [(ngModel)]="newCustomer.firstName" name="firstName" required class="form-control" />
-        </div>
-        <div class="form-group">
-          <label>Nachname *</label>
-          <input type="text" [(ngModel)]="newCustomer.lastName" name="lastName" required class="form-control" />
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>E-Mail</label>
-          <input type="email" [(ngModel)]="newCustomer.email" name="email" class="form-control" />
-        </div>
-        <div class="form-group">
-          <label>Telefon</label>
-          <input type="tel" [(ngModel)]="newCustomer.phone" name="phone" class="form-control" />
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Adresse</label>
-        <app-address-autocomplete
-          [address]="newCustomerAddressData"
-          (addressChange)="onNewCustomerAddressChange($event)"
-        />
-      </div>
-      <div class="form-group">
-        <label>Notizen</label>
-        <textarea [(ngModel)]="newCustomer.notes" name="notes" rows="3" class="form-control"></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="closeCustomerCreationModal()">Abbrechen</button>
-        <button type="submit" class="btn-primary" [disabled]="!customerForm.form.valid">Erstellen</button>
-      </div>
-    </form>
+    <h2>{{ 'CUSTOMERS.NEW' | translate }}</h2>
+    <app-customer-form
+      [customer]="newCustomer"
+      [isEditMode]="false"
+      [saving]="savingNewCustomer"
+      [showSalutation]="true"
+      [showAddressToggle]="true"
+      (save)="saveNewCustomer($event)"
+      (cancel)="closeCustomerCreationModal()"
+    />
   </app-overlay-modal>
 }
 <!-- Meter Creation Modal -->

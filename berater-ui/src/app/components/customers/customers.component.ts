@@ -9,13 +9,13 @@ import { ViewportService, ViewportType } from 'src/app/services/viewport.service
 import { CustomersMobileComponent } from "./mobile/customers-mobile/customers-mobile.component";
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
 import { CustomerDetailComponent, CustomerContract } from "../shared/customer-detail.component";
-import { AddressAutocompleteComponent, AddressData } from '../shared/address-autocomplete.component';
+import { CustomerFormComponent, CustomerFormData } from '../shared/customer-form.component';
 import { Contract } from 'src/app/models/contract.model';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-customers',
-    imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent, CustomerDetailComponent, AddressAutocompleteComponent, TranslateModule],
+    imports: [CommonModule, FormsModule, TableContainerComponent, CustomersMobileComponent, OverlayModalComponent, CustomerDetailComponent, CustomerFormComponent, TranslateModule],
     templateUrl: './customers.component.html',
     styleUrls: ['./customers.component.scss']
 })
@@ -27,7 +27,7 @@ export class CustomersComponent implements OnInit {
   editMode = false;
   currentCustomer: Partial<Customer> = {};
   activeMenuId: string | null = null;
-  showAddressFields = false;
+  savingCustomer = false;
 
   // Pagination
   currentPage = 1;
@@ -140,13 +140,16 @@ export class CustomersComponent implements OnInit {
 
   showCreateModal(): void {
     this.editMode = false;
-    this.showAddressFields = false;
     this.currentCustomer = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      notes: '',
       address: {
         street: '',
         zip: '',
-        city: '',
-        country: ''
+        city: ''
       }
     };
     this.showModal = true;
@@ -154,9 +157,6 @@ export class CustomersComponent implements OnInit {
 
   editCustomer(customer: Customer) {
     this.editMode = true;
-    // Prüfe ob Adresse vorhanden ist
-    const hasAddress = customer.address?.street || customer.address?.zip || customer.address?.city;
-    this.showAddressFields = !!hasAddress;
     this.currentCustomer = {
       ...customer,
       address: {
@@ -173,19 +173,42 @@ export class CustomersComponent implements OnInit {
     this.currentCustomer = {};
   }
 
-  saveCustomer(): void {
-    if (this.editMode && this.currentCustomer._id) {
-      this.customerService.updateCustomer(this.currentCustomer._id, this.currentCustomer).subscribe({
+  saveCustomer(customerData: CustomerFormData): void {
+    this.savingCustomer = true;
+    const customerPayload = {
+      anrede: customerData.anrede,
+      firstName: customerData.firstName,
+      lastName: customerData.lastName,
+      email: customerData.email,
+      phone: customerData.phone,
+      notes: customerData.notes,
+      address: {
+        street: customerData.address?.street || '',
+        zip: customerData.address?.zip || '',
+        city: customerData.address?.city || ''
+      }
+    };
+
+    if (this.editMode && customerData._id) {
+      this.customerService.updateCustomer(customerData._id, customerPayload).subscribe({
         next: () => {
           this.loadCustomers();
           this.closeModal();
+          this.savingCustomer = false;
+        },
+        error: () => {
+          this.savingCustomer = false;
         }
       });
     } else {
-      this.customerService.createCustomer(this.currentCustomer).subscribe({
+      this.customerService.createCustomer(customerPayload).subscribe({
         next: () => {
           this.loadCustomers();
           this.closeModal();
+          this.savingCustomer = false;
+        },
+        error: () => {
+          this.savingCustomer = false;
         }
       });
     }
@@ -250,20 +273,16 @@ export class CustomersComponent implements OnInit {
     this.navigateToContract(contract._id);
   }
 
-  // Address Autocomplete
-  get addressData(): AddressData {
+  get customerFormData(): CustomerFormData {
     return {
-      street: this.currentCustomer.address?.street || '',
-      zipCode: this.currentCustomer.address?.zip || '',
-      city: this.currentCustomer.address?.city || ''
+      _id: this.currentCustomer._id,
+      anrede: this.currentCustomer.anrede,
+      firstName: this.currentCustomer.firstName || '',
+      lastName: this.currentCustomer.lastName || '',
+      email: this.currentCustomer.email,
+      phone: this.currentCustomer.phone,
+      notes: this.currentCustomer.notes,
+      address: this.currentCustomer.address
     };
-  }
-
-  onAddressChange(address: AddressData): void {
-    if (this.currentCustomer.address) {
-      this.currentCustomer.address.street = address.street;
-      this.currentCustomer.address.zip = address.zipCode;
-      this.currentCustomer.address.city = address.city;
-    }
   }
 }
