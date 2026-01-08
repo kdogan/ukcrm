@@ -594,11 +594,10 @@
       </div>
       <div class="form-group">
         <label>Adresse</label>
-        <input type="text" name="street" [(ngModel)]="newCustomer.address.street" placeholder="Straße" class="form-control" />
-        <div class="form-row">
-          <input type="text" name="zip" [(ngModel)]="newCustomer.address.zip" placeholder="PLZ" class="form-control" />
-          <input type="text" name="city" [(ngModel)]="newCustomer.address.city" placeholder="Ort" class="form-control" />
-        </div>
+        <app-address-autocomplete
+          [address]="newCustomerAddressData"
+          (addressChange)="onNewCustomerAddressChange($event)"
+        />
       </div>
       <div class="form-group">
         <label>Notizen</label>
@@ -650,11 +649,10 @@
       </div>
       <div class="form-group">
         <label>{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}</label>
-        <input type="text" name="street" [(ngModel)]="newSupplier.address.street" [placeholder]="'CUSTOMERS.FIELDS.STREET' | translate" class="form-control" />
-        <div class="form-row">
-          <input type="text" name="zipCode" [(ngModel)]="newSupplier.address.zipCode" [placeholder]="'CUSTOMERS.FIELDS.ZIP' | translate" class="form-control" />
-          <input type="text" name="city" [(ngModel)]="newSupplier.address.city" [placeholder]="'CUSTOMERS.FIELDS.CITY' | translate" class="form-control" />
-        </div>
+        <app-address-autocomplete
+          [address]="newSupplierAddressData"
+          (addressChange)="onNewSupplierAddressChange($event)"
+        />
       </div>
       <div class="form-group">
         <label>{{ 'COMMON.NOTES' | translate }}</label>

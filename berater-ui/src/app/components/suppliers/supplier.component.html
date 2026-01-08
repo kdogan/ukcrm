@@ -99,20 +99,10 @@
           </div>
 
           <h3 class="section-title">{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}</h3>
-          <div class="form-group">
-            <label>{{ 'CUSTOMERS.FIELDS.STREET' | translate }}</label>
-            <input type="text" [(ngModel)]="currentSupplier.address!.street" name="street" />
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>{{ 'CUSTOMERS.FIELDS.ZIP' | translate }}</label>
-              <input type="text" [(ngModel)]="currentSupplier.address!.zipCode" name="zipCode" />
-            </div>
-            <div class="form-group">
-              <label>{{ 'CUSTOMERS.FIELDS.CITY' | translate }}</label>
-              <input type="text" [(ngModel)]="currentSupplier.address!.city" name="city" />
-            </div>
-          </div>
+          <app-address-autocomplete
+            [address]="supplierAddressData"
+            (addressChange)="onSupplierAddressChange($event)"
+          />
           <div class="form-group">
             <label>{{ 'CUSTOMERS.FIELDS.COUNTRY' | translate }}</label>
             <input type="text" [(ngModel)]="currentSupplier.address!.country" name="country" />

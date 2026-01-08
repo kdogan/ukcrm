@@ -18,6 +18,7 @@ import { Util } from '../util/util';
 import { Address, MeterType, meterTypes } from 'src/app/models/meter.model';
 import { MeterCreateComponent } from '../shared/meter-create.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { AddressAutocompleteComponent, AddressData } from '../shared/address-autocomplete.component';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -32,7 +33,8 @@ import { TranslateModule } from '@ngx-translate/core';
         OverlayModalComponent,
         MeterCreateComponent,
         CustomerDetailComponent,
-        TranslateModule
+        TranslateModule,
+        AddressAutocompleteComponent
       ]
 })
 export class ContractsComponent implements OnInit {
@@ -1039,6 +1041,40 @@ export class ContractsComponent implements OnInit {
     this.newCustomer = this.getEmptyCustomer();
     this.showCustomerCreationModal = true;
     this.showCustomerDropdown = false;
+  }
+
+  // Address Autocomplete für Kunde
+  get newCustomerAddressData(): AddressData {
+    return {
+      street: this.newCustomer?.address?.street || '',
+      zipCode: this.newCustomer?.address?.zip || '',
+      city: this.newCustomer?.address?.city || ''
+    };
+  }
+
+  onNewCustomerAddressChange(address: AddressData): void {
+    if (this.newCustomer?.address) {
+      this.newCustomer.address.street = address.street;
+      this.newCustomer.address.zip = address.zipCode;
+      this.newCustomer.address.city = address.city;
+    }
+  }
+
+  // Address Autocomplete für Lieferant
+  get newSupplierAddressData(): AddressData {
+    return {
+      street: this.newSupplier?.address?.street || '',
+      zipCode: this.newSupplier?.address?.zipCode || '',
+      city: this.newSupplier?.address?.city || ''
+    };
+  }
+
+  onNewSupplierAddressChange(address: AddressData): void {
+    if (this.newSupplier?.address) {
+      this.newSupplier.address.street = address.street;
+      this.newSupplier.address.zipCode = address.zipCode;
+      this.newSupplier.address.city = address.city;
+    }
   }
 
   openMeterCreationModal(): void {

@@ -7,10 +7,11 @@ import { ViewportService } from '../../services/viewport.service';
 import { SuppliersMobileComponent } from './mobile/suppliers-mobile.component';
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
 import { TranslateModule } from '@ngx-translate/core';
+import { AddressAutocompleteComponent, AddressData } from '../shared/address-autocomplete.component';
 
 @Component({
     selector: 'app-suppliers',
-    imports: [CommonModule, FormsModule, TableContainerComponent, SuppliersMobileComponent, OverlayModalComponent, TranslateModule],
+    imports: [CommonModule, FormsModule, TableContainerComponent, SuppliersMobileComponent, OverlayModalComponent, TranslateModule, AddressAutocompleteComponent],
     templateUrl:'supplier.component.html',
     styleUrls:['supplier.component.scss']
 })
@@ -142,5 +143,22 @@ export class SuppliersComponent implements OnInit {
 
   closeActionMenu(): void {
     this.activeMenuId = null;
+  }
+
+  // Address Autocomplete
+  get supplierAddressData(): AddressData {
+    return {
+      street: this.currentSupplier?.address?.street || '',
+      zipCode: this.currentSupplier?.address?.zipCode || '',
+      city: this.currentSupplier?.address?.city || ''
+    };
+  }
+
+  onSupplierAddressChange(address: AddressData): void {
+    if (this.currentSupplier?.address) {
+      this.currentSupplier.address.street = address.street;
+      this.currentSupplier.address.zipCode = address.zipCode;
+      this.currentSupplier.address.city = address.city;
+    }
   }
 }
