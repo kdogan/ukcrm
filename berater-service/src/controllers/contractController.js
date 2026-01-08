@@ -8,12 +8,13 @@ const getNextContractNumber = require('../utils/getNextContractNumber');
 // @access  Private
 exports.getContracts = async (req, res, next) => {
   try {
-    const { status, supplierId, daysRemaining, page = 1, limit = 20 } = req.query;
+    const { status, supplierId, customerId, daysRemaining, page = 1, limit = 20 } = req.query;
 
     const filter = { beraterId: req.user._id };
 
     if (status) filter.status = status;
     if (supplierId) filter.supplierId = supplierId;
+    if (customerId) filter.customerId = customerId;
 
     // Filter für auslaufende Verträge
     if (daysRemaining) {

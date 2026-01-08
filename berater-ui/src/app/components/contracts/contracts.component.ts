@@ -734,9 +734,17 @@ export class ContractsComponent implements OnInit {
   }
 
   loadCustomerContracts(customerId: string): void {
-    this.customerContracts = this.contracts.filter(
-      (contract: any) => contract.customerId?._id === customerId || contract.customerId === customerId
-    );
+    this.contractService.getContracts({ customerId }).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.customerContracts = response.data;
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden der Kundenverträge:', error);
+        this.customerContracts = [];
+      }
+    });
   }
 
   closeCustomerDetails(): void {
@@ -747,11 +755,17 @@ export class ContractsComponent implements OnInit {
 
   onContractClick(contract: CustomerContract): void {
     this.closeCustomerDetails();
-    // Finde den vollständigen Vertrag aus der Liste
-    const fullContract = this.contracts.find(c => c._id === contract._id);
-    if (fullContract) {
-      this.showContractDetails(fullContract);
-    }
+    // Lade den vollständigen Vertrag vom Server
+    this.contractService.getContract(contract._id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.showContractDetails(response.data);
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden des Vertrags:', error);
+      }
+    });
   }
 
   showSupplierDetails(id: string): void {

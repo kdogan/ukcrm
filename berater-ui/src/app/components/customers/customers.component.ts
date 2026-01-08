@@ -223,13 +223,10 @@ export class CustomersComponent implements OnInit {
   }
 
   loadCustomerContracts(customerId: string): void {
-    this.contractService.getContracts().subscribe({
+    this.contractService.getContracts({ customerId }).subscribe({
       next: (response) => {
         if (response.success) {
-          // Filter contracts by customerId
-          this.customerContracts = response.data.filter(
-            (contract: Contract) => contract.customerId?._id === customerId || contract.customerId === customerId
-          );
+          this.customerContracts = response.data;
         }
       },
       error: (error) => {
