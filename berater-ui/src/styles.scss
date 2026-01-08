@@ -429,6 +429,17 @@ body {
     }
   }
 
+  /* Contract button - purple/primary */
+  .contract {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-color);
+
+    &:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+  }
+
   /* Danger/Delete button - red */
   .danger {
     background: var(--danger-bg);

@@ -18,6 +18,7 @@ export class CustomersMobileComponent {
   @Output() edit = new EventEmitter<Customer>();
   @Output() delete = new EventEmitter<string>();
   @Output() showDetails = new EventEmitter<Customer>();
+  @Output() createContract = new EventEmitter<Customer>();
   @Output() filterActiveChange = new EventEmitter<boolean>();
   @Output() searchTermChange = new EventEmitter<string>();
   @Output() closeActionMenu = new EventEmitter<void>();

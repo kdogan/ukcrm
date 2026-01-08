@@ -163,6 +163,139 @@ export class ContractsComponent implements OnInit {
       } else {
         // Lade normale Vertragsliste
         this.loadContracts();
+
+        // Prüfe Query-Parameter für vorausgewählten Kunden oder Zähler
+        this.route.queryParams.subscribe(queryParams => {
+          if (queryParams['customerId']) {
+            this.openCreateModalWithCustomer(queryParams['customerId']);
+          } else if (queryParams['meterId']) {
+            this.openCreateModalWithMeter(queryParams['meterId']);
+          }
+        });
+      }
+    });
+  }
+
+  openCreateModalWithCustomer(customerId: string): void {
+    // Warte bis Kunden geladen sind
+    const checkCustomers = setInterval(() => {
+      if (this.customers.length > 0) {
+        clearInterval(checkCustomers);
+        const customer = this.customers.find(c => c._id === customerId);
+        if (customer) {
+          this.openCreateModalWithPreselection(customer, null);
+        }
+        // Entferne Query-Parameter aus URL
+        this.router.navigate([], { queryParams: {}, replaceUrl: true });
+      }
+    }, 100);
+
+    // Timeout nach 5 Sekunden
+    setTimeout(() => clearInterval(checkCustomers), 5000);
+  }
+
+  openCreateModalWithMeter(meterId: string): void {
+    // Warte bis Zähler geladen sind
+    const checkMeters = setInterval(() => {
+      if (this.freeMeters.length > 0) {
+        clearInterval(checkMeters);
+        const meter = this.freeMeters.find(m => m._id === meterId);
+        if (meter) {
+          this.openCreateModalWithPreselection(null, meter);
+        }
+        // Entferne Query-Parameter aus URL
+        this.router.navigate([], { queryParams: {}, replaceUrl: true });
+      }
+    }, 100);
+
+    // Timeout nach 5 Sekunden
+    setTimeout(() => clearInterval(checkMeters), 5000);
+  }
+
+  private openCreateModalWithPreselection(customer: any, meter: any): void {
+    // Prüfe zuerst die Paket-Limits
+    this.packageService.getUserLimits().subscribe({
+      next: (response) => {
+        const userLimits = response.data;
+
+        // Prüfe ob das Vertragslimit erreicht ist
+        if (userLimits.limits.isAtContractLimit) {
+          const confirmUpgrade = confirm(
+            `Sie haben das Vertragslimit Ihres ${userLimits.package.displayName}-Pakets erreicht!\n\n` +
+            `Aktuell: ${userLimits.usage.contracts} / ${userLimits.limits.maxContracts} Verträge\n\n` +
+            `Um weitere Verträge anzulegen, müssen Sie Ihr Paket upgraden.\n\n` +
+            `Möchten Sie jetzt zur Paket-Verwaltung wechseln?`
+          );
+
+          if (confirmUpgrade) {
+            this.router.navigate(['/settings']);
+          }
+          return;
+        }
+
+        // Öffne das Formular mit Vorauswahl
+        this.isEditMode = false;
+        this.currentContract = this.getEmptyContract();
+        this.customerSearch = '';
+        this.meterSearch = '';
+        this.supplierSearch = '';
+        this.showCustomerDropdown = false;
+        this.showMeterDropdown = false;
+        this.showSupplierDropdown = false;
+        this.filteredCustomers = this.customers;
+        this.filteredFreeMeters = this.freeMeters;
+        this.filteredSuppliers = this.suppliers;
+
+        // Setze Vorauswahl
+        if (customer) {
+          this.selectedCustomer = customer;
+          this.currentContract.customerId = customer._id;
+        } else {
+          this.selectedCustomer = null;
+        }
+
+        if (meter) {
+          this.selectedMeter = meter;
+          this.currentContract.meterId = meter._id;
+        } else {
+          this.selectedMeter = null;
+        }
+
+        this.selectedSupplier = null;
+        this.showModal = true;
+      },
+      error: (err) => {
+        console.error('Error checking package limits:', err);
+        // Bei Fehler trotzdem Formular öffnen (Backend prüft auch)
+        this.isEditMode = false;
+        this.currentContract = this.getEmptyContract();
+        this.customerSearch = '';
+        this.meterSearch = '';
+        this.supplierSearch = '';
+        this.showCustomerDropdown = false;
+        this.showMeterDropdown = false;
+        this.showSupplierDropdown = false;
+        this.filteredCustomers = this.customers;
+        this.filteredFreeMeters = this.freeMeters;
+        this.filteredSuppliers = this.suppliers;
+
+        // Setze Vorauswahl
+        if (customer) {
+          this.selectedCustomer = customer;
+          this.currentContract.customerId = customer._id;
+        } else {
+          this.selectedCustomer = null;
+        }
+
+        if (meter) {
+          this.selectedMeter = meter;
+          this.currentContract.meterId = meter._id;
+        } else {
+          this.selectedMeter = null;
+        }
+
+        this.selectedSupplier = null;
+        this.showModal = true;
       }
     });
   }

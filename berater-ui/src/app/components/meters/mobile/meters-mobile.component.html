@@ -75,6 +75,11 @@
         <button class="chart" (click)="showYearlyEstimates.emit(meter)" title="Jahresverbrauch">
           <i class="fas fa-chart-line"></i>
         </button>
+        @if(meter.isFree){
+          <button class="contract" (click)="createContract.emit(meter)" [title]="'CONTRACTS.NEW' | translate">
+            <i class="fas fa-file-contract"></i>
+          </button>
+        }
       </div>
 
     </div>

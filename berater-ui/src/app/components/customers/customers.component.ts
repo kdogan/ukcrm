@@ -273,6 +273,10 @@ export class CustomersComponent implements OnInit {
     this.navigateToContract(contract._id);
   }
 
+  createContractForCustomer(customer: Customer): void {
+    this.router.navigate(['/contracts'], { queryParams: { customerId: customer._id } });
+  }
+
   get customerFormData(): CustomerFormData {
     return {
       _id: this.currentCustomer._id,

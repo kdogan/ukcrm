@@ -29,6 +29,7 @@ export class MetersMobileComponent {
   @Output() viewReadings = new EventEmitter<Meter>();
   @Output() showYearlyEstimates = new EventEmitter<Meter>();
   @Output() showCustomerDetails = new EventEmitter<any>();
+  @Output() createContract = new EventEmitter<Meter>();
 
   searchTerm = '';
   statusFilterTerm = "";

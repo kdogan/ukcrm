@@ -52,6 +52,9 @@
         <button class="edit" (click)="edit.emit(c)" [title]="'COMMON.EDIT' | translate">
           <i class="fas fa-edit"></i>
         </button>
+        <button class="contract" (click)="createContract.emit(c)" [title]="'CONTRACTS.NEW' | translate">
+          <i class="fas fa-file-contract"></i>
+        </button>
         <button class="danger" (click)="delete.emit(c._id)" [title]="'COMMON.DELETE' | translate">
           <i class="fas fa-trash"></i>
         </button>

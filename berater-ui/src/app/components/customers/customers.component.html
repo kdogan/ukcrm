@@ -5,6 +5,7 @@
   (showDetails)="showCustomerDetails($event)"
   (edit)="editCustomer($event)"
   (delete)="deleteCustomer($event)"
+  (createContract)="createContractForCustomer($event)"
   (closeActionMenu)="closeActionMenu()"
   (filterActiveChange)="filterActive = $event; loadCustomers()" (toggleActionMenu)="toggleActionMenu($event)"
   (searchTermChange)="searchTerm = $event; onSearchChange()"
@@ -71,6 +72,9 @@
                   </button>
                   <button class="menu-item" (click)="editCustomer(customer); closeActionMenu()">
                     <i class="fas fa-edit fa-lg"></i> {{ 'COMMON.EDIT' | translate }}
+                  </button>
+                  <button class="menu-item" (click)="createContractForCustomer(customer); closeActionMenu()">
+                    <i class="fas fa-file-contract fa-lg"></i> {{ 'CONTRACTS.NEW' | translate }}
                   </button>
                   <button class="menu-item menu-item-danger"
                     (click)="deleteCustomer(customer._id); closeActionMenu()">

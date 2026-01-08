@@ -473,4 +473,8 @@ meterTypes: any;
     this.closeMeterModalDetails();
     this.router.navigate(['/contracts', contractId]);
   }
+
+  createContractForMeter(meter: Meter): void {
+    this.router.navigate(['/contracts'], { queryParams: { meterId: meter._id } });
+  }
 }

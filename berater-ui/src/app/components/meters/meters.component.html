@@ -6,7 +6,8 @@
   (addReading)="showAddReadingModal($event); closeActionMenu()"
   (viewReadings)="viewReadings($event); closeActionMenu()"
   (showYearlyEstimates)="showYearlyEstimates($event)"
-  (showCustomerDetails)="showCustomerDetails($event)" />
+  (showCustomerDetails)="showCustomerDetails($event)"
+  (createContract)="createContractForMeter($event)" />
 } @else {
 <div class="page-container" (click)="closeActionMenu()">
   <div class="page-header">
@@ -105,6 +106,11 @@
                 <button class="menu-item" (click)="editMeter(meter); closeActionMenu()">
                   <i class="fas fa-edit fa-lg"></i> {{ 'COMMON.EDIT' | translate }}
                 </button>
+                @if(!meter.currentCustomerId){
+                  <button class="menu-item" (click)="createContractForMeter(meter); closeActionMenu()">
+                    <i class="fas fa-file-contract fa-lg"></i> {{ 'CONTRACTS.NEW' | translate }}
+                  </button>
+                }
                 <button class="menu-item menu-item-danger" (click)="deleteMeter(meter._id); closeActionMenu()">
                   <i class="fas fa-trash fa-lg"></i> {{ 'COMMON.DELETE' | translate }}
                 </button>
