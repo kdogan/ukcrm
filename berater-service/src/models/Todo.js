@@ -75,7 +75,7 @@ const todoSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
-  // Für Berater: Zusätzliche Informationen/Antwort
+  // Für Berater: Zusätzliche Informationen/Antwort (Legacy - für Abwärtskompatibilität)
   beraterResponse: {
     type: String,
     default: null
@@ -84,7 +84,7 @@ const todoSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
-  // Für Superadmin: Antwort auf Support-Ticket
+  // Für Superadmin: Antwort auf Support-Ticket (Legacy - für Abwärtskompatibilität)
   adminResponse: {
     type: String,
     default: null
@@ -102,7 +102,31 @@ const todoSchema = new mongoose.Schema({
   adminResponseReadByBerater: {
     type: Boolean,
     default: false
-  }
+  },
+  // Chronologischer Konversationsverlauf
+  conversation: [{
+    message: {
+      type: String,
+      required: true
+    },
+    senderType: {
+      type: String,
+      enum: ['berater', 'admin'],
+      required: true
+    },
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    senderName: {
+      type: String
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }]
 }, {
   timestamps: true
 });

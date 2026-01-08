@@ -601,6 +601,9 @@
     "SEND_RESPONSE": "Antwort senden",
     "SEND_UPDATE": "Update senden",
     "CLOSE_TICKET": "Ticket abschließen",
+    "CONVERSATION": "Konversationsverlauf",
+    "ADD_MESSAGE": "Nachricht hinzufügen",
+    "ADD_MESSAGE_PLACEHOLDER": "Schreiben Sie hier Ihre Nachricht...",
     "STATUS": {
       "OPEN": "Offen",
       "IN_PROGRESS": "In Bearbeitung",

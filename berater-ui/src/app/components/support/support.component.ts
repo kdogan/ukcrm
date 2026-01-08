@@ -339,4 +339,14 @@ export class SupportComponent implements OnInit {
     const filename = urlWithoutQuery.split('/').pop() || 'ticket-image.png';
     this.fileViewerService.open(imageUrl, filename);
   }
+
+  getSortedConversation(): Array<{message: string; senderType: 'berater' | 'admin'; senderId: string; senderName?: string; createdAt: Date}> {
+    if (!this.selectedTicket?.conversation) {
+      return [];
+    }
+    // Sort by createdAt ascending (oldest first)
+    return [...this.selectedTicket.conversation].sort((a, b) =>
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }
 }

@@ -69,11 +69,14 @@
         </select>
       </div>
 
-      <div class="filter-group checkbox-filter">
-        <div class="checkbox-wrapper-compact">
-          <input type="checkbox" [(ngModel)]="showCompleted" (ngModelChange)="onFilterChange()" class="checkbox-input" id="showCompleted">
-          <label for="showCompleted" class="checkbox-label">{{ 'SUPPORT.SHOW_COMPLETED' | translate }}</label>
-        </div>
+      <div class="filter-group">
+        <div class="checkbox-wrapper">
+            <input type="checkbox" 
+                   [(ngModel)]="showCompleted" 
+                   (ngModelChange)="onFilterChange()" 
+                   class="checkbox-input" id="showCompleted">
+            <label for="showCompleted" class="checkbox-label">{{ 'SUPPORT.SHOW_COMPLETED' | translate }}</label>
+          </div>
       </div>
 
       <button class="btn-reset" (click)="resetFilters()" [title]="'TODOS.RESET_FILTERS' | translate">
@@ -282,46 +285,67 @@
           </div>
         }
 
-        @if(selectedTicket.beraterResponse){
-          <div class="detail-section berater-response">
+        <!-- Chronological Conversation -->
+        @if(selectedTicket.conversation && selectedTicket.conversation.length > 0){
+          <div class="detail-section conversation-section">
             <strong>
-              <i class="fas fa-comment"></i> {{ 'SUPPORT.YOUR_ANSWER' | translate }}:
+              <i class="fas fa-comments"></i> {{ 'SUPPORT.CONVERSATION' | translate }}:
             </strong>
-            <p>{{ selectedTicket.beraterResponse }}</p>
-            <small>
-              {{ 'SUPPORT.ADDED_AT' | translate }} {{ selectedTicket.beraterResponseAt | date:'dd.MM.yyyy HH:mm' }}
-            </small>
-          </div>
-        }
-
-        @if(selectedTicket.adminResponse){
-          <div class="detail-section admin-response">
-            <strong>
-              <i class="fas fa-reply"></i> {{ 'SUPPORT.SUPPORT_ANSWER' | translate }}:
-            </strong>
-            <p>{{ selectedTicket.adminResponse }}</p>
-            <small>
-              {{ 'SUPPORT.ANSWERED_AT' | translate }} {{ selectedTicket.adminResponseAt | date:'dd.MM.yyyy HH:mm' }}
-              @if(selectedTicket.respondedBy){
-                {{ 'SUPPORT.BY' | translate }} {{ selectedTicket.respondedBy.firstName }} {{ selectedTicket.respondedBy.lastName }}
+            <div class="conversation-list">
+              @for(msg of getSortedConversation(); track $index){
+                <div class="conversation-message" [class.berater-message]="msg.senderType === 'berater'" [class.admin-message]="msg.senderType === 'admin'">
+                  <div class="message-header">
+                    <span class="sender-name">
+                      @if(msg.senderType === 'admin'){
+                        <i class="fas fa-user-shield"></i>
+                      }@else{
+                        <i class="fas fa-user"></i>
+                      }
+                      {{ msg.senderName || (msg.senderType === 'admin' ? 'Support' : 'Berater') }}
+                    </span>
+                    <span class="message-time">{{ msg.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+                  </div>
+                  <p class="message-content">{{ msg.message }}</p>
+                </div>
               }
-            </small>
+            </div>
           </div>
+        }@else{
+          <!-- Fallback: Legacy fields for old tickets without conversation array -->
+          @if(selectedTicket.beraterResponse){
+            <div class="detail-section berater-response">
+              <strong>
+                <i class="fas fa-comment"></i> {{ 'SUPPORT.YOUR_ANSWER' | translate }}:
+              </strong>
+              <p>{{ selectedTicket.beraterResponse }}</p>
+              <small>
+                {{ 'SUPPORT.ADDED_AT' | translate }} {{ selectedTicket.beraterResponseAt | date:'dd.MM.yyyy HH:mm' }}
+              </small>
+            </div>
+          }
+
+          @if(selectedTicket.adminResponse){
+            <div class="detail-section admin-response">
+              <strong>
+                <i class="fas fa-reply"></i> {{ 'SUPPORT.SUPPORT_ANSWER' | translate }}:
+              </strong>
+              <p>{{ selectedTicket.adminResponse }}</p>
+              <small>
+                {{ 'SUPPORT.ANSWERED_AT' | translate }} {{ selectedTicket.adminResponseAt | date:'dd.MM.yyyy HH:mm' }}
+                @if(selectedTicket.respondedBy){
+                  {{ 'SUPPORT.BY' | translate }} {{ selectedTicket.respondedBy.firstName }} {{ selectedTicket.respondedBy.lastName }}
+                }
+              </small>
+            </div>
+          }
         }
 
         @if(!isSuperAdmin && selectedTicket.status !== 'completed'){
           <div class="detail-section">
-            @if(!selectedTicket.beraterResponse){
-              <strong>{{ 'SUPPORT.ADD_INFO' | translate }}:</strong>
-              <textarea [(ngModel)]="beraterResponse"
-                        rows="4"
-                        [placeholder]="'SUPPORT.ADD_INFO_PLACEHOLDER' | translate"></textarea>
-            }@else{
-              <strong>{{ 'SUPPORT.UPDATE_ANSWER' | translate }}:</strong>
-              <textarea [(ngModel)]="beraterResponse"
-                        rows="4"
-                        [placeholder]="'SUPPORT.UPDATE_ANSWER_PLACEHOLDER' | translate"></textarea>
-            }
+            <strong>{{ 'SUPPORT.ADD_MESSAGE' | translate }}:</strong>
+            <textarea [(ngModel)]="beraterResponse"
+                      rows="4"
+                      [placeholder]="'SUPPORT.ADD_MESSAGE_PLACEHOLDER' | translate"></textarea>
 
             <div class="form-group">
               <label>{{ 'SUPPORT.CHANGE_STATUS' | translate }}:</label>
@@ -334,28 +358,17 @@
 
             <button class="btn-primary" (click)="submitResponse()">
               <i class="fas fa-paper-plane"></i>
-              @if(!selectedTicket.beraterResponse){
-                {{ 'SUPPORT.ADD_RESPONSE' | translate }}
-              }@else{
-                {{ 'SUPPORT.UPDATE_RESPONSE' | translate }}
-              }
+              {{ 'SUPPORT.SEND_MESSAGE' | translate }}
             </button>
           </div>
         }
 
         @if(isSuperAdmin){
           <div class="detail-section">
-            @if(!selectedTicket.adminResponse){
-              <strong>{{ 'SUPPORT.ADMIN_ADD_RESPONSE' | translate }}:</strong>
-              <textarea [(ngModel)]="adminResponse"
-                        rows="4"
-                        [placeholder]="'SUPPORT.ADMIN_ADD_RESPONSE_PLACEHOLDER' | translate"></textarea>
-            }@else{
-              <strong>{{ 'SUPPORT.ADMIN_UPDATE_RESPONSE' | translate }}:</strong>
-              <textarea [(ngModel)]="adminResponse"
-                        rows="4"
-                        [placeholder]="'SUPPORT.ADMIN_UPDATE_PLACEHOLDER' | translate"></textarea>
-            }
+            <strong>{{ 'SUPPORT.ADD_MESSAGE' | translate }}:</strong>
+            <textarea [(ngModel)]="adminResponse"
+                      rows="4"
+                      [placeholder]="'SUPPORT.ADD_MESSAGE_PLACEHOLDER' | translate"></textarea>
 
             <div class="form-group">
               <label>{{ 'SUPPORT.CHANGE_STATUS' | translate }}:</label>
@@ -368,11 +381,7 @@
 
             <button class="btn-primary" (click)="submitResponse()">
               <i class="fas fa-paper-plane"></i>
-              @if(!selectedTicket.adminResponse){
-                {{ 'SUPPORT.SEND_RESPONSE' | translate }}
-              }@else{
-                {{ 'SUPPORT.SEND_UPDATE' | translate }}
-              }
+              {{ 'SUPPORT.SEND_MESSAGE' | translate }}
             </button>
           </div>
         }

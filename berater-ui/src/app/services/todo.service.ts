@@ -62,6 +62,14 @@ export interface Todo {
     firstName: string;
     lastName: string;
   };
+  // Chronological conversation
+  conversation?: Array<{
+    message: string;
+    senderType: 'berater' | 'admin';
+    senderId: string;
+    senderName?: string;
+    createdAt: Date;
+  }>;
 }
 
 export interface CreateTodoDto {

@@ -601,6 +601,9 @@
     "SEND_RESPONSE": "Yanıt Gönder",
     "SEND_UPDATE": "Güncelleme Gönder",
     "CLOSE_TICKET": "Talebi Kapat",
+    "CONVERSATION": "Konuşma Geçmişi",
+    "ADD_MESSAGE": "Mesaj Ekle",
+    "ADD_MESSAGE_PLACEHOLDER": "Mesajınızı buraya yazın...",
     "STATUS": {
       "OPEN": "Açık",
       "IN_PROGRESS": "İşlemde",
