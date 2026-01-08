@@ -73,7 +73,7 @@
 <app-overlay-modal (close)="closeModal()">
   <div class="modal-content">
     <h2 class="modal-title">{{ isEditMode ? ('EDUCATION.EDIT_MATERIAL' | translate) : ('EDUCATION.NEW_MATERIAL' | translate) }}</h2>
-    <form (ngSubmit)="saveMaterial()">
+    <form (ngSubmit)="saveMaterial()" #materialForm="ngForm">
       <div class="form-group">
         <label for="title">{{ 'EDUCATION.FIELDS.TITLE' | translate }} *</label>
         <input
@@ -83,7 +83,12 @@
           [(ngModel)]="currentMaterial.title"
           name="title"
           required
+          minlength="1"
+          #titleInput="ngModel"
         />
+        @if (titleInput.invalid && titleInput.touched) {
+          <small class="form-text text-danger">{{ 'VALIDATION.TITLE_REQUIRED' | translate }}</small>
+        }
       </div>
 
       <div class="form-group">
@@ -211,7 +216,7 @@
         <button type="button" class="btn btn-secondary" (click)="closeModal()">
           {{ 'COMMON.CANCEL' | translate }}
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" [disabled]="materialForm.invalid">
           {{ isEditMode ? ('COMMON.UPDATE' | translate) : ('COMMON.CREATE' | translate) }}
         </button>
       </div>

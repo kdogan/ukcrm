@@ -749,6 +749,7 @@
   },
   "VALIDATION": {
     "REQUIRED": "Dieses Feld ist erforderlich",
+    "TITLE_REQUIRED": "Titel ist erforderlich",
     "EMAIL": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
     "MIN_LENGTH": "Mindestens {{min}} Zeichen erforderlich",
     "MAX_LENGTH": "Maximal {{max}} Zeichen erlaubt",

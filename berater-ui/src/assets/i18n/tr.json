@@ -749,6 +749,7 @@
   },
   "VALIDATION": {
     "REQUIRED": "Bu alan zorunludur",
+    "TITLE_REQUIRED": "Başlık zorunludur",
     "EMAIL": "Lütfen geçerli bir e-posta adresi girin",
     "MIN_LENGTH": "En az {{min}} karakter gerekli",
     "MAX_LENGTH": "En fazla {{max}} karakter izinli",
