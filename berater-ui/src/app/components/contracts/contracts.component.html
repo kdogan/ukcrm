@@ -313,37 +313,20 @@
  @if(showMeterDetailsModal){
   <app-overlay-modal (close)="closeMeterDetails()">
     <div class="modal-header">
-      <h2>Zählerdetails</h2>
+      <h2>{{ 'METERS.DETAILS' | translate }}</h2>
       <button class="btn-close" (click)="closeMeterDetails()">&times;</button>
     </div>
-    @if(selectedMeterDetails){
-    <div class="detail-content">
-      <div class="detail-row">
-        <span class="detail-label">Zählernummer:</span>
-        <span class="detail-value">{{ selectedMeterDetails.meterNumber }}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Typ:</span>
-        <span class="detail-value">{{ getTypeLabel(selectedMeterDetails.type) }}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Status:</span>
-        <span class="detail-value">
-          <span class="badge" [class.badge-active]="!selectedMeterDetails.currentCustomerId">
-            {{ selectedMeterDetails.currentCustomerId ? 'Belegt' : 'Frei' }}
-          </span>
-        </span>
-      </div>
-      @if(selectedMeterDetails.currentCustomerId){
-      <div class="detail-row">
-        <span class="detail-label">Aktueller Kunde:</span>
-        <span class="detail-value">
-          {{ selectedMeterDetails.currentCustomerId.firstName }} {{ selectedMeterDetails.currentCustomerId.lastName }}
-        </span>
-      </div>
-      }
+    <div class="modal-body">
+      <app-meter-detail
+        [meter]="selectedMeterDetails"
+        [contracts]="[]"
+        [showContracts]="false"
+        (customerClick)="showCustomerDetails($event)">
+      </app-meter-detail>
     </div>
-  }
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeMeterDetails()">{{ 'COMMON.CLOSE' | translate }}</button>
+    </div>
   </app-overlay-modal>
 }
 

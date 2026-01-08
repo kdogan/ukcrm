@@ -289,7 +289,7 @@
     "NO_CONTRACTS_DESC": "İlk sözleşmenizi oluşturun",
     "DAYS_LEFT": "gün kaldı",
     "DAYS_OVERDUE": "gün gecikmiş",
-    "CONTRACTS_LIST": "Kendisine ait Sözleşmeler"
+    "CONTRACTS_LIST": "Sözleşme Geçmişi"
   },
   "CUSTOMERS": {
     "TITLE": "Müşteriler",
@@ -330,6 +330,7 @@
   },
   "METERS": {
     "TITLE": "Sayaçlar",
+    "DETAILS": "Sayaç Detayları",
     "NEW": "Yeni Sayaç",
     "EDIT": "Sayacı Düzenle",
     "DELETE": "Sayacı Sil",
@@ -354,7 +355,9 @@
       "ELECTRICITY": "Elektrik",
       "GAS": "Gaz",
       "WATER": "Su",
-      "HEAT": "Isı"
+      "HEAT": "Isı",
+      "HEAT_PUMP": "Isı Pompası",
+      "NIGHT_STORAGE": "Gece Depolama"
     },
     "MESSAGES": {
       "CREATED": "Sayaç başarıyla oluşturuldu",

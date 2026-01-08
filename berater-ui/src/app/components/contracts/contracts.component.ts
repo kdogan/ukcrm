@@ -13,6 +13,7 @@ import { ContractsMobileComponent } from './mobile/contracts-mobile/contracts-mo
 import { ContractsDesktopComponent } from './desktop/contracts-desktop/contracts-desktop.component';
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
 import { CustomerDetailComponent, CustomerContract } from "../shared/customer-detail.component";
+import { MeterDetailComponent } from "../shared/meter-detail.component";
 import { CustomerFormComponent, CustomerFormData } from '../shared/customer-form.component';
 import { ContractState, stateToLabel } from 'src/app/models/contract.model';
 import { Util } from '../util/util';
@@ -37,6 +38,7 @@ import { SupplierSearchComponent } from '../shared/supplier-search.component';
         OverlayModalComponent,
         MeterCreateComponent,
         CustomerDetailComponent,
+        MeterDetailComponent,
         CustomerFormComponent,
         TranslateModule,
         AddressAutocompleteComponent,

@@ -330,6 +330,7 @@
   },
   "METERS": {
     "TITLE": "Zähler",
+    "DETAILS": "Zählerdetails",
     "NEW": "Neuer Zähler",
     "EDIT": "Zähler bearbeiten",
     "DELETE": "Zähler löschen",
@@ -354,7 +355,9 @@
       "ELECTRICITY": "Strom",
       "GAS": "Gas",
       "WATER": "Wasser",
-      "HEAT": "Wärme"
+      "HEAT": "Wärme",
+      "HEAT_PUMP": "Wärmepumpe",
+      "NIGHT_STORAGE": "Nachtspeicher"
     },
     "MESSAGES": {
       "CREATED": "Zähler erfolgreich erstellt",

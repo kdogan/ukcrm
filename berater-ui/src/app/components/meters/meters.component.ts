@@ -16,6 +16,7 @@ import { MeterCreateComponent } from '../shared/meter-create.component';
 import { SearchInputComponent } from '../shared/search-input.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { CustomerDetailComponent, CustomerContract } from '../shared/customer-detail.component';
+import { MeterDetailComponent, MeterContract } from '../shared/meter-detail.component';
 import { Customer } from '../../services/customer.service';
 
 @Component({
@@ -25,7 +26,7 @@ import { Customer } from '../../services/customer.service';
       TableContainerComponent,
       MetersMobileComponent,
       OverlayModalComponent, MeterCreateComponent,
-      SearchInputComponent, TranslateModule, CustomerDetailComponent],
+      SearchInputComponent, TranslateModule, CustomerDetailComponent, MeterDetailComponent],
     styleUrls: ['./meters.component.scss'],
     templateUrl: './meters.component.html'
 })

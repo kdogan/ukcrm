@@ -185,73 +185,16 @@
     </div>
 
     <div class="modal-body">
-
-      <div class="info-row">
-        <span class="label">Zählernummer</span>
-        <span class="value">{{ selectedMeterForDetails?.meterNumber }}</span>
-      </div>
-      <div class="info-row" *ngIf="selectedMeterForDetails.maloId">
-        <span class="label">Malo Id</span>
-        <span class="value">
-          {{ selectedMeterForDetails?.maloId }}
-        </span>
-      </div>
-
-      <div class="info-row">
-        <span class="label">Typ</span>
-        <span class="value badge">
-          {{ getTypeLabel(selectedMeterForDetails?.type) }}
-        </span>
-      </div>
-
-      <div class="info-row address">
-        <span class="label">Adresse</span>
-        <span class="value">
-          {{ selectedMeterForDetails?.location?.street }}<br />
-          {{ selectedMeterForDetails?.location?.zip }} {{ selectedMeterForDetails?.location?.city }}
-        </span>
-      </div>
-
-      <!-- Vertragsliste -->
-      <hr class="section-divider" />
-      <h3 class="section-title">{{ 'CONTRACTS.CONTRACTS_LIST' | translate }}</h3>
-      @if(meterContracts.length === 0){
-        <div class="no-data">{{ 'CONTRACTS.NO_CONTRACTS' | translate }}</div>
-      }
-      @if(meterContracts.length > 0){
-        <table class="contracts-table">
-          <thead>
-            <tr>
-              <th>{{ 'CONTRACTS.FIELDS.CONTRACT_NUMBER' | translate }}</th>
-              <th>{{ 'METERS.FIELDS.CUSTOMER' | translate }}</th>
-              <th>{{ 'CONTRACTS.FIELDS.SUPPLIER' | translate }}</th>
-              <th>{{ 'CONTRACTS.FIELDS.STATUS' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for(contract of meterContracts; track contract._id){
-              <tr class="clickable-row" (click)="navigateToContract(contract._id)">
-                <td>{{ contract.contractNumber }}</td>
-                <td>{{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}</td>
-                <td>{{ contract.supplierId?.name || '-' }}</td>
-                <td>
-                  <span class="badge"
-                        [class.badge-active]="contract.status === 'active'"
-                        [class.badge-inactive]="contract.status === 'ended' || contract.status === 'archived'">
-                    {{ contract.status === 'active' ? ('DASHBOARD.ACTIVE' | translate) :
-                       contract.status === 'ended' ? ('CONTRACTS.STATUS.ENDED' | translate) :
-                       contract.status === 'archived' ? ('CONTRACTS.STATUS.ARCHIVED' | translate) :
-                       contract.status === 'draft' ? ('CONTRACTS.STATUS.DRAFT' | translate) : contract.status }}
-                  </span>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      }
+      <app-meter-detail
+        [meter]="selectedMeterForDetails"
+        [contracts]="meterContracts"
+        [showContracts]="true"
+        (contractClick)="navigateToContract($event._id)"
+        (customerClick)="showCustomerDetails($event)">
+      </app-meter-detail>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeMeterModalDetails()">Schließen</button>
+      <button type="button" class="btn-secondary" (click)="closeMeterModalDetails()">{{ 'COMMON.CLOSE' | translate }}</button>
     </div>
   </app-overlay-modal>
 }
