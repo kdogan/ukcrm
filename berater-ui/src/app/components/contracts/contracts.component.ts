@@ -98,6 +98,10 @@ export class ContractsComponent implements OnInit {
   totalItems = 0;
   totalPages = 0;
 
+  // Backend search
+  isSearchingBackend = false;
+  private searchTimeout: any = null;
+
   contractState = [
     {
       key: ContractState.ACTIVE,
@@ -260,7 +264,21 @@ export class ContractsComponent implements OnInit {
   onContractSearchChange(searchTerm: string): void {
     this.contractSearchTerm = searchTerm;
     this.currentPage = 1;
-    this.applySearchFilter();
+
+    // Debounce die Suche
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    // Erst lokal filtern
+    this.applyLocalSearchFilter();
+
+    // Wenn keine lokalen Ergebnisse und Suchbegriff vorhanden, Backend-Suche nach kurzer Verzögerung
+    if (this.filteredContracts.length === 0 && searchTerm.trim().length >= 2) {
+      this.searchTimeout = setTimeout(() => {
+        this.searchBackend(searchTerm);
+      }, 300);
+    }
   }
 
   goToPage(page: number): void {
@@ -277,6 +295,10 @@ export class ContractsComponent implements OnInit {
   }
 
   applySearchFilter(): void {
+    this.applyLocalSearchFilter();
+  }
+
+  applyLocalSearchFilter(): void {
     if (!this.contractSearchTerm || this.contractSearchTerm.trim() === '') {
       this.filteredContracts = this.contracts;
       return;
@@ -306,6 +328,38 @@ export class ContractsComponent implements OnInit {
       }
 
       return false;
+    });
+  }
+
+  searchBackend(searchTerm: string): void {
+    if (!searchTerm || searchTerm.trim().length < 2) {
+      return;
+    }
+
+    this.isSearchingBackend = true;
+
+    const params: any = {
+      search: searchTerm.trim(),
+      page: 1,
+      limit: 50 // Mehr Ergebnisse bei Backend-Suche
+    };
+    if (this.statusFilter) params.status = this.statusFilter;
+    if (this.daysFilter) params.daysRemaining = this.daysFilter;
+
+    this.contractService.getContracts(params).subscribe({
+      next: (response: any) => {
+        this.isSearchingBackend = false;
+        if (response.success) {
+          this.filteredContracts = response.data;
+          if (response.pagination) {
+            this.totalItems = response.pagination.total;
+            this.totalPages = response.pagination.pages;
+          }
+        }
+      },
+      error: () => {
+        this.isSearchingBackend = false;
+      }
     });
   }
 

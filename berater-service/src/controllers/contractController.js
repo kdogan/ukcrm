@@ -8,7 +8,7 @@ const getNextContractNumber = require('../utils/getNextContractNumber');
 // @access  Private
 exports.getContracts = async (req, res, next) => {
   try {
-    const { status, supplierId, customerId, daysRemaining, page = 1, limit = 20 } = req.query;
+    const { status, supplierId, customerId, daysRemaining, search, page = 1, limit = 20 } = req.query;
 
     const filter = { beraterId: req.user._id };
 
@@ -27,6 +27,45 @@ exports.getContracts = async (req, res, next) => {
         $lte: futureDate
       };
       filter.status = 'active';
+    }
+
+    // Suchfunktion: suche in Vertragsnummer, Kundendaten, Zählernummer
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+
+      // Suche zuerst passende Kunden und Zähler
+      const Customer = require('../models/Customer');
+      const Meter = require('../models/Meter');
+
+      const [matchingCustomers, matchingMeters] = await Promise.all([
+        Customer.find({
+          beraterId: req.user._id,
+          $or: [
+            { firstName: searchRegex },
+            { lastName: searchRegex },
+            { customerNumber: searchRegex }
+          ]
+        }).select('_id'),
+        Meter.find({
+          beraterId: req.user._id,
+          meterNumber: searchRegex
+        }).select('_id')
+      ]);
+
+      const customerIds = matchingCustomers.map(c => c._id);
+      const meterIds = matchingMeters.map(m => m._id);
+
+      filter.$or = [
+        { contractNumber: searchRegex },
+        { supplierContractNumber: searchRegex }
+      ];
+
+      if (customerIds.length > 0) {
+        filter.$or.push({ customerId: { $in: customerIds } });
+      }
+      if (meterIds.length > 0) {
+        filter.$or.push({ meterId: { $in: meterIds } });
+      }
     }
 
     const skip = (page - 1) * limit;

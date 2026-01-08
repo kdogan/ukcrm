@@ -17,6 +17,7 @@ export class ContractService {
     supplierId?: string;
     customerId?: string;
     daysRemaining?: number;
+    search?: string;
     page?: number;
     limit?: number;
   } = {}): Observable<any> {
