@@ -59,45 +59,18 @@
 
       <div class="form-group">
         <label for="customerId">{{ 'CONTRACTS.FIELDS.CUSTOMER' | translate }} *</label>
-        <div class="search-with-add">
-          <input type="text"
-                [placeholder]="'CUSTOMERS.SEARCH' | translate"
-                [(ngModel)]="customerSearch"
-                (input)="filterCustomers()"
-                (focus)="showCustomerDropdown = true; filterCustomers()"
-                (blur)="closeCustomerDropdownDelayed()"
-                class="form-control search-input"
-                [ngModelOptions]="{standalone: true}"
-                autocomplete="off" />
-          <button type="button" class="btn-add-inline" (click)="openCustomerCreationModal()" [title]="'CUSTOMERS.NEW' | translate">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
-              @if(showCustomerDropdown) {
-                <div class="dropdown-list">
-                @for(customer of filteredCustomers; track customer._id){
-                  <div class="dropdown-item"
-                      [class.selected]="currentContract.customerId === customer._id"
-                      (click)="selectCustomer(customer)">
-                    {{ customer.firstName }} {{ customer.lastName }}
-                    @if(customer.address){
-                      <span style="font-size: 12px;"> ({{formatAddress(customer.address)}})</span>
-                    }
-                  </div>
-                }
-                </div>
-              }
+        <app-customer-search
+          [customers]="customers"
+          [selectedCustomer]="selectedCustomer"
+          [showAddButton]="true"
+          (customerSelected)="onCustomerSelected($event)"
+          (customerCleared)="onCustomerCleared()"
+          (addNew)="openCustomerCreationModal()"
+        />
         <input type="hidden"
               id="customerId"
               name="customerId"
               [(ngModel)]="currentContract.customerId" required />
-        @if(selectedCustomer){
-        <div class="selected-item">
-          {{ 'COMMON.SELECT' | translate }}: <strong>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</strong> ({{
-          selectedCustomer.customerNumber }})
-          <button type="button" class="btn-clear" (click)="clearCustomer()">&times;</button>
-        </div>
-      }
       </div>
         <div class="form-group">
           <div class="checkbox-wrapper">
@@ -126,81 +99,32 @@
 
       <div class="form-group">
         <label for="meterId">{{ 'CONTRACTS.FIELDS.METER' | translate }} *</label>
-        <div class="search-with-add">
-          <input type="text" [placeholder]="'METERS.SEARCH' | translate"
-            [(ngModel)]="meterSearch"
-            (input)="filterMeters()"
-            (focus)="showMeterDropdown = true; filterMeters()"
-            (blur)="closeMeterDropdownDelayed()"
-            class="form-control search-input"
-            [ngModelOptions]="{standalone: true}"
-            autocomplete="off" />
-          <button type="button" class="btn-add-inline" (click)="openMeterCreationModal()" [title]="'METERS.NEW' | translate">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
-        @if(showMeterDropdown){
-        <div class="dropdown-list">
-          @for(meter of filteredFreeMeters; track meter._id){
-            <div class="dropdown-item"
-              [class.selected]="currentContract.meterId === meter._id" [class.occupied]="!isMeterFree(meter)"
-              [class.disabled]="!isMeterFree(meter)"
-              (click)="isMeterFree(meter) && selectMeter(meter)"
-              [style.cursor]="isMeterFree(meter) ? 'pointer' : 'not-allowed'">
-              {{ meter.meterNumber }} ({{ getTypeLabel(meter.type) }})
-              @if(!isMeterFree(meter)){
-                <span class="meter-status">- {{ 'METERS.STATUS.OCCUPIED' | translate }}</span>
-              }
-            </div>
-          }
-        </div>
-        }
+        <app-meter-search
+          [meters]="freeMeters"
+          [selectedMeter]="selectedMeter"
+          [showAddButton]="true"
+          [showFreeStatus]="true"
+          (meterSelected)="onMeterSelected($event)"
+          (meterCleared)="onMeterCleared()"
+          (addNew)="openMeterCreationModal()"
+        />
         <input type="hidden" id="meterId" name="meterId" [(ngModel)]="currentContract.meterId" required />
-        @if(selectedMeter){
-          <div class="selected-item">
-            {{ 'COMMON.SELECT' | translate }}: <strong>{{ selectedMeter.meterNumber }}</strong> ({{ getTypeLabel(selectedMeter.type) }})
-            <button type="button" class="btn-clear" (click)="clearMeter()">&times;</button>
-          </div>
-        }
       </div>
 
       <div class="form-group">
         <label for="supplierId">{{ 'CONTRACTS.FIELDS.SUPPLIER' | translate }} *</label>
-        <div class="search-with-add">
-          <input type="text"
-                [placeholder]="'SUPPLIERS.SEARCH' | translate"
-                [(ngModel)]="supplierSearch"
-                (input)="filterSuppliers()"
-                (focus)="showSupplierDropdown = true; filterSuppliers()"
-                (blur)="closeSupplierDropdownDelayed()"
-                class="form-control search-input"
-                [ngModelOptions]="{standalone: true}"
-                autocomplete="off" />
-          <button type="button" class="btn-add-inline" (click)="openSupplierCreationModal()" [title]="'SUPPLIERS.NEW' | translate">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
-        @if(showSupplierDropdown) {
-          <div class="dropdown-list">
-            @for(supplier of filteredSuppliers; track supplier._id){
-              <div class="dropdown-item"
-                  [class.selected]="currentContract.supplierId === supplier._id"
-                  (click)="selectSupplier(supplier)">
-                {{ supplier.name }}
-              </div>
-            }
-          </div>
-        }
+        <app-supplier-search
+          [suppliers]="suppliers"
+          [selectedSupplier]="selectedSupplier"
+          [showAddButton]="true"
+          (supplierSelected)="onSupplierSelected($event)"
+          (supplierCleared)="onSupplierCleared()"
+          (addNew)="openSupplierCreationModal()"
+        />
         <input type="hidden"
               id="supplierId"
               name="supplierId"
               [(ngModel)]="currentContract.supplierId" required />
-        @if(selectedSupplier){
-          <div class="selected-item">
-            {{ 'COMMON.SELECT' | translate }}: <strong>{{ selectedSupplier.name }}</strong>
-            <button type="button" class="btn-clear" (click)="clearSupplier()">&times;</button>
-          </div>
-        }
       </div>
       <div class="form-group">
         <label>{{ 'CONTRACTS.FIELDS.CONTRACT_NUMBER' | translate }}</label>

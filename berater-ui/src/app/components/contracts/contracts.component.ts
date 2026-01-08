@@ -19,6 +19,9 @@ import { Address, MeterType, meterTypes } from 'src/app/models/meter.model';
 import { MeterCreateComponent } from '../shared/meter-create.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { AddressAutocompleteComponent, AddressData } from '../shared/address-autocomplete.component';
+import { CustomerSearchComponent } from '../shared/customer-search.component';
+import { MeterSearchComponent } from '../shared/meter-search.component';
+import { SupplierSearchComponent } from '../shared/supplier-search.component';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -34,7 +37,10 @@ import { AddressAutocompleteComponent, AddressData } from '../shared/address-aut
         MeterCreateComponent,
         CustomerDetailComponent,
         TranslateModule,
-        AddressAutocompleteComponent
+        AddressAutocompleteComponent,
+        CustomerSearchComponent,
+        MeterSearchComponent,
+        SupplierSearchComponent
       ]
 })
 export class ContractsComponent implements OnInit {
@@ -374,15 +380,27 @@ export class ContractsComponent implements OnInit {
   selectCustomer(customer: any): void {
     this.selectedCustomer = customer;
     this.currentContract.customerId = customer._id;
-    this.customerSearch = `${customer.firstName} ${customer.lastName} (${customer.customerNumber})`;
-    this.showCustomerDropdown = false;
+  }
+
+  onCustomerSelected(customer: any): void {
+    this.selectCustomer(customer);
+  }
+
+  onCustomerCleared(): void {
+    this.clearCustomer();
   }
 
   selectMeter(meter: any): void {
     this.selectedMeter = meter;
     this.currentContract.meterId = meter._id;
-    this.meterSearch = `${meter.meterNumber} (${this.getTypeLabel(meter.type)})`;
-    this.showMeterDropdown = false;
+  }
+
+  onMeterSelected(meter: any): void {
+    this.selectMeter(meter);
+  }
+
+  onMeterCleared(): void {
+    this.clearMeter();
   }
 
   clearCustomer(): void {
@@ -428,8 +446,14 @@ export class ContractsComponent implements OnInit {
   selectSupplier(supplier: any): void {
     this.selectedSupplier = supplier;
     this.currentContract.supplierId = supplier._id;
-    this.supplierSearch = supplier.name;
-    this.showSupplierDropdown = false;
+  }
+
+  onSupplierSelected(supplier: any): void {
+    this.selectSupplier(supplier);
+  }
+
+  onSupplierCleared(): void {
+    this.clearSupplier();
   }
 
   clearSupplier(): void {

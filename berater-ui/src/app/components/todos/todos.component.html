@@ -94,95 +94,38 @@
       <!-- Kunde Suche -->
       <div class="form-group">
         <label>{{ 'TODOS.FIELDS.CUSTOMER' | translate }}</label>
-        <div class="search-field">
-          <input type="text"
-                [placeholder]="'CUSTOMERS.SEARCH' | translate"
-                [(ngModel)]="customerSearch"
-                (input)="filterCustomers()"
-                (focus)="showCustomerDropdown = true; filterCustomers()"
-                (blur)="closeCustomerDropdownDelayed()"
-                class="form-control"
-                [ngModelOptions]="{standalone: true}"
-                autocomplete="off" />
-        </div>
-        <div class="dropdown-list" *ngIf="showCustomerDropdown">
-          <div class="dropdown-item"
-              *ngFor="let customer of filteredCustomers"
-              [class.selected]="currentTodo.relatedCustomerId === customer._id"
-              (mousedown)="selectCustomer(customer); $event.preventDefault()">
-            <span class="customer-name">{{ customer.firstName }} {{ customer.lastName }}</span>
-            <span class="customer-address" *ngIf="getCustomerAddress(customer)">{{ getCustomerAddress(customer) }}</span>
-          </div>
-          <div class="dropdown-item no-results" *ngIf="filteredCustomers.length === 0">
-            {{ 'COMMON.NO_RESULTS' | translate }}
-          </div>
-        </div>
-        <div class="selected-item" *ngIf="selectedCustomer">
-          <span class="selected-text">{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}<span class="selected-address" *ngIf="getCustomerAddress(selectedCustomer)"> ({{ getCustomerAddress(selectedCustomer) }})</span></span>
-          <button type="button" class="btn-clear" (click)="clearCustomer()">&times;</button>
-        </div>
+        <app-customer-search
+          [customers]="customers"
+          [selectedCustomer]="selectedCustomer"
+          [showAddButton]="false"
+          (customerSelected)="onCustomerSelected($event)"
+          (customerCleared)="onCustomerCleared()"
+        />
       </div>
 
       <!-- Vertrag Suche -->
       <div class="form-group">
         <label>{{ 'TODOS.FIELDS.CONTRACT' | translate }}</label>
-        <div class="search-field">
-          <input type="text"
-                [placeholder]="'CONTRACTS.SEARCH' | translate"
-                [(ngModel)]="contractSearch"
-                (input)="filterContracts()"
-                (focus)="showContractDropdown = true; filterContracts()"
-                (blur)="closeContractDropdownDelayed()"
-                class="form-control"
-                [ngModelOptions]="{standalone: true}"
-                autocomplete="off" />
-        </div>
-        <div class="dropdown-list" *ngIf="showContractDropdown">
-          <div class="dropdown-item"
-              *ngFor="let contract of filteredContracts"
-              [class.selected]="currentTodo.relatedContractId === contract._id"
-              (mousedown)="selectContract(contract); $event.preventDefault()">
-            {{ contract.contractNumber }} - {{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}
-          </div>
-          <div class="dropdown-item no-results" *ngIf="filteredContracts.length === 0">
-            {{ 'COMMON.NO_RESULTS' | translate }}
-          </div>
-        </div>
-        <div class="selected-item" *ngIf="selectedContract">
-          {{ 'COMMON.SELECT' | translate }}: <strong>{{ selectedContract.contractNumber }}</strong>
-          <button type="button" class="btn-clear" (click)="clearContract()">&times;</button>
-        </div>
+        <app-contract-search
+          [contracts]="contracts"
+          [selectedContract]="selectedContract"
+          [showAddButton]="false"
+          (contractSelected)="onContractSelected($event)"
+          (contractCleared)="onContractCleared()"
+        />
       </div>
 
       <!-- Zähler Suche -->
       <div class="form-group">
         <label>{{ 'TODOS.FIELDS.METER' | translate }}</label>
-        <div class="search-field">
-          <input type="text"
-                [placeholder]="'METERS.SEARCH' | translate"
-                [(ngModel)]="meterSearch"
-                (input)="filterMeters()"
-                (focus)="showMeterDropdown = true; filterMeters()"
-                (blur)="closeMeterDropdownDelayed()"
-                class="form-control"
-                [ngModelOptions]="{standalone: true}"
-                autocomplete="off" />
-        </div>
-        <div class="dropdown-list" *ngIf="showMeterDropdown">
-          <div class="dropdown-item"
-              *ngFor="let meter of filteredMeters"
-              [class.selected]="currentTodo.relatedMeterId === meter._id"
-              (mousedown)="selectMeter(meter); $event.preventDefault()">
-            {{ meter.meterNumber }} ({{ getTypeLabel(meter.type) }})
-          </div>
-          <div class="dropdown-item no-results" *ngIf="filteredMeters.length === 0">
-            {{ 'COMMON.NO_RESULTS' | translate }}
-          </div>
-        </div>
-        <div class="selected-item" *ngIf="selectedMeter">
-          {{ 'COMMON.SELECT' | translate }}: <strong>{{ selectedMeter.meterNumber }}</strong> ({{ getTypeLabel(selectedMeter.type) }})
-          <button type="button" class="btn-clear" (click)="clearMeter()">&times;</button>
-        </div>
+        <app-meter-search
+          [meters]="meters"
+          [selectedMeter]="selectedMeter"
+          [showAddButton]="false"
+          [showFreeStatus]="false"
+          (meterSelected)="onMeterSelected($event)"
+          (meterCleared)="onMeterCleared()"
+        />
       </div>
     </div>
 

@@ -13,12 +13,16 @@ import { TodosDesktopComponent } from './desktop/todos-desktop.component';
 import { TodosMobileComponent } from './mobile/todos-mobile.component';
 import { OverlayModalComponent } from '../shared/overlay-modal.component';
 import { Util } from '../util/util';
+import { CustomerSearchComponent } from '../shared/customer-search.component';
+import { ContractSearchComponent } from '../shared/contract-search.component';
+import { MeterSearchComponent } from '../shared/meter-search.component';
 
 @Component({
     selector: 'app-todos',
     standalone: true,
     imports: [CommonModule, FormsModule, TranslateModule, TodoComponent,
-      TodosDesktopComponent, TodosMobileComponent, OverlayModalComponent],
+      TodosDesktopComponent, TodosMobileComponent, OverlayModalComponent,
+      CustomerSearchComponent, ContractSearchComponent, MeterSearchComponent],
     templateUrl: './todos.component.html',
     styleUrls: ['./todos.component.scss']
 })
@@ -202,8 +206,14 @@ export class TodosComponent implements OnInit {
   selectCustomer(customer: any): void {
     this.selectedCustomer = customer;
     this.currentTodo.relatedCustomerId = customer._id;
-    this.customerSearch = `${customer.firstName} ${customer.lastName}`;
-    this.showCustomerDropdown = false;
+  }
+
+  onCustomerSelected(customer: any): void {
+    this.selectCustomer(customer);
+  }
+
+  onCustomerCleared(): void {
+    this.clearCustomer();
   }
 
   clearCustomer(): void {
@@ -238,10 +248,14 @@ export class TodosComponent implements OnInit {
   selectContract(contract: any): void {
     this.selectedContract = contract;
     this.currentTodo.relatedContractId = contract._id;
-    const customerName = contract.customerId ?
-      `${contract.customerId.firstName} ${contract.customerId.lastName}` : '';
-    this.contractSearch = `${contract.contractNumber} - ${customerName}`;
-    this.showContractDropdown = false;
+  }
+
+  onContractSelected(contract: any): void {
+    this.selectContract(contract);
+  }
+
+  onContractCleared(): void {
+    this.clearContract();
   }
 
   clearContract(): void {
@@ -275,8 +289,14 @@ export class TodosComponent implements OnInit {
   selectMeter(meter: any): void {
     this.selectedMeter = meter;
     this.currentTodo.relatedMeterId = meter._id;
-    this.meterSearch = `${meter.meterNumber} (${this.getTypeLabel(meter.type)})`;
-    this.showMeterDropdown = false;
+  }
+
+  onMeterSelected(meter: any): void {
+    this.selectMeter(meter);
+  }
+
+  onMeterCleared(): void {
+    this.clearMeter();
   }
 
   clearMeter(): void {
