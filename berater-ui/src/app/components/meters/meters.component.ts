@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MeterService } from '../../services/meter.service';
-import { MeterReadingService } from '../../services/meter-reading.service';
+import { MeterReadingService, YearlyConsumptionResponse, YearlyEstimate } from '../../services/meter-reading.service';
 import { ContractService } from '../../services/contract.service';
 import { CustomerService } from '../../services/customer.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
@@ -62,6 +62,11 @@ meterTypes: any;
   showCustomerDetailsModal = false;
   selectedCustomer: Customer | null = null;
   customerContracts: CustomerContract[] = [];
+
+  // Yearly consumption estimates
+  showYearlyEstimatesModal = false;
+  yearlyEstimatesData: YearlyConsumptionResponse | null = null;
+  yearlyEstimatesLoading = false;
 
   // Pagination
   currentPage = 1;
@@ -412,5 +417,41 @@ meterTypes: any;
     this.showCustomerDetailsModal = false;
     this.selectedCustomer = null;
     this.customerContracts = [];
+  }
+
+  // Yearly consumption estimates methods
+  showYearlyEstimates(meter: any): void {
+    this.selectedMeterForReading = meter;
+    this.yearlyEstimatesData = null;
+    this.yearlyEstimatesLoading = true;
+    this.showYearlyEstimatesModal = true;
+
+    this.meterReadingService.getYearlyEstimates(meter._id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.yearlyEstimatesData = response.data;
+        }
+        this.yearlyEstimatesLoading = false;
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden der Jahresschätzungen:', error);
+        this.yearlyEstimatesLoading = false;
+        alert('Fehler beim Laden der Jahresschätzungen: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  closeYearlyEstimatesModal(): void {
+    this.showYearlyEstimatesModal = false;
+    this.yearlyEstimatesData = null;
+    this.selectedMeterForReading = null;
+  }
+
+  isYearlyEstimateSingle(estimate: YearlyEstimate): boolean {
+    return estimate.hasEstimate && estimate.type === 'single';
+  }
+
+  isYearlyEstimateTwoTariff(estimate: YearlyEstimate): boolean {
+    return estimate.hasEstimate && estimate.type === 'twoTariff';
   }
 }

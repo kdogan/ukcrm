@@ -406,6 +406,187 @@ exports.getLatestMeterReading = async (req, res, next) => {
   }
 };
 
+// @desc    Get yearly consumption estimates
+// @route   GET /api/meters/:id/readings/yearly-estimates
+// @access  Private
+exports.getYearlyConsumptionEstimates = async (req, res, next) => {
+  try {
+    const meter = await Meter.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!meter) {
+      return res.status(404).json({
+        success: false,
+        message: 'Zähler nicht gefunden'
+      });
+    }
+
+    // Hole alle Ablesungen für diesen Zähler, sortiert nach Datum
+    const readings = await MeterReading.find({ meterId: req.params.id })
+      .sort({ readingDate: 1 }); // Aufsteigend sortiert für Berechnungen
+
+    if (readings.length < 2) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          yearlyEstimates: [],
+          message: 'Mindestens 2 Ablesungen erforderlich für Verbrauchsschätzung'
+        }
+      });
+    }
+
+    // Berechne die letzten 5 Jahre
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = 0; i < 5; i++) {
+      years.push(currentYear - i);
+    }
+
+    const yearlyEstimates = [];
+
+    for (const year of years) {
+      // Filtere Ablesungen für dieses Jahr
+      const yearStart = new Date(year, 0, 1);
+      const yearEnd = new Date(year, 11, 31, 23, 59, 59);
+
+      const yearReadings = readings.filter(r => {
+        const readingDate = new Date(r.readingDate);
+        return readingDate >= yearStart && readingDate <= yearEnd;
+      });
+
+      if (yearReadings.length < 2) {
+        // Nicht genug Ablesungen für dieses Jahr
+        yearlyEstimates.push({
+          year,
+          hasEstimate: false,
+          message: 'Nicht genug Ablesungen für Schätzung',
+          readingCount: yearReadings.length
+        });
+        continue;
+      }
+
+      // Erste und letzte Ablesung des Jahres
+      const firstReading = yearReadings[0];
+      const lastReading = yearReadings[yearReadings.length - 1];
+
+      // Tage zwischen den Ablesungen
+      const daysBetween = Math.ceil(
+        (new Date(lastReading.readingDate) - new Date(firstReading.readingDate)) / (1000 * 60 * 60 * 24)
+      );
+
+      if (daysBetween < 1) {
+        yearlyEstimates.push({
+          year,
+          hasEstimate: false,
+          message: 'Ablesungen am gleichen Tag',
+          readingCount: yearReadings.length
+        });
+        continue;
+      }
+
+      let estimate = null;
+
+      // Ein-Tarif-Zähler
+      if (firstReading.readingValue != null && lastReading.readingValue != null) {
+        const consumption = lastReading.readingValue - firstReading.readingValue;
+        const dailyConsumption = consumption / daysBetween;
+        const yearlyEstimate = Math.round(dailyConsumption * 365);
+
+        estimate = {
+          year,
+          hasEstimate: true,
+          type: 'single',
+          firstReading: {
+            date: firstReading.readingDate,
+            value: firstReading.readingValue
+          },
+          lastReading: {
+            date: lastReading.readingDate,
+            value: lastReading.readingValue
+          },
+          actualConsumption: consumption,
+          daysBetween,
+          dailyConsumption: Math.round(dailyConsumption * 100) / 100,
+          yearlyEstimate,
+          readingCount: yearReadings.length
+        };
+      }
+      // Zwei-Tarif-Zähler (HT/NT)
+      else if (firstReading.readingValueHT != null && lastReading.readingValueHT != null) {
+        const consumptionHT = lastReading.readingValueHT - firstReading.readingValueHT;
+        const dailyConsumptionHT = consumptionHT / daysBetween;
+        const yearlyEstimateHT = Math.round(dailyConsumptionHT * 365);
+
+        let consumptionNT = null;
+        let dailyConsumptionNT = null;
+        let yearlyEstimateNT = null;
+
+        // NT Verbrauch nur wenn beide Werte vorhanden
+        if (firstReading.readingValueNT != null && lastReading.readingValueNT != null) {
+          consumptionNT = lastReading.readingValueNT - firstReading.readingValueNT;
+          dailyConsumptionNT = consumptionNT / daysBetween;
+          yearlyEstimateNT = Math.round(dailyConsumptionNT * 365);
+        }
+
+        const totalConsumption = consumptionHT + (consumptionNT || 0);
+        const yearlyEstimateTotal = yearlyEstimateHT + (yearlyEstimateNT || 0);
+
+        estimate = {
+          year,
+          hasEstimate: true,
+          type: 'twoTariff',
+          firstReading: {
+            date: firstReading.readingDate,
+            valueHT: firstReading.readingValueHT,
+            valueNT: firstReading.readingValueNT
+          },
+          lastReading: {
+            date: lastReading.readingDate,
+            valueHT: lastReading.readingValueHT,
+            valueNT: lastReading.readingValueNT
+          },
+          actualConsumptionHT: consumptionHT,
+          actualConsumptionNT: consumptionNT,
+          actualConsumptionTotal: totalConsumption,
+          daysBetween,
+          dailyConsumptionHT: Math.round(dailyConsumptionHT * 100) / 100,
+          dailyConsumptionNT: dailyConsumptionNT != null ? Math.round(dailyConsumptionNT * 100) / 100 : null,
+          yearlyEstimateHT,
+          yearlyEstimateNT,
+          yearlyEstimateTotal,
+          readingCount: yearReadings.length
+        };
+      }
+
+      if (estimate) {
+        yearlyEstimates.push(estimate);
+      } else {
+        yearlyEstimates.push({
+          year,
+          hasEstimate: false,
+          message: 'Inkonsistente Ablesungsdaten',
+          readingCount: yearReadings.length
+        });
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        meterId: meter._id,
+        meterNumber: meter.meterNumber,
+        meterType: meter.type,
+        isTwoTariff: meter.isTwoTariff,
+        yearlyEstimates
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Delete meter reading
 // @route   DELETE /api/meters/:id/readings/:readingId
 // @access  Private

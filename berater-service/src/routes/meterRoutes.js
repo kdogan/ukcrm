@@ -10,6 +10,7 @@ const {
   getMeterReadings,
   createMeterReading,
   getLatestMeterReading,
+  getYearlyConsumptionEstimates,
   deleteMeterReading,
   deleteMeter
 } = require('../controllers/meterController');
@@ -31,6 +32,7 @@ router.post('/:id/assign', assignMeter);
 
 // Meter reading routes
 router.get('/:id/readings/latest', getLatestMeterReading);
+router.get('/:id/readings/yearly-estimates', getYearlyConsumptionEstimates);
 router.route('/:id/readings')
   .get(getMeterReadings)
   .post(createMeterReading);

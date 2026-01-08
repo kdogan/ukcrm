@@ -27,6 +27,7 @@ export class MetersMobileComponent {
   @Output() toggleActionMenu = new EventEmitter<string>();
   @Output() addReading = new EventEmitter<Meter>();
   @Output() viewReadings = new EventEmitter<Meter>();
+  @Output() showYearlyEstimates = new EventEmitter<Meter>();
   @Output() showCustomerDetails = new EventEmitter<any>();
 
   searchTerm = '';

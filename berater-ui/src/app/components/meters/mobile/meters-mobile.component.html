@@ -72,6 +72,9 @@
         <button class="view" (click)="viewReadings.emit(meter)" [title]="'METERS.VIEW_READINGS' | translate">
           <i class="fas fa-eye"></i>
         </button>
+        <button class="chart" (click)="showYearlyEstimates.emit(meter)" title="Jahresverbrauch">
+          <i class="fas fa-chart-line"></i>
+        </button>
       </div>
 
     </div>
