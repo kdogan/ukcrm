@@ -265,7 +265,10 @@
     "STATUS": {
       "ACTIVE": "Aktiv",
       "EXPIRING": "Läuft bald ab",
-      "EXPIRED": "Abgelaufen"
+      "EXPIRED": "Abgelaufen",
+      "ENDED": "Beendet",
+      "ARCHIVED": "Archiviert",
+      "DRAFT": "Entwurf"
     },
     "TYPES": {
       "ELECTRICITY": "Strom",

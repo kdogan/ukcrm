@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MeterService } from '../../services/meter.service';
 import { MeterReadingService, YearlyConsumptionResponse, YearlyEstimate } from '../../services/meter-reading.service';
 import { ContractService } from '../../services/contract.service';
@@ -63,6 +63,9 @@ meterTypes: any;
   selectedCustomer: Customer | null = null;
   customerContracts: CustomerContract[] = [];
 
+  // Meter contracts (for meter details modal)
+  meterContracts: any[] = [];
+
   // Yearly consumption estimates
   showYearlyEstimatesModal = false;
   yearlyEstimatesData: YearlyConsumptionResponse | null = null;
@@ -80,6 +83,7 @@ meterTypes: any;
     private contractService: ContractService,
     private customerService: CustomerService,
     private route: ActivatedRoute,
+    private router: Router,
     private viewport: ViewportService
   ) { }
 
@@ -377,11 +381,21 @@ meterTypes: any;
   showMeterDetails(meter: Meter): void {
     this.selectedMeterForDetails = meter;
     this.showMeterModalForDetails = true;
+    this.meterContracts = [];
 
     this.meterReadingService.getMeterReadings(meter._id).subscribe({
       next: (res) => {
         if (res.success) {
           this.meterReadings = res.data;
+        }
+      }
+    });
+
+    // Lade Verträge die diesem Zähler zugewiesen sind
+    this.contractService.getContracts({ meterId: meter._id }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.meterContracts = res.data;
         }
       }
     });
@@ -453,5 +467,10 @@ meterTypes: any;
 
   isYearlyEstimateTwoTariff(estimate: YearlyEstimate): boolean {
     return estimate.hasEstimate && estimate.type === 'twoTariff';
+  }
+
+  navigateToContract(contractId: string): void {
+    this.closeMeterModalDetails();
+    this.router.navigate(['/contracts', contractId]);
   }
 }

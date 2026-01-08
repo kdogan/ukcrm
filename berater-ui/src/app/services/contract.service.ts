@@ -16,6 +16,7 @@ export class ContractService {
     status?: string;
     supplierId?: string;
     customerId?: string;
+    meterId?: string;
     daysRemaining?: number;
     search?: string;
     page?: number;

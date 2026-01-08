@@ -15,6 +15,7 @@ exports.getContracts = async (req, res, next) => {
     if (status) filter.status = status;
     if (supplierId) filter.supplierId = supplierId;
     if (customerId) filter.customerId = customerId;
+    if (req.query.meterId) filter.meterId = req.query.meterId;
 
     // Filter für auslaufende Verträge
     if (daysRemaining) {

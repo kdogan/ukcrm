@@ -265,7 +265,10 @@
     "STATUS": {
       "ACTIVE": "Aktif",
       "EXPIRING": "Yakında Bitiyor",
-      "EXPIRED": "Süresi Dolmuş"
+      "EXPIRED": "Süresi Dolmuş",
+      "ENDED": "Sonlandırılmış",
+      "ARCHIVED": "Arşivlenmiş",
+      "DRAFT": "Taslak"
     },
     "TYPES": {
       "ELECTRICITY": "Elektrik",
