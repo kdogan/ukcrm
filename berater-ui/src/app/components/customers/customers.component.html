@@ -158,18 +158,31 @@
         <input type="tel" [(ngModel)]="currentCustomer.phone" name="phone" />
       </div>
 </div>
-    @if(currentCustomer.address){
-      <label>{{ 'CUSTOMERS.FIELDS.ADDRESS' | translate }}:</label>
-      <hr/>
+    <div class="form-group">
+      <label>{{ 'COMMON.NOTES' | translate }}</label>
+      <textarea [(ngModel)]="currentCustomer.notes" name="notes" rows="3"></textarea>
+    </div>
+
+    <!-- Adresse optional -->
+    <div class="form-group">
+      <div class="checkbox-wrapper">
+        <input
+          type="checkbox"
+          id="showAddress"
+          [(ngModel)]="showAddressFields"
+          [ngModelOptions]="{standalone: true}"
+          class="checkbox-input" />
+        <label for="showAddress" class="checkbox-label">{{ 'CUSTOMERS.WANT_ADDRESS' | translate }}</label>
+      </div>
+    </div>
+
+    @if(showAddressFields && currentCustomer.address){
       <app-address-autocomplete
         [address]="addressData"
         (addressChange)="onAddressChange($event)"
       />
     }
-    <div class="form-group">
-      <label>{{ 'COMMON.NOTES' | translate }}</label>
-      <textarea [(ngModel)]="currentCustomer.notes" name="notes" rows="3"></textarea>
-    </div>
+
     <div class="modal-footer">
       <button type="button" class="btn-secondary" (click)="closeModal()">{{ 'COMMON.CANCEL' | translate }}</button>
       <button type="submit" class="btn-primary">{{ 'COMMON.SAVE' | translate }}</button>

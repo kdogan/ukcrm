@@ -36,18 +36,19 @@ import { AddressAutocompleteComponent, AddressData } from "./address-autocomplet
             <input type="text" id="meter-malo-input" name="maloId" [(ngModel)]="meter.maloId"
                 placeholder="" class="form-control" />
             </div>
-            <div class="form-row">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <input type="checkbox"
-                                id="meter-two-tariff-check"
-                                name="isTwoTariff"
-                                [(ngModel)]="meter.isTwoTariff"
-                        />
-                        <label for="meter-two-tariff-check" style="margin: 0;">Zwei-Tarif-Zähler (HT/NT)</label>
-                    </div>
-                    <small style="display: block; color: #666; margin-top: 0.5rem; margin-left: 0;">
-                        <i class="fas fa-info-circle"></i> Für Stromzähler mit Tag/Nacht-Tarif (Hochtarif/Niedrigtarif)
-                    </small>
+            <div class="form-group">
+              <div class="checkbox-wrapper">
+                <input type="checkbox"
+                       id="meter-two-tariff-check"
+                       name="isTwoTariff"
+                       [(ngModel)]="meter.isTwoTariff"
+                       class="checkbox-input"
+                />
+                <label for="meter-two-tariff-check" class="checkbox-label">Zwei-Tarif-Zähler (HT/NT)</label>
+              </div>
+              <small style="display: block; color: #666; margin-top: 0.5rem;">
+                <i class="fas fa-info-circle"></i> Für Stromzähler mit Tag/Nacht-Tarif (Hochtarif/Niedrigtarif)
+              </small>
             </div>
 
             <label>Standort:</label>

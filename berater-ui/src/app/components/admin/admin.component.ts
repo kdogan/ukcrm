@@ -230,17 +230,17 @@ import { AdminMobileComponent } from './mobile/admin-mobile.component';
             </div>
 
             <div class="form-group" *ngIf="editMode">
-              <label class="checkbox-label">
-                <input type="checkbox" [(ngModel)]="currentUser.isActive" name="isActive" />
-                <span>Aktiv</span>
-              </label>
+              <div class="checkbox-wrapper">
+                <input type="checkbox" [(ngModel)]="currentUser.isActive" name="isActive" class="checkbox-input" id="isActive" />
+                <label for="isActive" class="checkbox-label">Aktiv</label>
+              </div>
             </div>
 
             <div class="form-group" *ngIf="currentUser.role === 'berater'">
-              <label class="checkbox-label">
-                <input type="checkbox" [(ngModel)]="currentUser.isMasterBerater" name="isMasterBerater" />
-                <span>Master Berater (kann Bildungsmaterialien erstellen und teilen)</span>
-              </label>
+              <div class="checkbox-wrapper">
+                <input type="checkbox" [(ngModel)]="currentUser.isMasterBerater" name="isMasterBerater" class="checkbox-input" id="isMasterBerater" />
+                <label for="isMasterBerater" class="checkbox-label">Master Berater (kann Bildungsmaterialien erstellen und teilen)</label>
+              </div>
             </div>
 
             <div class="modal-actions">

@@ -64,10 +64,10 @@
         </div>
 
         <div class="filter-group checkbox-filter">
-          <label class="checkbox-label">
-            <input type="checkbox" [(ngModel)]="showCompleted" (ngModelChange)="onFilterChange()">
-            <span>{{ 'TODOS.SHOW_COMPLETED' | translate }}</span>
-          </label>
+          <div class="checkbox-wrapper-compact">
+            <input type="checkbox" [(ngModel)]="showCompleted" (ngModelChange)="onFilterChange()" class="checkbox-input" id="showCompletedDesktop">
+            <label for="showCompletedDesktop" class="checkbox-label">{{ 'TODOS.SHOW_COMPLETED' | translate }}</label>
+          </div>
         </div>
 
         <button class="btn-reset" (click)="resetFilters()" [title]="'TODOS.RESET_FILTERS' | translate">

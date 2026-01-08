@@ -27,6 +27,7 @@ export class CustomersComponent implements OnInit {
   editMode = false;
   currentCustomer: Partial<Customer> = {};
   activeMenuId: string | null = null;
+  showAddressFields = false;
 
   // Pagination
   currentPage = 1;
@@ -139,6 +140,7 @@ export class CustomersComponent implements OnInit {
 
   showCreateModal(): void {
     this.editMode = false;
+    this.showAddressFields = false;
     this.currentCustomer = {
       address: {
         street: '',
@@ -152,6 +154,9 @@ export class CustomersComponent implements OnInit {
 
   editCustomer(customer: Customer) {
     this.editMode = true;
+    // Prüfe ob Adresse vorhanden ist
+    const hasAddress = customer.address?.street || customer.address?.zip || customer.address?.city;
+    this.showAddressFields = !!hasAddress;
     this.currentCustomer = {
       ...customer,
       address: {

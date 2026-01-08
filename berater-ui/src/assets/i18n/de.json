@@ -318,6 +318,7 @@
       "DELETE_CONFIRM": "Möchten Sie diesen Kunden wirklich löschen?"
     },
     "NO_CUSTOMERS": "Keine Kunden gefunden",
+    "WANT_ADDRESS": "Möchten Sie eine Adresse eintragen?",
     "NO_CUSTOMERS_DESC": "Erstellen Sie Ihren ersten Kunden",
     "CONTRACTS_COUNT": "Verträge",
     "DETAILS": "Kundendetails",

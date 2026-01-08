@@ -322,7 +322,8 @@
     "CONTRACTS_COUNT": "Sözleşmeler",
     "DETAILS": "Müşteri Detayları",
     "ADDRESS_SEARCH": "Adres ara",
-    "ADDRESS_SEARCH_PLACEHOLDER": "Örn: Örnek Sokak 1, 12345 Berlin"
+    "ADDRESS_SEARCH_PLACEHOLDER": "Örn: Örnek Sokak 1, 12345 Berlin",
+    "WANT_ADDRESS": "Adres girmek ister misiniz?"
   },
   "METERS": {
     "TITLE": "Sayaçlar",

@@ -188,14 +188,15 @@
         <label>{{ 'EDUCATION.SHARE_WITH_BERATER' | translate }}</label>
         <div class="berater-list">
           @for (berater of beraterList; track berater._id) {
-            <div class="berater-item">
+            <div class="checkbox-wrapper-compact" style="margin-bottom: 0.5rem;">
               <input
                 type="checkbox"
                 [id]="'berater-' + berater._id"
                 [checked]="isBeraterSelected(berater._id)"
                 (change)="toggleBeraterSelection(berater, $event)"
+                class="checkbox-input"
               />
-              <label [for]="'berater-' + berater._id">
+              <label [for]="'berater-' + berater._id" class="checkbox-label">
                 {{ berater.firstName }} {{ berater.lastName }}
                 @if (berater.isMasterBerater) {
                   <span class="badge-master">Master</span>

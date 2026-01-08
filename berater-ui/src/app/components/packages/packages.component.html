@@ -101,16 +101,16 @@
               <input type="number" [(ngModel)]="formData.order" name="order">
             </div>
             <div class="form-group checkbox-group">
-              <label>
-                <input type="checkbox" [(ngModel)]="formData.isFree" name="isFree">
-                Kostenloses Paket
-              </label>
+              <div class="checkbox-wrapper">
+                <input type="checkbox" [(ngModel)]="formData.isFree" name="isFree" class="checkbox-input" id="isFree">
+                <label for="isFree" class="checkbox-label">Kostenloses Paket</label>
+              </div>
             </div>
             <div class="form-group checkbox-group">
-              <label>
-                <input type="checkbox" [(ngModel)]="formData.isActive" name="isActive">
-                Aktiv
-              </label>
+              <div class="checkbox-wrapper">
+                <input type="checkbox" [(ngModel)]="formData.isActive" name="isActive" class="checkbox-input" id="isActive">
+                <label for="isActive" class="checkbox-label">Aktiv</label>
+              </div>
             </div>
           </div>
 
@@ -118,13 +118,15 @@
             <h3>Features</h3>
             <div class="features-list">
               <div class="feature-item">
-                <label>
+                <div class="checkbox-wrapper">
                   <input type="checkbox" [(ngModel)]="fileUploadEnabled"
                          (change)="updateFileUploadFeature()"
-                         name="fileUpload">
-                  Datei-Upload
-                </label>
-                <small>Erlaubt Benutzern, Dateien zu Verträgen hochzuladen</small>
+                         name="fileUpload"
+                         class="checkbox-input"
+                         id="fileUpload">
+                  <label for="fileUpload" class="checkbox-label">Datei-Upload</label>
+                </div>
+                <small style="margin-top: 0.5rem; display: block; color: #666;">Erlaubt Benutzern, Dateien zu Verträgen hochzuladen</small>
               </div>
             </div>
           </div>

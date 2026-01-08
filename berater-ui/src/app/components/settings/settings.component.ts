@@ -229,14 +229,16 @@ import { LanguageService, Language } from '../../services/language.service';
               </div>
             </div>
 
-            <label class="checkbox-label email-reminder-checkbox">
+            <div class="checkbox-wrapper">
               <input
                 type="checkbox"
                 [(ngModel)]="settings.reminderDays.sendEmail"
                 (change)="saveSettings()"
+                class="checkbox-input"
+                id="sendEmailDesktop"
               />
-              <span>📧 {{ 'SETTINGS.REMINDERS.EMAIL_NOTIFY' | translate }}</span>
-            </label>
+              <label for="sendEmailDesktop" class="checkbox-label">📧 {{ 'SETTINGS.REMINDERS.EMAIL_NOTIFY' | translate }}</label>
+            </div>
           </div>
         </div>
 
@@ -248,23 +250,27 @@ import { LanguageService, Language } from '../../services/language.service';
           </p>
 
           <div class="setting-group">
-            <label class="checkbox-label">
+            <div class="checkbox-wrapper">
               <input
                 type="checkbox"
                 [(ngModel)]="settings.notifications.email"
                 (change)="saveSettings()"
+                class="checkbox-input"
+                id="notifyEmailDesktop"
               />
-              <span>{{ 'SETTINGS.NOTIFICATIONS.EMAIL' | translate }}</span>
-            </label>
+              <label for="notifyEmailDesktop" class="checkbox-label">{{ 'SETTINGS.NOTIFICATIONS.EMAIL' | translate }}</label>
+            </div>
 
-            <label class="checkbox-label">
+            <div class="checkbox-wrapper" style="margin-top: 0.75rem;">
               <input
                 type="checkbox"
                 [(ngModel)]="settings.notifications.browser"
                 (change)="saveSettings()"
+                class="checkbox-input"
+                id="notifyBrowserDesktop"
               />
-              <span>{{ 'SETTINGS.NOTIFICATIONS.BROWSER' | translate }}</span>
-            </label>
+              <label for="notifyBrowserDesktop" class="checkbox-label">{{ 'SETTINGS.NOTIFICATIONS.BROWSER' | translate }}</label>
+            </div>
           </div>
         </div>
         }

@@ -155,14 +155,16 @@
         </div>
       </div>
 
-      <label class="checkbox-item email-reminder">
+      <div class="checkbox-wrapper">
         <input
           type="checkbox"
           [(ngModel)]="settings.reminderDays.sendEmail"
           (change)="onSaveSettings()"
+          class="checkbox-input"
+          id="sendEmail"
         />
-        <span>📧 Zusätzlich per E-Mail benachrichtigen</span>
-      </label>
+        <label for="sendEmail" class="checkbox-label">📧 Zusätzlich per E-Mail benachrichtigen</label>
+      </div>
     </div>
 
     <!-- Benachrichtigungseinstellungen -->
@@ -173,23 +175,27 @@
       </p>
 
       <div class="checkbox-list">
-        <label class="checkbox-item">
+        <div class="checkbox-wrapper">
           <input
             type="checkbox"
             [(ngModel)]="settings.notifications.email"
             (change)="onSaveSettings()"
+            class="checkbox-input"
+            id="notifyEmail"
           />
-          <span>E-Mail-Benachrichtigungen</span>
-        </label>
+          <label for="notifyEmail" class="checkbox-label">E-Mail-Benachrichtigungen</label>
+        </div>
 
-        <label class="checkbox-item">
+        <div class="checkbox-wrapper" style="margin-top: 0.75rem;">
           <input
             type="checkbox"
             [(ngModel)]="settings.notifications.browser"
             (change)="onSaveSettings()"
+            class="checkbox-input"
+            id="notifyBrowser"
           />
-          <span>Browser-Benachrichtigungen</span>
-        </label>
+          <label for="notifyBrowser" class="checkbox-label">Browser-Benachrichtigungen</label>
+        </div>
       </div>
     </div>
     }
