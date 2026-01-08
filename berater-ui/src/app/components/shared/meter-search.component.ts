@@ -11,16 +11,29 @@ import { Util } from '../util/util';
   imports: [CommonModule, FormsModule, TranslateModule],
   template: `
     <div class="meter-search">
-      <div class="search-container" [class.with-add-button]="showAddButton">
-        <input type="text"
-              [placeholder]="'METERS.SEARCH' | translate"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchInput()"
-              (focus)="onFocus()"
-              (blur)="closeSuggestionsDelayed()"
-              class="form-control search-input"
-              autocomplete="off" />
-        @if(showAddButton){
+      <div class="search-container" [class.with-add-button]="showAddButton" [class.has-selection]="selectedMeter">
+        @if(selectedMeter){
+          <div class="selected-input">
+            <span class="selected-text">
+              {{ selectedMeter.meterNumber }}
+              <span class="selected-type">({{ getTypeLabel(selectedMeter.type) }})</span>
+              @if(selectedMeter.location?.city){
+                <span class="selected-location">· {{ formatLocation(selectedMeter) }}</span>
+              }
+            </span>
+            <button type="button" class="btn-clear" (click)="clearSelection(); $event.stopPropagation()">&times;</button>
+          </div>
+        } @else {
+          <input type="text"
+                [placeholder]="'METERS.SEARCH' | translate"
+                [(ngModel)]="searchQuery"
+                (input)="onSearchInput()"
+                (focus)="onFocus()"
+                (blur)="closeSuggestionsDelayed()"
+                class="form-control search-input"
+                autocomplete="off" />
+        }
+        @if(showAddButton && !selectedMeter){
           <button type="button" class="btn-add-inline" (click)="addNew.emit()" [title]="'METERS.NEW' | translate">
             <i class="fas fa-plus"></i>
           </button>
@@ -54,19 +67,6 @@ import { Util } from '../util/util';
           <div class="dropdown-item no-results">
             {{ 'COMMON.NO_RESULTS' | translate }}
           </div>
-        </div>
-      }
-
-      @if(selectedMeter){
-        <div class="selected-item">
-          <span class="selected-text">
-            <strong>{{ selectedMeter.meterNumber }}</strong>
-            <span class="selected-type">({{ getTypeLabel(selectedMeter.type) }})</span>
-            @if(selectedMeter.location?.city){
-              <span class="selected-location">- {{ formatLocation(selectedMeter) }}</span>
-            }
-          </span>
-          <button type="button" class="btn-clear" (click)="clearSelection()">&times;</button>
         </div>
       }
     </div>
@@ -195,22 +195,25 @@ import { Util } from '../util/util';
       width: 100%;
     }
 
-    .selected-item {
+    .selected-input {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 100%;
       background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
       border: 1px solid #2196f3;
       border-radius: 8px;
       padding: 0.75rem 1rem;
-      margin-top: 0.5rem;
+      min-height: 46px;
     }
 
     .selected-text {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.25rem;
+      font-weight: 500;
+      color: var(--text-primary, #333);
     }
 
     .selected-type {
@@ -221,6 +224,7 @@ import { Util } from '../util/util';
     .selected-location {
       color: var(--text-secondary, #666);
       font-size: 0.9rem;
+      font-weight: normal;
     }
 
     .btn-clear {
@@ -232,6 +236,7 @@ import { Util } from '../util/util';
       padding: 0 0.5rem;
       line-height: 1;
       transition: color 0.2s;
+      flex-shrink: 0;
     }
 
     .btn-clear:hover {

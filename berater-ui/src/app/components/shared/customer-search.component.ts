@@ -10,16 +10,28 @@ import { Customer } from '../../services/customer.service';
   imports: [CommonModule, FormsModule, TranslateModule],
   template: `
     <div class="customer-search">
-      <div class="search-container" [class.with-add-button]="showAddButton">
-        <input type="text"
-              [placeholder]="'CUSTOMERS.SEARCH' | translate"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchInput()"
-              (focus)="onFocus()"
-              (blur)="closeSuggestionsDelayed()"
-              class="form-control search-input"
-              autocomplete="off" />
-        @if(showAddButton){
+      <div class="search-container" [class.with-add-button]="showAddButton" [class.has-selection]="selectedCustomer">
+        @if(selectedCustomer){
+          <div class="selected-input">
+            <span class="selected-text">
+              {{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}
+              @if(formatAddress(selectedCustomer)){
+                <span class="selected-address">· {{ formatAddress(selectedCustomer) }}</span>
+              }
+            </span>
+            <button type="button" class="btn-clear" (click)="clearSelection(); $event.stopPropagation()">&times;</button>
+          </div>
+        } @else {
+          <input type="text"
+                [placeholder]="'CUSTOMERS.SEARCH' | translate"
+                [(ngModel)]="searchQuery"
+                (input)="onSearchInput()"
+                (focus)="onFocus()"
+                (blur)="closeSuggestionsDelayed()"
+                class="form-control search-input"
+                autocomplete="off" />
+        }
+        @if(showAddButton && !selectedCustomer){
           <button type="button" class="btn-add-inline" (click)="addNew.emit()" [title]="'CUSTOMERS.NEW' | translate">
             <i class="fas fa-plus"></i>
           </button>
@@ -33,9 +45,6 @@ import { Customer } from '../../services/customer.service';
                 [class.selected]="selectedCustomer?._id === customer._id"
                 (mousedown)="selectCustomer(customer); $event.preventDefault()">
               <span class="customer-name">{{ customer.firstName }} {{ customer.lastName }}</span>
-              <!-- @if(customer.customerNumber){
-                <span class="customer-number">#{{ customer.customerNumber }}</span>
-              } -->
               @if(formatAddress(customer)){
                 <span class="customer-address">{{ formatAddress(customer) }}</span>
               }
@@ -49,21 +58,6 @@ import { Customer } from '../../services/customer.service';
           <div class="dropdown-item no-results">
             {{ 'COMMON.NO_RESULTS' | translate }}
           </div>
-        </div>
-      }
-
-      @if(selectedCustomer){
-        <div class="selected-item">
-          <span class="selected-text">
-            <strong>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</strong>
-            @if(selectedCustomer.customerNumber){
-              <span class="selected-number">(#{{ selectedCustomer.customerNumber }})</span>
-            }
-            @if(formatAddress(selectedCustomer)){
-              <span class="selected-address">- {{ formatAddress(selectedCustomer) }}</span>
-            }
-          </span>
-          <button type="button" class="btn-clear" (click)="clearSelection()">&times;</button>
         </div>
       }
     </div>
@@ -181,32 +175,31 @@ import { Customer } from '../../services/customer.service';
       width: 100%;
     }
 
-    .selected-item {
+    .selected-input {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 100%;
       background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
       border: 1px solid #4caf50;
       border-radius: 8px;
       padding: 0.75rem 1rem;
-      margin-top: 0.5rem;
+      min-height: 46px;
     }
 
     .selected-text {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.5rem;
-    }
-
-    .selected-number {
-      color: var(--text-secondary, #666);
-      font-weight: normal;
+      gap: 0.25rem;
+      font-weight: 500;
+      color: var(--text-primary, #333);
     }
 
     .selected-address {
       color: var(--text-secondary, #666);
       font-size: 0.9rem;
+      font-weight: normal;
     }
 
     .btn-clear {
@@ -218,6 +211,7 @@ import { Customer } from '../../services/customer.service';
       padding: 0 0.5rem;
       line-height: 1;
       transition: color 0.2s;
+      flex-shrink: 0;
     }
 
     .btn-clear:hover {
