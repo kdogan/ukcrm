@@ -5,6 +5,7 @@ import { AdminService, AppUser, UserStats } from '../../services/admin.service';
 import { TableContainerComponent } from "../shared/tablecontainer.component";
 import { ViewportService } from '../../services/viewport.service';
 import { AdminMobileComponent } from './mobile/admin-mobile.component';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
     selector: 'app-admin',
@@ -565,7 +566,8 @@ export class AdminComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
-    private viewport: ViewportService
+    private viewport: ViewportService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -586,7 +588,7 @@ export class AdminComponent implements OnInit {
       },
       error: (error) => {
         console.error('Fehler beim Laden der Benutzer:', error);
-        alert('Benutzer konnten nicht geladen werden');
+        this.toastService.error('Benutzer konnten nicht geladen werden');
       }
     });
   }
@@ -658,27 +660,29 @@ export class AdminComponent implements OnInit {
     if (this.editMode && this.currentUser._id) {
       this.adminService.updateUser(this.currentUser._id, this.currentUser).subscribe({
         next: () => {
+          this.toastService.success('Benutzer erfolgreich aktualisiert');
           this.loadUsers();
           this.loadStats();
           this.closeModal();
         },
         error: (error) => {
-          alert('Fehler beim Aktualisieren des Benutzers: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Aktualisieren des Benutzers: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     } else {
       if (!this.currentUser.password) {
-        alert('Passwort ist erforderlich');
+        this.toastService.warning('Passwort ist erforderlich');
         return;
       }
       this.adminService.createUser(this.currentUser as any).subscribe({
         next: () => {
+          this.toastService.success('Benutzer erfolgreich erstellt');
           this.loadUsers();
           this.loadStats();
           this.closeModal();
         },
         error: (error) => {
-          alert('Fehler beim Erstellen des Benutzers: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Erstellen des Benutzers: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     }
@@ -698,18 +702,19 @@ export class AdminComponent implements OnInit {
 
   confirmBlockUser(): void {
     if (!this.blockReason) {
-      alert('Bitte geben Sie einen Grund an');
+      this.toastService.warning('Bitte geben Sie einen Grund an');
       return;
     }
     if (this.selectedUser) {
       this.adminService.blockUser(this.selectedUser._id, this.blockReason).subscribe({
         next: () => {
+          this.toastService.success('Benutzer erfolgreich blockiert');
           this.loadUsers();
           this.loadStats();
           this.closeBlockModal();
         },
         error: (error) => {
-          alert('Fehler beim Blockieren: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Blockieren: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     }
@@ -719,11 +724,12 @@ export class AdminComponent implements OnInit {
     if (confirm('Benutzer wirklich entsperren?')) {
       this.adminService.unblockUser(id).subscribe({
         next: () => {
+          this.toastService.success('Benutzer erfolgreich entsperrt');
           this.loadUsers();
           this.loadStats();
         },
         error: (error) => {
-          alert('Fehler beim Entsperren: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Entsperren: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     }
@@ -743,17 +749,17 @@ export class AdminComponent implements OnInit {
 
   confirmResetPassword(): void {
     if (!this.newPassword || this.newPassword.length < 8) {
-      alert('Passwort muss mindestens 8 Zeichen lang sein');
+      this.toastService.warning('Passwort muss mindestens 8 Zeichen lang sein');
       return;
     }
     if (this.selectedUser) {
       this.adminService.resetPassword(this.selectedUser._id, this.newPassword).subscribe({
         next: () => {
-          alert('Passwort erfolgreich zurückgesetzt');
+          this.toastService.success('Passwort erfolgreich zurückgesetzt');
           this.closePasswordModal();
         },
         error: (error) => {
-          alert('Fehler beim Zurücksetzen: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Zurücksetzen: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     }
@@ -763,11 +769,12 @@ export class AdminComponent implements OnInit {
     if (confirm('Benutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
       this.adminService.deleteUser(id).subscribe({
         next: () => {
+          this.toastService.success('Benutzer erfolgreich gelöscht');
           this.loadUsers();
           this.loadStats();
         },
         error: (error) => {
-          alert('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     }

@@ -16,6 +16,8 @@ import { Util } from '../util/util';
 import { CustomerSearchComponent } from '../shared/customer-search.component';
 import { ContractSearchComponent } from '../shared/contract-search.component';
 import { MeterSearchComponent } from '../shared/meter-search.component';
+import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
     selector: 'app-todos',
@@ -69,7 +71,9 @@ export class TodosComponent implements OnInit {
     private contractService: ContractService,
     private meterService: MeterService,
     private router: Router,
-    public viewportService: ViewportService
+    public viewportService: ViewportService,
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) { }
 
   ngOnInit(): void {
@@ -371,42 +375,51 @@ export class TodosComponent implements OnInit {
       this.todoService.updateTodo(this.currentTodo._id, todoData).subscribe({
         next: (response) => {
           if (response.success) {
+            this.toastService.success('TODO erfolgreich gespeichert');
             this.loadTodos();
             this.closeModal();
           }
         },
         error: (error) => {
-          alert('Fehler beim Speichern: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Speichern: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     } else {
       this.todoService.createTodo(todoData).subscribe({
         next: (response) => {
           if (response.success) {
+            this.toastService.success('TODO erfolgreich erstellt');
             this.loadTodos();
             this.closeModal();
           }
         },
         error: (error) => {
-          alert('Fehler beim Erstellen: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Erstellen: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     }
   }
 
-  deleteTodo(id: string): void {
-    if (!confirm('Möchten Sie dieses TODO wirklich löschen?')) {
-      return;
-    }
+  async deleteTodo(id: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'TODO löschen',
+      message: 'Möchten Sie dieses TODO wirklich löschen?',
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
 
     this.todoService.deleteTodo(id).subscribe({
       next: (response) => {
         if (response.success) {
+          this.toastService.success('TODO erfolgreich gelöscht');
           this.loadTodos();
         }
       },
       error: (error) => {
-        alert('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -415,29 +428,36 @@ export class TodosComponent implements OnInit {
     this.todoService.completeTodo(id).subscribe({
       next: (response) => {
         if (response.success) {
+          this.toastService.success('TODO erfolgreich abgeschlossen');
           this.loadTodos();
         }
       },
       error: (error) => {
-        alert('Fehler beim Abschließen: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Abschließen: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
 
-  generateAutoTodos(): void {
-    if (!confirm('Möchten Sie automatische TODOs für ablaufende Verträge generieren?')) {
-      return;
-    }
+  async generateAutoTodos(): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Automatische TODOs generieren',
+      message: 'Möchten Sie automatische TODOs für ablaufende Verträge generieren?',
+      confirmText: 'Generieren',
+      cancelText: 'Abbrechen',
+      type: 'info'
+    });
+
+    if (!confirmed) return;
 
     this.todoService.generateExpiringContractTodos().subscribe({
       next: (response) => {
         if (response.success) {
-          alert(response.message);
+          this.toastService.success(response.message);
           this.loadTodos();
         }
       },
       error: (error) => {
-        alert('Fehler beim Generieren: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Generieren: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }

@@ -9,6 +9,7 @@ import { ViewportService } from '../../services/viewport.service';
 import { EducationDesktopComponent } from './desktop/education-desktop.component';
 import { EducationMobileComponent } from './mobile/education-mobile.component';
 import { OverlayModalComponent } from '../shared/overlay-modal.component';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-education',
@@ -95,7 +96,8 @@ export class EducationComponent implements OnInit, OnDestroy {
     private educationService: EducationService,
     private authService: AuthService,
     public viewportService: ViewportService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -298,13 +300,14 @@ export class EducationComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Fehler beim Aktualisieren:', error);
-          alert('Fehler beim Aktualisieren des Materials');
+          this.toastService.error('Fehler beim Aktualisieren des Materials');
         }
       });
     } else {
       this.educationService.createMaterial(materialData).subscribe({
         next: (response) => {
           if (response.success) {
+            this.toastService.success('Material erfolgreich erstellt');
             this.loadMaterials();
             if (this.isMasterBerater) {
               this.loadStats();
@@ -314,7 +317,7 @@ export class EducationComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Fehler beim Erstellen:', error);
-          alert('Fehler beim Erstellen des Materials');
+          this.toastService.error('Fehler beim Erstellen des Materials');
         }
       });
     }
@@ -344,7 +347,7 @@ export class EducationComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Fehler beim Löschen:', error);
-          alert('Fehler beim Löschen des Materials');
+          this.toastService.error('Fehler beim Löschen des Materials');
         }
       });
     }
@@ -381,7 +384,7 @@ export class EducationComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('PDF konnte nicht geladen werden', err);
-          alert('PDF konnte nicht geladen werden');
+          this.toastService.error('PDF konnte nicht geladen werden');
         }
       });
     } else if (material.type === 'link') {
@@ -447,7 +450,7 @@ onPdfSelected(event: any): void {
   if (!file) return;
 
   if (file.size > 12 * 1024 * 1024) { // 12 MB Limit
-    alert('Die PDF-Datei darf maximal 12 MB groß sein.');
+    this.toastService.warning('Die PDF-Datei darf maximal 12 MB groß sein.');
     event.target.value = ''; // Input zurücksetzen
     return;
   }

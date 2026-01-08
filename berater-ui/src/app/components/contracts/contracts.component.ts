@@ -24,6 +24,7 @@ import { AddressAutocompleteComponent, AddressData } from '../shared/address-aut
 import { CustomerSearchComponent } from '../shared/customer-search.component';
 import { MeterSearchComponent } from '../shared/meter-search.component';
 import { SupplierSearchComponent } from '../shared/supplier-search.component';
+import { ToastService } from '../../shared/services/toast.service';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -135,7 +136,8 @@ export class ContractsComponent implements OnInit {
     private router: Router,
     private packageService: PackageService,
     public viewportService: ViewportService,
-    public packageFeatureService: PackageFeatureService
+    public packageFeatureService: PackageFeatureService,
+    private toastService: ToastService
   ) { }
 
   ngOnInit(): void {
@@ -358,7 +360,7 @@ export class ContractsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Fehler beim Laden des Vertrags:', error);
-        alert('Vertrag konnte nicht geladen werden: ' + (error.error?.message || error.message));
+        this.toastService.error('Vertrag konnte nicht geladen werden: ' + (error.error?.message || error.message));
       }
     });
   }
@@ -786,7 +788,7 @@ export class ContractsComponent implements OnInit {
         },
         error: (error) => {
           this.isSaving = false;
-          alert('Fehler beim Aktualisieren des Vertrags: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Aktualisieren des Vertrags: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     } else {
@@ -815,7 +817,7 @@ export class ContractsComponent implements OnInit {
               this.router.navigate(['/packages']);
             }
           } else {
-            alert('Fehler beim Erstellen des Vertrags: ' + (errorData?.message || 'Unbekannter Fehler'));
+            this.toastService.error('Fehler beim Erstellen des Vertrags: ' + (errorData?.message || 'Unbekannter Fehler'));
           }
         }
       });
@@ -849,7 +851,7 @@ export class ContractsComponent implements OnInit {
             this.closeModal();
             this.loadContracts();
             this.loadFreeMeters();
-            alert('Einige Dateien konnten nicht hochgeladen werden.');
+            this.toastService.warning('Einige Dateien konnten nicht hochgeladen werden.');
           }
         }
       });
@@ -897,7 +899,7 @@ export class ContractsComponent implements OnInit {
           this.loadFreeMeters();
         },
         error: (error: any) => {
-          alert('Fehler beim Löschen des Vertrags: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Löschen des Vertrags: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     }
@@ -915,7 +917,7 @@ export class ContractsComponent implements OnInit {
         },
         error: (error) => {
           console.error('Fehler beim Laden der Kundendetails:', error);
-          alert('Kundendetails konnten nicht geladen werden');
+          this.toastService.error('Kundendetails konnten nicht geladen werden');
         }
       });
     } else {
@@ -971,7 +973,7 @@ export class ContractsComponent implements OnInit {
         },
         error: (error) => {
           console.error('Fehler beim Laden der Anbieterdetails:', error);
-          alert('Anbieterdetails konnten nicht geladen werden');
+          this.toastService.error('Anbieterdetails konnten nicht geladen werden');
         }
       });
     } else {
@@ -996,7 +998,7 @@ export class ContractsComponent implements OnInit {
         },
         error: (error) => {
           console.error('Fehler beim Laden der Zählerdetails:', error);
-          alert('Zählerdetails konnten nicht geladen werden');
+          this.toastService.error('Zählerdetails konnten nicht geladen werden');
         }
       });
     } else {
@@ -1033,7 +1035,7 @@ export class ContractsComponent implements OnInit {
 
     // Dateigrößenprüfung (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      alert('Datei ist zu groß! Maximale Größe: 10MB');
+      this.toastService.warning('Datei ist zu groß! Maximale Größe: 10MB');
       return;
     }
 
@@ -1055,7 +1057,7 @@ export class ContractsComponent implements OnInit {
         },
         error: (error) => {
           this.uploadingFile = false;
-          alert('Fehler beim Hochladen: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Hochladen: ' + (error.error?.message || 'Unbekannter Fehler'));
           event.target.value = '';
         }
       });
@@ -1079,7 +1081,7 @@ export class ContractsComponent implements OnInit {
         window.URL.revokeObjectURL(url);
       },
       error: (error) => {
-        alert('Fehler beim Herunterladen: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Herunterladen: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -1106,7 +1108,7 @@ export class ContractsComponent implements OnInit {
             }
           },
           error: (error) => {
-            alert('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
+            this.toastService.error('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
           }
         });
       }
@@ -1162,7 +1164,7 @@ export class ContractsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Fehler beim Laden des Bildes:', error);
-        alert('Fehler beim Laden des Bildes');
+        this.toastService.error('Fehler beim Laden des Bildes');
         this.closeImageViewer();
       }
     });
@@ -1189,7 +1191,7 @@ export class ContractsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Fehler beim Laden des Bildes:', error);
-        alert('Fehler beim Laden des Bildes');
+        this.toastService.error('Fehler beim Laden des Bildes');
         this.closeImageViewer();
       }
     });
@@ -1206,7 +1208,7 @@ export class ContractsComponent implements OnInit {
         window.URL.revokeObjectURL(url);
       },
       error: (error) => {
-        alert('Fehler beim Herunterladen: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Herunterladen: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -1333,11 +1335,11 @@ export class ContractsComponent implements OnInit {
           // Schließe das Modal
           this.closeSupplierCreationModal();
 
-          alert('Anbieter erfolgreich erstellt!');
+          this.toastService.success('Anbieter erfolgreich erstellt!');
         }
       },
       error: (error) => {
-        alert('Fehler beim Erstellen des Anbieters: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Erstellen des Anbieters: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -1377,7 +1379,7 @@ export class ContractsComponent implements OnInit {
       },
       error: (error) => {
         this.savingNewCustomer = false;
-        alert('Fehler beim Erstellen des Kunden: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Erstellen des Kunden: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -1398,11 +1400,11 @@ export class ContractsComponent implements OnInit {
           // Schließe das Modal
           this.closeMeterCreationModal();
 
-          alert('Zähler erfolgreich erstellt!');
+          this.toastService.success('Zähler erfolgreich erstellt!');
         }
       },
       error: (error) => {
-        alert('Fehler beim Erstellen des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Erstellen des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }

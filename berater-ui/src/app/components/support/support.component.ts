@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TodoService, Todo } from '../../services/todo.service';
 import { AuthService } from '../../services/auth.service';
 import { FileViewerService } from '../../shared/services/file-viewer.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-support',
@@ -46,7 +47,8 @@ export class SupportComponent implements OnInit {
   constructor(
     private todoService: TodoService,
     private authService: AuthService,
-    private fileViewerService: FileViewerService
+    private fileViewerService: FileViewerService,
+    private toastService: ToastService
   ) {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -168,7 +170,7 @@ export class SupportComponent implements OnInit {
 
   createTicket(): void {
     if (!this.newTicket.title || !this.newTicket.description) {
-      alert('Bitte Titel und Beschreibung eingeben');
+      this.toastService.warning('Bitte Titel und Beschreibung eingeben');
       return;
     }
 
@@ -184,14 +186,14 @@ export class SupportComponent implements OnInit {
     this.todoService.createSupportTicket(formData).subscribe({
       next: (response) => {
         if (response.success) {
-          alert('Support-Ticket erfolgreich erstellt');
+          this.toastService.success('Support-Ticket erfolgreich erstellt');
           this.closeCreateModal();
           this.loadTickets();
         }
       },
       error: (error) => {
         console.error('Fehler beim Erstellen des Tickets:', error);
-        alert('Fehler beim Erstellen des Tickets');
+        this.toastService.error('Fehler beim Erstellen des Tickets');
       }
     });
   }
@@ -224,7 +226,7 @@ export class SupportComponent implements OnInit {
     const hasResponse = beraterHasResponse || adminHasResponse;
 
     if (!statusChanged && !hasResponse) {
-      alert('Bitte eine Antwort eingeben oder den Status ändern');
+      this.toastService.warning('Bitte eine Antwort eingeben oder den Status ändern');
       return;
     }
 
@@ -239,11 +241,11 @@ export class SupportComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           if (hasResponse && statusChanged) {
-            alert('Antwort und Status erfolgreich aktualisiert');
+            this.toastService.success('Antwort und Status erfolgreich aktualisiert');
           } else if (hasResponse) {
-            alert('Antwort erfolgreich gespeichert');
+            this.toastService.success('Antwort erfolgreich gespeichert');
           } else if (statusChanged) {
-            alert('Status erfolgreich geändert');
+            this.toastService.success('Status erfolgreich geändert');
           }
           this.closeViewModal();
           this.loadTickets();
@@ -251,7 +253,7 @@ export class SupportComponent implements OnInit {
       },
       error: (error) => {
         console.error('Fehler beim Speichern:', error);
-        alert('Fehler beim Speichern');
+        this.toastService.error('Fehler beim Speichern');
       }
     });
   }
@@ -272,14 +274,14 @@ export class SupportComponent implements OnInit {
     ).subscribe({
       next: (response) => {
         if (response.success) {
-          alert('Ticket erfolgreich abgeschlossen');
+          this.toastService.success('Ticket erfolgreich abgeschlossen');
           this.closeViewModal();
           this.loadTickets();
         }
       },
       error: (error) => {
         console.error('Fehler beim Abschließen des Tickets:', error);
-        alert('Fehler beim Abschließen des Tickets');
+        this.toastService.error('Fehler beim Abschließen des Tickets');
       }
     });
   }

@@ -5,6 +5,7 @@ import { ContractService } from '../../services/contract.service';
 import { MeterService } from '../../services/meter.service';
 import { ReminderService } from '../../services/reminder.service';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
+import { ToastService } from '../../shared/services/toast.service';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -152,7 +153,7 @@ export class MetersComponent implements OnInit {
   meters: any[] = [];
   statusFilter = '';
 
-  constructor(private meterService: MeterService) {}
+  constructor(private meterService: MeterService, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.loadMeters();
@@ -173,7 +174,7 @@ export class MetersComponent implements OnInit {
   }
 
   viewHistory(meterId: string): void {
-    alert('Historie-Ansicht für Zähler: ' + meterId);
+    this.toastService.info('Historie-Ansicht für Zähler: ' + meterId);
   }
 }
 

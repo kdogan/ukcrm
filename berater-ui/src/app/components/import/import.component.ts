@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { ToastService } from '../../shared/services/toast.service';
 
 interface ImportResult {
   success: number;
@@ -31,7 +32,10 @@ export class ImportComponent {
   isImportingCustomers = false;
   isImportingMeters = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private toastService: ToastService
+  ) {}
 
   onCustomerFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -51,7 +55,7 @@ export class ImportComponent {
 
   importCustomers(): void {
     if (!this.selectedCustomerFile) {
-      alert('Bitte wählen Sie eine Datei aus');
+      this.toastService.warning('Bitte wählen Sie eine Datei aus');
       return;
     }
 
@@ -67,13 +71,14 @@ export class ImportComponent {
         this.customerImportResult = response.data;
         this.isImportingCustomers = false;
         this.selectedCustomerFile = null;
+        this.toastService.success(`${response.data.success} Kunden erfolgreich importiert`);
         // Reset file input
         const input = document.getElementById('customerFileInput') as HTMLInputElement;
         if (input) input.value = '';
       },
       error: (error) => {
         console.error('Fehler beim Import:', error);
-        alert(error.error?.message || 'Fehler beim Importieren der Kunden');
+        this.toastService.error(error.error?.message || 'Fehler beim Importieren der Kunden');
         this.isImportingCustomers = false;
       }
     });
@@ -81,7 +86,7 @@ export class ImportComponent {
 
   importMeters(): void {
     if (!this.selectedMeterFile) {
-      alert('Bitte wählen Sie eine Datei aus');
+      this.toastService.warning('Bitte wählen Sie eine Datei aus');
       return;
     }
 
@@ -97,13 +102,14 @@ export class ImportComponent {
         this.meterImportResult = response.data;
         this.isImportingMeters = false;
         this.selectedMeterFile = null;
+        this.toastService.success(`${response.data.success} Zähler erfolgreich importiert`);
         // Reset file input
         const input = document.getElementById('meterFileInput') as HTMLInputElement;
         if (input) input.value = '';
       },
       error: (error) => {
         console.error('Fehler beim Import:', error);
-        alert(error.error?.message || 'Fehler beim Importieren der Zähler');
+        this.toastService.error(error.error?.message || 'Fehler beim Importieren der Zähler');
         this.isImportingMeters = false;
       }
     });

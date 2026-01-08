@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FileViewerComponent } from './shared/components/file-viewer/file-viewer.component';
+import { ToastComponent } from './shared/components/toast/toast.component';
+import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
 import { LanguageService } from './services/language.service';
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, FileViewerComponent],
+    imports: [RouterOutlet, FileViewerComponent, ToastComponent, ConfirmDialogComponent],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     standalone: true

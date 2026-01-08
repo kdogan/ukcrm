@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContractService, MeterService, ReminderService } from '../../services/data.services';
+import { ToastService } from '../../shared/services/toast.service';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -151,7 +152,7 @@ export class MetersComponent implements OnInit {
   meters: any[] = [];
   statusFilter = '';
 
-  constructor(private meterService: MeterService) {}
+  constructor(private meterService: MeterService, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.loadMeters();
@@ -172,7 +173,7 @@ export class MetersComponent implements OnInit {
   }
 
   viewHistory(meterId: string): void {
-    alert('Historie-Ansicht für Zähler: ' + meterId);
+    this.toastService.info('Historie-Ansicht für Zähler: ' + meterId);
   }
 }
 

@@ -12,6 +12,8 @@ import { CustomerDetailComponent, CustomerContract } from "../shared/customer-de
 import { CustomerFormComponent, CustomerFormData } from '../shared/customer-form.component';
 import { Contract } from 'src/app/models/contract.model';
 import { TranslateModule } from '@ngx-translate/core';
+import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
     selector: 'app-customers',
@@ -45,7 +47,8 @@ export class CustomersComponent implements OnInit {
     private contractService: ContractService,
     private route: ActivatedRoute,
     private router: Router,
-    private viewport: ViewportService
+    private viewport: ViewportService,
+    private toastService: ToastService
   ) {}
 
     get isMobile() {
@@ -80,7 +83,7 @@ export class CustomersComponent implements OnInit {
       },
       error: (error) => {
         console.error('Fehler beim Laden des Kunden:', error);
-        alert('Kunde konnte nicht geladen werden');
+        this.toastService.error('Kunde konnte nicht geladen werden');
       }
     });
   }
@@ -224,7 +227,7 @@ export class CustomersComponent implements OnInit {
         },
         error: (error) => {
           const errorMessage = error.error?.message || 'Kunde konnte nicht gelöscht werden';
-          alert(errorMessage);
+          this.toastService.error(errorMessage);
         }
       });
     }

@@ -18,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CustomerDetailComponent, CustomerContract } from '../shared/customer-detail.component';
 import { MeterDetailComponent, MeterContract } from '../shared/meter-detail.component';
 import { Customer } from '../../services/customer.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
     selector: 'app-meters',
@@ -85,7 +86,8 @@ meterTypes: any;
     private customerService: CustomerService,
     private route: ActivatedRoute,
     private router: Router,
-    private viewport: ViewportService
+    private viewport: ViewportService,
+    private toastService: ToastService
   ) { }
 
   ngOnInit(): void {
@@ -121,7 +123,7 @@ meterTypes: any;
       },
       error: (error) => {
         console.error('Fehler beim Laden des Zählers:', error);
-        alert('Zähler konnte nicht geladen werden');
+        this.toastService.error('Zähler konnte nicht geladen werden');
       }
     });
   }
@@ -229,7 +231,7 @@ meterTypes: any;
           }
         },
         error: (error) => {
-          alert('Fehler beim Aktualisieren des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Aktualisieren des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     } else {
@@ -241,7 +243,7 @@ meterTypes: any;
           }
         },
         error: (error) => {
-          alert('Fehler beim Erstellen des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
+          this.toastService.error('Fehler beim Erstellen des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
         }
       });
     }
@@ -252,7 +254,7 @@ meterTypes: any;
   }
 
   viewHistory(meterId: string): void {
-    alert('Historie-Ansicht für Zähler: ' + meterId);
+    this.toastService.info('Historie-Ansicht für Zähler: ' + meterId);
   }
 
   showAddReadingModal(meter: any): void {
@@ -280,22 +282,22 @@ meterTypes: any;
 
   saveReading(): void {
 
-    if (!this.selectedMeterForReading || (this.selectedMeterForReading.isTwoTariff && !this.currentReading.readingValueHT) || 
+    if (!this.selectedMeterForReading || (this.selectedMeterForReading.isTwoTariff && !this.currentReading.readingValueHT) ||
        (!this.selectedMeterForReading.isTwoTariff && !this.currentReading.readingValue)) {
-      alert('Bitte geben Sie einen Zählerstand ein');
+      this.toastService.warning('Bitte geben Sie einen Zählerstand ein');
       return;
     }
-    
+
     this.meterReadingService.createReading(this.selectedMeterForReading._id, this.currentReading).subscribe({
       next: (response) => {
         if (response.success) {
           this.closeReadingModal();
           this.loadMeters(); // Reload to get updated reading
-          alert('Ablesung erfolgreich gespeichert');
+          this.toastService.success('Ablesung erfolgreich gespeichert');
         }
       },
       error: (error) => {
-        alert('Fehler beim Speichern der Ablesung: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Speichern der Ablesung: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -310,7 +312,7 @@ meterTypes: any;
         }
       },
       error: (error) => {
-        alert('Fehler beim Laden der Ablesungen: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Laden der Ablesungen: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -334,7 +336,7 @@ meterTypes: any;
         }
       },
       error: (error) => {
-        alert('Fehler beim Löschen der Ablesung: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Löschen der Ablesung: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -370,11 +372,11 @@ meterTypes: any;
       next: (response) => {
         if (response.success) {
           this.loadMeters();
-          alert('Zähler erfolgreich gelöscht');
+          this.toastService.success('Zähler erfolgreich gelöscht');
         }
       },
       error: (error) => {
-        alert('Fehler beim Löschen des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Löschen des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -451,7 +453,7 @@ meterTypes: any;
       error: (error) => {
         console.error('Fehler beim Laden der Jahresschätzungen:', error);
         this.yearlyEstimatesLoading = false;
-        alert('Fehler beim Laden der Jahresschätzungen: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Laden der Jahresschätzungen: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }

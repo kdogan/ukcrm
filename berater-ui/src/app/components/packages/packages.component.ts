@@ -5,6 +5,7 @@ import { PackageService, Package, UserLimits } from '../../services/package.serv
 import { UpgradeService } from '../../services/upgrade.service';
 import { AuthService } from '../../services/auth.service';
 import { PaypalService } from '../../services/paypal.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
     selector: 'app-packages',
@@ -40,7 +41,8 @@ export class PackagesComponent implements OnInit {
     private packageService: PackageService,
     private upgradeService: UpgradeService,
     private authService: AuthService,
-    private paypalService: PaypalService
+    private paypalService: PaypalService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -148,26 +150,28 @@ export class PackagesComponent implements OnInit {
       this.packageService.updatePackage(this.editingPackage._id, packageData).subscribe({
         next: (response: any) => {
           if (response.success) {
+            this.toastService.success('Paket erfolgreich aktualisiert');
             this.loadPackages();
             this.cancelEdit();
           }
         },
         error: (error: any) => {
           console.error('Error updating package:', error);
-          alert('Fehler beim Aktualisieren des Pakets');
+          this.toastService.error('Fehler beim Aktualisieren des Pakets');
         }
       });
     } else {
       this.packageService.createPackage(packageData).subscribe({
         next: (response: any) => {
           if (response.success) {
+            this.toastService.success('Paket erfolgreich erstellt');
             this.loadPackages();
             this.cancelEdit();
           }
         },
         error: (error: any) => {
           console.error('Error creating package:', error);
-          alert('Fehler beim Erstellen des Pakets');
+          this.toastService.error('Fehler beim Erstellen des Pakets');
         }
       });
     }
@@ -178,12 +182,13 @@ export class PackagesComponent implements OnInit {
       this.packageService.deletePackage(id).subscribe({
         next: (response: any) => {
           if (response.success) {
+            this.toastService.success('Paket erfolgreich gelöscht');
             this.loadPackages();
           }
         },
         error: (error: any) => {
           console.error('Error deleting package:', error);
-          alert('Fehler beim Löschen des Pakets');
+          this.toastService.error('Fehler beim Löschen des Pakets');
         }
       });
     }
@@ -255,7 +260,7 @@ export class PackagesComponent implements OnInit {
         this.packageService.upgradePackage(packageName, billingInterval).subscribe({
           next: (response: any) => {
             if (response.success) {
-              alert(`${action} erfolgreich!\n\nNeues Paket: ${response.subscription.package}\nZahlungsintervall: ${response.subscription.billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich'}\nPreis: ${response.subscription.price} ${targetPackage.currency}\n\n${response.message}`);
+              this.toastService.success(`${action} erfolgreich! Neues Paket: ${response.subscription.package}`);
               // Aktualisiere User-Daten im AuthService (inkl. packageFeatures)
               if (response.data) {
                 this.authService.updateCurrentUser(response.data);
@@ -267,7 +272,7 @@ export class PackagesComponent implements OnInit {
           error: (error: any) => {
             console.error('Error changing package:', error);
             const errorMessage = error.error?.message || 'Unbekannter Fehler';
-            alert('Fehler beim Paket-Wechsel: ' + errorMessage);
+            this.toastService.error('Fehler beim Paket-Wechsel: ' + errorMessage);
           }
         });
       } else {
@@ -296,12 +301,12 @@ export class PackagesComponent implements OnInit {
           window.location.href = response.approvalUrl;
         } else {
           console.error('❌ Invalid PayPal response:', response);
-          alert('Fehler beim Erstellen der PayPal-Bestellung');
+          this.toastService.error('Fehler beim Erstellen der PayPal-Bestellung');
         }
       },
       error: (error) => {
         console.error('❌ Error creating PayPal order:', error);
-        alert('Fehler beim Erstellen der PayPal-Bestellung: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Erstellen der PayPal-Bestellung: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }

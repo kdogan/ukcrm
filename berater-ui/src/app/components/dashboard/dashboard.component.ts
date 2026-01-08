@@ -11,6 +11,7 @@ import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { DashboardMobileComponent } from './mobile/dashboard-mobile.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -45,7 +46,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private adminService: AdminService,
     private subscriptionService: SubscriptionService,
-    private viewport: ViewportService
+    private viewport: ViewportService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -138,13 +140,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptionService.downgradeExpiredSubscriptions().subscribe({
       next: (response) => {
         if (response.success) {
-          alert(`${response.data.length} Paket(e) wurden erfolgreich herabgestuft.`);
+          this.toastService.success(`${response.data.length} Paket(e) wurden erfolgreich herabgestuft.`);
           this.loadExpiringSubscriptions(); // Reload list
         }
       },
       error: (error) => {
         console.error('Error downgrading packages:', error);
-        alert(error.error?.message || 'Fehler beim Herabstufen der Pakete');
+        this.toastService.error(error.error?.message || 'Fehler beim Herabstufen der Pakete');
       }
     });
   }
@@ -273,7 +275,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.adminService.approveUpgradeRequest(requestId, adminNotes || undefined).subscribe({
         next: (response: any) => {
           if (response.success) {
-            alert(`Upgrade erfolgreich genehmigt!\n\nBenutzer: ${response.data.updatedUser.email}\nNeues Paket: ${response.data.updatedUser.package}`);
+            this.toastService.success(`Upgrade erfolgreich genehmigt! Benutzer: ${response.data.updatedUser.email}, Neues Paket: ${response.data.updatedUser.package}`);
             // Dashboard neu laden
             if (this.isSuperAdmin) {
               this.loadUserStats();
@@ -285,7 +287,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
         error: (error: any) => {
           console.error('Error approving upgrade:', error);
-          alert(error.error?.message || 'Fehler beim Genehmigen der Anfrage');
+          this.toastService.error(error.error?.message || 'Fehler beim Genehmigen der Anfrage');
         }
       });
     }
@@ -295,7 +297,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const rejectionReason = prompt('Bitte geben Sie einen Ablehnungsgrund ein:');
 
     if (!rejectionReason) {
-      alert('Ablehnungsgrund ist erforderlich');
+      this.toastService.warning('Ablehnungsgrund ist erforderlich');
       return;
     }
 
@@ -305,7 +307,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.adminService.rejectUpgradeRequest(requestId, rejectionReason, adminNotes || undefined).subscribe({
         next: (response: any) => {
           if (response.success) {
-            alert('Upgrade-Anfrage wurde abgelehnt');
+            this.toastService.success('Upgrade-Anfrage wurde abgelehnt');
             // Dashboard neu laden
             if (this.isSuperAdmin) {
               this.loadUserStats();
@@ -317,7 +319,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
         error: (error: any) => {
           console.error('Error rejecting upgrade:', error);
-          alert(error.error?.message || 'Fehler beim Ablehnen der Anfrage');
+          this.toastService.error(error.error?.message || 'Fehler beim Ablehnen der Anfrage');
         }
       });
     }

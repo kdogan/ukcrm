@@ -8,6 +8,8 @@ import { SuppliersMobileComponent } from './mobile/suppliers-mobile.component';
 import { OverlayModalComponent } from "../shared/overlay-modal.component";
 import { TranslateModule } from '@ngx-translate/core';
 import { AddressAutocompleteComponent, AddressData } from '../shared/address-autocomplete.component';
+import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
     selector: 'app-suppliers',
@@ -27,7 +29,9 @@ export class SuppliersComponent implements OnInit {
 
   constructor(
     private supplierService: SupplierService,
-    private viewport: ViewportService
+    private viewport: ViewportService,
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) {}
 
   get isMobile() {
@@ -87,6 +91,7 @@ export class SuppliersComponent implements OnInit {
     if (this.editMode && this.currentSupplier._id) {
       this.supplierService.updateSupplier(this.currentSupplier._id, this.currentSupplier).subscribe({
         next: () => {
+          this.toastService.success('Anbieter erfolgreich aktualisiert');
           this.loadSuppliers();
           this.closeModal();
         },
@@ -100,12 +105,13 @@ export class SuppliersComponent implements OnInit {
           } else if (error.error?.message) {
             errorMessage = error.error.message;
           }
-          alert(errorMessage);
+          this.toastService.error(errorMessage);
         }
       });
     } else {
       this.supplierService.createSupplier(this.currentSupplier).subscribe({
         next: () => {
+          this.toastService.success('Anbieter erfolgreich erstellt');
           this.loadSuppliers();
           this.closeModal();
         },
@@ -119,22 +125,33 @@ export class SuppliersComponent implements OnInit {
           } else if (error.error?.message) {
             errorMessage = error.error.message;
           }
-          alert(errorMessage);
+          this.toastService.error(errorMessage);
         }
       });
     }
   }
 
-  deleteSupplier(id: string): void {
-    if (confirm('Anbieter wirklich löschen?')) {
-      this.supplierService.deleteSupplier(id).subscribe({
-        next: () => this.loadSuppliers(),
-        error: (error) => {
-          console.error('Fehler beim Löschen des Anbieters:', error);
-          alert('Fehler beim Löschen des Anbieters');
-        }
-      });
-    }
+  async deleteSupplier(id: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Anbieter löschen',
+      message: 'Möchten Sie diesen Anbieter wirklich löschen?',
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
+
+    this.supplierService.deleteSupplier(id).subscribe({
+      next: () => {
+        this.toastService.success('Anbieter erfolgreich gelöscht');
+        this.loadSuppliers();
+      },
+      error: (error) => {
+        console.error('Fehler beim Löschen des Anbieters:', error);
+        this.toastService.error('Fehler beim Löschen des Anbieters');
+      }
+    });
   }
 
   toggleActionMenu(id: string): void {

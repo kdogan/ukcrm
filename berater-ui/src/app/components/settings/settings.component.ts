@@ -10,6 +10,7 @@ import { ViewportService } from 'src/app/services/viewport.service';
 import { SettingsMobileComponent } from './mobile/settings-mobile.component';
 import { PaypalService } from '../../services/paypal.service';
 import { LanguageService, Language } from '../../services/language.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
     selector: 'app-settings',
@@ -1669,7 +1670,8 @@ export class SettingsComponent implements OnInit {
     private authService: AuthService,
     private viewport: ViewportService,
     private paypalService: PaypalService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private toastService: ToastService
   ) {}
 
   get isMobile() {
@@ -1817,7 +1819,7 @@ export class SettingsComponent implements OnInit {
         this.packageService.upgradePackage(packageName, billingInterval).subscribe({
           next: (response: any) => {
             if (response.success) {
-              alert(`${action} erfolgreich!\n\nNeues Paket: ${response.subscription.package}\nZahlungsintervall: ${response.subscription.billingInterval === 'yearly' ? 'Jährlich' : 'Monatlich'}\nPreis: ${response.subscription.price} ${targetPackage.currency}\n\n${response.message}`);
+              this.toastService.success(`${action} erfolgreich! Neues Paket: ${response.subscription.package}`);
               // Aktualisiere User-Daten im AuthService (inkl. packageFeatures)
               if (response.data) {
                 this.authService.updateCurrentUser(response.data);
@@ -1829,7 +1831,7 @@ export class SettingsComponent implements OnInit {
           error: (error: any) => {
             console.error('Error changing package:', error);
             const errorMessage = error.error?.message || 'Unbekannter Fehler';
-            alert('Fehler beim Paket-Wechsel: ' + errorMessage);
+            this.toastService.error('Fehler beim Paket-Wechsel: ' + errorMessage);
           }
         });
       } else {
@@ -1858,12 +1860,12 @@ export class SettingsComponent implements OnInit {
           window.location.href = response.approvalUrl;
         } else {
           console.error('❌ [Settings] Invalid PayPal response:', response);
-          alert('Fehler beim Erstellen der PayPal-Bestellung');
+          this.toastService.error('Fehler beim Erstellen der PayPal-Bestellung');
         }
       },
       error: (error) => {
         console.error('❌ [Settings] Error creating PayPal order:', error);
-        alert('Fehler beim Erstellen der PayPal-Bestellung: ' + (error.error?.message || 'Unbekannter Fehler'));
+        this.toastService.error('Fehler beim Erstellen der PayPal-Bestellung: ' + (error.error?.message || 'Unbekannter Fehler'));
       }
     });
   }
@@ -1985,7 +1987,7 @@ export class SettingsComponent implements OnInit {
         next: (response) => {
           this.isRenewing = false;
           if (response.success) {
-            alert(response.message || 'Paket erfolgreich verlängert!');
+            this.toastService.success(response.message || 'Paket erfolgreich verlängert!');
             this.loadSubscriptionInfo();
             this.loadUserLimits();
           }
@@ -1993,7 +1995,7 @@ export class SettingsComponent implements OnInit {
         error: (err) => {
           this.isRenewing = false;
           console.error('Error renewing package:', err);
-          alert(err.error?.message || 'Fehler bei der Paketverlängerung');
+          this.toastService.error(err.error?.message || 'Fehler bei der Paketverlängerung');
         }
       });
     }
@@ -2009,7 +2011,7 @@ export class SettingsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error saving settings:', err);
-        alert('Fehler beim Speichern der Einstellungen');
+        this.toastService.error('Fehler beim Speichern der Einstellungen');
       }
     });
   }
@@ -2026,7 +2028,7 @@ export class SettingsComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error resetting settings:', err);
-          alert('Fehler beim Zurücksetzen der Einstellungen');
+          this.toastService.error('Fehler beim Zurücksetzen der Einstellungen');
         }
       });
     }
@@ -2035,12 +2037,12 @@ export class SettingsComponent implements OnInit {
   changePassword(): void {
     // Validation
     if (this.newPassword.length < 8) {
-      alert('Das neue Passwort muss mindestens 8 Zeichen lang sein.');
+      this.toastService.warning('Das neue Passwort muss mindestens 8 Zeichen lang sein.');
       return;
     }
 
     if (this.newPassword !== this.confirmPassword) {
-      alert('Die Passwörter stimmen nicht überein.');
+      this.toastService.warning('Die Passwörter stimmen nicht überein.');
       return;
     }
 
@@ -2050,7 +2052,7 @@ export class SettingsComponent implements OnInit {
       next: (response) => {
         this.isChangingPassword = false;
         if (response.success) {
-          alert('Passwort erfolgreich geändert!');
+          this.toastService.success('Passwort erfolgreich geändert!');
           // Reset form
           this.currentPassword = '';
           this.newPassword = '';
@@ -2060,14 +2062,14 @@ export class SettingsComponent implements OnInit {
       error: (error) => {
         this.isChangingPassword = false;
         const errorMessage = error.error?.message || 'Fehler beim Ändern des Passworts';
-        alert(errorMessage);
+        this.toastService.error(errorMessage);
       }
     });
   }
 
   saveProfile(): void {
     if (!this.profileFirstName.trim() || !this.profileLastName.trim()) {
-      alert('Bitte geben Sie Vor- und Nachname ein.');
+      this.toastService.warning('Bitte geben Sie Vor- und Nachname ein.');
       return;
     }
 
@@ -2080,6 +2082,7 @@ export class SettingsComponent implements OnInit {
       next: (response) => {
         this.isSavingProfile = false;
         if (response.success) {
+          this.toastService.success('Profil erfolgreich gespeichert');
           this.showSaveIndicator = true;
           setTimeout(() => {
             this.showSaveIndicator = false;
@@ -2089,7 +2092,7 @@ export class SettingsComponent implements OnInit {
       error: (error) => {
         this.isSavingProfile = false;
         const errorMessage = error.error?.message || 'Fehler beim Speichern des Profils';
-        alert(errorMessage);
+        this.toastService.error(errorMessage);
       }
     });
   }
