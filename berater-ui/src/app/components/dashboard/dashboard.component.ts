@@ -12,6 +12,7 @@ import { ViewportService } from 'src/app/services/viewport.service';
 import { DashboardMobileComponent } from './mobile/dashboard-mobile.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -47,7 +48,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private adminService: AdminService,
     private subscriptionService: SubscriptionService,
     private viewport: ViewportService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) {}
 
   ngOnInit(): void {
@@ -132,10 +134,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.expiringSubscriptions.filter(sub => sub.warningLevel === level).length;
   }
 
-  downgradeExpiredPackages(): void {
-    if (!confirm('Möchten Sie wirklich alle abgelaufenen Pakete auf "Free" herabstufen?')) {
-      return;
-    }
+  async downgradeExpiredPackages(): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Pakete herabstufen',
+      message: 'Möchten Sie wirklich alle abgelaufenen Pakete auf "Free" herabstufen?',
+      confirmText: 'Herabstufen',
+      cancelText: 'Abbrechen',
+      type: 'warning'
+    });
+
+    if (!confirmed) return;
 
     this.subscriptionService.downgradeExpiredSubscriptions().subscribe({
       next: (response) => {
@@ -268,32 +276,40 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  approveUpgrade(requestId: string): void {
+  async approveUpgrade(requestId: string): Promise<void> {
     const adminNotes = prompt('Optional: Notizen zur Genehmigung eingeben');
 
-    if (confirm('Möchten Sie diese Upgrade-Anfrage wirklich genehmigen?\n\nDas Benutzer-Paket wird automatisch aktualisiert.')) {
-      this.adminService.approveUpgradeRequest(requestId, adminNotes || undefined).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            this.toastService.success(`Upgrade erfolgreich genehmigt! Benutzer: ${response.data.updatedUser.email}, Neues Paket: ${response.data.updatedUser.package}`);
-            // Dashboard neu laden
-            if (this.isSuperAdmin) {
-              this.loadUserStats();
-              this.loadStats(); // Reload to update upgrade requests
-            } else {
-              this.loadStats();
-            }
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Upgrade genehmigen',
+      message: 'Möchten Sie diese Upgrade-Anfrage wirklich genehmigen?\n\nDas Benutzer-Paket wird automatisch aktualisiert.',
+      confirmText: 'Genehmigen',
+      cancelText: 'Abbrechen',
+      type: 'info'
+    });
+
+    if (!confirmed) return;
+
+    this.adminService.approveUpgradeRequest(requestId, adminNotes || undefined).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.toastService.success(`Upgrade erfolgreich genehmigt! Benutzer: ${response.data.updatedUser.email}, Neues Paket: ${response.data.updatedUser.package}`);
+          // Dashboard neu laden
+          if (this.isSuperAdmin) {
+            this.loadUserStats();
+            this.loadStats(); // Reload to update upgrade requests
+          } else {
+            this.loadStats();
           }
-        },
-        error: (error: any) => {
-          console.error('Error approving upgrade:', error);
-          this.toastService.error(error.error?.message || 'Fehler beim Genehmigen der Anfrage');
         }
-      });
-    }
+      },
+      error: (error: any) => {
+        console.error('Error approving upgrade:', error);
+        this.toastService.error(error.error?.message || 'Fehler beim Genehmigen der Anfrage');
+      }
+    });
   }
 
-  rejectUpgrade(requestId: string): void {
+  async rejectUpgrade(requestId: string): Promise<void> {
     const rejectionReason = prompt('Bitte geben Sie einen Ablehnungsgrund ein:');
 
     if (!rejectionReason) {
@@ -303,25 +319,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const adminNotes = prompt('Optional: Zusätzliche Notizen eingeben');
 
-    if (confirm(`Möchten Sie diese Upgrade-Anfrage wirklich ablehnen?\n\nGrund: ${rejectionReason}`)) {
-      this.adminService.rejectUpgradeRequest(requestId, rejectionReason, adminNotes || undefined).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            this.toastService.success('Upgrade-Anfrage wurde abgelehnt');
-            // Dashboard neu laden
-            if (this.isSuperAdmin) {
-              this.loadUserStats();
-              this.loadStats(); // Reload to update upgrade requests
-            } else {
-              this.loadStats();
-            }
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Upgrade ablehnen',
+      message: `Möchten Sie diese Upgrade-Anfrage wirklich ablehnen?\n\nGrund: ${rejectionReason}`,
+      confirmText: 'Ablehnen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
+
+    this.adminService.rejectUpgradeRequest(requestId, rejectionReason, adminNotes || undefined).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.toastService.success('Upgrade-Anfrage wurde abgelehnt');
+          // Dashboard neu laden
+          if (this.isSuperAdmin) {
+            this.loadUserStats();
+            this.loadStats(); // Reload to update upgrade requests
+          } else {
+            this.loadStats();
           }
-        },
-        error: (error: any) => {
-          console.error('Error rejecting upgrade:', error);
-          this.toastService.error(error.error?.message || 'Fehler beim Ablehnen der Anfrage');
         }
-      });
-    }
+      },
+      error: (error: any) => {
+        console.error('Error rejecting upgrade:', error);
+        this.toastService.error(error.error?.message || 'Fehler beim Ablehnen der Anfrage');
+      }
+    });
   }
 }

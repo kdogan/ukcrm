@@ -798,6 +798,10 @@ form {
   }
 
   .filter-group {
+    min-width: unset;
+    max-width: unset;
+    width: 100%;
+
     label {
       font-size: 0.85rem;
     }

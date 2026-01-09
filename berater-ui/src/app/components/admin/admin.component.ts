@@ -6,6 +6,7 @@ import { TableContainerComponent } from "../shared/tablecontainer.component";
 import { ViewportService } from '../../services/viewport.service';
 import { AdminMobileComponent } from './mobile/admin-mobile.component';
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
     selector: 'app-admin',
@@ -567,7 +568,8 @@ export class AdminComponent implements OnInit {
   constructor(
     private adminService: AdminService,
     private viewport: ViewportService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) {}
 
   ngOnInit(): void {
@@ -720,19 +722,27 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  unblockUser(id: string): void {
-    if (confirm('Benutzer wirklich entsperren?')) {
-      this.adminService.unblockUser(id).subscribe({
-        next: () => {
-          this.toastService.success('Benutzer erfolgreich entsperrt');
-          this.loadUsers();
-          this.loadStats();
-        },
-        error: (error) => {
-          this.toastService.error('Fehler beim Entsperren: ' + (error.error?.message || 'Unbekannter Fehler'));
-        }
-      });
-    }
+  async unblockUser(id: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Benutzer entsperren',
+      message: 'Möchten Sie diesen Benutzer wirklich entsperren?',
+      confirmText: 'Entsperren',
+      cancelText: 'Abbrechen',
+      type: 'warning'
+    });
+
+    if (!confirmed) return;
+
+    this.adminService.unblockUser(id).subscribe({
+      next: () => {
+        this.toastService.success('Benutzer erfolgreich entsperrt');
+        this.loadUsers();
+        this.loadStats();
+      },
+      error: (error) => {
+        this.toastService.error('Fehler beim Entsperren: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
   }
 
   showResetPasswordModal(user: AppUser): void {
@@ -765,19 +775,27 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  deleteUser(id: string): void {
-    if (confirm('Benutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
-      this.adminService.deleteUser(id).subscribe({
-        next: () => {
-          this.toastService.success('Benutzer erfolgreich gelöscht');
-          this.loadUsers();
-          this.loadStats();
-        },
-        error: (error) => {
-          this.toastService.error('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
-        }
-      });
-    }
+  async deleteUser(id: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Benutzer löschen',
+      message: 'Möchten Sie diesen Benutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
+
+    this.adminService.deleteUser(id).subscribe({
+      next: () => {
+        this.toastService.success('Benutzer erfolgreich gelöscht');
+        this.loadUsers();
+        this.loadStats();
+      },
+      error: (error) => {
+        this.toastService.error('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
   }
 
   toggleActionMenu(id: string, event: MouseEvent, isBlocked: boolean = false): void {

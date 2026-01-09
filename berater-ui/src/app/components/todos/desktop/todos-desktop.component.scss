@@ -117,12 +117,14 @@
 
 .filters-row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr) auto;
+  grid-template-columns: repeat(3, 1fr) auto auto;
   gap: 1rem;
   margin-bottom: 1rem;
+  align-items: end;
 }
 
 .filter-group {
+
   label {
     display: block;
     margin-bottom: 0.5rem;

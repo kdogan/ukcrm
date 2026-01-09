@@ -6,6 +6,7 @@ import { TodoService, Todo } from '../../services/todo.service';
 import { AuthService } from '../../services/auth.service';
 import { FileViewerService } from '../../shared/services/file-viewer.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-support',
@@ -48,7 +49,8 @@ export class SupportComponent implements OnInit {
     private todoService: TodoService,
     private authService: AuthService,
     private fileViewerService: FileViewerService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -258,14 +260,20 @@ export class SupportComponent implements OnInit {
     });
   }
 
-  closeTicket(): void {
+  async closeTicket(): Promise<void> {
     if (!this.selectedTicket) {
       return;
     }
 
-    if (!confirm('Möchten Sie dieses Ticket wirklich als abgeschlossen markieren?')) {
-      return;
-    }
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Ticket abschließen',
+      message: 'Möchten Sie dieses Ticket wirklich als abgeschlossen markieren?',
+      confirmText: 'Abschließen',
+      cancelText: 'Abbrechen',
+      type: 'warning'
+    });
+
+    if (!confirmed) return;
 
     this.todoService.respondToSupportTicket(
       this.selectedTicket._id,

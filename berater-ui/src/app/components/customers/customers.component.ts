@@ -48,7 +48,8 @@ export class CustomersComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private viewport: ViewportService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) {}
 
     get isMobile() {
@@ -217,20 +218,29 @@ export class CustomersComponent implements OnInit {
     }
   }
 
-  deleteCustomer(id: string): void {
-    if (confirm('Kunde wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
-      this.customerService.deleteCustomer(id).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadCustomers();
-          }
-        },
-        error: (error) => {
-          const errorMessage = error.error?.message || 'Kunde konnte nicht gelöscht werden';
-          this.toastService.error(errorMessage);
+  async deleteCustomer(id: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Kunde löschen',
+      message: 'Möchten Sie diesen Kunden wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
+
+    this.customerService.deleteCustomer(id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.toastService.success('Kunde erfolgreich gelöscht');
+          this.loadCustomers();
         }
-      });
-    }
+      },
+      error: (error) => {
+        const errorMessage = error.error?.message || 'Kunde konnte nicht gelöscht werden';
+        this.toastService.error(errorMessage);
+      }
+    });
   }
 
   toggleActionMenu(id: string): void {

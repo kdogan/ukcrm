@@ -25,6 +25,7 @@ import { CustomerSearchComponent } from '../shared/customer-search.component';
 import { MeterSearchComponent } from '../shared/meter-search.component';
 import { SupplierSearchComponent } from '../shared/supplier-search.component';
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -137,7 +138,8 @@ export class ContractsComponent implements OnInit {
     private packageService: PackageService,
     public viewportService: ViewportService,
     public packageFeatureService: PackageFeatureService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) { }
 
   ngOnInit(): void {
@@ -224,16 +226,20 @@ export class ContractsComponent implements OnInit {
 
         // Prüfe ob das Vertragslimit erreicht ist
         if (userLimits.limits.isAtContractLimit) {
-          const confirmUpgrade = confirm(
-            `Sie haben das Vertragslimit Ihres ${userLimits.package.displayName}-Pakets erreicht!\n\n` +
-            `Aktuell: ${userLimits.usage.contracts} / ${userLimits.limits.maxContracts} Verträge\n\n` +
-            `Um weitere Verträge anzulegen, müssen Sie Ihr Paket upgraden.\n\n` +
-            `Möchten Sie jetzt zur Paket-Verwaltung wechseln?`
-          );
-
-          if (confirmUpgrade) {
-            this.router.navigate(['/settings']);
-          }
+          this.confirmDialog.confirm({
+            title: 'Vertragslimit erreicht',
+            message: `Sie haben das Vertragslimit Ihres ${userLimits.package.displayName}-Pakets erreicht!\n\n` +
+              `Aktuell: ${userLimits.usage.contracts} / ${userLimits.limits.maxContracts} Verträge\n\n` +
+              `Um weitere Verträge anzulegen, müssen Sie Ihr Paket upgraden.\n\n` +
+              `Möchten Sie jetzt zur Paket-Verwaltung wechseln?`,
+            confirmText: 'Zur Paket-Verwaltung',
+            cancelText: 'Abbrechen',
+            type: 'warning'
+          }).then(confirmed => {
+            if (confirmed) {
+              this.router.navigate(['/settings']);
+            }
+          });
           return;
         }
 
@@ -671,16 +677,20 @@ export class ContractsComponent implements OnInit {
 
         // Prüfe ob das Vertragslimit erreicht ist
         if (userLimits.limits.isAtContractLimit) {
-          const confirmUpgrade = confirm(
-            `Sie haben das Vertragslimit Ihres ${userLimits.package.displayName}-Pakets erreicht!\n\n` +
-            `Aktuell: ${userLimits.usage.contracts} / ${userLimits.limits.maxContracts} Verträge\n\n` +
-            `Um weitere Verträge anzulegen, müssen Sie Ihr Paket upgraden.\n\n` +
-            `Möchten Sie jetzt zur Paket-Verwaltung wechseln?`
-          );
-
-          if (confirmUpgrade) {
-            this.router.navigate(['/settings']);
-          }
+          this.confirmDialog.confirm({
+            title: 'Vertragslimit erreicht',
+            message: `Sie haben das Vertragslimit Ihres ${userLimits.package.displayName}-Pakets erreicht!\n\n` +
+              `Aktuell: ${userLimits.usage.contracts} / ${userLimits.limits.maxContracts} Verträge\n\n` +
+              `Um weitere Verträge anzulegen, müssen Sie Ihr Paket upgraden.\n\n` +
+              `Möchten Sie jetzt zur Paket-Verwaltung wechseln?`,
+            confirmText: 'Zur Paket-Verwaltung',
+            cancelText: 'Abbrechen',
+            type: 'warning'
+          }).then(confirmed => {
+            if (confirmed) {
+              this.router.navigate(['/settings']);
+            }
+          });
           return;
         }
 
@@ -812,10 +822,17 @@ export class ContractsComponent implements OnInit {
           this.isSaving = false;
           const errorData = error.error;
           if (errorData?.limitReached && errorData?.upgradeRequired) {
-            const message = `${errorData.message}\n\nSie haben derzeit ${errorData.currentCount} von ${errorData.maxAllowed} Verträgen.\n\nMöchten Sie Ihr Paket jetzt upgraden?`;
-            if (confirm(message)) {
-              this.router.navigate(['/packages']);
-            }
+            this.confirmDialog.confirm({
+              title: 'Vertragslimit erreicht',
+              message: `${errorData.message}\n\nSie haben derzeit ${errorData.currentCount} von ${errorData.maxAllowed} Verträgen.\n\nMöchten Sie Ihr Paket jetzt upgraden?`,
+              confirmText: 'Paket upgraden',
+              cancelText: 'Abbrechen',
+              type: 'warning'
+            }).then(confirmed => {
+              if (confirmed) {
+                this.router.navigate(['/packages']);
+              }
+            });
           } else {
             this.toastService.error('Fehler beim Erstellen des Vertrags: ' + (errorData?.message || 'Unbekannter Fehler'));
           }
@@ -891,18 +908,27 @@ export class ContractsComponent implements OnInit {
     this.activeMenuId = null;
   }
 
-  deleteContract(id: string): void {
-    if (confirm('Vertrag wirklich löschen?')) {
-      this.contractService.deleteContract(id).subscribe({
-        next: () => {
-          this.loadContracts();
-          this.loadFreeMeters();
-        },
-        error: (error: any) => {
-          this.toastService.error('Fehler beim Löschen des Vertrags: ' + (error.error?.message || 'Unbekannter Fehler'));
-        }
-      });
-    }
+  async deleteContract(id: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Vertrag löschen',
+      message: 'Möchten Sie diesen Vertrag wirklich löschen?',
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
+
+    this.contractService.deleteContract(id).subscribe({
+      next: () => {
+        this.toastService.success('Vertrag erfolgreich gelöscht');
+        this.loadContracts();
+        this.loadFreeMeters();
+      },
+      error: (error: any) => {
+        this.toastService.error('Fehler beim Löschen des Vertrags: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
   }
 
   showCustomerDetails(id: string): void {
@@ -1086,32 +1112,41 @@ export class ContractsComponent implements OnInit {
     });
   }
 
-  deleteAttachment(attachment: any): void {
+  async deleteAttachment(attachment: any): Promise<void> {
     const fileName = attachment.originalName || attachment.name;
-    if (confirm(`Datei "${fileName}" wirklich löschen?`)) {
-      // Wenn attachment eine File-Instanz ist (pending), nur aus pendingFiles entfernen
-      if (attachment instanceof File) {
-        const index = this.pendingFiles.indexOf(attachment);
-        if (index > -1) {
-          this.pendingFiles.splice(index, 1);
-        }
-      } else {
-        // Ansonsten ist es ein bereits hochgeladenes Attachment - Backend-Call
-        this.contractService.deleteAttachment(this.currentContract._id, attachment._id).subscribe({
-          next: (response) => {
-            if (response.success) {
-              // Attachment aus Liste entfernen
-              const index = this.currentContract.attachments.findIndex((a: any) => a._id === attachment._id);
-              if (index > -1) {
-                this.currentContract.attachments.splice(index, 1);
-              }
-            }
-          },
-          error: (error) => {
-            this.toastService.error('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
-          }
-        });
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Datei löschen',
+      message: `Möchten Sie die Datei "${fileName}" wirklich löschen?`,
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
+
+    // Wenn attachment eine File-Instanz ist (pending), nur aus pendingFiles entfernen
+    if (attachment instanceof File) {
+      const index = this.pendingFiles.indexOf(attachment);
+      if (index > -1) {
+        this.pendingFiles.splice(index, 1);
       }
+    } else {
+      // Ansonsten ist es ein bereits hochgeladenes Attachment - Backend-Call
+      this.contractService.deleteAttachment(this.currentContract._id, attachment._id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.toastService.success('Datei erfolgreich gelöscht');
+            // Attachment aus Liste entfernen
+            const index = this.currentContract.attachments.findIndex((a: any) => a._id === attachment._id);
+            if (index > -1) {
+              this.currentContract.attachments.splice(index, 1);
+            }
+          }
+        },
+        error: (error) => {
+          this.toastService.error('Fehler beim Löschen: ' + (error.error?.message || 'Unbekannter Fehler'));
+        }
+      });
     }
   }
 

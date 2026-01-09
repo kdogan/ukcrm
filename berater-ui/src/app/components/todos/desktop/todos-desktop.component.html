@@ -63,10 +63,15 @@
           </select>
         </div>
 
-        <div class="filter-group checkbox-filter">
-          <div class="checkbox-wrapper-compact">
-            <input type="checkbox" [(ngModel)]="showCompleted" (ngModelChange)="onFilterChange()" class="checkbox-input" id="showCompletedDesktop">
-            <label for="showCompletedDesktop" class="checkbox-label">{{ 'TODOS.SHOW_COMPLETED' | translate }}</label>
+        <div class="filter-group">
+          <div class="checkbox-wrapper">
+            <input type="checkbox" 
+                   [(ngModel)]="showCompleted" 
+                   (ngModelChange)="onFilterChange()" 
+                   class="checkbox-input" id="showCompletedDesktop">
+            <label for="showCompletedDesktop" class="checkbox-label">
+              {{ 'TODOS.SHOW_COMPLETED' | translate }}
+            </label>
           </div>
         </div>
 

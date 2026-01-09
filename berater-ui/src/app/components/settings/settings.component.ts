@@ -11,6 +11,7 @@ import { SettingsMobileComponent } from './mobile/settings-mobile.component';
 import { PaypalService } from '../../services/paypal.service';
 import { LanguageService, Language } from '../../services/language.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
     selector: 'app-settings',
@@ -1671,7 +1672,8 @@ export class SettingsComponent implements OnInit {
     private viewport: ViewportService,
     private paypalService: PaypalService,
     private languageService: LanguageService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) {}
 
   get isMobile() {
@@ -1784,7 +1786,7 @@ export class SettingsComponent implements OnInit {
     return fileUploadFeature ? fileUploadFeature.enabled : false;
   }
 
-  changePackage(packageName: string, packageOrder: number): void {
+  async changePackage(packageName: string, packageOrder: number): Promise<void> {
     console.log('🔵 [Settings] changePackage called:', { packageName, packageOrder });
     const isDowngrade = this.userLimits && packageOrder < this.userLimits.package.order;
     const isUpgrade = this.userLimits && packageOrder > this.userLimits.package.order;
@@ -1806,41 +1808,54 @@ export class SettingsComponent implements OnInit {
       : '';
 
     let confirmMessage = `Möchten Sie wirklich auf das ${targetPackage.displayName}-Paket ${action.toLowerCase()}?\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}${savingsText}\n\nSie werden zu PayPal weitergeleitet, um die Zahlung abzuschließen.`;
+    let dialogTitle = `Paket ${action}`;
+    let dialogType: 'warning' | 'danger' = 'warning';
 
     if (isDowngrade) {
-      confirmMessage = `ACHTUNG: Downgrade auf ${targetPackage.displayName}\n\nWenn Ihre aktuelle Nutzung die Limits des neuen Pakets überschreitet, wird der Downgrade abgelehnt.\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}\n\nMöchten Sie fortfahren?`;
+      confirmMessage = `Wenn Ihre aktuelle Nutzung die Limits des neuen Pakets überschreitet, wird der Downgrade abgelehnt.\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}\n\nMöchten Sie fortfahren?`;
+      dialogTitle = `ACHTUNG: Downgrade auf ${targetPackage.displayName}`;
+      dialogType = 'danger';
     }
 
-    if (confirm(confirmMessage)) {
-      console.log('🟢 [Settings] User confirmed the action');
-      // For downgrades and free packages, use the old method (no payment needed)
-      if (isDowngrade || targetPackage.isFree) {
-        console.log('🔵 [Settings] Using direct upgrade (downgrade or free package)');
-        this.packageService.upgradePackage(packageName, billingInterval).subscribe({
-          next: (response: any) => {
-            if (response.success) {
-              this.toastService.success(`${action} erfolgreich! Neues Paket: ${response.subscription.package}`);
-              // Aktualisiere User-Daten im AuthService (inkl. packageFeatures)
-              if (response.data) {
-                this.authService.updateCurrentUser(response.data);
-              }
-              this.loadUserLimits();
-              this.loadPackages();
-            }
-          },
-          error: (error: any) => {
-            console.error('Error changing package:', error);
-            const errorMessage = error.error?.message || 'Unbekannter Fehler';
-            this.toastService.error('Fehler beim Paket-Wechsel: ' + errorMessage);
-          }
-        });
-      } else {
-        // For upgrades and paid packages, redirect to PayPal
-        console.log('🟡 [Settings] Using PayPal for upgrade (paid package)');
-        this.purchaseWithPayPal(packageName, billingInterval);
-      }
-    } else {
+    const confirmed = await this.confirmDialog.confirm({
+      title: dialogTitle,
+      message: confirmMessage,
+      confirmText: action,
+      cancelText: 'Abbrechen',
+      type: dialogType
+    });
+
+    if (!confirmed) {
       console.log('🔴 [Settings] User cancelled the action');
+      return;
+    }
+
+    console.log('🟢 [Settings] User confirmed the action');
+    // For downgrades and free packages, use the old method (no payment needed)
+    if (isDowngrade || targetPackage.isFree) {
+      console.log('🔵 [Settings] Using direct upgrade (downgrade or free package)');
+      this.packageService.upgradePackage(packageName, billingInterval).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.toastService.success(`${action} erfolgreich! Neues Paket: ${response.subscription.package}`);
+            // Aktualisiere User-Daten im AuthService (inkl. packageFeatures)
+            if (response.data) {
+              this.authService.updateCurrentUser(response.data);
+            }
+            this.loadUserLimits();
+            this.loadPackages();
+          }
+        },
+        error: (error: any) => {
+          console.error('Error changing package:', error);
+          const errorMessage = error.error?.message || 'Unbekannter Fehler';
+          this.toastService.error('Fehler beim Paket-Wechsel: ' + errorMessage);
+        }
+      });
+    } else {
+      // For upgrades and paid packages, redirect to PayPal
+      console.log('🟡 [Settings] Using PayPal for upgrade (paid package)');
+      this.purchaseWithPayPal(packageName, billingInterval);
     }
   }
 
@@ -2016,22 +2031,30 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  resetToDefaults(): void {
-    if (confirm('Möchten Sie wirklich alle Einstellungen auf die Standardwerte zurücksetzen?')) {
-      this.settingsService.resetToDefaults().subscribe({
-        next: () => {
-          this.settings = this.settingsService.getSettings();
-          this.showSaveIndicator = true;
-          setTimeout(() => {
-            this.showSaveIndicator = false;
-          }, 2000);
-        },
-        error: (err) => {
-          console.error('Error resetting settings:', err);
-          this.toastService.error('Fehler beim Zurücksetzen der Einstellungen');
-        }
-      });
-    }
+  async resetToDefaults(): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Einstellungen zurücksetzen',
+      message: 'Möchten Sie wirklich alle Einstellungen auf die Standardwerte zurücksetzen?',
+      confirmText: 'Zurücksetzen',
+      cancelText: 'Abbrechen',
+      type: 'warning'
+    });
+
+    if (!confirmed) return;
+
+    this.settingsService.resetToDefaults().subscribe({
+      next: () => {
+        this.settings = this.settingsService.getSettings();
+        this.showSaveIndicator = true;
+        setTimeout(() => {
+          this.showSaveIndicator = false;
+        }, 2000);
+      },
+      error: (err) => {
+        console.error('Error resetting settings:', err);
+        this.toastService.error('Fehler beim Zurücksetzen der Einstellungen');
+      }
+    });
   }
 
   changePassword(): void {

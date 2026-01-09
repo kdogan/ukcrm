@@ -43,7 +43,8 @@
 }
 
 <!-- Modal for Create/Edit TODO -->
-<app-overlay-modal *ngIf="showModal" (close)="closeModal()">
+ @if(showModal){
+<app-overlay-modal (close)="closeModal()">
   <div class="modal-header">
     <h2>{{ isEditMode ? ('TODOS.EDIT' | translate) : ('TODOS.NEW' | translate) }}</h2>
     <button class="btn-close" (click)="closeModal()">&times;</button>
@@ -137,3 +138,4 @@
     </div>
   </form>
 </app-overlay-modal>
+}

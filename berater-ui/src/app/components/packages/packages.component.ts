@@ -6,6 +6,7 @@ import { UpgradeService } from '../../services/upgrade.service';
 import { AuthService } from '../../services/auth.service';
 import { PaypalService } from '../../services/paypal.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
     selector: 'app-packages',
@@ -42,7 +43,8 @@ export class PackagesComponent implements OnInit {
     private upgradeService: UpgradeService,
     private authService: AuthService,
     private paypalService: PaypalService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) {}
 
   ngOnInit(): void {
@@ -177,21 +179,29 @@ export class PackagesComponent implements OnInit {
     }
   }
 
-  deletePackage(id: string): void {
-    if (confirm('Möchten Sie dieses Paket wirklich löschen?')) {
-      this.packageService.deletePackage(id).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            this.toastService.success('Paket erfolgreich gelöscht');
-            this.loadPackages();
-          }
-        },
-        error: (error: any) => {
-          console.error('Error deleting package:', error);
-          this.toastService.error('Fehler beim Löschen des Pakets');
+  async deletePackage(id: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Paket löschen',
+      message: 'Möchten Sie dieses Paket wirklich löschen?',
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
+
+    this.packageService.deletePackage(id).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.toastService.success('Paket erfolgreich gelöscht');
+          this.loadPackages();
         }
-      });
-    }
+      },
+      error: (error: any) => {
+        console.error('Error deleting package:', error);
+        this.toastService.error('Fehler beim Löschen des Pakets');
+      }
+    });
   }
 
   cancelEdit(): void {
@@ -225,7 +235,7 @@ export class PackagesComponent implements OnInit {
     this.selectedBillingInterval[packageName] = interval;
   }
 
-  changePackage(packageName: string, packageOrder: number): void {
+  async changePackage(packageName: string, packageOrder: number): Promise<void> {
     console.log('🔵 changePackage called:', { packageName, packageOrder });
     const isDowngrade = this.userLimits && packageOrder < this.userLimits.package.order;
     const isUpgrade = this.userLimits && packageOrder > this.userLimits.package.order;
@@ -247,41 +257,54 @@ export class PackagesComponent implements OnInit {
       : '';
 
     let confirmMessage = `Möchten Sie wirklich auf das ${targetPackage.displayName}-Paket ${action.toLowerCase()}?\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}${savingsText}\n\nSie werden zu PayPal weitergeleitet, um die Zahlung abzuschließen.`;
+    let dialogTitle = `Paket ${action}`;
+    let dialogType: 'warning' | 'danger' = 'warning';
 
     if (isDowngrade) {
-      confirmMessage = `ACHTUNG: Downgrade auf ${targetPackage.displayName}\n\nWenn Ihre aktuelle Nutzung die Limits des neuen Pakets überschreitet, wird der Downgrade abgelehnt.\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}\n\nMöchten Sie fortfahren?`;
+      confirmMessage = `Wenn Ihre aktuelle Nutzung die Limits des neuen Pakets überschreitet, wird der Downgrade abgelehnt.\n\nZahlungsintervall: ${intervalText}\nPreis: ${price} ${targetPackage.currency}\n\nMöchten Sie fortfahren?`;
+      dialogTitle = `ACHTUNG: Downgrade auf ${targetPackage.displayName}`;
+      dialogType = 'danger';
     }
 
-    if (confirm(confirmMessage)) {
-      console.log('🟢 User confirmed the action');
-      // For downgrades and free packages, use the old method (no payment needed)
-      if (isDowngrade || targetPackage.isFree) {
-        console.log('🔵 Using direct upgrade (downgrade or free package)');
-        this.packageService.upgradePackage(packageName, billingInterval).subscribe({
-          next: (response: any) => {
-            if (response.success) {
-              this.toastService.success(`${action} erfolgreich! Neues Paket: ${response.subscription.package}`);
-              // Aktualisiere User-Daten im AuthService (inkl. packageFeatures)
-              if (response.data) {
-                this.authService.updateCurrentUser(response.data);
-              }
-              this.loadUserLimits();
-              this.loadPackages();
-            }
-          },
-          error: (error: any) => {
-            console.error('Error changing package:', error);
-            const errorMessage = error.error?.message || 'Unbekannter Fehler';
-            this.toastService.error('Fehler beim Paket-Wechsel: ' + errorMessage);
-          }
-        });
-      } else {
-        // For upgrades and paid packages, redirect to PayPal
-        console.log('🟡 Using PayPal for upgrade (paid package)');
-        this.purchaseWithPayPal(packageName, billingInterval);
-      }
-    } else {
+    const confirmed = await this.confirmDialog.confirm({
+      title: dialogTitle,
+      message: confirmMessage,
+      confirmText: action,
+      cancelText: 'Abbrechen',
+      type: dialogType
+    });
+
+    if (!confirmed) {
       console.log('🔴 User cancelled the action');
+      return;
+    }
+
+    console.log('🟢 User confirmed the action');
+    // For downgrades and free packages, use the old method (no payment needed)
+    if (isDowngrade || targetPackage.isFree) {
+      console.log('🔵 Using direct upgrade (downgrade or free package)');
+      this.packageService.upgradePackage(packageName, billingInterval).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.toastService.success(`${action} erfolgreich! Neues Paket: ${response.subscription.package}`);
+            // Aktualisiere User-Daten im AuthService (inkl. packageFeatures)
+            if (response.data) {
+              this.authService.updateCurrentUser(response.data);
+            }
+            this.loadUserLimits();
+            this.loadPackages();
+          }
+        },
+        error: (error: any) => {
+          console.error('Error changing package:', error);
+          const errorMessage = error.error?.message || 'Unbekannter Fehler';
+          this.toastService.error('Fehler beim Paket-Wechsel: ' + errorMessage);
+        }
+      });
+    } else {
+      // For upgrades and paid packages, redirect to PayPal
+      console.log('🟡 Using PayPal for upgrade (paid package)');
+      this.purchaseWithPayPal(packageName, billingInterval);
     }
   }
 

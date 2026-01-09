@@ -19,6 +19,7 @@ import { CustomerDetailComponent, CustomerContract } from '../shared/customer-de
 import { MeterDetailComponent, MeterContract } from '../shared/meter-detail.component';
 import { Customer } from '../../services/customer.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
     selector: 'app-meters',
@@ -87,7 +88,8 @@ meterTypes: any;
     private route: ActivatedRoute,
     private router: Router,
     private viewport: ViewportService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private confirmDialog: ConfirmDialogService
   ) { }
 
   ngOnInit(): void {
@@ -323,14 +325,21 @@ meterTypes: any;
     this.selectedMeterForReading = null;
   }
 
-  deleteReading(readingId: string): void {
-    if (!confirm('Möchten Sie diese Ablesung wirklich löschen?')) {
-      return;
-    }
+  async deleteReading(readingId: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Ablesung löschen',
+      message: 'Möchten Sie diese Ablesung wirklich löschen?',
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
 
     this.meterReadingService.deleteReading(this.selectedMeterForReading._id, readingId).subscribe({
       next: (response) => {
         if (response.success) {
+          this.toastService.success('Ablesung erfolgreich gelöscht');
           this.viewReadings(this.selectedMeterForReading); // Reload readings
           this.loadMeters(); // Reload meters to update current reading
         }
@@ -363,10 +372,16 @@ meterTypes: any;
     this.activeMenuId = null;
   }
 
-  deleteMeter(id: string): void {
-    if (!confirm('Möchten Sie diesen Zähler wirklich löschen?')) {
-      return;
-    }
+  async deleteMeter(id: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Zähler löschen',
+      message: 'Möchten Sie diesen Zähler wirklich löschen?',
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
 
     this.meterService.deleteMeter(id).subscribe({
       next: (response) => {
