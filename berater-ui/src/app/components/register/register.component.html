@@ -1,26 +1,26 @@
 <div class="register-container">
   <div class="register-box">
     <div class="logo-section">
-      <h1>Berater App</h1>
-      <p>Erstellen Sie Ihr Konto</p>
+      <h1>{{ t['appTitle'] }}</h1>
+      <p>{{ t['subtitle'] }}</p>
     </div>
 
     <div *ngIf="success" class="success-message">
       <div class="success-icon">✓</div>
       <p>{{ successMessage }}</p>
-      <p class="small">Sie werden in Kürze zum Login weitergeleitet...</p>
+      <p class="small">{{ t['successRedirect'] }}</p>
     </div>
 
     <form *ngIf="!success" [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
       <div class="form-row">
         <div class="form-group">
-          <label for="firstName">Vorname *</label>
+          <label for="firstName">{{ t['firstName'] }} *</label>
           <input
             type="text"
             id="firstName"
             formControlName="firstName"
             [class.error]="hasFieldError('firstName')"
-            placeholder="Max"
+            [placeholder]="currentLang === 'tr' ? 'Ahmet' : 'Max'"
           />
           <span *ngIf="hasFieldError('firstName')" class="error-message">
             {{ getFieldError('firstName') }}
@@ -28,13 +28,13 @@
         </div>
 
         <div class="form-group">
-          <label for="lastName">Nachname *</label>
+          <label for="lastName">{{ t['lastName'] }} *</label>
           <input
             type="text"
             id="lastName"
             formControlName="lastName"
             [class.error]="hasFieldError('lastName')"
-            placeholder="Mustermann"
+            [placeholder]="currentLang === 'tr' ? 'Yılmaz' : 'Mustermann'"
           />
           <span *ngIf="hasFieldError('lastName')" class="error-message">
             {{ getFieldError('lastName') }}
@@ -43,13 +43,13 @@
       </div>
 
       <div class="form-group">
-        <label for="email">E-Mail-Adresse *</label>
+        <label for="email">{{ t['email'] }} *</label>
         <input
           type="email"
           id="email"
           formControlName="email"
           [class.error]="hasFieldError('email')"
-          placeholder="max.mustermann@example.com"
+          [placeholder]="currentLang === 'tr' ? 'ahmet.yilmaz@example.com' : 'max.mustermann@example.com'"
         />
         <span *ngIf="hasFieldError('email')" class="error-message">
           {{ getFieldError('email') }}
@@ -57,13 +57,26 @@
       </div>
 
       <div class="form-group">
-        <label for="phone">Telefon (optional)</label>
+        <label for="phone">{{ t['phone'] }}</label>
         <input
           type="tel"
           id="phone"
           formControlName="phone"
           placeholder="+49 123 456789"
         />
+      </div>
+
+      <div class="form-group">
+        <label for="language">{{ t['language'] }} *</label>
+        <select
+          id="language"
+          formControlName="language"
+          class="language-select"
+        >
+          <option value="de">Deutsch</option>
+          <option value="tr">Türkçe</option>
+        </select>
+        <small class="form-hint">{{ t['languageHint'] }}</small>
       </div>
 
       <!-- <div class="form-group">
@@ -82,13 +95,13 @@
       </div> -->
 
       <div class="form-group">
-        <label for="password">Passwort *</label>
+        <label for="password">{{ t['password'] }} *</label>
         <input
           type="password"
           id="password"
           formControlName="password"
           [class.error]="hasFieldError('password')"
-          placeholder="Mindestens 8 Zeichen"
+          [placeholder]="t['passwordPlaceholder']"
         />
         <span *ngIf="hasFieldError('password')" class="error-message">
           {{ getFieldError('password') }}
@@ -96,13 +109,13 @@
       </div>
 
       <div class="form-group">
-        <label for="confirmPassword">Passwort wiederholen *</label>
+        <label for="confirmPassword">{{ t['confirmPassword'] }} *</label>
         <input
           type="password"
           id="confirmPassword"
           formControlName="confirmPassword"
           [class.error]="hasFieldError('confirmPassword')"
-          placeholder="Passwort wiederholen"
+          [placeholder]="t['confirmPassword']"
         />
         <span *ngIf="hasFieldError('confirmPassword')" class="error-message">
           {{ getFieldError('confirmPassword') }}
@@ -119,7 +132,12 @@
             id="acceptPrivacy"
           />
           <label for="acceptPrivacy" class="checkbox-label">
-            Ich habe die <a routerLink="/privacy" target="_blank">Datenschutzerklärung</a> gelesen und akzeptiere diese. *
+            <ng-container *ngIf="currentLang === 'de'">
+              {{ t['privacyText'] }} <a [routerLink]="['/privacy']" [queryParams]="{lang: currentLang}" target="_blank">{{ t['privacyLink'] }}</a> {{ t['privacyAccept'] }} *
+            </ng-container>
+            <ng-container *ngIf="currentLang === 'tr'">
+              <a [routerLink]="['/privacy']" [queryParams]="{lang: currentLang}" target="_blank">{{ t['privacyLink'] }}</a> {{ t['privacyAccept'] }} *
+            </ng-container>
           </label>
         </div>
         <span *ngIf="hasFieldError('acceptPrivacy')" class="error-message">
@@ -136,15 +154,15 @@
         class="btn-register"
         [disabled]="loading"
       >
-        {{ loading ? 'Registrierung läuft...' : 'Registrieren' }}
+        {{ loading ? t['registerLoading'] : t['registerButton'] }}
       </button>
 
       <div class="login-link">
-        <p>Haben Sie bereits ein Konto? <a routerLink="/login">Hier anmelden</a></p>
+        <p>{{ t['loginPrompt'] }} <a routerLink="/login">{{ t['loginLink'] }}</a></p>
       </div>
 
       <div class="privacy-link">
-        <a routerLink="/privacy">Datenschutzerklärung</a>
+        <a [routerLink]="['/privacy']" [queryParams]="{lang: currentLang}">{{ t['privacyLink'] }}</a>
       </div>
     </form>
   </div>

@@ -17,6 +17,76 @@ export class RegisterComponent {
   success = false;
   successMessage = '';
 
+  // Mehrsprachige Texte für das Registrierungsformular
+  translations: { [key: string]: { [key: string]: string } } = {
+    de: {
+      appTitle: 'Berater App',
+      subtitle: 'Erstellen Sie Ihr Konto',
+      firstName: 'Vorname',
+      lastName: 'Nachname',
+      email: 'E-Mail-Adresse',
+      phone: 'Telefon (optional)',
+      language: 'Sprache / Dil',
+      languageHint: 'E-Mails werden in der gewählten Sprache versendet.',
+      password: 'Passwort',
+      passwordPlaceholder: 'Mindestens 8 Zeichen',
+      confirmPassword: 'Passwort wiederholen',
+      privacyText: 'Ich habe die',
+      privacyLink: 'Datenschutzerklärung',
+      privacyAccept: 'gelesen und akzeptiere diese.',
+      registerButton: 'Registrieren',
+      registerLoading: 'Registrierung läuft...',
+      loginPrompt: 'Haben Sie bereits ein Konto?',
+      loginLink: 'Hier anmelden',
+      successRedirect: 'Sie werden in Kürze zum Login weitergeleitet...',
+      errorRequired: 'ist erforderlich',
+      errorEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
+      errorMinLength: 'muss mindestens',
+      errorMinLengthSuffix: 'Zeichen lang sein',
+      errorPasswordMismatch: 'Passwörter stimmen nicht überein',
+      errorPrivacy: 'Sie müssen die Datenschutzerklärung akzeptieren',
+      errorGeneric: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.'
+    },
+    tr: {
+      appTitle: 'Danışman App',
+      subtitle: 'Hesabınızı oluşturun',
+      firstName: 'Ad',
+      lastName: 'Soyad',
+      email: 'E-posta adresi',
+      phone: 'Telefon (isteğe bağlı)',
+      language: 'Sprache / Dil',
+      languageHint: 'E-postalar seçilen dilde gönderilecektir.',
+      password: 'Şifre',
+      passwordPlaceholder: 'En az 8 karakter',
+      confirmPassword: 'Şifre tekrar',
+      privacyText: '',
+      privacyLink: 'Gizlilik politikasını',
+      privacyAccept: 'okudum ve kabul ediyorum.',
+      registerButton: 'Kayıt Ol',
+      registerLoading: 'Kayıt yapılıyor...',
+      loginPrompt: 'Zaten hesabınız var mı?',
+      loginLink: 'Giriş yap',
+      successRedirect: 'Kısa süre içinde giriş sayfasına yönlendirileceksiniz...',
+      errorRequired: 'gereklidir',
+      errorEmail: 'Lütfen geçerli bir e-posta adresi girin',
+      errorMinLength: 'en az',
+      errorMinLengthSuffix: 'karakter olmalıdır',
+      errorPasswordMismatch: 'Şifreler eşleşmiyor',
+      errorPrivacy: 'Gizlilik politikasını kabul etmelisiniz',
+      errorGeneric: 'Bir hata oluştu. Lütfen tekrar deneyin.'
+    }
+  };
+
+  // Getter für aktuelle Sprache
+  get currentLang(): string {
+    return this.registerForm.get('language')?.value || 'de';
+  }
+
+  // Getter für aktuelle Übersetzungen
+  get t(): { [key: string]: string } {
+    return this.translations[this.currentLang] || this.translations['de'];
+  }
+
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
@@ -28,6 +98,7 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
       masterBeraterEmail: ['', [Validators.email]],
+      language: ['de', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]],
       acceptPrivacy: [false, [Validators.requiredTrue]]
@@ -60,9 +131,9 @@ export class RegisterComponent {
     this.error = '';
     this.success = false;
 
-    const { firstName, lastName, email, phone, password } = this.registerForm.value;
+    const { firstName, lastName, email, phone, password, language } = this.registerForm.value;
 
-    this.authService.register({ firstName, lastName, email, phone, password }).subscribe({
+    this.authService.register({ firstName, lastName, email, phone, password, language }).subscribe({
       next: (response) => {
         if (response.success) {
           this.success = true;
@@ -86,17 +157,17 @@ export class RegisterComponent {
   getFieldError(fieldName: string): string {
     const field = this.registerForm.get(fieldName);
     if (field?.touched && field?.errors) {
-      if (field.errors['required']) return `${this.getFieldLabel(fieldName)} ist erforderlich`;
-      if (field.errors['email']) return 'Bitte geben Sie eine gültige E-Mail-Adresse ein';
-      if (field.errors['minlength']) return `${this.getFieldLabel(fieldName)} muss mindestens ${field.errors['minlength'].requiredLength} Zeichen lang sein`;
-      if (field.errors['passwordMismatch']) return 'Passwörter stimmen nicht überein';
-      if (fieldName === 'acceptPrivacy' && field.errors['required']) return 'Sie müssen die Datenschutzerklärung akzeptieren';
+      if (field.errors['required']) return `${this.getFieldLabel(fieldName)} ${this.t['errorRequired']}`;
+      if (field.errors['email']) return this.t['errorEmail'];
+      if (field.errors['minlength']) return `${this.getFieldLabel(fieldName)} ${this.t['errorMinLength']} ${field.errors['minlength'].requiredLength} ${this.t['errorMinLengthSuffix']}`;
+      if (field.errors['passwordMismatch']) return this.t['errorPasswordMismatch'];
+      if (fieldName === 'acceptPrivacy' && field.errors['required']) return this.t['errorPrivacy'];
     }
     return '';
   }
 
   getFieldLabel(fieldName: string): string {
-    const labels: any = {
+    const labelsDE: any = {
       firstName: 'Vorname',
       lastName: 'Nachname',
       email: 'E-Mail',
@@ -104,6 +175,15 @@ export class RegisterComponent {
       password: 'Passwort',
       confirmPassword: 'Passwort wiederholen'
     };
+    const labelsTR: any = {
+      firstName: 'Ad',
+      lastName: 'Soyad',
+      email: 'E-posta',
+      phone: 'Telefon',
+      password: 'Şifre',
+      confirmPassword: 'Şifre tekrar'
+    };
+    const labels = this.currentLang === 'tr' ? labelsTR : labelsDE;
     return labels[fieldName] || fieldName;
   }
 

@@ -51,7 +51,7 @@ export class AuthService {
     this.loadUserFromStorage();
   }
 
-  register(userData: { firstName: string; lastName: string; email: string; phone?: string; password: string }): Observable<any> {
+  register(userData: { firstName: string; lastName: string; email: string; phone?: string; password: string; language?: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData);
   }
 

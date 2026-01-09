@@ -99,7 +99,7 @@ exports.getTestUsers = async (req, res, next) => {
 // @access  Public
 exports.register = async (req, res, next) => {
   try {
-    const { email, password, firstName, lastName, phone, masterBeraterEmail } = req.body;
+    const { email, password, firstName, lastName, phone, masterBeraterEmail, language } = req.body;
 
     // Validierung
     if (!email || !password || !firstName || !lastName) {
@@ -164,6 +164,9 @@ exports.register = async (req, res, next) => {
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 Stunden
 
+    // Sprache validieren (nur 'de' oder 'tr' erlaubt)
+    const userLanguage = ['de', 'tr'].includes(language) ? language : 'de';
+
     // Neuen User erstellen
     const user = await User.create({
       email,
@@ -175,15 +178,16 @@ exports.register = async (req, res, next) => {
       package: 'free',
       packageLimits,
       masterBerater: masterBeraterId,
+      language: userLanguage,
       isActive: false, // Nicht aktiv bis Email verifiziert
       isEmailVerified: false,
       emailVerificationToken: verificationToken,
       emailVerificationExpires: verificationExpires
     });
 
-    // Verifizierungs-Email senden
+    // Verifizierungs-Email senden (mit Sprache)
     try {
-      await emailService.sendVerificationEmail(email, firstName, verificationToken);
+      await emailService.sendVerificationEmail(email, firstName, verificationToken, userLanguage);
     } catch (emailError) {
       console.error('Fehler beim Senden der Verifizierungs-Email:', emailError);
       // Wir werfen hier keinen Fehler, damit die Registrierung trotzdem erfolgreich ist
@@ -397,9 +401,9 @@ exports.resendVerificationEmail = async (req, res, next) => {
     user.emailVerificationExpires = verificationExpires;
     await user.save();
 
-    // Email erneut senden
+    // Email erneut senden (mit Benutzersprache)
     try {
-      await emailService.sendVerificationEmail(email, user.firstName, verificationToken);
+      await emailService.sendVerificationEmail(email, user.firstName, verificationToken, user.language || 'de');
     } catch (emailError) {
       console.error('Fehler beim Senden der Verifizierungs-Email:', emailError);
       return res.status(500).json({
@@ -613,9 +617,9 @@ exports.forgotPassword = async (req, res, next) => {
     user.passwordResetExpires = resetExpires;
     await user.save();
 
-    // E-Mail mit Reset-Link senden
+    // E-Mail mit Reset-Link senden (mit Benutzersprache)
     try {
-      await emailService.sendPasswordResetEmail(email, user.firstName, resetToken);
+      await emailService.sendPasswordResetEmail(email, user.firstName, resetToken, user.language || 'de');
     } catch (emailError) {
       console.error('Fehler beim Senden der Password-Reset-Email:', emailError);
       // Token zurücksetzen bei E-Mail-Fehler

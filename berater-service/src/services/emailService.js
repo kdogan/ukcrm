@@ -1,5 +1,67 @@
 const nodemailer = require('nodemailer');
 
+// Mehrsprachige E-Mail-Texte
+const emailTranslations = {
+  verification: {
+    de: {
+      subject: 'Bestätigen Sie Ihre E-Mail-Adresse',
+      headerTitle: 'Willkommen bei Berater App!',
+      greeting: (name) => `Hallo ${name},`,
+      welcomeText: 'vielen Dank für Ihre Registrierung bei Berater App!',
+      actionText: 'Um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren, klicken Sie bitte auf den folgenden Button:',
+      buttonText: 'E-Mail-Adresse bestätigen',
+      copyLinkText: 'Oder kopieren Sie diesen Link in Ihren Browser:',
+      validityText: 'Dieser Link ist 24 Stunden gültig.',
+      ignoreText: 'Wenn Sie sich nicht registriert haben, ignorieren Sie bitte diese E-Mail.',
+      regards: 'Mit freundlichen Grüßen,',
+      teamName: 'Ihr Berater App Team',
+      footerText: 'Dies ist eine automatisch generierte E-Mail. Bitte antworten Sie nicht darauf.'
+    },
+    tr: {
+      subject: 'E-posta adresinizi onaylayın',
+      headerTitle: 'Danışman App\'e Hoş Geldiniz!',
+      greeting: (name) => `Merhaba ${name},`,
+      welcomeText: 'Danışman App\'e kaydolduğunuz için teşekkür ederiz!',
+      actionText: 'E-posta adresinizi onaylamak ve hesabınızı etkinleştirmek için lütfen aşağıdaki düğmeye tıklayın:',
+      buttonText: 'E-posta adresini onayla',
+      copyLinkText: 'Veya bu linki tarayıcınıza kopyalayın:',
+      validityText: 'Bu link 24 saat geçerlidir.',
+      ignoreText: 'Eğer kayıt olmadıysanız, lütfen bu e-postayı dikkate almayın.',
+      regards: 'Saygılarımızla,',
+      teamName: 'Danışman App Ekibi',
+      footerText: 'Bu otomatik olarak oluşturulmuş bir e-postadır. Lütfen yanıtlamayın.'
+    }
+  },
+  passwordReset: {
+    de: {
+      subject: 'Passwort zurücksetzen',
+      headerTitle: 'Passwort zurücksetzen',
+      greeting: (name) => `Hallo ${name},`,
+      requestText: 'Sie haben eine Anfrage zum Zurücksetzen Ihres Passworts gestellt.',
+      actionText: 'Klicken Sie auf den folgenden Button, um ein neues Passwort festzulegen:',
+      buttonText: 'Neues Passwort festlegen',
+      copyLinkText: 'Oder kopieren Sie diesen Link in Ihren Browser:',
+      validityText: 'Dieser Link ist nur 1 Stunde gültig.',
+      ignoreText: 'Wenn Sie diese Anfrage nicht gestellt haben, ignorieren Sie bitte diese E-Mail. Ihr Passwort bleibt unverändert.',
+      regards: 'Mit freundlichen Grüßen,',
+      teamName: 'Ihr Berater App Team'
+    },
+    tr: {
+      subject: 'Şifre sıfırlama',
+      headerTitle: 'Şifre Sıfırlama',
+      greeting: (name) => `Merhaba ${name},`,
+      requestText: 'Şifrenizi sıfırlamak için bir talep aldık.',
+      actionText: 'Yeni bir şifre belirlemek için aşağıdaki düğmeye tıklayın:',
+      buttonText: 'Yeni şifre belirle',
+      copyLinkText: 'Veya bu linki tarayıcınıza kopyalayın:',
+      validityText: 'Bu link yalnızca 1 saat geçerlidir.',
+      ignoreText: 'Bu talebi siz yapmadıysanız, lütfen bu e-postayı dikkate almayın. Şifreniz değişmeden kalacaktır.',
+      regards: 'Saygılarımızla,',
+      teamName: 'Danışman App Ekibi'
+    }
+  }
+};
+
 // Email-Transporter konfigurieren
 const createTransporter = () => {
   // Prüfe ob Email-Konfiguration vorhanden ist
@@ -36,15 +98,19 @@ const createTransporter = () => {
 };
 
 // E-Mail-Verifizierungs-E-Mail senden
-exports.sendVerificationEmail = async (email, firstName, verificationToken) => {
+exports.sendVerificationEmail = async (email, firstName, verificationToken, language = 'de') => {
   const transporter = createTransporter();
+
+  // Sprache validieren, Fallback auf Deutsch
+  const lang = ['de', 'tr'].includes(language) ? language : 'de';
+  const t = emailTranslations.verification[lang];
 
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
 
   const mailOptions = {
     from: process.env.EMAIL_FROM || 'noreply@berater-app.com',
     to: email,
-    subject: 'Bestätigen Sie Ihre E-Mail-Adresse',
+    subject: t.subject,
     html: `
       <!DOCTYPE html>
       <html>
@@ -60,7 +126,7 @@ exports.sendVerificationEmail = async (email, firstName, verificationToken) => {
             padding: 20px;
           }
           .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -74,7 +140,7 @@ exports.sendVerificationEmail = async (email, firstName, verificationToken) => {
           .button {
             display: inline-block;
             padding: 15px 30px;
-            background: #667eea;
+            background: #11998e;
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -91,33 +157,33 @@ exports.sendVerificationEmail = async (email, firstName, verificationToken) => {
       </head>
       <body>
         <div class="header">
-          <h1>Willkommen bei Berater App!</h1>
+          <h1>${t.headerTitle}</h1>
         </div>
         <div class="content">
-          <p>Hallo ${firstName},</p>
+          <p>${t.greeting(firstName)}</p>
 
-          <p>vielen Dank für Ihre Registrierung bei Berater App!</p>
+          <p>${t.welcomeText}</p>
 
-          <p>Um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren, klicken Sie bitte auf den folgenden Button:</p>
+          <p>${t.actionText}</p>
 
           <div style="text-align: center;">
-            <a href="${verificationUrl}" class="button">E-Mail-Adresse bestätigen</a>
+            <a href="${verificationUrl}" class="button">${t.buttonText}</a>
           </div>
 
-          <p>Oder kopieren Sie diesen Link in Ihren Browser:</p>
+          <p>${t.copyLinkText}</p>
           <p style="word-break: break-all; background: white; padding: 10px; border-radius: 5px;">
             ${verificationUrl}
           </p>
 
-          <p><strong>Wichtig:</strong> Dieser Link ist 24 Stunden gültig.</p>
+          <p><strong>${lang === 'de' ? 'Wichtig:' : 'Önemli:'}</strong> ${t.validityText}</p>
 
-          <p>Wenn Sie sich nicht registriert haben, ignorieren Sie bitte diese E-Mail.</p>
+          <p>${t.ignoreText}</p>
 
-          <p>Mit freundlichen Grüßen,<br>
-          Ihr Berater App Team</p>
+          <p>${t.regards}<br>
+          ${t.teamName}</p>
         </div>
         <div class="footer">
-          <p>Dies ist eine automatisch generierte E-Mail. Bitte antworten Sie nicht darauf.</p>
+          <p>${t.footerText}</p>
         </div>
       </body>
       </html>
@@ -134,16 +200,20 @@ exports.sendVerificationEmail = async (email, firstName, verificationToken) => {
   }
 };
 
-// Passwort-Reset-E-Mail senden (für zukünftige Verwendung)
-exports.sendPasswordResetEmail = async (email, firstName, resetToken) => {
+// Passwort-Reset-E-Mail senden
+exports.sendPasswordResetEmail = async (email, firstName, resetToken, language = 'de') => {
   const transporter = createTransporter();
+
+  // Sprache validieren, Fallback auf Deutsch
+  const lang = ['de', 'tr'].includes(language) ? language : 'de';
+  const t = emailTranslations.passwordReset[lang];
 
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
   const mailOptions = {
     from: process.env.EMAIL_FROM || 'noreply@berater-app.com',
     to: email,
-    subject: 'Passwort zurücksetzen',
+    subject: t.subject,
     html: `
       <!DOCTYPE html>
       <html>
@@ -159,7 +229,7 @@ exports.sendPasswordResetEmail = async (email, firstName, resetToken) => {
             padding: 20px;
           }
           .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -173,7 +243,7 @@ exports.sendPasswordResetEmail = async (email, firstName, resetToken) => {
           .button {
             display: inline-block;
             padding: 15px 30px;
-            background: #667eea;
+            background: #11998e;
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -190,32 +260,32 @@ exports.sendPasswordResetEmail = async (email, firstName, resetToken) => {
       </head>
       <body>
         <div class="header">
-          <h1>Passwort zurücksetzen</h1>
+          <h1>${t.headerTitle}</h1>
         </div>
         <div class="content">
-          <p>Hallo ${firstName},</p>
+          <p>${t.greeting(firstName)}</p>
 
-          <p>Sie haben eine Anfrage zum Zurücksetzen Ihres Passworts gestellt.</p>
+          <p>${t.requestText}</p>
 
-          <p>Klicken Sie auf den folgenden Button, um ein neues Passwort festzulegen:</p>
+          <p>${t.actionText}</p>
 
           <div style="text-align: center;">
-            <a href="${resetUrl}" class="button">Neues Passwort festlegen</a>
+            <a href="${resetUrl}" class="button">${t.buttonText}</a>
           </div>
 
-          <p>Oder kopieren Sie diesen Link in Ihren Browser:</p>
+          <p>${t.copyLinkText}</p>
           <p style="word-break: break-all; background: white; padding: 10px; border-radius: 5px;">
             ${resetUrl}
           </p>
 
           <div class="warning">
-            <strong>Wichtig:</strong> Dieser Link ist nur 1 Stunde gültig.
+            <strong>${lang === 'de' ? 'Wichtig:' : 'Önemli:'}</strong> ${t.validityText}
           </div>
 
-          <p>Wenn Sie diese Anfrage nicht gestellt haben, ignorieren Sie bitte diese E-Mail. Ihr Passwort bleibt unverändert.</p>
+          <p>${t.ignoreText}</p>
 
-          <p>Mit freundlichen Grüßen,<br>
-          Ihr Berater App Team</p>
+          <p>${t.regards}<br>
+          ${t.teamName}</p>
         </div>
       </body>
       </html>
