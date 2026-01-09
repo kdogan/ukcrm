@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--auth-gradient, linear-gradient(135deg, #11998e 0%, #38ef7d 100%));
   padding: 20px;
 }
 
@@ -166,7 +166,7 @@
 
 .btn-register {
   padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--auth-gradient, linear-gradient(135deg, #11998e 0%, #38ef7d 100%));
   color: white;
   border: none;
   border-radius: 8px;
@@ -178,7 +178,7 @@
 
 .btn-register:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
 }
 
 .btn-register:disabled {
