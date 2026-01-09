@@ -20,7 +20,13 @@ export interface UserSettings {
     primaryColor?: string;
     accentColor?: string;
   };
+  favoriteStats?: string[];
 }
+
+// Verfügbare Statistik-Karten für das Dashboard
+export type StatCardId = 'reminders' | 'contracts' | 'recentReadings' | 'customers' | 'meters' | 'newCustomers' | 'contractsBySupplier';
+
+const DEFAULT_FAVORITE_STATS: string[] = ['reminders', 'contracts', 'recentReadings'];
 
 const DEFAULT_SETTINGS: UserSettings = {
   reminderDays: {
@@ -38,7 +44,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     sidebarColor: 'mint',
     primaryColor: '#667eea',
     accentColor: '#764ba2'
-  }
+  },
+  favoriteStats: DEFAULT_FAVORITE_STATS
 };
 
 @Injectable({
@@ -173,5 +180,34 @@ export class SettingsService {
     const g = (num >> 8) & 255;
     const b = num & 255;
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  // Favorit-Statistiken verwalten
+  getFavoriteStats(): string[] {
+    return this.settingsSubject.value.favoriteStats || DEFAULT_FAVORITE_STATS;
+  }
+
+  isFavorite(statId: string): boolean {
+    const favorites = this.getFavoriteStats();
+    return favorites.includes(statId);
+  }
+
+  toggleFavorite(statId: string): Observable<any> {
+    const currentSettings = this.settingsSubject.value;
+    const favorites = [...(currentSettings.favoriteStats || DEFAULT_FAVORITE_STATS)];
+
+    const index = favorites.indexOf(statId);
+    if (index > -1) {
+      favorites.splice(index, 1);
+    } else {
+      favorites.push(statId);
+    }
+
+    const updatedSettings: UserSettings = {
+      ...currentSettings,
+      favoriteStats: favorites
+    };
+
+    return this.saveSettings(updatedSettings);
   }
 }

@@ -160,79 +160,82 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="stats-cards" *ngIf="stats">
-      <!-- Erinnerungen -->
-      <div class="stat-card priority-high clickable" *ngIf="stats.reminders" routerLink="/todos">
-        <div class="stat-icon">🔔</div>
-        <div class="reminder-values">
-          <div class="reminder-urgent">
-            <span class="count">{{ stats.reminders.urgent || 0 }}</span>
-            <span class="label">Dringend</span>
-          </div>
-          <div class="reminder-total">
-            <span class="count">{{ stats.reminders.total || 0 }}</span>
-            <span class="label">Gesamt</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Kunden -->
-      <div class="stat-card">
-        <div class="stat-icon">👥</div>
-        <div class="stat-value">{{ stats.customers?.active || 0 }}</div>
-        <div class="stat-label">Aktive Kunden</div>
-      </div>
-
-      <!-- Zähler -->
-      <div class="stat-card">
-        <div class="stat-icon">⚡</div>
-        <div class="meter-values">
-          <div class="meter-free">
-            <span class="count">{{ stats.meters?.free || 0 }}</span>
-            <span class="label">Frei</span>
-          </div>
-          <div class="meter-occupied">
-            <span class="count">{{ stats.meters?.occupied || 0 }}</span>
-            <span class="label">Belegt</span>
+    <!-- FAVORIT-STATISTIKEN (oben) -->
+    <div class="favorites-section" *ngIf="stats && getFavoriteStatCards().length > 0">
+      <h2>⭐ Favoriten</h2>
+      <div class="stats-cards">
+        <!-- Erinnerungen -->
+        <div class="stat-card priority-high clickable" *ngIf="isFavorite('reminders') && stats.reminders" routerLink="/todos">
+          <div class="stat-icon">🔔</div>
+          <div class="reminder-values">
+            <div class="reminder-urgent">
+              <span class="count">{{ stats.reminders.urgent || 0 }}</span>
+              <span class="label">Dringend</span>
+            </div>
+            <div class="reminder-total">
+              <span class="count">{{ stats.reminders.total || 0 }}</span>
+              <span class="label">Gesamt</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Verträge -->
-      <div class="stat-card">
-        <div class="stat-icon">📄</div>
-        <div class="meter-values">
-          <div class="meter-free">
-            <span class="count">{{ stats.contracts?.active || 0 }}</span>
-            <span class="label">Aktiv</span>
-          </div>
-          <div class="meter-occupied">
-            <span class="count">{{ stats.contracts?.total || 0 }}</span>
-            <span class="label">Gesamt</span>
+        <!-- Verträge -->
+        <div class="stat-card" *ngIf="isFavorite('contracts')">
+          <div class="stat-icon">📄</div>
+          <div class="meter-values">
+            <div class="meter-free">
+              <span class="count">{{ stats.contracts?.active || 0 }}</span>
+              <span class="label">Aktiv</span>
+            </div>
+            <div class="meter-occupied">
+              <span class="count">{{ stats.contracts?.total || 0 }}</span>
+              <span class="label">Gesamt</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Neue Kunden -->
-      <div class="stat-card">
-        <div class="stat-icon">👤+</div>
-        <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
-        <div class="stat-label">Neue Kunden</div>
-      </div>
+        <!-- Zählerablesungen -->
+        <div class="stat-card clickable" *ngIf="isFavorite('recentReadings')" routerLink="/meters">
+          <div class="stat-icon">📊</div>
+          <div class="meter-values">
+            <div class="meter-free">
+              <span class="count">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</span>
+              <span class="label">Mit Ablesung</span>
+            </div>
+            <div class="meter-occupied" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">
+              <span class="count">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</span>
+              <span class="label">Ohne Ablesung</span>
+            </div>
+          </div>
+        </div>
 
-      <!-- Verträge mit Zählerablesungen (30 Tage) -->
-      <div class="stat-card clickable" routerLink="/meters">
-        <div class="stat-icon">📊</div>
-        <div class="meter-values">
-          <div class="meter-free">
-            <span class="count">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</span>
-            <span class="label">Mit Ablesung</span>
+        <!-- Kunden -->
+        <div class="stat-card" *ngIf="isFavorite('customers')">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value">{{ stats.customers?.active || 0 }}</div>
+          <div class="stat-label">Aktive Kunden</div>
+        </div>
+
+        <!-- Zähler -->
+        <div class="stat-card" *ngIf="isFavorite('meters')">
+          <div class="stat-icon">⚡</div>
+          <div class="meter-values">
+            <div class="meter-free">
+              <span class="count">{{ stats.meters?.free || 0 }}</span>
+              <span class="label">Frei</span>
+            </div>
+            <div class="meter-occupied">
+              <span class="count">{{ stats.meters?.occupied || 0 }}</span>
+              <span class="label">Belegt</span>
+            </div>
           </div>
-          <div class="meter-occupied" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">
-            <span class="count">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</span>
-            <span class="label">Ohne Ablesung</span>
-          </div>
+        </div>
+
+        <!-- Neue Kunden -->
+        <div class="stat-card" *ngIf="isFavorite('newCustomers')">
+          <div class="stat-icon">👤+</div>
+          <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
+          <div class="stat-label">Neue Kunden</div>
         </div>
       </div>
     </div>
@@ -317,6 +320,125 @@
             </div>
           </div>
           <div class="chart-label">{{ label }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALLE STATISTIKEN (unten, mit Favoriten-Toggle) -->
+    <div class="all-stats-section" *ngIf="stats">
+      <div class="section-header-toggle" (click)="showAllStats = !showAllStats">
+        <h2>📊 Alle Statistiken</h2>
+        <span class="toggle-icon">{{ showAllStats ? '▲' : '▼' }}</span>
+      </div>
+
+      <div class="accordion-content" [class.open]="showAllStats">
+        <p class="stats-hint">Tippen Sie auf den Stern, um Statistiken zu Ihren Favoriten hinzuzufügen oder zu entfernen.</p>
+        <div class="stats-cards">
+          <!-- Erinnerungen -->
+          <div class="stat-card" *ngIf="stats.reminders" [class.is-favorite]="isFavorite('reminders')">
+            <button class="favorite-toggle" (click)="toggleFavorite('reminders', $event)">
+              {{ isFavorite('reminders') ? '★' : '☆' }}
+            </button>
+            <div class="stat-icon">🔔</div>
+            <div class="reminder-values">
+              <div class="reminder-urgent">
+                <span class="count">{{ stats.reminders.urgent || 0 }}</span>
+                <span class="label">Dringend</span>
+              </div>
+              <div class="reminder-total">
+                <span class="count">{{ stats.reminders.total || 0 }}</span>
+                <span class="label">Gesamt</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Verträge -->
+          <div class="stat-card" [class.is-favorite]="isFavorite('contracts')">
+            <button class="favorite-toggle" (click)="toggleFavorite('contracts', $event)">
+              {{ isFavorite('contracts') ? '★' : '☆' }}
+            </button>
+            <div class="stat-icon">📄</div>
+            <div class="meter-values">
+              <div class="meter-free">
+                <span class="count">{{ stats.contracts?.active || 0 }}</span>
+                <span class="label">Aktiv</span>
+              </div>
+              <div class="meter-occupied">
+                <span class="count">{{ stats.contracts?.total || 0 }}</span>
+                <span class="label">Gesamt</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Zählerablesungen -->
+          <div class="stat-card" [class.is-favorite]="isFavorite('recentReadings')">
+            <button class="favorite-toggle" (click)="toggleFavorite('recentReadings', $event)">
+              {{ isFavorite('recentReadings') ? '★' : '☆' }}
+            </button>
+            <div class="stat-icon">📊</div>
+            <div class="meter-values">
+              <div class="meter-free">
+                <span class="count">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</span>
+                <span class="label">Mit Ablesung</span>
+              </div>
+              <div class="meter-occupied" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">
+                <span class="count">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</span>
+                <span class="label">Ohne Ablesung</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kunden -->
+          <div class="stat-card" [class.is-favorite]="isFavorite('customers')">
+            <button class="favorite-toggle" (click)="toggleFavorite('customers', $event)">
+              {{ isFavorite('customers') ? '★' : '☆' }}
+            </button>
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">{{ stats.customers?.active || 0 }}</div>
+            <div class="stat-label">Aktive Kunden</div>
+          </div>
+
+          <!-- Zähler -->
+          <div class="stat-card" [class.is-favorite]="isFavorite('meters')">
+            <button class="favorite-toggle" (click)="toggleFavorite('meters', $event)">
+              {{ isFavorite('meters') ? '★' : '☆' }}
+            </button>
+            <div class="stat-icon">⚡</div>
+            <div class="meter-values">
+              <div class="meter-free">
+                <span class="count">{{ stats.meters?.free || 0 }}</span>
+                <span class="label">Frei</span>
+              </div>
+              <div class="meter-occupied">
+                <span class="count">{{ stats.meters?.occupied || 0 }}</span>
+                <span class="label">Belegt</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Neue Kunden -->
+          <div class="stat-card" [class.is-favorite]="isFavorite('newCustomers')">
+            <button class="favorite-toggle" (click)="toggleFavorite('newCustomers', $event)">
+              {{ isFavorite('newCustomers') ? '★' : '☆' }}
+            </button>
+            <div class="stat-icon">👤+</div>
+            <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
+            <div class="stat-label">Neue Kunden</div>
+          </div>
+        </div>
+
+        <!-- Verträge nach Anbieter -->
+        <div class="section-card" *ngIf="stats?.contractsBySupplier">
+          <h2>📊 Verträge nach Anbieter</h2>
+          <div class="chart-container">
+            <div *ngFor="let item of stats.contractsBySupplier" class="chart-bar">
+              <div class="bar-label">{{ item.name }}</div>
+              <div class="bar-wrapper">
+                <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+                <span class="bar-value">{{ item.count }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

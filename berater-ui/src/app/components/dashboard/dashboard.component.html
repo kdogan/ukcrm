@@ -10,10 +10,13 @@
     [subscriptionWarningLevel]="getSubscriptionWarningLevel()"
     [chartData]="chartData"
     [maxChartValue]="maxChartValue"
+    [favoriteStats]="favoriteStats"
+    [availableStatCards]="availableStatCards"
     (approveUpgradeEvent)="approveUpgrade($event)"
     (rejectUpgradeEvent)="rejectUpgrade($event)"
     (chartMonthsChange)="chartMonths = $event; loadChartData()"
-  ></app-dashboard-mobile>
+    (toggleFavoriteEvent)="onToggleFavoriteFromMobile($event)"
+  />
 } @else {
     <div class="dashboard">
       <h1>{{ 'DASHBOARD.TITLE' | translate }}</h1>
@@ -286,81 +289,154 @@
               </div>
             </div>
           }
-          <div class="stats-grid" *ngIf="stats">
-            <!-- Erinnerungen -->
-             @if(stats.reminders){
-              <div class="stat-card priority-high clickable" routerLink="/todos">
-                <div class="info-tooltip-container">
-                  <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('reminders', $event)"></i>
-                  @if(activeTooltip === 'reminders') {
-                    <div class="info-tooltip">
-                      <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.REMINDERS' | translate }}</div>
-                      <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+
+          <!-- FAVORIT-STATISTIKEN (oben) -->
+          @if(stats && getFavoriteStatCards().length > 0) {
+            <div class="favorites-section">
+              <h2><i class="fas fa-star"></i> {{ 'DASHBOARD.FAVORITES' | translate }}</h2>
+              <div class="stats-grid">
+                <!-- Erinnerungen -->
+                @if(isFavorite('reminders') && stats.reminders) {
+                  <div class="stat-card priority-high clickable" routerLink="/todos">
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('reminders', $event)"></i>
+                      @if(activeTooltip === 'reminders') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.REMINDERS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
                     </div>
-                  }
-                </div>
-                <h3><i class="fas fa-bell"></i> {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h3>
-                <div class="reminder-stats">
-                  <div class="reminder-item high">
-                    <span class="count">{{ stats.reminders.urgent || 0 }}</span>
-                    <span class="label">{{ 'TODOS.PRIORITY.URGENT' | translate }}</span>
+                    <h3><i class="fas fa-bell"></i> {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h3>
+                    <div class="reminder-stats">
+                      <div class="reminder-item high">
+                        <span class="count">{{ stats.reminders.urgent || 0 }}</span>
+                        <span class="label">{{ 'TODOS.PRIORITY.URGENT' | translate }}</span>
+                      </div>
+                      <div class="reminder-item medium">
+                        <span class="count">{{ stats.reminders.total || 0 }}</span>
+                        <span class="label">{{ 'COMMON.ALL' | translate }}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="reminder-item medium">
-                    <span class="count">{{ stats.reminders.total || 0 }}</span>
-                    <span class="label">{{ 'COMMON.ALL' | translate }}</span>
-                  </div>
-                </div>
-              </div>
-            }
+                }
 
-            <!-- Verträge (Hauptstatistik) -->
-            <div class="stat-card">
-              <div class="info-tooltip-container">
-                <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('contracts', $event)"></i>
-                @if(activeTooltip === 'contracts') {
-                  <div class="info-tooltip">
-                    <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACTS' | translate }}</div>
-                    <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                <!-- Verträge -->
+                @if(isFavorite('contracts')) {
+                  <div class="stat-card">
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('contracts', $event)"></i>
+                      @if(activeTooltip === 'contracts') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACTS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
+                    <h3><i class="fas fa-file-contract"></i> {{ 'DASHBOARD.CONTRACTS' | translate }}</h3>
+                    <div class="stat-split">
+                      <div>
+                        <div class="stat-number small">{{ stats.contracts?.active || 0 }}</div>
+                        <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
+                      </div>
+                      <div>
+                        <div class="stat-number small">{{ stats.contracts?.total || 0 }}</div>
+                        <div class="stat-label">{{ 'COMMON.ALL' | translate }}</div>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- Zählerablesungen -->
+                @if(isFavorite('recentReadings')) {
+                  <div class="stat-card clickable" routerLink="/meters">
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('recentContracts', $event)"></i>
+                      @if(activeTooltip === 'recentContracts') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.RECENT_CONTRACTS_READINGS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
+                    <h3><i class="fas fa-tachometer-alt"></i> {{ 'DASHBOARD.RECENT_CONTRACTS_READINGS' | translate }}</h3>
+                    <div class="stat-split">
+                      <div>
+                        <div class="stat-number small">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</div>
+                        <div class="stat-label">{{ 'DASHBOARD.WITH_READINGS' | translate }}</div>
+                      </div>
+                      <div>
+                        <div class="stat-number small" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</div>
+                        <div class="stat-label">{{ 'DASHBOARD.WITHOUT_READINGS' | translate }}</div>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- Kunden -->
+                @if(isFavorite('customers')) {
+                  <div class="stat-card">
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('customers', $event)"></i>
+                      @if(activeTooltip === 'customers') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CUSTOMERS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
+                    <h3><i class="fas fa-users"></i> {{ 'DASHBOARD.CUSTOMERS' | translate }}</h3>
+                    <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
+                    <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
+                  </div>
+                }
+
+                <!-- Zähler -->
+                @if(isFavorite('meters')) {
+                  <div class="stat-card">
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('meters', $event)"></i>
+                      @if(activeTooltip === 'meters') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.METERS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
+                    <h3><i class="fas fa-bolt"></i> {{ 'DASHBOARD.METERS' | translate }}</h3>
+                    <div class="stat-split">
+                      <div>
+                        <div class="stat-number small">{{ stats.meters?.free || 0 }}</div>
+                        <div class="stat-label">{{ 'METERS.STATUS.FREE' | translate }}</div>
+                      </div>
+                      <div>
+                        <div class="stat-number small">{{ stats.meters?.occupied || 0 }}</div>
+                        <div class="stat-label">{{ 'METERS.STATUS.OCCUPIED' | translate }}</div>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- Neue Kunden -->
+                @if(isFavorite('newCustomers')) {
+                  <div class="stat-card">
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('newCustomers', $event)"></i>
+                      @if(activeTooltip === 'newCustomers') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.NEW_CUSTOMERS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
+                    <h3><i class="fas fa-user-plus"></i> {{ 'DASHBOARD.NEW_CUSTOMERS' | translate }}</h3>
+                    <div class="stat-number">{{ stats.newCustomers?.count || 0 }}</div>
+                    <div class="stat-label">{{ 'DASHBOARD.LAST_MONTH' | translate }}</div>
                   </div>
                 }
               </div>
-              <h3><i class="fas fa-file-contract"></i> {{ 'DASHBOARD.CONTRACTS' | translate }}</h3>
-              <div class="stat-split">
-                <div>
-                  <div class="stat-number small">{{ stats.contracts?.active || 0 }}</div>
-                  <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
-                </div>
-                <div>
-                  <div class="stat-number small">{{ stats.contracts?.total || 0 }}</div>
-                  <div class="stat-label">{{ 'COMMON.ALL' | translate }}</div>
-                </div>
-              </div>
             </div>
-
-            <!-- Neue Verträge mit Zählerablesungen -->
-            <div class="stat-card clickable" routerLink="/meters">
-              <div class="info-tooltip-container">
-                <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('recentContracts', $event)"></i>
-                @if(activeTooltip === 'recentContracts') {
-                  <div class="info-tooltip">
-                    <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.RECENT_CONTRACTS_READINGS' | translate }}</div>
-                    <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                  </div>
-                }
-              </div>
-              <h3><i class="fas fa-tachometer-alt"></i> {{ 'DASHBOARD.RECENT_CONTRACTS_READINGS' | translate }}</h3>
-              <div class="stat-split">
-                <div>
-                  <div class="stat-number small">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</div>
-                  <div class="stat-label">{{ 'DASHBOARD.WITH_READINGS' | translate }}</div>
-                </div>
-                <div>
-                  <div class="stat-number small" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</div>
-                  <div class="stat-label">{{ 'DASHBOARD.WITHOUT_READINGS' | translate }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          }
 
           <!-- Auslaufende Verträge -->
            @if(stats?.expiringContracts){
@@ -458,28 +534,126 @@
             </div>
           }
 
-          <!-- Weitere Statistiken Accordion -->
-          <div class="more-stats-accordion" *ngIf="stats">
-            <div class="accordion-header" (click)="showMoreStats = !showMoreStats">
+          <!-- ALLE STATISTIKEN (unten, mit Favorit-Toggle) -->
+          <div class="all-stats-section" *ngIf="stats">
+            <div class="section-header" (click)="showMoreStats = !showMoreStats">
               <h2>
-                <i class="fas fa-ellipsis-h"></i>
-                {{ 'DASHBOARD.MORE_STATS' | translate }}
+                <i class="fas fa-th-large"></i>
+                {{ 'DASHBOARD.ALL_STATS' | translate }}
               </h2>
               <i class="fas" [class.fa-chevron-down]="!showMoreStats" [class.fa-chevron-up]="showMoreStats"></i>
             </div>
 
             <div class="accordion-content" [class.open]="showMoreStats">
+              <p class="stats-hint">
+                <i class="fas fa-info-circle"></i>
+                {{ 'DASHBOARD.FAVORITE_HINT' | translate }}
+              </p>
               <div class="stats-grid">
-                <!-- Kunden -->
-                <div class="stat-card">
-                  <div class="info-tooltip-container">
-                    <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('customers', $event)"></i>
-                    @if(activeTooltip === 'customers') {
-                      <div class="info-tooltip">
-                        <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CUSTOMERS' | translate }}</div>
-                        <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                <!-- Erinnerungen -->
+                @if(stats.reminders) {
+                  <div class="stat-card" [class.is-favorite]="isFavorite('reminders')">
+                    <div class="card-actions">
+                      <button class="favorite-toggle" (click)="toggleFavorite('reminders', $event)" [title]="isFavorite('reminders') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+                        <i [class.fas]="isFavorite('reminders')" [class.far]="!isFavorite('reminders')" class="fa-star"></i>
+                      </button>
+                      <div class="info-tooltip-container">
+                        <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allReminders', $event)"></i>
+                        @if(activeTooltip === 'allReminders') {
+                          <div class="info-tooltip">
+                            <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.REMINDERS' | translate }}</div>
+                            <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                          </div>
+                        }
                       </div>
-                    }
+                    </div>
+                    <h3><i class="fas fa-bell"></i> {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h3>
+                    <div class="reminder-stats">
+                      <div class="reminder-item high">
+                        <span class="count">{{ stats.reminders.urgent || 0 }}</span>
+                        <span class="label">{{ 'TODOS.PRIORITY.URGENT' | translate }}</span>
+                      </div>
+                      <div class="reminder-item medium">
+                        <span class="count">{{ stats.reminders.total || 0 }}</span>
+                        <span class="label">{{ 'COMMON.ALL' | translate }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- Verträge -->
+                <div class="stat-card" [class.is-favorite]="isFavorite('contracts')">
+                  <div class="card-actions">
+                    <button class="favorite-toggle" (click)="toggleFavorite('contracts', $event)" [title]="isFavorite('contracts') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+                      <i [class.fas]="isFavorite('contracts')" [class.far]="!isFavorite('contracts')" class="fa-star"></i>
+                    </button>
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allContracts', $event)"></i>
+                      @if(activeTooltip === 'allContracts') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACTS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  <h3><i class="fas fa-file-contract"></i> {{ 'DASHBOARD.CONTRACTS' | translate }}</h3>
+                  <div class="stat-split">
+                    <div>
+                      <div class="stat-number small">{{ stats.contracts?.active || 0 }}</div>
+                      <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
+                    </div>
+                    <div>
+                      <div class="stat-number small">{{ stats.contracts?.total || 0 }}</div>
+                      <div class="stat-label">{{ 'COMMON.ALL' | translate }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Zählerablesungen -->
+                <div class="stat-card" [class.is-favorite]="isFavorite('recentReadings')">
+                  <div class="card-actions">
+                    <button class="favorite-toggle" (click)="toggleFavorite('recentReadings', $event)" [title]="isFavorite('recentReadings') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+                      <i [class.fas]="isFavorite('recentReadings')" [class.far]="!isFavorite('recentReadings')" class="fa-star"></i>
+                    </button>
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allRecentReadings', $event)"></i>
+                      @if(activeTooltip === 'allRecentReadings') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.RECENT_CONTRACTS_READINGS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  <h3><i class="fas fa-tachometer-alt"></i> {{ 'DASHBOARD.RECENT_CONTRACTS_READINGS' | translate }}</h3>
+                  <div class="stat-split">
+                    <div>
+                      <div class="stat-number small">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</div>
+                      <div class="stat-label">{{ 'DASHBOARD.WITH_READINGS' | translate }}</div>
+                    </div>
+                    <div>
+                      <div class="stat-number small" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</div>
+                      <div class="stat-label">{{ 'DASHBOARD.WITHOUT_READINGS' | translate }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Kunden -->
+                <div class="stat-card" [class.is-favorite]="isFavorite('customers')">
+                  <div class="card-actions">
+                    <button class="favorite-toggle" (click)="toggleFavorite('customers', $event)" [title]="isFavorite('customers') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+                      <i [class.fas]="isFavorite('customers')" [class.far]="!isFavorite('customers')" class="fa-star"></i>
+                    </button>
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allCustomers', $event)"></i>
+                      @if(activeTooltip === 'allCustomers') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CUSTOMERS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
                   </div>
                   <h3><i class="fas fa-users"></i> {{ 'DASHBOARD.CUSTOMERS' | translate }}</h3>
                   <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
@@ -487,15 +661,20 @@
                 </div>
 
                 <!-- Zähler -->
-                <div class="stat-card">
-                  <div class="info-tooltip-container">
-                    <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('meters', $event)"></i>
-                    @if(activeTooltip === 'meters') {
-                      <div class="info-tooltip">
-                        <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.METERS' | translate }}</div>
-                        <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                      </div>
-                    }
+                <div class="stat-card" [class.is-favorite]="isFavorite('meters')">
+                  <div class="card-actions">
+                    <button class="favorite-toggle" (click)="toggleFavorite('meters', $event)" [title]="isFavorite('meters') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+                      <i [class.fas]="isFavorite('meters')" [class.far]="!isFavorite('meters')" class="fa-star"></i>
+                    </button>
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allMeters', $event)"></i>
+                      @if(activeTooltip === 'allMeters') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.METERS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
                   </div>
                   <h3><i class="fas fa-bolt"></i> {{ 'DASHBOARD.METERS' | translate }}</h3>
                   <div class="stat-split">
@@ -511,15 +690,20 @@
                 </div>
 
                 <!-- Neue Kunden -->
-                <div class="stat-card">
-                  <div class="info-tooltip-container">
-                    <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('newCustomers', $event)"></i>
-                    @if(activeTooltip === 'newCustomers') {
-                      <div class="info-tooltip">
-                        <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.NEW_CUSTOMERS' | translate }}</div>
-                        <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                      </div>
-                    }
+                <div class="stat-card" [class.is-favorite]="isFavorite('newCustomers')">
+                  <div class="card-actions">
+                    <button class="favorite-toggle" (click)="toggleFavorite('newCustomers', $event)" [title]="isFavorite('newCustomers') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+                      <i [class.fas]="isFavorite('newCustomers')" [class.far]="!isFavorite('newCustomers')" class="fa-star"></i>
+                    </button>
+                    <div class="info-tooltip-container">
+                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allNewCustomers', $event)"></i>
+                      @if(activeTooltip === 'allNewCustomers') {
+                        <div class="info-tooltip">
+                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.NEW_CUSTOMERS' | translate }}</div>
+                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                    </div>
                   </div>
                   <h3><i class="fas fa-user-plus"></i> {{ 'DASHBOARD.NEW_CUSTOMERS' | translate }}</h3>
                   <div class="stat-number">{{ stats.newCustomers?.count || 0 }}</div>

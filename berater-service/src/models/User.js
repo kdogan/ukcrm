@@ -156,6 +156,11 @@ const userSchema = new mongoose.Schema({
       sidebarColor: { type: String, default: 'mint' },
       primaryColor: { type: String, default: '#667eea' },
       accentColor: { type: String, default: '#764ba2' }
+    },
+    // Favorit-Statistiken auf dem Dashboard
+    favoriteStats: {
+      type: [String],
+      default: ['reminders', 'contracts', 'recentReadings'] // Standard-Favoriten
     }
   }
 }, {

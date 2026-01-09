@@ -1330,3 +1330,131 @@
     font-size: 0.8rem;
   }
 }
+
+/* FAVORITEN-SEKTION */
+.favorites-section {
+  margin-bottom: 2rem;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+
+    i.fa-star {
+      color: #f59e0b;
+    }
+  }
+}
+
+/* ALLE STATISTIKEN SEKTION */
+.all-stats-section {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-top: 2rem;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, var(--bg-table-header) 0%, #f8f9fa 100%);
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: linear-gradient(135deg, #e8eaf0 0%, #f0f1f3 100%);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    > i {
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: transform 0.3s ease;
+    }
+  }
+}
+
+.stats-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem 0;
+  background: #f0f9ff;
+  border-left: 3px solid #0ea5e9;
+  color: #0369a1;
+  font-size: 0.875rem;
+  border-radius: 0 4px 4px 0;
+
+  i {
+    color: #0ea5e9;
+  }
+}
+
+/* CARD-ACTIONS CONTAINER (Stern + Info nebeneinander) */
+.card-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+/* FAVORIT-TOGGLE BUTTON */
+.favorite-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+
+  /* Leerer Stern (nicht favorisiert) */
+  .far.fa-star {
+    color: #d1d5db;
+  }
+
+  /* Gefüllter Stern (favorisiert) */
+  .fas.fa-star {
+    color: #f59e0b;
+  }
+
+  &:hover .far.fa-star {
+    color: #f59e0b;
+  }
+}
+
+/* Info-tooltip im card-actions Container */
+.card-actions .info-tooltip-container {
+  position: relative;
+  top: auto;
+  right: auto;
+}
+
+/* Stat-Card mit Favorit-Markierung */
+.stat-card.is-favorite {
+  border: 2px solid #fcd34d;
+  background: linear-gradient(135deg, #fffbeb 0%, var(--white) 100%);
+}
+
+/* Anpassungen für Stat-Cards mit Toggle */
+.all-stats-section .stat-card {
+  padding-right: 3.5rem;
+}

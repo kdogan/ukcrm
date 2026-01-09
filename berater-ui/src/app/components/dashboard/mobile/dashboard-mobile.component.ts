@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { SubscriptionInfo } from '../../../services/subscription.service';
 import { ChartData } from '../../../services/dashboard.service';
+import { StatCard } from '../dashboard.component';
 
 @Component({
   selector: 'app-dashboard-mobile',
@@ -23,12 +24,16 @@ export class DashboardMobileComponent {
   @Input() subscriptionWarningLevel: 'expired' | 'danger' | 'warning' | 'info' | null = null;
   @Input() chartData: ChartData | null = null;
   @Input() maxChartValue: number = 1;
+  @Input() favoriteStats: string[] = [];
+  @Input() availableStatCards: StatCard[] = [];
 
   @Output() approveUpgradeEvent = new EventEmitter<string>();
   @Output() rejectUpgradeEvent = new EventEmitter<string>();
   @Output() chartMonthsChange = new EventEmitter<number>();
+  @Output() toggleFavoriteEvent = new EventEmitter<string>();
 
   chartMonths = 6;
+  showAllStats = false;
 
   shouldShowSubscriptionWarning(): boolean {
     return this.subscriptionInfo !== null &&
@@ -103,5 +108,19 @@ export class DashboardMobileComponent {
   getBarHeight(value: number): number {
     if (this.maxChartValue === 0) return 0;
     return (value / this.maxChartValue) * 100;
+  }
+
+  isFavorite(statId: string): boolean {
+    return this.favoriteStats.includes(statId);
+  }
+
+  toggleFavorite(statId: string, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.toggleFavoriteEvent.emit(statId);
+  }
+
+  getFavoriteStatCards(): StatCard[] {
+    return this.availableStatCards.filter(card => this.favoriteStats.includes(card.id));
   }
 }

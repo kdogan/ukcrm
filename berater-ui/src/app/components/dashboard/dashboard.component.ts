@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { SubscriptionService, SubscriptionInfo, ExpiringSubscriptionsResponse, ExpiringUser } from '../../services/subscription.service';
 import { StatisticsService, ContractStatisticsData, StatisticsSupplier } from '../../services/statistics.service';
+import { SettingsService } from '../../services/settings.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +15,14 @@ import { DashboardMobileComponent } from './mobile/dashboard-mobile.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from '../../shared/services/toast.service';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
+
+// Definition der verfügbaren Statistik-Karten
+export interface StatCard {
+  id: string;
+  icon: string;
+  titleKey: string;
+  tooltipKey: string;
+}
 
 @Component({
     selector: 'app-dashboard',
@@ -56,6 +65,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Tooltip
   activeTooltip: string | null = null;
 
+  // Favorit-Statistiken
+  favoriteStats: string[] = [];
+  availableStatCards: StatCard[] = [
+    { id: 'reminders', icon: 'fa-bell', titleKey: 'SETTINGS.REMINDERS.TITLE', tooltipKey: 'DASHBOARD.TOOLTIPS.REMINDERS' },
+    { id: 'contracts', icon: 'fa-file-contract', titleKey: 'DASHBOARD.CONTRACTS', tooltipKey: 'DASHBOARD.TOOLTIPS.CONTRACTS' },
+    { id: 'recentReadings', icon: 'fa-tachometer-alt', titleKey: 'DASHBOARD.RECENT_CONTRACTS_READINGS', tooltipKey: 'DASHBOARD.TOOLTIPS.RECENT_CONTRACTS_READINGS' },
+    { id: 'customers', icon: 'fa-users', titleKey: 'DASHBOARD.CUSTOMERS', tooltipKey: 'DASHBOARD.TOOLTIPS.CUSTOMERS' },
+    { id: 'meters', icon: 'fa-bolt', titleKey: 'DASHBOARD.METERS', tooltipKey: 'DASHBOARD.TOOLTIPS.METERS' },
+    { id: 'newCustomers', icon: 'fa-user-plus', titleKey: 'DASHBOARD.NEW_CUSTOMERS', tooltipKey: 'DASHBOARD.TOOLTIPS.NEW_CUSTOMERS' }
+  ];
+
   statusColors: { [key: string]: string } = {
     draft: '#ffc107',
     active: '#28a745',
@@ -75,12 +95,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private adminService: AdminService,
     private subscriptionService: SubscriptionService,
     private statisticsService: StatisticsService,
+    private settingsService: SettingsService,
     private viewport: ViewportService,
     private toastService: ToastService,
     private confirmDialog: ConfirmDialogService
   ) {}
 
   ngOnInit(): void {
+    // Lade Favoriten-Einstellungen
+    this.loadFavoriteStats();
+
     const userSub = this.authService.currentUser$.subscribe(user => {
       if (!user) return; // Ignore null/undefined users
 
@@ -517,6 +541,50 @@ export class DashboardComponent implements OnInit, OnDestroy {
       error: (error: any) => {
         console.error('Error rejecting upgrade:', error);
         this.toastService.error(error.error?.message || 'Fehler beim Ablehnen der Anfrage');
+      }
+    });
+  }
+
+  // Favorit-Statistiken Methoden
+  loadFavoriteStats(): void {
+    this.favoriteStats = this.settingsService.getFavoriteStats();
+  }
+
+  isFavorite(statId: string): boolean {
+    return this.favoriteStats.includes(statId);
+  }
+
+  toggleFavorite(statId: string, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    this.settingsService.toggleFavorite(statId).subscribe({
+      next: () => {
+        this.favoriteStats = this.settingsService.getFavoriteStats();
+      },
+      error: (error) => {
+        console.error('Error toggling favorite:', error);
+        this.toastService.error('Fehler beim Speichern der Favoriten');
+      }
+    });
+  }
+
+  getFavoriteStatCards(): StatCard[] {
+    return this.availableStatCards.filter(card => this.favoriteStats.includes(card.id));
+  }
+
+  getNonFavoriteStatCards(): StatCard[] {
+    return this.availableStatCards.filter(card => !this.favoriteStats.includes(card.id));
+  }
+
+  onToggleFavoriteFromMobile(statId: string): void {
+    this.settingsService.toggleFavorite(statId).subscribe({
+      next: () => {
+        this.favoriteStats = this.settingsService.getFavoriteStats();
+      },
+      error: (error) => {
+        console.error('Error toggling favorite:', error);
+        this.toastService.error('Fehler beim Speichern der Favoriten');
       }
     });
   }
