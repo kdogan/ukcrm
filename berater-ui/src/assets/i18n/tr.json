@@ -11,6 +11,7 @@
     "TODOS": "Görevler",
     "SUPPLIERS": "Tedarikçiler",
     "EDUCATION": "Eğitim",
+    "STATISTICS": "İstatistik",
     "SUPPORT": "Destek",
     "USERS": "Kullanıcılar",
     "PACKAGES": "Paketler",
@@ -229,7 +230,16 @@
     "MORE_STATS": "Daha Fazla İstatistik",
     "RECENT_CONTRACTS_READINGS": "Sözleşmeler (30 Gün)",
     "WITH_READINGS": "Okumalı",
-    "WITHOUT_READINGS": "Okumasız"
+    "WITHOUT_READINGS": "Okumasız",
+    "TOOLTIPS": {
+      "REMINDERS": "Açık hatırlatmalarınızı ve görevlerinizi gösterir. Acil görevler, kısa sürede tamamlanması gereken görevlerdir.",
+      "CONTRACTS": "Sözleşmelerinize genel bakış: 'Teslimat' durumundaki aktif sözleşmeler ve toplam sözleşme sayısı.",
+      "RECENT_CONTRACTS_READINGS": "Son 30 günün sözleşmelerini ve sayaç okumalarını gösterir. Hangi yeni sözleşmelerin hala sayaç okumasına ihtiyaç duyduğunu görmenize yardımcı olur.",
+      "CUSTOMERS": "En az bir sözleşmesi olan aktif müşterilerinizin sayısı.",
+      "METERS": "Sayaçlarınıza genel bakış: Boş sayaçlar yeni sözleşmeler için kullanılabilir, dolu sayaçlar zaten aktif bir sözleşmeye atanmıştır.",
+      "NEW_CUSTOMERS": "Son ay oluşturulan müşteri sayısı.",
+      "CONTRACTS_BY_SUPPLIER": "Sözleşmelerinizin enerji tedarikçisine göre dağılımı."
+    }
   },
   "CONTRACTS": {
     "TITLE": "Sözleşmeler",
@@ -722,7 +732,8 @@
     "SHOWING": "Gösteriliyor",
     "OF": "/",
     "PER_PAGE": "sayfa başına",
-    "OR": "veya"
+    "OR": "veya",
+    "TOTAL": "Toplam"
   },
   "ERRORS": {
     "GENERIC": "Bir hata oluştu",
@@ -763,5 +774,16 @@
     "DATE": "Geçersiz tarih",
     "NUMBER": "Lütfen bir sayı girin",
     "URL": "Lütfen geçerli bir URL girin"
+  },
+  "STATISTICS": {
+    "TITLE": "Sözleşme İstatistikleri",
+    "SELECT_PERIOD": "Dönem",
+    "CUSTOM": "Özel",
+    "PERIOD_STATS": "Dönemdeki Sözleşmeler",
+    "TOTAL_STATS": "Toplam İstatistik",
+    "CONTRACTS_BY_MONTH": "Aylık ve Duruma Göre Sözleşmeler",
+    "NO_DATA": "İstatistik verisi bulunamadı",
+    "FILTER_SUPPLIER": "Tedarikçi",
+    "ALL_SUPPLIERS": "Tüm Tedarikçiler"
   }
 }

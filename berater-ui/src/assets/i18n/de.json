@@ -11,6 +11,7 @@
     "TODOS": "Aufgaben",
     "SUPPLIERS": "Anbieter",
     "EDUCATION": "Bildung",
+    "STATISTICS": "Statistik",
     "SUPPORT": "Support",
     "USERS": "Benutzer",
     "PACKAGES": "Pakete",
@@ -178,7 +179,7 @@
     "TODOS": "Offene Aufgaben",
     "EXPIRING_SOON": "Bald ablaufend",
     "EXPIRED": "Abgelaufen",
-    "ACTIVE": "Aktiv",
+    "ACTIVE": "Belieferung",
     "NO_EXPIRING": "Keine ablaufenden Verträge",
     "CONTRACTS_BY_SUPPLIER": "Verträge nach Anbieter",
     "DAYS": "Tage",
@@ -229,7 +230,16 @@
     "MORE_STATS": "Weitere Statistiken",
     "RECENT_CONTRACTS_READINGS": "Verträge (30 Tage)",
     "WITH_READINGS": "Mit Ablesung",
-    "WITHOUT_READINGS": "Ohne Ablesung"
+    "WITHOUT_READINGS": "Ohne Ablesung",
+    "TOOLTIPS": {
+      "REMINDERS": "Zeigt Ihre offenen Erinnerungen und Aufgaben. Dringende Aufgaben sind solche, die zeitnah erledigt werden müssen.",
+      "CONTRACTS": "Übersicht Ihrer Verträge: Aktive Verträge im Status 'Belieferung' und die Gesamtanzahl aller Verträge.",
+      "RECENT_CONTRACTS_READINGS": "Zeigt Verträge der letzten 30 Tage und deren Zählerablesungen. Hilft zu erkennen, welche neuen Verträge noch Zählerablesungen benötigen.",
+      "CUSTOMERS": "Anzahl Ihrer aktiven Kunden, die mindestens einen Vertrag haben.",
+      "METERS": "Übersicht Ihrer Zähler: Freie Zähler können für neue Verträge verwendet werden, belegte Zähler sind bereits einem aktiven Vertrag zugeordnet.",
+      "NEW_CUSTOMERS": "Anzahl der Kunden, die im letzten Monat neu angelegt wurden.",
+      "CONTRACTS_BY_SUPPLIER": "Verteilung Ihrer Verträge nach Energieanbieter."
+    }
   },
   "CONTRACTS": {
     "TITLE": "Verträge",
@@ -722,7 +732,8 @@
     "SHOWING": "Zeige",
     "OF": "von",
     "PER_PAGE": "pro Seite",
-    "OR": "oder"
+    "OR": "oder",
+    "TOTAL": "Gesamt"
   },
   "ERRORS": {
     "GENERIC": "Ein Fehler ist aufgetreten",
@@ -763,5 +774,16 @@
     "DATE": "Ungültiges Datum",
     "NUMBER": "Bitte geben Sie eine Zahl ein",
     "URL": "Bitte geben Sie eine gültige URL ein"
+  },
+  "STATISTICS": {
+    "TITLE": "Vertragsstatistik",
+    "SELECT_PERIOD": "Zeitraum",
+    "CUSTOM": "Beliebig",
+    "PERIOD_STATS": "Verträge im Zeitraum",
+    "TOTAL_STATS": "Gesamt-Statistik",
+    "CONTRACTS_BY_MONTH": "Verträge nach Monat und Status",
+    "NO_DATA": "Keine Statistikdaten verfügbar",
+    "FILTER_SUPPLIER": "Anbieter",
+    "ALL_SUPPLIERS": "Alle Anbieter"
   }
 }

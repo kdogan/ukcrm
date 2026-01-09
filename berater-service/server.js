@@ -34,6 +34,7 @@ const geocodingRoutes = require('./src/routes/geocodingRoutes');
 
 const { initializeJobs } = require('./src/jobs/todoJobs');
 const { getDashboardStats, getDashboardCharts } = require('./src/controllers/reminderController');
+const { getContractStatistics } = require('./src/controllers/statisticsController');
 const { authenticate } = require('./src/middleware/auth');
 
 const app = express();
@@ -129,6 +130,9 @@ app.use('/api/geocoding', apiLimiter, geocodingRoutes);
 // 📊 Dashboard Routes
 app.get('/api/dashboard/stats', authenticate, getDashboardStats);
 app.get('/api/dashboard/charts', authenticate, getDashboardCharts);
+
+// 📈 Statistics Routes
+app.get('/api/statistics/contracts', authenticate, getContractStatistics);
 
 // ❤️ Health Check
 app.get('/health', (req, res) => {
