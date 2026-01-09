@@ -38,18 +38,15 @@ const generateExpiringContractTodos = async () => {
 
       const daysUntilExpiry = Math.ceil((contract.endDate - today) / (1000 * 60 * 60 * 24));
 
-      // Prüfe ob der Berater für diesen Tag eine Erinnerung wünscht
+      // Prüfe ob der Vertrag innerhalb der Erinnerungszeit liegt
       const reminderDays = berater.settings?.reminderDays?.custom || 30;
-      const shouldRemind = daysUntilExpiry === reminderDays;
+      if (daysUntilExpiry > reminderDays) continue;
 
-      if (!shouldRemind) continue;
-
-      // Prüfe ob bereits ein TODO für diesen Vertrag existiert
+      // Prüfe ob bereits ein TODO für diesen Vertrag existiert (auch completed)
       const existingTodo = await Todo.findOne({
         beraterId: contract.beraterId,
         relatedContractId: contract._id,
-        autoGenerationType: 'contract_expiring',
-        status: { $ne: 'completed' }
+        autoGenerationType: 'contract_expiring'
       });
 
       if (!existingTodo && contract.customerId) {
