@@ -99,7 +99,7 @@ exports.getContractStatistics = async (req, res, next) => {
       draft: 'Entwurf',
       active: 'Belieferung',
       ended: 'Beendet',
-      archived: 'Archiviert'
+      archived: 'Gekündigt'
     };
 
     // Mappe Daten auf Monate für jeden Status

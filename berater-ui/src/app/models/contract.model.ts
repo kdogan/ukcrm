@@ -8,7 +8,7 @@ export enum ContractState {
 export const stateToLabel: Record<ContractState, string> = {
   active: 'Belieferung',
   draft: 'Entwurf',
-  archived: 'Archiviert',
+  archived: 'Gekündigt',
   ended:'Beendet'
 };
 

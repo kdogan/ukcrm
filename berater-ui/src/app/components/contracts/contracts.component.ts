@@ -879,7 +879,7 @@ export class ContractsComponent implements OnInit {
     const labels: any = {
       active: 'Aktiv',
       ended: 'Beendet',
-      archived: 'Archiviert'
+      archived: 'Gekündigt'
     };
     return labels[status] || status;
   }

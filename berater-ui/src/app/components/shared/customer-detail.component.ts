@@ -221,7 +221,7 @@ export class CustomerDetailComponent {
       'draft': 'Entwurf',
       'active': 'Aktiv',
       'ended': 'Beendet',
-      'archived': 'Archiviert'
+      'archived': 'Gekündigt'
     };
     return statusLabels[status] || status;
   }
