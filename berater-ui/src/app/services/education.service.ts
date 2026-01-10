@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface EducationMaterial {
@@ -71,7 +71,34 @@ export class EducationService {
   private apiUrl = `${environment.apiUrl}/education`;
   private usersApiUrl = `${environment.apiUrl}/users`;
 
+  // Badge count für ungelesene Materialien
+  private unreadCountSubject = new BehaviorSubject<number>(0);
+  unreadCount$ = this.unreadCountSubject.asObservable();
+
   constructor(private http: HttpClient) {}
+
+  /**
+   * Anzahl ungelesener Materialien abrufen (für Badge)
+   */
+  getUnreadCount(): Observable<{ success: boolean; data: { unreadCount: number } }> {
+    return this.http.get<{ success: boolean; data: { unreadCount: number } }>(`${this.apiUrl}/unread-count`);
+  }
+
+  /**
+   * Badge-Count aktualisieren
+   */
+  refreshUnreadCount(): void {
+    this.getUnreadCount().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.unreadCountSubject.next(response.data.unreadCount);
+        }
+      },
+      error: () => {
+        this.unreadCountSubject.next(0);
+      }
+    });
+  }
 
   getMaterials(): Observable<{ success: boolean; data: EducationMaterial[] }> {
     return this.http.get<{ success: boolean; data: EducationMaterial[] }>(this.apiUrl);

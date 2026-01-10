@@ -53,6 +53,41 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
+// GET /api/education/unread-count - Anzahl ungelesener Materialien für Slave-Berater
+router.get('/unread-count', authenticate, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    // Master-Berater haben keine ungelesenen Materialien (sie erstellen sie selbst)
+    if (user.isMasterBerater || !user.masterBerater) {
+      return res.json({
+        success: true,
+        data: { unreadCount: 0 }
+      });
+    }
+
+    // Zähle Materialien vom Master, die dieser User noch nicht gesehen hat
+    const unreadCount = await EducationMaterial.countDocuments({
+      createdBy: user.masterBerater,
+      isActive: true,
+      'viewedBy.userId': { $ne: userId }
+    });
+
+    res.json({
+      success: true,
+      data: { unreadCount }
+    });
+  } catch (error) {
+    console.error('Fehler beim Zählen ungelesener Materialien:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Fehler beim Zählen ungelesener Materialien',
+      error: error.message
+    });
+  }
+});
+
 // GET /api/education/stats - Statistiken für Master Berater
 router.get('/stats', authenticate, async (req, res) => {
   try {

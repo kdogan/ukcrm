@@ -6,6 +6,7 @@ import { Subscription, interval } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 import { TodoService } from '../../services/todo.service';
+import { EducationService } from '../../services/education.service';
 
 @Component({
     selector: 'app-layout',
@@ -20,18 +21,21 @@ export class LayoutComponent implements OnInit, OnDestroy {
   sidebarOpen = false;
   userMenuOpen = false;
   supportBadgeCount = 0;
+  educationBadgeCount = 0;
   private subscriptions: Subscription[] = [];
 
   constructor(
     private authService: AuthService,
     private settingsService: SettingsService,
-    private todoService: TodoService
+    private todoService: TodoService,
+    private educationService: EducationService
   ) {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      // Refresh badge count when user changes
+      // Refresh badge counts when user changes
       if (user) {
         this.todoService.refreshSupportBadgeCount();
+        this.educationService.refreshUnreadCount();
       }
     });
   }
@@ -61,14 +65,23 @@ export class LayoutComponent implements OnInit, OnDestroy {
       })
     );
 
+    // Subscribe to education badge count
+    this.subscriptions.push(
+      this.educationService.unreadCount$.subscribe(count => {
+        this.educationBadgeCount = count;
+      })
+    );
+
     // Initial badge count fetch
     this.todoService.refreshSupportBadgeCount();
+    this.educationService.refreshUnreadCount();
 
-    // Refresh badge count every 60 seconds
+    // Refresh badge counts every 60 seconds
     this.subscriptions.push(
       interval(60000).subscribe(() => {
         if (this.currentUser) {
           this.todoService.refreshSupportBadgeCount();
+          this.educationService.refreshUnreadCount();
         }
       })
     );

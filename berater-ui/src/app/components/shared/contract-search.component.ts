@@ -10,16 +10,28 @@ import { Contract, stateToLabel } from '../../models/contract.model';
   imports: [CommonModule, FormsModule, TranslateModule],
   template: `
     <div class="contract-search">
-      <div class="search-container" [class.with-add-button]="showAddButton">
-        <input type="text"
-              [placeholder]="'CONTRACTS.SEARCH' | translate"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchInput()"
-              (focus)="onFocus()"
-              (blur)="closeSuggestionsDelayed()"
-              class="form-control search-input"
-              autocomplete="off" />
-        @if(showAddButton){
+      <div class="search-container" [class.with-add-button]="showAddButton" [class.has-selection]="selectedContract">
+        @if(selectedContract){
+          <div class="selected-input">
+            <span class="selected-text">
+              <strong>{{ selectedContract.contractNumber }}</strong>
+              @if(selectedContract.customerId){
+                <span class="selected-customer">· {{ selectedContract.customerId.firstName }} {{ selectedContract.customerId.lastName }}</span>
+              }
+            </span>
+            <button type="button" class="btn-clear" (click)="clearSelection(); $event.stopPropagation()">&times;</button>
+          </div>
+        } @else {
+          <input type="text"
+                [placeholder]="'CONTRACTS.SEARCH' | translate"
+                [(ngModel)]="searchQuery"
+                (input)="onSearchInput()"
+                (focus)="onFocus()"
+                (blur)="closeSuggestionsDelayed()"
+                class="form-control search-input"
+                autocomplete="off" />
+        }
+        @if(showAddButton && !selectedContract){
           <button type="button" class="btn-add-inline" (click)="addNew.emit()" [title]="'CONTRACTS.NEW' | translate">
             <i class="fas fa-plus"></i>
           </button>
@@ -51,18 +63,6 @@ import { Contract, stateToLabel } from '../../models/contract.model';
           <div class="dropdown-item no-results">
             {{ 'COMMON.NO_RESULTS' | translate }}
           </div>
-        </div>
-      }
-
-      @if(selectedContract){
-        <div class="selected-item">
-          <span class="selected-text">
-            <strong>{{ selectedContract.contractNumber }}</strong>
-            @if(selectedContract.customerId){
-              <span class="selected-customer">- {{ selectedContract.customerId.firstName }} {{ selectedContract.customerId.lastName }}</span>
-            }
-          </span>
-          <button type="button" class="btn-clear" (click)="clearSelection()">&times;</button>
         </div>
       }
     </div>
@@ -199,15 +199,20 @@ import { Contract, stateToLabel } from '../../models/contract.model';
       color: #991b1b;
     }
 
-    .selected-item {
+    .selected-input {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-      border: 1px solid #f59e0b;
-      border-radius: 8px;
+      width: 100%;
       padding: 0.75rem 1rem;
-      margin-top: 0.5rem;
+      border: 1px solid var(--primary-color, #6366f1);
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f0f0ff 0%, #e8e8ff 100%);
+      min-height: 46px;
+    }
+
+    .search-container.has-selection {
+      display: flex;
     }
 
     .selected-text {
@@ -215,6 +220,10 @@ import { Contract, stateToLabel } from '../../models/contract.model';
       flex-wrap: wrap;
       align-items: center;
       gap: 0.5rem;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .selected-customer {
@@ -231,6 +240,7 @@ import { Contract, stateToLabel } from '../../models/contract.model';
       padding: 0 0.5rem;
       line-height: 1;
       transition: color 0.2s;
+      flex-shrink: 0;
     }
 
     .btn-clear:hover {

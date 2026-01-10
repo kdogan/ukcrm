@@ -173,35 +173,42 @@
         </div>
 
         <!-- Liste der hochgeladenen Dateien (Edit-Modus) -->
-        <div class="attachments-list" *ngIf="isEditMode && currentContract.attachments && currentContract.attachments.length > 0">
-          <div class="attachment-item" *ngFor="let attachment of currentContract.attachments">
-            <div class="attachment-icon" (click)="isImage(attachment.mimetype) ? viewImage(attachment) : null"
-                [style.cursor]="isImage(attachment.mimetype) ? 'pointer' : 'default'"
-                [title]="isImage(attachment.mimetype) ? 'Klicken zum Anzeigen' : ''">
-              <i [class]="getFileIcon(attachment.mimetype)"></i>
-            </div>
-            <div class="attachment-info" (click)="isImage(attachment.mimetype) ? viewImage(attachment) : null"
-                [style.cursor]="isImage(attachment.mimetype) ? 'pointer' : 'default'">
-              <div class="attachment-name">{{ attachment.originalName }}</div>
-              <div class="attachment-meta">
-                {{ formatFileSize(attachment.size) }} • {{ formatDate(attachment.uploadedAt) }}
+         @if(isEditMode && currentContract.attachments && currentContract.attachments.length > 0){
+          <div class="attachments-list">
+            @for(attachment of currentContract.attachments; track attachment){
+              <div class="attachment-item">
+                <div class="attachment-icon" (click)="isImage(attachment.mimetype) ? viewImage(attachment) : null"
+                    [style.cursor]="isImage(attachment.mimetype) ? 'pointer' : 'default'"
+                    [title]="isImage(attachment.mimetype) ? 'Klicken zum Anzeigen' : ''">
+                  <i [class]="getFileIcon(attachment.mimetype)"></i>
+                </div>
+                <div class="attachment-info" (click)="isImage(attachment.mimetype) ? viewImage(attachment) : null"
+                    [style.cursor]="isImage(attachment.mimetype) ? 'pointer' : 'default'">
+                  <div class="attachment-name">{{ attachment.originalName }}</div>
+                  <div class="attachment-meta">
+                    {{ formatFileSize(attachment.size) }} • {{ formatDate(attachment.uploadedAt) }}
+                  </div>
+                </div>
+                <div class="attachment-actions">
+                  @if(isImage(attachment.mimetype)){
+                  <button type="button" 
+                          class="btn-icon" 
+                          (click)="viewImage(attachment)" 
+                          [title]="'COMMON.VIEW' | translate">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  }
+                  <button type="button" class="btn-icon" (click)="downloadAttachment(attachment)" [title]="'COMMON.DOWNLOAD' | translate">
+                    <i class="fas fa-download"></i>
+                  </button>
+                  <button type="button" class="btn-icon btn-danger" (click)="deleteAttachment(attachment)" [title]="'COMMON.DELETE' | translate">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
               </div>
-            </div>
-            <div class="attachment-actions">
-              <button type="button" class="btn-icon" (click)="viewImage(attachment)" [title]="'COMMON.VIEW' | translate"
-                      *ngIf="isImage(attachment.mimetype)">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button type="button" class="btn-icon" (click)="downloadAttachment(attachment)" [title]="'COMMON.DOWNLOAD' | translate">
-                <i class="fas fa-download"></i>
-              </button>
-              <button type="button" class="btn-icon btn-danger" (click)="deleteAttachment(attachment)" [title]="'COMMON.DELETE' | translate">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
+            }
           </div>
-        </div>
-
+        }
         <!-- Liste der noch nicht hochgeladenen Dateien (Create-Modus) -->
         <div class="attachments-list" *ngIf="!isEditMode && pendingFiles.length > 0">
           <div class="attachment-item" *ngFor="let file of pendingFiles">

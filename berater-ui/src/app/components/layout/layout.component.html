@@ -61,9 +61,12 @@
                 </a>
             </li>
             <li>
-                <a routerLink="/education" routerLinkActive="active" (click)="closeMenusAndSidebar()">
+                <a routerLink="/education" routerLinkActive="active" (click)="closeMenusAndSidebar()" class="education-link">
                     <i class="fas fa-graduation-cap fa-lg"></i>
                     <span class="nav-text">{{ 'NAV.EDUCATION' | translate }}</span>
+                    @if(educationBadgeCount > 0){
+                      <span class="education-badge">{{ educationBadgeCount }}</span>
+                    }
                 </a>
             </li>
             }
