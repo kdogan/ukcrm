@@ -3,7 +3,7 @@ import { DashboardService, ChartData } from '../../services/dashboard.service';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { SubscriptionService, SubscriptionInfo, ExpiringSubscriptionsResponse, ExpiringUser } from '../../services/subscription.service';
-import { StatisticsService, ContractStatisticsData, StatisticsSupplier } from '../../services/statistics.service';
+import { StatisticsService, ContractStatisticsData, StatisticsSupplier, EndingForecastData } from '../../services/statistics.service';
 import { SettingsService } from '../../services/settings.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -57,10 +57,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   contractStatsLoading = false;
   selectedSupplierId = 'all';
 
-  // Supplier Autocomplete
+  // Supplier Autocomplete (for Contract Statistics)
   supplierSearchQuery = '';
   showSupplierDropdown = false;
   filteredSuppliers: StatisticsSupplier[] = [];
+
+  // Ending Forecast (separate from Contract Statistics)
+  forecastData: EndingForecastData | null = null;
+  forecastMonths = 6;
+  forecastMonthOptions = [3, 6, 9, 12];
+  forecastLoading = false;
+  forecastSupplierId = 'all';
+  forecastSupplierSearchQuery = '';
+  showForecastSupplierDropdown = false;
+  filteredForecastSuppliers: StatisticsSupplier[] = [];
 
   // Tooltip
   activeTooltip: string | null = null;
@@ -80,7 +90,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'overdueContracts', icon: 'fa-exclamation-triangle', titleKey: 'DASHBOARD.OVERDUE_CONTRACTS', tooltipKey: 'DASHBOARD.TOOLTIPS.OVERDUE_CONTRACTS' },
     { id: 'contractsBySupplier', icon: 'fa-chart-pie', titleKey: 'DASHBOARD.CONTRACTS_BY_SUPPLIER', tooltipKey: 'DASHBOARD.TOOLTIPS.CONTRACTS_BY_SUPPLIER' },
     { id: 'monthlyTrends', icon: 'fa-chart-line', titleKey: 'DASHBOARD.MONTHLY_TRENDS', tooltipKey: 'DASHBOARD.TOOLTIPS.MONTHLY_TRENDS' },
-    { id: 'contractStatistics', icon: 'fa-chart-bar', titleKey: 'STATISTICS.TITLE', tooltipKey: 'DASHBOARD.TOOLTIPS.CONTRACT_STATISTICS' }
+    { id: 'contractStatistics', icon: 'fa-chart-bar', titleKey: 'STATISTICS.TITLE', tooltipKey: 'DASHBOARD.TOOLTIPS.CONTRACT_STATISTICS' },
+    { id: 'endingForecast', icon: 'fa-calendar-check', titleKey: 'STATISTICS.ENDING_FORECAST', tooltipKey: 'DASHBOARD.TOOLTIPS.ENDING_FORECAST' }
   ];
 
   // Farben passend zu den globalen CSS-Variablen (styles.scss) und contracts-mobile.component.scss
@@ -129,6 +140,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.loadChartData(); // Load chart data for Berater
         this.loadSubscriptionInfo(); // Load subscription info for Berater
         this.loadContractStatistics(); // Load contract statistics for Berater
+        this.loadEndingForecast(); // Load ending forecast separately
       }
     });
 
@@ -387,6 +399,98 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Ending Forecast Methods (separate from Contract Statistics)
+  loadEndingForecast(): void {
+    this.forecastLoading = true;
+    this.statisticsService.getEndingForecast(this.forecastMonths, this.forecastSupplierId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.forecastData = response.data;
+        }
+        this.forecastLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading ending forecast:', error);
+        this.forecastLoading = false;
+      }
+    });
+  }
+
+  onForecastMonthsChange(months: number): void {
+    this.forecastMonths = months;
+    this.loadEndingForecast();
+  }
+
+  // Forecast Supplier Autocomplete Methods
+  onForecastSupplierSearchFocus(): void {
+    this.showForecastSupplierDropdown = true;
+    this.filterForecastSupplierList();
+  }
+
+  onForecastSupplierSearchInput(): void {
+    this.showForecastSupplierDropdown = true;
+    this.filterForecastSupplierList();
+  }
+
+  filterForecastSupplierList(): void {
+    if (!this.forecastData?.suppliers) {
+      this.filteredForecastSuppliers = [];
+      return;
+    }
+    const query = this.forecastSupplierSearchQuery.toLowerCase().trim();
+    if (!query) {
+      this.filteredForecastSuppliers = this.forecastData.suppliers.slice(0, 20);
+    } else {
+      this.filteredForecastSuppliers = this.forecastData.suppliers.filter(supplier =>
+        supplier.name?.toLowerCase().includes(query) ||
+        supplier.shortName?.toLowerCase().includes(query)
+      ).slice(0, 20);
+    }
+  }
+
+  selectForecastSupplierFilter(supplier: StatisticsSupplier | null): void {
+    if (supplier) {
+      this.forecastSupplierId = supplier._id;
+      this.forecastSupplierSearchQuery = '';
+    } else {
+      this.forecastSupplierId = 'all';
+      this.forecastSupplierSearchQuery = '';
+    }
+    this.showForecastSupplierDropdown = false;
+    this.loadEndingForecast();
+  }
+
+  clearForecastSupplierSelection(): void {
+    this.forecastSupplierId = 'all';
+    this.forecastSupplierSearchQuery = '';
+    this.loadEndingForecast();
+  }
+
+  closeForecastSupplierDropdownDelayed(): void {
+    setTimeout(() => {
+      this.showForecastSupplierDropdown = false;
+    }, 200);
+  }
+
+  getForecastSelectedSupplierName(): string | null {
+    if (this.forecastSupplierId === 'all' || !this.forecastData?.suppliers) {
+      return null;
+    }
+    const supplier = this.forecastData.suppliers.find(s => s._id === this.forecastSupplierId);
+    return supplier ? (supplier.shortName || supplier.name) : null;
+  }
+
+  getForecastBarHeight(value: number): number {
+    if (!this.forecastData?.endingContractsByMonth?.data) return 5;
+    const maxValue = Math.max(...this.forecastData.endingContractsByMonth.data, 1);
+    if (value === 0) return 5;
+    return Math.max((value / maxValue) * 100, 10);
+  }
+
+  hasForecastEndingContracts(): boolean {
+    return this.forecastData?.endingContractsByMonth?.data?.some(d => d > 0) ?? false;
+  }
+
   getStatusColor(status: string): string {
     return this.statusColors[status] || '#6c757d';
   }
@@ -405,6 +509,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   getBarHeight(value: number): number {
     if (this.maxChartValue === 0) return 0;
     return (value / this.maxChartValue) * 100;
+  }
+
+  getEndingBarHeight(value: number): number {
+    if (!this.contractStats?.endingContractsByMonth?.data) return 5;
+    const maxValue = Math.max(...this.contractStats.endingContractsByMonth.data, 1);
+    // Mindestens 5% Höhe für sichtbare Balken, auch wenn value 0 ist
+    if (value === 0) return 5;
+    return Math.max((value / maxValue) * 100, 10);
+  }
+
+  hasEndingContracts(): boolean {
+    return this.contractStats?.endingContractsByMonth?.data?.some(d => d > 0) ?? false;
   }
 
   loadUserStats(): void {

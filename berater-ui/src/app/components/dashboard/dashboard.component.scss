@@ -785,6 +785,47 @@
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 1.5rem;
+
+  // Kompakte einzeilige Variante
+  &.compact {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    .filter-group {
+      margin: 0;
+    }
+
+    .supplier-filter-group {
+      flex: 1;
+      min-width: 150px;
+      max-width: 250px;
+    }
+  }
+}
+
+// Zeitraum-Dropdown Styling
+.period-select {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: 120px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--primary-color);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
 }
 
 .filter-group {
@@ -1018,6 +1059,271 @@
 
       i {
         font-size: 0.85rem;
+      }
+    }
+  }
+}
+
+// Vertragsende-Prognose Karte (separate Statistik)
+.ending-forecast-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  margin-top: 1.5rem;
+
+  &.is-favorite {
+    border: 2px solid #fcd34d;
+    background: linear-gradient(135deg, #fffbeb 0%, var(--white) 100%);
+  }
+
+  .section-header-with-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .forecast-filters {
+    margin-bottom: 1rem;
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+
+      .filter-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .period-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        .period-btn {
+          padding: 0.4rem 0.75rem;
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          background: var(--white);
+          color: var(--text-secondary);
+          font-size: 0.8rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+          }
+
+          &.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+          }
+        }
+      }
+    }
+  }
+
+  .ending-forecast-content {
+    background: var(--bg-light);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .ending-forecast-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    min-height: 150px;
+    padding: 25px 10px 10px;
+    background: white;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border-light);
+  }
+
+  .forecast-bar-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 35px;
+    max-width: 60px;
+  }
+
+  .forecast-bar-container {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-top: 20px;
+  }
+
+  .forecast-bar {
+    width: 70%;
+    max-width: 30px;
+    background: #e0e0e0;
+    border-radius: 4px 4px 0 0;
+    min-height: 8px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    transition: height 0.3s ease;
+    position: relative;
+
+    &.has-value {
+      background: linear-gradient(180deg, var(--primary-color) 0%, #5a67d8 100%);
+      min-height: 20px;
+    }
+
+    .forecast-bar-value {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      white-space: nowrap;
+    }
+  }
+
+  .forecast-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+    text-align: center;
+  }
+
+  .forecast-total {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-light);
+
+    strong {
+      color: var(--primary-color);
+      font-size: 1rem;
+    }
+  }
+
+  .no-data-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    background: var(--bg-light);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+
+    i {
+      color: var(--info-color);
+    }
+  }
+
+  .ending-contracts-list-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-light);
+
+    h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        color: var(--primary-color);
+      }
+    }
+
+    .ending-contracts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .ending-contract-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: var(--white);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border-light);
+
+      &:hover {
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-sm);
+        transform: translateX(4px);
+      }
+
+      .contract-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+
+        .contract-number {
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+
+        .customer-name {
+          color: var(--text-secondary);
+          font-size: 0.85rem;
+        }
+
+        .supplier-name {
+          color: var(--text-muted);
+          font-size: 0.8rem;
+          background: var(--bg-light);
+          padding: 0.15rem 0.5rem;
+          border-radius: 4px;
+        }
+      }
+
+      .contract-end-date {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--danger-red);
+        font-size: 0.85rem;
+        font-weight: 500;
+        white-space: nowrap;
+
+        i {
+          font-size: 0.75rem;
+        }
       }
     }
   }
@@ -1824,9 +2130,17 @@
     margin: 0; // Reset margin da Grid gap verwendet wird
   }
 
-  // Vertragsstatistik nimmt volle Breite (2 Spalten)
+  // Vertragsstatistik und Prognose nebeneinander
   .contract-statistics-section {
-    grid-column: 1 / -1;
+    // Nimmt nicht mehr volle Breite, sondern nur eine Spalte
+  }
+
+  .ending-forecast-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    margin: 0;
   }
 
   // Trends-Section Anpassungen für Grid
@@ -1867,6 +2181,7 @@
   }
 }
 
+
 /* FAVORIT-CHARTS GRID - volle Größe im Favoriten-Bereich */
 .favorite-charts-grid {
   display: grid;
@@ -1876,7 +2191,8 @@
 
   .trends-section,
   .supplier-section,
-  .contract-statistics-section {
+  .contract-statistics-section,
+  .ending-forecast-card {
     background: var(--white);
     border-radius: var(--radius-lg);
     padding: 1.5rem;

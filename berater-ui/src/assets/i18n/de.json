@@ -250,7 +250,8 @@
       "CONTRACTS_BY_SUPPLIER": "Verteilung Ihrer Verträge nach Energieanbieter.",
       "MONTHLY_TRENDS": "Zeigt die monatliche Entwicklung Ihrer Verträge, Kunden und Zähler im gewählten Zeitraum.",
       "CONTRACT_STATISTICS": "Detaillierte Statistik Ihrer Verträge nach Status und Zeitraum.",
-      "OVERDUE_CONTRACTS": "Verträge, deren Enddatum überschritten ist, aber noch als 'aktiv' markiert sind. Sofortiger Handlungsbedarf!"
+      "OVERDUE_CONTRACTS": "Verträge, deren Enddatum überschritten ist, aber noch als 'aktiv' markiert sind. Sofortiger Handlungsbedarf!",
+      "ENDING_FORECAST": "Prognose wie viele Verträge in den kommenden Monaten enden werden. Hilft bei der Planung von Vertragsverlängerungen."
     }
   },
   "CONTRACTS": {
@@ -799,6 +800,9 @@
     "NO_DATA": "Keine Statistikdaten verfügbar",
     "FILTER_SUPPLIER": "Anbieter",
     "ALL_SUPPLIERS": "Alle Anbieter",
-    "ENDING_CONTRACTS": "Endende Verträge im Zeitraum"
+    "ENDING_CONTRACTS": "Endende Verträge im Zeitraum",
+    "ENDING_FORECAST": "Vertragsende-Prognose",
+    "TOTAL_ENDING": "Gesamt endende Verträge",
+    "NO_ENDING_CONTRACTS": "Keine endenden Verträge im gewählten Zeitraum"
   }
 }

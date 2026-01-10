@@ -295,377 +295,22 @@
             <div class="favorites-section">
               <h2><i class="fas fa-star"></i> {{ 'DASHBOARD.FAVORITES' | translate }}</h2>
               <div class="stats-grid">
-                <!-- Erinnerungen -->
-                @if(isFavorite('reminders') && stats.reminders) {
-                  <div class="stat-card priority-high clickable" routerLink="/todos">
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('reminders', $event)"></i>
-                      @if(activeTooltip === 'reminders') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.REMINDERS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                    <h3><i class="fas fa-bell"></i> {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h3>
-                    <div class="reminder-stats">
-                      <div class="reminder-item high">
-                        <span class="count">{{ stats.reminders.urgent || 0 }}</span>
-                        <span class="label">{{ 'TODOS.PRIORITY.URGENT' | translate }}</span>
-                      </div>
-                      <div class="reminder-item medium">
-                        <span class="count">{{ stats.reminders.total || 0 }}</span>
-                        <span class="label">{{ 'COMMON.ALL' | translate }}</span>
-                      </div>
-                    </div>
-                  </div>
-                }
-
-                <!-- Verträge -->
-                @if(isFavorite('contracts')) {
-                  <div class="stat-card">
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('contracts', $event)"></i>
-                      @if(activeTooltip === 'contracts') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACTS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                    <h3><i class="fas fa-file-contract"></i> {{ 'DASHBOARD.CONTRACTS' | translate }}</h3>
-                    <div class="stat-split">
-                      <div>
-                        <div class="stat-number small">{{ stats.contracts?.active || 0 }}</div>
-                        <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
-                      </div>
-                      <div>
-                        <div class="stat-number small">{{ stats.contracts?.total || 0 }}</div>
-                        <div class="stat-label">{{ 'COMMON.ALL' | translate }}</div>
-                      </div>
-                    </div>
-                  </div>
-                }
-
-                <!-- Zählerablesungen -->
-                @if(isFavorite('recentReadings')) {
-                  <div class="stat-card clickable" routerLink="/meters">
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('recentContracts', $event)"></i>
-                      @if(activeTooltip === 'recentContracts') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.RECENT_CONTRACTS_READINGS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                    <h3><i class="fas fa-tachometer-alt"></i> {{ 'DASHBOARD.RECENT_CONTRACTS_READINGS' | translate }}</h3>
-                    <div class="stat-split">
-                      <div>
-                        <div class="stat-number small">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</div>
-                        <div class="stat-label">{{ 'DASHBOARD.WITH_READINGS' | translate }}</div>
-                      </div>
-                      <div>
-                        <div class="stat-number small" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</div>
-                        <div class="stat-label">{{ 'DASHBOARD.WITHOUT_READINGS' | translate }}</div>
-                      </div>
-                    </div>
-                  </div>
-                }
-
-                <!-- Kunden -->
-                @if(isFavorite('customers')) {
-                  <div class="stat-card">
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('customers', $event)"></i>
-                      @if(activeTooltip === 'customers') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CUSTOMERS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                    <h3><i class="fas fa-users"></i> {{ 'DASHBOARD.CUSTOMERS' | translate }}</h3>
-                    <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
-                    <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
-                  </div>
-                }
-
-                <!-- Zähler -->
-                @if(isFavorite('meters')) {
-                  <div class="stat-card">
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('meters', $event)"></i>
-                      @if(activeTooltip === 'meters') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.METERS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                    <h3><i class="fas fa-bolt"></i> {{ 'DASHBOARD.METERS' | translate }}</h3>
-                    <div class="stat-split">
-                      <div>
-                        <div class="stat-number small">{{ stats.meters?.free || 0 }}</div>
-                        <div class="stat-label">{{ 'METERS.STATUS.FREE' | translate }}</div>
-                      </div>
-                      <div>
-                        <div class="stat-number small">{{ stats.meters?.occupied || 0 }}</div>
-                        <div class="stat-label">{{ 'METERS.STATUS.OCCUPIED' | translate }}</div>
-                      </div>
-                    </div>
-                  </div>
-                }
-
-                <!-- Neue Kunden -->
-                @if(isFavorite('newCustomers')) {
-                  <div class="stat-card">
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('newCustomers', $event)"></i>
-                      @if(activeTooltip === 'newCustomers') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.NEW_CUSTOMERS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                    <h3><i class="fas fa-user-plus"></i> {{ 'DASHBOARD.NEW_CUSTOMERS' | translate }}</h3>
-                    <div class="stat-number">{{ stats.newCustomers?.count || 0 }}</div>
-                    <div class="stat-label">{{ 'DASHBOARD.LAST_MONTH' | translate }}</div>
-                  </div>
-                }
-
-                <!-- Überfällige Verträge -->
-                @if(isFavorite('overdueContracts') && stats.overdueContracts) {
-                  <div class="stat-card warning-card clickable" [class.priority-high]="stats.overdueContracts.count > 0" (click)="openOverdueModal($event)">
-                    <div class="info-tooltip-container" (click)="$event.stopPropagation()">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('overdueContracts', $event)"></i>
-                      @if(activeTooltip === 'overdueContracts') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.OVERDUE_CONTRACTS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                    <h3><i class="fas fa-exclamation-triangle"></i> {{ 'DASHBOARD.OVERDUE_CONTRACTS' | translate }}</h3>
-                    <div class="stat-number warning-text">{{ stats.overdueContracts.count || 0 }}</div>
-                    <div class="stat-label">{{ 'DASHBOARD.OVERDUE_CONTRACTS_DESC' | translate }}</div>
-                    @if(stats.overdueContracts.count > 0) {
-                      <div class="click-hint"><i class="fas fa-external-link-alt"></i> {{ 'COMMON.CLICK_TO_VIEW' | translate }}</div>
-                    }
-                  </div>
-                }
+                @if(isFavorite('reminders')) { <ng-container *ngTemplateOutlet="RemindersCard"/> }
+                @if(isFavorite('contracts')) { <ng-container *ngTemplateOutlet="ContractsCard"/> }
+                @if(isFavorite('recentReadings')) { <ng-container *ngTemplateOutlet="RecentReadingsCard"/> }
+                @if(isFavorite('customers')) { <ng-container *ngTemplateOutlet="CustomersCard"/> }
+                @if(isFavorite('meters')) { <ng-container *ngTemplateOutlet="MetersCard"/> }
+                @if(isFavorite('newCustomers')) { <ng-container *ngTemplateOutlet="NewCustomersCard"/> }
+                @if(isFavorite('overdueContracts')) { <ng-container *ngTemplateOutlet="OverdueContractsCard"/> }
               </div>
 
               <!-- Favorit-Charts Grid (volle Größe) -->
-              @if(isFavorite('monthlyTrends') || isFavorite('contractsBySupplier') || isFavorite('contractStatistics')) {
+              @if(isFavorite('monthlyTrends') || isFavorite('contractsBySupplier') || isFavorite('contractStatistics') || isFavorite('endingForecast')) {
                 <div class="favorite-charts-grid">
-                  <!-- Monatliche Trends (volle Größe) -->
-                  @if(isFavorite('monthlyTrends') && chartData) {
-                    <div class="trends-section is-favorite">
-                      <div class="trends-header">
-                        <h3><i class="fas fa-chart-line"></i> {{ 'DASHBOARD.MONTHLY_TRENDS' | translate }}</h3>
-                        <div class="header-actions">
-                          <button class="favorite-toggle" (click)="toggleFavorite('monthlyTrends', $event)" title="Aus Favoriten entfernen">
-                            <i class="fas fa-star"></i>
-                          </button>
-                          <div class="info-tooltip-container inline">
-                            <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('favMonthlyTrends', $event)"></i>
-                            @if(activeTooltip === 'favMonthlyTrends') {
-                              <div class="info-tooltip">
-                                <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.MONTHLY_TRENDS' | translate }}</div>
-                                <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                              </div>
-                            }
-                          </div>
-                          <select [(ngModel)]="chartMonths" (change)="onChartMonthsChange()" class="months-select">
-                            <option [value]="3">3 {{ 'COMMON.MONTHS' | translate }}</option>
-                            <option [value]="6">6 {{ 'COMMON.MONTHS' | translate }}</option>
-                            <option [value]="12">12 {{ 'COMMON.MONTHS' | translate }}</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="trends-chart-container">
-                        <div class="chart-legend">
-                          <div class="legend-item">
-                            <span class="legend-color contracts"></span>
-                            <span>{{ 'DASHBOARD.CONTRACTS' | translate }}</span>
-                          </div>
-                          <div class="legend-item">
-                            <span class="legend-color customers"></span>
-                            <span>{{ 'DASHBOARD.CUSTOMERS' | translate }}</span>
-                          </div>
-                          <div class="legend-item">
-                            <span class="legend-color meters"></span>
-                            <span>{{ 'DASHBOARD.METERS' | translate }}</span>
-                          </div>
-                        </div>
-                        <div class="bar-chart">
-                          @for(label of chartData.labels; track label; let i = $index) {
-                            <div class="chart-column">
-                              <div class="bars-group">
-                                <div class="vertical-bar contracts"
-                                     [style.height.%]="getBarHeight(chartData.contracts[i])"
-                                     [title]="'Verträge: ' + chartData.contracts[i]">
-                                  @if(chartData.contracts[i] > 0) {
-                                    <span class="bar-value-top">{{ chartData.contracts[i] }}</span>
-                                  }
-                                </div>
-                                <div class="vertical-bar customers"
-                                     [style.height.%]="getBarHeight(chartData.customers[i])"
-                                     [title]="'Kunden: ' + chartData.customers[i]">
-                                  @if(chartData.customers[i] > 0) {
-                                    <span class="bar-value-top">{{ chartData.customers[i] }}</span>
-                                  }
-                                </div>
-                                <div class="vertical-bar meters"
-                                     [style.height.%]="getBarHeight(chartData.meters[i])"
-                                     [title]="'Zähler: ' + chartData.meters[i]">
-                                  @if(chartData.meters[i] > 0) {
-                                    <span class="bar-value-top">{{ chartData.meters[i] }}</span>
-                                  }
-                                </div>
-                              </div>
-                              <div class="chart-label">{{ label }}</div>
-                            </div>
-                          }
-                        </div>
-                      </div>
-                    </div>
-                  }
-
-                  <!-- Verträge nach Anbieter (volle Größe) -->
-                  @if(isFavorite('contractsBySupplier') && stats?.contractsBySupplier) {
-                    <div class="supplier-section is-favorite">
-                      <div class="section-header-with-info">
-                        <h3><i class="fas fa-chart-pie"></i> {{ 'DASHBOARD.CONTRACTS_BY_SUPPLIER' | translate }}</h3>
-                        <div class="header-actions">
-                          <button class="favorite-toggle" (click)="toggleFavorite('contractsBySupplier', $event)" title="Aus Favoriten entfernen">
-                            <i class="fas fa-star"></i>
-                          </button>
-                          <div class="info-tooltip-container inline">
-                            <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('favContractsBySupplier', $event)"></i>
-                            @if(activeTooltip === 'favContractsBySupplier') {
-                              <div class="info-tooltip">
-                                <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACTS_BY_SUPPLIER' | translate }}</div>
-                                <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                              </div>
-                            }
-                          </div>
-                        </div>
-                      </div>
-                      <div class="supplier-stats-container">
-                        <div class="pie-chart-wrapper">
-                          <div class="pie-chart" [style.background]="getPieChartGradient()">
-                            <div class="pie-chart-center">
-                              <span class="pie-total">{{ getTotalSupplierContracts() }}</span>
-                              <span class="pie-label">{{ 'COMMON.TOTAL' | translate }}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="supplier-legend">
-                          <div class="supplier-table">
-                            <div class="supplier-row header">
-                              <span class="supplier-name">{{ 'SUPPLIERS.FIELDS.NAME' | translate }}</span>
-                              <span class="supplier-count">{{ 'DASHBOARD.CONTRACTS' | translate }}</span>
-                              <span class="supplier-percent">%</span>
-                            </div>
-                            @for(item of stats.contractsBySupplier; track item._id; let i = $index) {
-                              <div class="supplier-row">
-                                <span class="supplier-name">
-                                  <span class="color-dot" [style.background]="getSupplierColor(i)"></span>
-                                  {{ item.shortName || item.name }}
-                                </span>
-                                <span class="supplier-count">{{ item.count }}</span>
-                                <span class="supplier-percent">{{ getSupplierPercentage(item.count) }}%</span>
-                              </div>
-                            }
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  }
-
-                  <!-- Vertragsstatistik (volle Größe) -->
-                  @if(isFavorite('contractStatistics') && contractStats) {
-                    <div class="contract-statistics-section is-favorite">
-                      <div class="section-header-with-info">
-                        <h3><i class="fas fa-chart-bar"></i> {{ 'STATISTICS.TITLE' | translate }}</h3>
-                        <div class="header-actions">
-                          <button class="favorite-toggle" (click)="toggleFavorite('contractStatistics', $event)" title="Aus Favoriten entfernen">
-                            <i class="fas fa-star"></i>
-                          </button>
-                          <div class="info-tooltip-container inline">
-                            <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('favContractStats', $event)"></i>
-                            @if(activeTooltip === 'favContractStats') {
-                              <div class="info-tooltip">
-                                <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACT_STATISTICS' | translate }}</div>
-                                <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                              </div>
-                            }
-                          </div>
-                        </div>
-                      </div>
-                      <div class="statistics-filters">
-                        <div class="filter-group">
-                          <span class="filter-label">{{ 'STATISTICS.SELECT_PERIOD' | translate }}:</span>
-                          <div class="period-buttons">
-                            @for(option of contractStatsMonthOptions; track option) {
-                              <button class="period-btn" [class.active]="contractStatsMonths === option && !showCustomMonthsInput" (click)="onContractStatsMonthsChange(option)">
-                                {{ option }} {{ 'COMMON.MONTHS' | translate }}
-                              </button>
-                            }
-                          </div>
-                        </div>
-                      </div>
-                      @if(contractStatsLoading) {
-                        <div class="loading-indicator">
-                          <i class="fas fa-spinner fa-spin"></i> {{ 'COMMON.LOADING' | translate }}...
-                        </div>
-                      }
-                      @if(!contractStatsLoading) {
-                        <div class="status-overview">
-                          @for(dataset of contractStats.chartData.datasets; track dataset.status) {
-                            <div class="status-card" [style.border-left-color]="getStatusColor(dataset.status)">
-                              <div class="status-label">{{ dataset.label }}</div>
-                              <div class="status-value">{{ getContractStatValue(contractStats.periodStats, dataset.status) }}</div>
-                            </div>
-                          }
-                          <div class="status-card total">
-                            <div class="status-label">{{ 'COMMON.TOTAL' | translate }}</div>
-                            <div class="status-value">{{ contractStats.periodStats.total }}</div>
-                          </div>
-                        </div>
-                        <div class="contract-chart">
-                          <div class="chart-legend">
-                            @for(dataset of contractStats.chartData.datasets; track dataset.status) {
-                              <div class="legend-item">
-                                <span class="legend-color" [style.background-color]="getStatusColor(dataset.status)"></span>
-                                <span>{{ dataset.label }}</span>
-                              </div>
-                            }
-                          </div>
-                          <div class="stacked-bar-chart">
-                            @for(label of contractStats.chartData.labels; track label; let i = $index) {
-                              <div class="chart-column">
-                                <div class="stacked-bars">
-                                  @for(dataset of contractStats.chartData.datasets; track dataset.status) {
-                                    @if(dataset.data[i] > 0) {
-                                      <div class="bar-segment" [style.height.%]="getContractBarHeight(dataset.data[i])" [style.background-color]="getStatusColor(dataset.status)" [title]="dataset.label + ': ' + dataset.data[i]">
-                                        <span class="bar-value">{{ dataset.data[i] }}</span>
-                                      </div>
-                                    }
-                                  }
-                                </div>
-                                <div class="chart-label">{{ label }}</div>
-                                <div class="chart-total">{{ getTotalForMonth(i) }}</div>
-                              </div>
-                            }
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  }
+                  @if(isFavorite('monthlyTrends') && chartData) { <ng-container *ngTemplateOutlet="MonthlyTrendsChart"/> }
+                  @if(isFavorite('contractsBySupplier') && stats?.contractsBySupplier) { <ng-container *ngTemplateOutlet="ContractsBySupplierChart"/> }
+                  @if(isFavorite('endingForecast')) { <ng-container *ngTemplateOutlet="VertragsendePrognose"/> }
+                  @if(isFavorite('contractStatistics') && contractStats) { <ng-container *ngTemplateOutlet="ContractStatisticsChart"/> }
                 </div>
               }
             </div>
@@ -719,191 +364,13 @@
                 {{ 'DASHBOARD.FAVORITE_HINT' | translate }}
               </p>
               <div class="stats-grid">
-                <!-- Erinnerungen -->
-                @if(stats.reminders) {
-                  <div class="stat-card" [class.is-favorite]="isFavorite('reminders')">
-                    <div class="card-actions">
-                      <button class="favorite-toggle" (click)="toggleFavorite('reminders', $event)" [title]="isFavorite('reminders') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                        <i [class.fas]="isFavorite('reminders')" [class.far]="!isFavorite('reminders')" class="fa-star"></i>
-                      </button>
-                      <div class="info-tooltip-container">
-                        <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allReminders', $event)"></i>
-                        @if(activeTooltip === 'allReminders') {
-                          <div class="info-tooltip">
-                            <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.REMINDERS' | translate }}</div>
-                            <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                          </div>
-                        }
-                      </div>
-                    </div>
-                    <h3><i class="fas fa-bell"></i> {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h3>
-                    <div class="reminder-stats">
-                      <div class="reminder-item high">
-                        <span class="count">{{ stats.reminders.urgent || 0 }}</span>
-                        <span class="label">{{ 'TODOS.PRIORITY.URGENT' | translate }}</span>
-                      </div>
-                      <div class="reminder-item medium">
-                        <span class="count">{{ stats.reminders.total || 0 }}</span>
-                        <span class="label">{{ 'COMMON.ALL' | translate }}</span>
-                      </div>
-                    </div>
-                  </div>
-                }
-
-                <!-- Verträge -->
-                <div class="stat-card" [class.is-favorite]="isFavorite('contracts')">
-                  <div class="card-actions">
-                    <button class="favorite-toggle" (click)="toggleFavorite('contracts', $event)" [title]="isFavorite('contracts') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                      <i [class.fas]="isFavorite('contracts')" [class.far]="!isFavorite('contracts')" class="fa-star"></i>
-                    </button>
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allContracts', $event)"></i>
-                      @if(activeTooltip === 'allContracts') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACTS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                  <h3><i class="fas fa-file-contract"></i> {{ 'DASHBOARD.CONTRACTS' | translate }}</h3>
-                  <div class="stat-split">
-                    <div>
-                      <div class="stat-number small">{{ stats.contracts?.active || 0 }}</div>
-                      <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
-                    </div>
-                    <div>
-                      <div class="stat-number small">{{ stats.contracts?.total || 0 }}</div>
-                      <div class="stat-label">{{ 'COMMON.ALL' | translate }}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Zählerablesungen -->
-                <div class="stat-card" [class.is-favorite]="isFavorite('recentReadings')">
-                  <div class="card-actions">
-                    <button class="favorite-toggle" (click)="toggleFavorite('recentReadings', $event)" [title]="isFavorite('recentReadings') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                      <i [class.fas]="isFavorite('recentReadings')" [class.far]="!isFavorite('recentReadings')" class="fa-star"></i>
-                    </button>
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allRecentReadings', $event)"></i>
-                      @if(activeTooltip === 'allRecentReadings') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.RECENT_CONTRACTS_READINGS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                  <h3><i class="fas fa-tachometer-alt"></i> {{ 'DASHBOARD.RECENT_CONTRACTS_READINGS' | translate }}</h3>
-                  <div class="stat-split">
-                    <div>
-                      <div class="stat-number small">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</div>
-                      <div class="stat-label">{{ 'DASHBOARD.WITH_READINGS' | translate }}</div>
-                    </div>
-                    <div>
-                      <div class="stat-number small" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</div>
-                      <div class="stat-label">{{ 'DASHBOARD.WITHOUT_READINGS' | translate }}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Kunden -->
-                <div class="stat-card" [class.is-favorite]="isFavorite('customers')">
-                  <div class="card-actions">
-                    <button class="favorite-toggle" (click)="toggleFavorite('customers', $event)" [title]="isFavorite('customers') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                      <i [class.fas]="isFavorite('customers')" [class.far]="!isFavorite('customers')" class="fa-star"></i>
-                    </button>
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allCustomers', $event)"></i>
-                      @if(activeTooltip === 'allCustomers') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CUSTOMERS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                  <h3><i class="fas fa-users"></i> {{ 'DASHBOARD.CUSTOMERS' | translate }}</h3>
-                  <div class="stat-number">{{ stats.customers?.active || 0 }}</div>
-                  <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
-                </div>
-
-                <!-- Zähler -->
-                <div class="stat-card" [class.is-favorite]="isFavorite('meters')">
-                  <div class="card-actions">
-                    <button class="favorite-toggle" (click)="toggleFavorite('meters', $event)" [title]="isFavorite('meters') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                      <i [class.fas]="isFavorite('meters')" [class.far]="!isFavorite('meters')" class="fa-star"></i>
-                    </button>
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allMeters', $event)"></i>
-                      @if(activeTooltip === 'allMeters') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.METERS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                  <h3><i class="fas fa-bolt"></i> {{ 'DASHBOARD.METERS' | translate }}</h3>
-                  <div class="stat-split">
-                    <div>
-                      <div class="stat-number small">{{ stats.meters?.free || 0 }}</div>
-                      <div class="stat-label">{{ 'METERS.STATUS.FREE' | translate }}</div>
-                    </div>
-                    <div>
-                      <div class="stat-number small">{{ stats.meters?.occupied || 0 }}</div>
-                      <div class="stat-label">{{ 'METERS.STATUS.OCCUPIED' | translate }}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Neue Kunden -->
-                <div class="stat-card" [class.is-favorite]="isFavorite('newCustomers')">
-                  <div class="card-actions">
-                    <button class="favorite-toggle" (click)="toggleFavorite('newCustomers', $event)" [title]="isFavorite('newCustomers') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                      <i [class.fas]="isFavorite('newCustomers')" [class.far]="!isFavorite('newCustomers')" class="fa-star"></i>
-                    </button>
-                    <div class="info-tooltip-container">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allNewCustomers', $event)"></i>
-                      @if(activeTooltip === 'allNewCustomers') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.NEW_CUSTOMERS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                  <h3><i class="fas fa-user-plus"></i> {{ 'DASHBOARD.NEW_CUSTOMERS' | translate }}</h3>
-                  <div class="stat-number">{{ stats.newCustomers?.count || 0 }}</div>
-                  <div class="stat-label">{{ 'DASHBOARD.LAST_MONTH' | translate }}</div>
-                </div>
-
-                <!-- Überfällige Verträge -->
-                @if(stats.overdueContracts) {
-                  <div class="stat-card warning-card clickable" [class.is-favorite]="isFavorite('overdueContracts')" [class.priority-high]="stats.overdueContracts.count > 0" (click)="openOverdueModal($event)">
-                    <div class="card-actions" (click)="$event.stopPropagation()">
-                      <button class="favorite-toggle" (click)="toggleFavorite('overdueContracts', $event)" [title]="isFavorite('overdueContracts') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                        <i [class.fas]="isFavorite('overdueContracts')" [class.far]="!isFavorite('overdueContracts')" class="fa-star"></i>
-                      </button>
-                      <div class="info-tooltip-container">
-                        <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('allOverdueContracts', $event)"></i>
-                        @if(activeTooltip === 'allOverdueContracts') {
-                          <div class="info-tooltip">
-                            <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.OVERDUE_CONTRACTS' | translate }}</div>
-                            <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                          </div>
-                        }
-                      </div>
-                    </div>
-                    <h3><i class="fas fa-exclamation-triangle"></i> {{ 'DASHBOARD.OVERDUE_CONTRACTS' | translate }}</h3>
-                    <div class="stat-number warning-text">{{ stats.overdueContracts.count || 0 }}</div>
-                    <div class="stat-label">{{ 'DASHBOARD.OVERDUE_CONTRACTS_DESC' | translate }}</div>
-                    @if(stats.overdueContracts.count > 0) {
-                      <div class="click-hint"><i class="fas fa-external-link-alt"></i> {{ 'COMMON.CLICK_TO_VIEW' | translate }}</div>
-                    }
-                  </div>
-                }
+                <ng-container *ngTemplateOutlet="RemindersCard"/>
+                <ng-container *ngTemplateOutlet="ContractsCard"/>
+                <ng-container *ngTemplateOutlet="RecentReadingsCard"/>
+                <ng-container *ngTemplateOutlet="CustomersCard"/>
+                <ng-container *ngTemplateOutlet="MetersCard"/>
+                <ng-container *ngTemplateOutlet="NewCustomersCard"/>
+                <ng-container *ngTemplateOutlet="OverdueContractsCard"/>
               </div>
 
               <!-- Überfällige Verträge Liste -->
@@ -944,331 +411,20 @@
               <!-- Charts Grid Container (2 Spalten auf Desktop) -->
               <div class="charts-grid">
                 <!-- Monatliche Trends Chart -->
-                @if(chartData){
-                  <div class="trends-section" [class.is-favorite]="isFavorite('monthlyTrends')">
-                    <div class="trends-header">
-                      <h3><i class="fas fa-chart-line"></i> {{ 'DASHBOARD.MONTHLY_TRENDS' | translate }}</h3>
-                      <div class="header-actions">
-                        <button class="favorite-toggle" (click)="toggleFavorite('monthlyTrends', $event)" [title]="isFavorite('monthlyTrends') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                          <i [class.fas]="isFavorite('monthlyTrends')" [class.far]="!isFavorite('monthlyTrends')" class="fa-star"></i>
-                        </button>
-                        <div class="info-tooltip-container inline">
-                          <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('monthlyTrends', $event)"></i>
-                          @if(activeTooltip === 'monthlyTrends') {
-                            <div class="info-tooltip">
-                              <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.MONTHLY_TRENDS' | translate }}</div>
-                              <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                            </div>
-                          }
-                        </div>
-                        <select [(ngModel)]="chartMonths" (change)="onChartMonthsChange()" class="months-select">
-                          <option [value]="3">3 {{ 'COMMON.MONTHS' | translate }}</option>
-                          <option [value]="6">6 {{ 'COMMON.MONTHS' | translate }}</option>
-                          <option [value]="12">12 {{ 'COMMON.MONTHS' | translate }}</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div class="trends-chart-container">
-                      <!-- Legende -->
-                      <div class="chart-legend">
-                        <div class="legend-item">
-                          <span class="legend-color contracts"></span>
-                          <span>{{ 'DASHBOARD.CONTRACTS' | translate }}</span>
-                        </div>
-                        <div class="legend-item">
-                          <span class="legend-color customers"></span>
-                          <span>{{ 'DASHBOARD.CUSTOMERS' | translate }}</span>
-                        </div>
-                        <div class="legend-item">
-                          <span class="legend-color meters"></span>
-                          <span>{{ 'DASHBOARD.METERS' | translate }}</span>
-                        </div>
-                      </div>
-
-                      <!-- Chart -->
-                      <div class="bar-chart">
-                        @for(label of chartData.labels; track label; let i = $index) {
-                          <div class="chart-column">
-                            <div class="bars-group">
-                              <div class="vertical-bar contracts"
-                                   [style.height.%]="getBarHeight(chartData.contracts[i])"
-                                   [title]="'Verträge: ' + chartData.contracts[i]">
-                                @if(chartData.contracts[i] > 0) {
-                                  <span class="bar-value-top">{{ chartData.contracts[i] }}</span>
-                                }
-                              </div>
-                              <div class="vertical-bar customers"
-                                   [style.height.%]="getBarHeight(chartData.customers[i])"
-                                   [title]="'Kunden: ' + chartData.customers[i]">
-                                @if(chartData.customers[i] > 0) {
-                                  <span class="bar-value-top">{{ chartData.customers[i] }}</span>
-                                }
-                              </div>
-                              <div class="vertical-bar meters"
-                                   [style.height.%]="getBarHeight(chartData.meters[i])"
-                                   [title]="'Zähler: ' + chartData.meters[i]">
-                                @if(chartData.meters[i] > 0) {
-                                  <span class="bar-value-top">{{ chartData.meters[i] }}</span>
-                                }
-                              </div>
-                            </div>
-                            <div class="chart-label">{{ label }}</div>
-                          </div>
-                        }
-                      </div>
-                    </div>
-                  </div>
+                @if(chartData) {
+                  <ng-container *ngTemplateOutlet="MonthlyTrendsChart"></ng-container>
                 }
 
                 <!-- Verträge nach Anbieter -->
-                @if(stats?.contractsBySupplier){
-                  <div class="supplier-section" [class.is-favorite]="isFavorite('contractsBySupplier')">
-                  <div class="section-header-with-info">
-                    <h3><i class="fas fa-chart-pie"></i> {{ 'DASHBOARD.CONTRACTS_BY_SUPPLIER' | translate }}</h3>
-                    <div class="header-actions">
-                      <button class="favorite-toggle" (click)="toggleFavorite('contractsBySupplier', $event)" [title]="isFavorite('contractsBySupplier') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                        <i [class.fas]="isFavorite('contractsBySupplier')" [class.far]="!isFavorite('contractsBySupplier')" class="fa-star"></i>
-                      </button>
-                      <div class="info-tooltip-container inline">
-                        <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('contractsBySupplier', $event)"></i>
-                        @if(activeTooltip === 'contractsBySupplier') {
-                          <div class="info-tooltip">
-                            <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACTS_BY_SUPPLIER' | translate }}</div>
-                            <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                          </div>
-                        }
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="supplier-stats-container">
-                    <!-- Kreisdiagramm -->
-                    <div class="pie-chart-wrapper">
-                      <div class="pie-chart" [style.background]="getPieChartGradient()">
-                        <div class="pie-chart-center">
-                          <span class="pie-total">{{ getTotalSupplierContracts() }}</span>
-                          <span class="pie-label">{{ 'COMMON.TOTAL' | translate }}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Legende mit Tabelle -->
-                    <div class="supplier-legend">
-                      <div class="supplier-table">
-                        <div class="supplier-row header">
-                          <span class="supplier-name">{{ 'SUPPLIERS.FIELDS.NAME' | translate }}</span>
-                          <span class="supplier-count">{{ 'DASHBOARD.CONTRACTS' | translate }}</span>
-                          <span class="supplier-percent">%</span>
-                        </div>
-                        @for(item of stats.contractsBySupplier; track item._id; let i = $index) {
-                          <div class="supplier-row">
-                            <span class="supplier-name">
-                              <span class="color-dot" [style.background]="getSupplierColor(i)"></span>
-                              {{ item.shortName || item.name }}
-                            </span>
-                            <span class="supplier-count">{{ item.count }}</span>
-                            <span class="supplier-percent">{{ getSupplierPercentage(item.count) }}%</span>
-                          </div>
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              }
+                @if(stats?.contractsBySupplier) {
+                  <ng-container *ngTemplateOutlet="ContractsBySupplierChart"></ng-container>
+                }
 
               <!-- Vertragsstatistik nach Status -->
-              <div class="contract-statistics-section" [class.is-favorite]="isFavorite('contractStatistics')">
-                <div class="section-header-with-info">
-                  <h3><i class="fas fa-chart-bar"></i> {{ 'STATISTICS.TITLE' | translate }}</h3>
-                  <div class="header-actions">
-                    <button class="favorite-toggle" (click)="toggleFavorite('contractStatistics', $event)" [title]="isFavorite('contractStatistics') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
-                      <i [class.fas]="isFavorite('contractStatistics')" [class.far]="!isFavorite('contractStatistics')" class="fa-star"></i>
-                    </button>
-                    <div class="info-tooltip-container inline">
-                      <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('contractStatistics', $event)"></i>
-                      @if(activeTooltip === 'contractStatistics') {
-                        <div class="info-tooltip">
-                          <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACT_STATISTICS' | translate }}</div>
-                          <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                </div>
+              <ng-container *ngTemplateOutlet="ContractStatisticsChart"></ng-container>
 
-                <!-- Filter-Bereich -->
-                <div class="statistics-filters">
-                  <!-- Zeitraum-Auswahl -->
-                  <div class="filter-group">
-                    <span class="filter-label">{{ 'STATISTICS.SELECT_PERIOD' | translate }}:</span>
-                    <div class="period-buttons">
-                      @for(option of contractStatsMonthOptions; track option) {
-                        <button
-                          class="period-btn"
-                          [class.active]="contractStatsMonths === option && !showCustomMonthsInput"
-                          (click)="onContractStatsMonthsChange(option)">
-                          {{ option }} {{ 'COMMON.MONTHS' | translate }}
-                        </button>
-                      }
-                      <button
-                        class="period-btn"
-                        [class.active]="showCustomMonthsInput"
-                        (click)="showCustomMonthsInput = true">
-                        {{ 'STATISTICS.CUSTOM' | translate }}
-                      </button>
-                    </div>
-                    @if(showCustomMonthsInput) {
-                      <div class="custom-months-input">
-                        <input
-                          type="number"
-                          [(ngModel)]="customMonths"
-                          min="1"
-                          max="24"
-                          placeholder="1-24"
-                          (change)="onCustomMonthsChange()" />
-                        <span>{{ 'COMMON.MONTHS' | translate }}</span>
-                      </div>
-                    }
-                  </div>
-
-                  <!-- Anbieter-Filter -->
-                  @if(contractStats && contractStats.suppliers && contractStats.suppliers.length > 0) {
-                    <div class="filter-group supplier-filter-group">
-                      <span class="filter-label">{{ 'STATISTICS.FILTER_SUPPLIER' | translate }}:</span>
-                      <div class="supplier-autocomplete">
-                        <input
-                          type="text"
-                          class="supplier-search-input"
-                          [placeholder]="'SUPPLIERS.SEARCH' | translate"
-                          [(ngModel)]="supplierSearchQuery"
-                          (input)="onSupplierSearchInput()"
-                          (focus)="onSupplierSearchFocus()"
-                          (blur)="closeSupplierDropdownDelayed()"
-                          autocomplete="off" />
-                        @if(selectedSupplierId !== 'all') {
-                          <button type="button" class="btn-clear-supplier" (click)="clearSupplierSelection()">
-                            <i class="fas fa-times"></i>
-                          </button>
-                        }
-                        @if(showSupplierDropdown && filteredSuppliers.length > 0) {
-                          <div class="supplier-dropdown">
-                            <div
-                              class="supplier-dropdown-item"
-                              [class.selected]="selectedSupplierId === 'all'"
-                              (mousedown)="selectSupplierFilter(null); $event.preventDefault()">
-                              {{ 'STATISTICS.ALL_SUPPLIERS' | translate }}
-                            </div>
-                            @for(supplier of filteredSuppliers; track supplier._id) {
-                              <div
-                                class="supplier-dropdown-item"
-                                [class.selected]="selectedSupplierId === supplier._id"
-                                (mousedown)="selectSupplierFilter(supplier); $event.preventDefault()">
-                                {{ supplier.shortName || supplier.name }}
-                              </div>
-                            }
-                          </div>
-                        }
-                        @if(showSupplierDropdown && filteredSuppliers.length === 0 && supplierSearchQuery.length > 0) {
-                          <div class="supplier-dropdown">
-                            <div class="supplier-dropdown-item no-results">
-                              {{ 'COMMON.NO_RESULTS' | translate }}
-                            </div>
-                          </div>
-                        }
-                      </div>
-                      @if(selectedSupplierId !== 'all' && getSelectedSupplierName()) {
-                        <div class="selected-supplier-badge">
-                          <span>{{ getSelectedSupplierName() }}</span>
-                          <button type="button" class="btn-remove-badge" (click)="clearSupplierSelection()">
-                            <i class="fas fa-times"></i>
-                          </button>
-                        </div>
-                      }
-                    </div>
-                  }
-                </div>
-
-                @if(contractStatsLoading) {
-                  <div class="loading-indicator">
-                    <i class="fas fa-spinner fa-spin"></i> {{ 'COMMON.LOADING' | translate }}...
-                  </div>
-                }
-
-                @if(contractStats && !contractStatsLoading) {
-                  <!-- Status-Übersicht Karten -->
-                  <div class="status-overview">
-                    @for(dataset of contractStats.chartData.datasets; track dataset.status) {
-                      <div class="status-card" [style.border-left-color]="getStatusColor(dataset.status)">
-                        <div class="status-label">{{ dataset.label }}</div>
-                        <div class="status-value">{{ getContractStatValue(contractStats.periodStats, dataset.status) }}</div>
-                      </div>
-                    }
-                    <div class="status-card total">
-                      <div class="status-label">{{ 'COMMON.TOTAL' | translate }}</div>
-                      <div class="status-value">{{ contractStats.periodStats.total }}</div>
-                    </div>
-                  </div>
-
-                  <!-- Endende Verträge im Zeitraum -->
-                  @if(contractStats.endingContracts && contractStats.endingContracts.count > 0) {
-                    <div class="ending-contracts-section">
-                      <div class="ending-contracts-header">
-                        <h4><i class="fas fa-calendar-times"></i> {{ 'STATISTICS.ENDING_CONTRACTS' | translate }} ({{ contractStats.endingContracts.count }})</h4>
-                      </div>
-                      <div class="ending-contracts-list">
-                        @for(contract of contractStats.endingContracts.list; track contract._id) {
-                          <div class="ending-contract-item" (click)="navigateToContract(contract._id)">
-                            <div class="contract-info">
-                              <span class="contract-number">{{ contract.contractNumber }}</span>
-                              <span class="customer-name">{{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}</span>
-                              <span class="supplier-name">{{ contract.supplierId?.shortName || contract.supplierId?.name }}</span>
-                            </div>
-                            <div class="contract-end-date">
-                              <i class="fas fa-calendar-alt"></i>
-                              {{ contract.endDate | date:'dd.MM.yyyy' }}
-                            </div>
-                          </div>
-                        }
-                      </div>
-                    </div>
-                  }
-
-                  <!-- Balkendiagramm -->
-                  <div class="contract-chart">
-                    <div class="chart-legend">
-                      @for(dataset of contractStats.chartData.datasets; track dataset.status) {
-                        <div class="legend-item">
-                          <span class="legend-color" [style.background-color]="getStatusColor(dataset.status)"></span>
-                          <span>{{ dataset.label }}</span>
-                        </div>
-                      }
-                    </div>
-
-                    <div class="stacked-bar-chart">
-                      @for(label of contractStats.chartData.labels; track label; let i = $index) {
-                        <div class="chart-column">
-                          <div class="stacked-bars">
-                            @for(dataset of contractStats.chartData.datasets; track dataset.status) {
-                              @if(dataset.data[i] > 0) {
-                                <div
-                                  class="bar-segment"
-                                  [style.height.%]="getContractBarHeight(dataset.data[i])"
-                                  [style.background-color]="getStatusColor(dataset.status)"
-                                  [title]="dataset.label + ': ' + dataset.data[i]">
-                                  <span class="bar-value">{{ dataset.data[i] }}</span>
-                                </div>
-                              }
-                            }
-                          </div>
-                          <div class="chart-label">{{ label }}</div>
-                          <div class="chart-total">{{ getTotalForMonth(i) }}</div>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
+              <!-- Vertragsende-Prognose (neben Vertragsstatistik) -->
+              <ng-container *ngTemplateOutlet="VertragsendePrognose"/>
               </div><!-- Ende charts-grid -->
             </div>
           </div>
@@ -1332,3 +488,616 @@
     </div>
   </div>
 }
+
+<ng-template #VertragsendePrognose>
+  <div class="ending-forecast-card" [class.is-favorite]="isFavorite('endingForecast')">
+    <div class="section-header-with-info">
+      <h3><i class="fas fa-calendar-check"></i> {{ 'STATISTICS.ENDING_FORECAST' | translate }}</h3>
+      <div class="header-actions">
+        <button class="favorite-toggle" (click)="toggleFavorite('endingForecast', $event)" [title]="isFavorite('endingForecast') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+          <i [class.fas]="isFavorite('endingForecast')" [class.far]="!isFavorite('endingForecast')" class="fa-star"></i>
+        </button>
+        <div class="info-tooltip-container inline">
+          <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('endingForecast', $event)"></i>
+          @if(activeTooltip === 'endingForecast') {
+            <div class="info-tooltip">
+              <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.ENDING_FORECAST' | translate }}</div>
+              <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter-Bereich für Prognose (kompakte Zeile) -->
+    <div class="statistics-filters compact forecast-filters">
+      <!-- Zeitraum-Dropdown -->
+      <div class="filter-group">
+        <select class="period-select" [(ngModel)]="forecastMonths" (change)="onForecastMonthsChange(forecastMonths)">
+          @for(option of forecastMonthOptions; track option) {
+            <option [value]="option">{{ option }} {{ 'COMMON.MONTHS' | translate }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Anbieter-Filter für Prognose -->
+      @if(forecastData && forecastData.suppliers && forecastData.suppliers.length > 0) {
+        <div class="filter-group supplier-filter-group">
+          <div class="supplier-autocomplete">
+            <input
+              type="text"
+              class="supplier-search-input"
+              [placeholder]="'SUPPLIERS.SEARCH' | translate"
+              [(ngModel)]="forecastSupplierSearchQuery"
+              (input)="onForecastSupplierSearchInput()"
+              (focus)="onForecastSupplierSearchFocus()"
+              (blur)="closeForecastSupplierDropdownDelayed()"
+              autocomplete="off" />
+            @if(forecastSupplierId !== 'all') {
+              <button type="button" class="btn-clear-supplier" (click)="clearForecastSupplierSelection()">
+                <i class="fas fa-times"></i>
+              </button>
+            }
+            @if(showForecastSupplierDropdown && filteredForecastSuppliers.length > 0) {
+              <div class="supplier-dropdown">
+                <div
+                  class="supplier-dropdown-item"
+                  [class.selected]="forecastSupplierId === 'all'"
+                  (mousedown)="selectForecastSupplierFilter(null); $event.preventDefault()">
+                  {{ 'STATISTICS.ALL_SUPPLIERS' | translate }}
+                </div>
+                @for(supplier of filteredForecastSuppliers; track supplier._id) {
+                  <div
+                    class="supplier-dropdown-item"
+                    [class.selected]="forecastSupplierId === supplier._id"
+                    (mousedown)="selectForecastSupplierFilter(supplier); $event.preventDefault()">
+                    {{ supplier.shortName || supplier.name }}
+                  </div>
+                }
+              </div>
+            }
+            @if(showForecastSupplierDropdown && filteredForecastSuppliers.length === 0 && forecastSupplierSearchQuery.length > 0) {
+              <div class="supplier-dropdown">
+                <div class="supplier-dropdown-item no-results">
+                  {{ 'COMMON.NO_RESULTS' | translate }}
+                </div>
+              </div>
+            }
+          </div>
+          @if(forecastSupplierId !== 'all' && getForecastSelectedSupplierName()) {
+            <div class="selected-supplier-badge">
+              <span>{{ getForecastSelectedSupplierName() }}</span>
+              <button type="button" class="btn-remove-badge" (click)="clearForecastSupplierSelection()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    @if(forecastLoading) {
+      <div class="loading-indicator">
+        <i class="fas fa-spinner fa-spin"></i> {{ 'COMMON.LOADING' | translate }}...
+      </div>
+    }
+
+    @if(forecastData && !forecastLoading) {
+      <div class="ending-forecast-content">
+        @if(forecastData.endingContractsByMonth && forecastData.endingContractsByMonth.labels && forecastData.endingContractsByMonth.labels.length > 0) {
+          <div class="ending-forecast-chart">
+            @for(label of forecastData.endingContractsByMonth.labels; track label; let i = $index) {
+              <div class="forecast-bar-column">
+                <div class="forecast-bar-container">
+                  <div
+                    class="forecast-bar"
+                    [style.height.%]="getForecastBarHeight(forecastData.endingContractsByMonth.data[i])"
+                    [class.has-value]="forecastData.endingContractsByMonth.data[i] > 0">
+                    @if(forecastData.endingContractsByMonth.data[i] > 0) {
+                      <span class="forecast-bar-value">{{ forecastData.endingContractsByMonth.data[i] }}</span>
+                    }
+                  </div>
+                </div>
+                <div class="forecast-label">{{ label }}</div>
+              </div>
+            }
+          </div>
+          <div class="forecast-total">
+            {{ 'STATISTICS.TOTAL_ENDING' | translate }}: <strong>{{ forecastData.endingContracts?.count || 0 }}</strong>
+          </div>
+        } @else {
+          <div class="no-data-message">
+            <i class="fas fa-info-circle"></i>
+            {{ 'STATISTICS.NO_ENDING_CONTRACTS' | translate }}
+          </div>
+        }
+
+      </div>
+    }
+  </div>
+</ng-template>
+
+<ng-template #MonthlyTrendsChart>
+  @if(chartData) {
+    <div class="trends-section" [class.is-favorite]="isFavorite('monthlyTrends')">
+      <div class="trends-header">
+        <h3><i class="fas fa-chart-line"></i> {{ 'DASHBOARD.MONTHLY_TRENDS' | translate }}</h3>
+        <div class="header-actions">
+          <button class="favorite-toggle" (click)="toggleFavorite('monthlyTrends', $event)" [title]="isFavorite('monthlyTrends') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+            <i [class.fas]="isFavorite('monthlyTrends')" [class.far]="!isFavorite('monthlyTrends')" class="fa-star"></i>
+          </button>
+          <div class="info-tooltip-container inline">
+            <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('monthlyTrends', $event)"></i>
+            @if(activeTooltip === 'monthlyTrends') {
+              <div class="info-tooltip">
+                <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.MONTHLY_TRENDS' | translate }}</div>
+                <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+              </div>
+            }
+          </div>
+          <select [(ngModel)]="chartMonths" (change)="onChartMonthsChange()" class="months-select">
+            <option [value]="3">3 {{ 'COMMON.MONTHS' | translate }}</option>
+            <option [value]="6">6 {{ 'COMMON.MONTHS' | translate }}</option>
+            <option [value]="12">12 {{ 'COMMON.MONTHS' | translate }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="trends-chart-container">
+        <div class="chart-legend">
+          <div class="legend-item">
+            <span class="legend-color contracts"></span>
+            <span>{{ 'DASHBOARD.CONTRACTS' | translate }}</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color customers"></span>
+            <span>{{ 'DASHBOARD.CUSTOMERS' | translate }}</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color meters"></span>
+            <span>{{ 'DASHBOARD.METERS' | translate }}</span>
+          </div>
+        </div>
+        <div class="bar-chart">
+          @for(label of chartData.labels; track label; let i = $index) {
+            <div class="chart-column">
+              <div class="bars-group">
+                <div class="vertical-bar contracts"
+                     [style.height.%]="getBarHeight(chartData.contracts[i])"
+                     [title]="'Verträge: ' + chartData.contracts[i]">
+                  @if(chartData.contracts[i] > 0) {
+                    <span class="bar-value-top">{{ chartData.contracts[i] }}</span>
+                  }
+                </div>
+                <div class="vertical-bar customers"
+                     [style.height.%]="getBarHeight(chartData.customers[i])"
+                     [title]="'Kunden: ' + chartData.customers[i]">
+                  @if(chartData.customers[i] > 0) {
+                    <span class="bar-value-top">{{ chartData.customers[i] }}</span>
+                  }
+                </div>
+                <div class="vertical-bar meters"
+                     [style.height.%]="getBarHeight(chartData.meters[i])"
+                     [title]="'Zähler: ' + chartData.meters[i]">
+                  @if(chartData.meters[i] > 0) {
+                    <span class="bar-value-top">{{ chartData.meters[i] }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-label">{{ label }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</ng-template>
+
+<ng-template #ContractsBySupplierChart>
+  @if(stats?.contractsBySupplier) {
+    <div class="supplier-section" [class.is-favorite]="isFavorite('contractsBySupplier')">
+      <div class="section-header-with-info">
+        <h3><i class="fas fa-chart-pie"></i> {{ 'DASHBOARD.CONTRACTS_BY_SUPPLIER' | translate }}</h3>
+        <div class="header-actions">
+          <button class="favorite-toggle" (click)="toggleFavorite('contractsBySupplier', $event)" [title]="isFavorite('contractsBySupplier') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+            <i [class.fas]="isFavorite('contractsBySupplier')" [class.far]="!isFavorite('contractsBySupplier')" class="fa-star"></i>
+          </button>
+          <div class="info-tooltip-container inline">
+            <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('contractsBySupplier', $event)"></i>
+            @if(activeTooltip === 'contractsBySupplier') {
+              <div class="info-tooltip">
+                <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACTS_BY_SUPPLIER' | translate }}</div>
+                <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="supplier-stats-container">
+        <div class="pie-chart-wrapper">
+          <div class="pie-chart" [style.background]="getPieChartGradient()">
+            <div class="pie-chart-center">
+              <span class="pie-total">{{ getTotalSupplierContracts() }}</span>
+              <span class="pie-label">{{ 'COMMON.TOTAL' | translate }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="supplier-legend">
+          <div class="supplier-table">
+            <div class="supplier-row header">
+              <span class="supplier-name">{{ 'SUPPLIERS.FIELDS.NAME' | translate }}</span>
+              <span class="supplier-count">{{ 'DASHBOARD.CONTRACTS' | translate }}</span>
+              <span class="supplier-percent">%</span>
+            </div>
+            @for(item of stats.contractsBySupplier; track item._id; let i = $index) {
+              <div class="supplier-row">
+                <span class="supplier-name">
+                  <span class="color-dot" [style.background]="getSupplierColor(i)"></span>
+                  {{ item.shortName || item.name }}
+                </span>
+                <span class="supplier-count">{{ item.count }}</span>
+                <span class="supplier-percent">{{ getSupplierPercentage(item.count) }}%</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</ng-template>
+
+<ng-template #ContractStatisticsChart>
+  <div class="contract-statistics-section" [class.is-favorite]="isFavorite('contractStatistics')">
+    <div class="section-header-with-info">
+      <h3><i class="fas fa-chart-bar"></i> {{ 'STATISTICS.TITLE' | translate }}</h3>
+      <div class="header-actions">
+        <button class="favorite-toggle" (click)="toggleFavorite('contractStatistics', $event)" [title]="isFavorite('contractStatistics') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+          <i [class.fas]="isFavorite('contractStatistics')" [class.far]="!isFavorite('contractStatistics')" class="fa-star"></i>
+        </button>
+        <div class="info-tooltip-container inline">
+          <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('contractStatistics', $event)"></i>
+          @if(activeTooltip === 'contractStatistics') {
+            <div class="info-tooltip">
+              <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACT_STATISTICS' | translate }}</div>
+              <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter-Bereich (kompakte Zeile) -->
+    <div class="statistics-filters compact">
+      <!-- Zeitraum-Dropdown -->
+      <div class="filter-group">
+        <select class="period-select" [(ngModel)]="contractStatsMonths" (change)="onContractStatsMonthsChange(contractStatsMonths)">
+          @for(option of contractStatsMonthOptions; track option) {
+            <option [value]="option">{{ option }} {{ 'COMMON.MONTHS' | translate }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Anbieter-Filter -->
+      @if(contractStats && contractStats.suppliers && contractStats.suppliers.length > 0) {
+        <div class="filter-group supplier-filter-group">
+          <div class="supplier-autocomplete">
+            <input
+              type="text"
+              class="supplier-search-input"
+              [placeholder]="'SUPPLIERS.SEARCH' | translate"
+              [(ngModel)]="supplierSearchQuery"
+              (input)="onSupplierSearchInput()"
+              (focus)="onSupplierSearchFocus()"
+              (blur)="closeSupplierDropdownDelayed()"
+              autocomplete="off" />
+            @if(selectedSupplierId !== 'all') {
+              <button type="button" class="btn-clear-supplier" (click)="clearSupplierSelection()">
+                <i class="fas fa-times"></i>
+              </button>
+            }
+            @if(showSupplierDropdown && filteredSuppliers.length > 0) {
+              <div class="supplier-dropdown">
+                <div
+                  class="supplier-dropdown-item"
+                  [class.selected]="selectedSupplierId === 'all'"
+                  (mousedown)="selectSupplierFilter(null); $event.preventDefault()">
+                  {{ 'STATISTICS.ALL_SUPPLIERS' | translate }}
+                </div>
+                @for(supplier of filteredSuppliers; track supplier._id) {
+                  <div
+                    class="supplier-dropdown-item"
+                    [class.selected]="selectedSupplierId === supplier._id"
+                    (mousedown)="selectSupplierFilter(supplier); $event.preventDefault()">
+                    {{ supplier.shortName || supplier.name }}
+                  </div>
+                }
+              </div>
+            }
+            @if(showSupplierDropdown && filteredSuppliers.length === 0 && supplierSearchQuery.length > 0) {
+              <div class="supplier-dropdown">
+                <div class="supplier-dropdown-item no-results">
+                  {{ 'COMMON.NO_RESULTS' | translate }}
+                </div>
+              </div>
+            }
+          </div>
+          @if(selectedSupplierId !== 'all' && getSelectedSupplierName()) {
+            <div class="selected-supplier-badge">
+              <span>{{ getSelectedSupplierName() }}</span>
+              <button type="button" class="btn-remove-badge" (click)="clearSupplierSelection()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    @if(contractStatsLoading) {
+      <div class="loading-indicator">
+        <i class="fas fa-spinner fa-spin"></i> {{ 'COMMON.LOADING' | translate }}...
+      </div>
+    }
+
+    @if(contractStats && !contractStatsLoading) {
+      <!-- Status-Übersicht Karten -->
+      <div class="status-overview">
+        @for(dataset of contractStats.chartData.datasets; track dataset.status) {
+          <div class="status-card" [style.border-left-color]="getStatusColor(dataset.status)">
+            <div class="status-label">{{ dataset.label }}</div>
+            <div class="status-value">{{ getContractStatValue(contractStats.periodStats, dataset.status) }}</div>
+          </div>
+        }
+        <div class="status-card total">
+          <div class="status-label">{{ 'COMMON.TOTAL' | translate }}</div>
+          <div class="status-value">{{ contractStats.periodStats.total }}</div>
+        </div>
+      </div>
+
+      <!-- Balkendiagramm -->
+      <div class="contract-chart">
+        <div class="chart-legend">
+          @for(dataset of contractStats.chartData.datasets; track dataset.status) {
+            <div class="legend-item">
+              <span class="legend-color" [style.background-color]="getStatusColor(dataset.status)"></span>
+              <span>{{ dataset.label }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="stacked-bar-chart">
+          @for(label of contractStats.chartData.labels; track label; let i = $index) {
+            <div class="chart-column">
+              <div class="stacked-bars">
+                @for(dataset of contractStats.chartData.datasets; track dataset.status) {
+                  @if(dataset.data[i] > 0) {
+                    <div
+                      class="bar-segment"
+                      [style.height.%]="getContractBarHeight(dataset.data[i])"
+                      [style.background-color]="getStatusColor(dataset.status)"
+                      [title]="dataset.label + ': ' + dataset.data[i]">
+                      <span class="bar-value">{{ dataset.data[i] }}</span>
+                    </div>
+                  }
+                }
+              </div>
+              <div class="chart-label">{{ label }}</div>
+              <div class="chart-total">{{ getTotalForMonth(i) }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</ng-template>
+
+<!-- ========== STAT-CARD TEMPLATES ========== -->
+
+<!-- Erinnerungen Kachel -->
+<ng-template #RemindersCard>
+  @if(stats?.reminders) {
+    <div class="stat-card"
+         [class.priority-high]="!isFavorite('reminders')"
+         [class.clickable]="isFavorite('reminders')"
+         [class.is-favorite]="isFavorite('reminders')"
+         [routerLink]="isFavorite('reminders') ? '/todos' : null">
+      <div class="card-actions">
+        <button class="favorite-toggle" (click)="toggleFavorite('reminders', $event)" [title]="isFavorite('reminders') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+          <i [class.fas]="isFavorite('reminders')" [class.far]="!isFavorite('reminders')" class="fa-star"></i>
+        </button>
+        <div class="info-tooltip-container">
+          <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('reminders', $event)"></i>
+          @if(activeTooltip === 'reminders') {
+            <div class="info-tooltip">
+              <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.REMINDERS' | translate }}</div>
+              <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+            </div>
+          }
+        </div>
+      </div>
+      <h3><i class="fas fa-bell"></i> {{ 'SETTINGS.REMINDERS.TITLE' | translate }}</h3>
+      <div class="reminder-stats">
+        <div class="reminder-item high">
+          <span class="count">{{ stats.reminders.urgent || 0 }}</span>
+          <span class="label">{{ 'TODOS.PRIORITY.URGENT' | translate }}</span>
+        </div>
+        <div class="reminder-item medium">
+          <span class="count">{{ stats.reminders.total || 0 }}</span>
+          <span class="label">{{ 'COMMON.ALL' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</ng-template>
+
+<!-- Verträge Kachel -->
+<ng-template #ContractsCard>
+  <div class="stat-card" [class.is-favorite]="isFavorite('contracts')">
+    <div class="card-actions">
+      <button class="favorite-toggle" (click)="toggleFavorite('contracts', $event)" [title]="isFavorite('contracts') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+        <i [class.fas]="isFavorite('contracts')" [class.far]="!isFavorite('contracts')" class="fa-star"></i>
+      </button>
+      <div class="info-tooltip-container">
+        <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('contracts', $event)"></i>
+        @if(activeTooltip === 'contracts') {
+          <div class="info-tooltip">
+            <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CONTRACTS' | translate }}</div>
+            <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+          </div>
+        }
+      </div>
+    </div>
+    <h3><i class="fas fa-file-contract"></i> {{ 'DASHBOARD.CONTRACTS' | translate }}</h3>
+    <div class="stat-split">
+      <div>
+        <div class="stat-number small">{{ stats?.contracts?.active || 0 }}</div>
+        <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
+      </div>
+      <div>
+        <div class="stat-number small">{{ stats?.contracts?.total || 0 }}</div>
+        <div class="stat-label">{{ 'COMMON.ALL' | translate }}</div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Zählerablesungen Kachel -->
+<ng-template #RecentReadingsCard>
+  <div class="stat-card"
+       [class.is-favorite]="isFavorite('recentReadings')"
+       [class.clickable]="isFavorite('recentReadings')"
+       [routerLink]="isFavorite('recentReadings') ? '/meters' : null">
+    <div class="card-actions">
+      <button class="favorite-toggle" (click)="toggleFavorite('recentReadings', $event)" [title]="isFavorite('recentReadings') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+        <i [class.fas]="isFavorite('recentReadings')" [class.far]="!isFavorite('recentReadings')" class="fa-star"></i>
+      </button>
+      <div class="info-tooltip-container">
+        <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('recentReadings', $event)"></i>
+        @if(activeTooltip === 'recentReadings') {
+          <div class="info-tooltip">
+            <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.RECENT_CONTRACTS_READINGS' | translate }}</div>
+            <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+          </div>
+        }
+      </div>
+    </div>
+    <h3><i class="fas fa-tachometer-alt"></i> {{ 'DASHBOARD.RECENT_CONTRACTS_READINGS' | translate }}</h3>
+    <div class="stat-split">
+      <div>
+        <div class="stat-number small">{{ stats?.recentContractsReadings?.withReadings || 0 }}/{{ stats?.recentContractsReadings?.totalContracts || 0 }}</div>
+        <div class="stat-label">{{ 'DASHBOARD.WITH_READINGS' | translate }}</div>
+      </div>
+      <div>
+        <div class="stat-number small" [class.text-warning]="(stats?.recentContractsReadings?.withoutReadings || 0) > 0">{{ stats?.recentContractsReadings?.withoutReadings || 0 }}</div>
+        <div class="stat-label">{{ 'DASHBOARD.WITHOUT_READINGS' | translate }}</div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Kunden Kachel -->
+<ng-template #CustomersCard>
+  <div class="stat-card" [class.is-favorite]="isFavorite('customers')">
+    <div class="card-actions">
+      <button class="favorite-toggle" (click)="toggleFavorite('customers', $event)" [title]="isFavorite('customers') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+        <i [class.fas]="isFavorite('customers')" [class.far]="!isFavorite('customers')" class="fa-star"></i>
+      </button>
+      <div class="info-tooltip-container">
+        <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('customers', $event)"></i>
+        @if(activeTooltip === 'customers') {
+          <div class="info-tooltip">
+            <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.CUSTOMERS' | translate }}</div>
+            <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+          </div>
+        }
+      </div>
+    </div>
+    <h3><i class="fas fa-users"></i> {{ 'DASHBOARD.CUSTOMERS' | translate }}</h3>
+    <div class="stat-number">{{ stats?.customers?.active || 0 }}</div>
+    <div class="stat-label">{{ 'DASHBOARD.ACTIVE' | translate }}</div>
+  </div>
+</ng-template>
+
+<!-- Zähler Kachel -->
+<ng-template #MetersCard>
+  <div class="stat-card" [class.is-favorite]="isFavorite('meters')">
+    <div class="card-actions">
+      <button class="favorite-toggle" (click)="toggleFavorite('meters', $event)" [title]="isFavorite('meters') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+        <i [class.fas]="isFavorite('meters')" [class.far]="!isFavorite('meters')" class="fa-star"></i>
+      </button>
+      <div class="info-tooltip-container">
+        <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('meters', $event)"></i>
+        @if(activeTooltip === 'meters') {
+          <div class="info-tooltip">
+            <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.METERS' | translate }}</div>
+            <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+          </div>
+        }
+      </div>
+    </div>
+    <h3><i class="fas fa-bolt"></i> {{ 'DASHBOARD.METERS' | translate }}</h3>
+    <div class="stat-split">
+      <div>
+        <div class="stat-number small">{{ stats?.meters?.free || 0 }}</div>
+        <div class="stat-label">{{ 'METERS.STATUS.FREE' | translate }}</div>
+      </div>
+      <div>
+        <div class="stat-number small">{{ stats?.meters?.occupied || 0 }}</div>
+        <div class="stat-label">{{ 'METERS.STATUS.OCCUPIED' | translate }}</div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Neue Kunden Kachel -->
+<ng-template #NewCustomersCard>
+  <div class="stat-card" [class.is-favorite]="isFavorite('newCustomers')">
+    <div class="card-actions">
+      <button class="favorite-toggle" (click)="toggleFavorite('newCustomers', $event)" [title]="isFavorite('newCustomers') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+        <i [class.fas]="isFavorite('newCustomers')" [class.far]="!isFavorite('newCustomers')" class="fa-star"></i>
+      </button>
+      <div class="info-tooltip-container">
+        <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('newCustomers', $event)"></i>
+        @if(activeTooltip === 'newCustomers') {
+          <div class="info-tooltip">
+            <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.NEW_CUSTOMERS' | translate }}</div>
+            <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+          </div>
+        }
+      </div>
+    </div>
+    <h3><i class="fas fa-user-plus"></i> {{ 'DASHBOARD.NEW_CUSTOMERS' | translate }}</h3>
+    <div class="stat-number">{{ stats?.newCustomers?.count || 0 }}</div>
+    <div class="stat-label">{{ 'DASHBOARD.LAST_MONTH' | translate }}</div>
+  </div>
+</ng-template>
+
+<!-- Überfällige Verträge Kachel -->
+<ng-template #OverdueContractsCard>
+  @if(stats?.overdueContracts) {
+    <div class="stat-card warning-card clickable"
+         [class.is-favorite]="isFavorite('overdueContracts')"
+         [class.priority-high]="stats.overdueContracts.count > 0"
+         (click)="openOverdueModal($event)">
+      <div class="card-actions" (click)="$event.stopPropagation()">
+        <button class="favorite-toggle" (click)="toggleFavorite('overdueContracts', $event)" [title]="isFavorite('overdueContracts') ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'">
+          <i [class.fas]="isFavorite('overdueContracts')" [class.far]="!isFavorite('overdueContracts')" class="fa-star"></i>
+        </button>
+        <div class="info-tooltip-container">
+          <i class="fas fa-info-circle info-icon" (click)="toggleTooltip('overdueContracts', $event)"></i>
+          @if(activeTooltip === 'overdueContracts') {
+            <div class="info-tooltip">
+              <div class="tooltip-content">{{ 'DASHBOARD.TOOLTIPS.OVERDUE_CONTRACTS' | translate }}</div>
+              <button class="tooltip-close" (click)="closeTooltip($event)"><i class="fas fa-times"></i></button>
+            </div>
+          }
+        </div>
+      </div>
+      <h3><i class="fas fa-exclamation-triangle"></i> {{ 'DASHBOARD.OVERDUE_CONTRACTS' | translate }}</h3>
+      <div class="stat-number warning-text">{{ stats.overdueContracts.count || 0 }}</div>
+      <div class="stat-label">{{ 'DASHBOARD.OVERDUE_CONTRACTS_DESC' | translate }}</div>
+      @if(stats.overdueContracts.count > 0) {
+        <div class="click-hint"><i class="fas fa-external-link-alt"></i> {{ 'COMMON.CLICK_TO_VIEW' | translate }}</div>
+      }
+    </div>
+  }
+</ng-template>

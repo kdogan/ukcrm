@@ -66,6 +66,24 @@ export interface ContractStatisticsData {
     list: EndingContract[];
     count: number;
   };
+  endingContractsByMonth: {
+    labels: string[];
+    data: number[];
+  };
+}
+
+export interface EndingForecastData {
+  endingContracts: {
+    list: EndingContract[];
+    count: number;
+  };
+  endingContractsByMonth: {
+    labels: string[];
+    data: number[];
+  };
+  months: number;
+  suppliers: StatisticsSupplier[];
+  selectedSupplierId: string;
 }
 
 @Injectable({
@@ -82,5 +100,13 @@ export class StatisticsService {
       url += `&supplierId=${supplierId}`;
     }
     return this.http.get<{ success: boolean; data: ContractStatisticsData }>(url);
+  }
+
+  getEndingForecast(months: number = 6, supplierId: string = 'all'): Observable<{ success: boolean; data: EndingForecastData }> {
+    let url = `${this.apiUrl}/ending-forecast?months=${months}`;
+    if (supplierId && supplierId !== 'all') {
+      url += `&supplierId=${supplierId}`;
+    }
+    return this.http.get<{ success: boolean; data: EndingForecastData }>(url);
   }
 }

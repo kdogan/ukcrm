@@ -6,503 +6,522 @@
   </div>
 
   <!-- SUPERADMIN VIEW -->
-  <div *ngIf="isSuperAdmin" class="mobile-content">
+   @if(isSuperAdmin){
+    <div class="mobile-content">
 
-    <!-- Stats Cards -->
-    <div class="stats-cards" *ngIf="userStats">
-      <div class="stat-card">
-        <div class="stat-icon">👥</div>
-        <div class="stat-value">{{ userStats.total || 0 }}</div>
-        <div class="stat-label">Benutzer</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">✅</div>
-        <div class="stat-value">{{ userStats.active || 0 }}</div>
-        <div class="stat-label">Aktive</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">🚫</div>
-        <div class="stat-value">{{ userStats.blocked || 0 }}</div>
-        <div class="stat-label">Blockiert</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">📦</div>
-        <div class="stat-value">{{ userStats.package || 0 }}</div>
-        <div class="stat-label">Paket</div>
-      </div>
-    </div>
-
-    <!-- Benutzer nach Rolle -->
-    <div class="section-card" *ngIf="userStats?.byRole">
-      <h2>📊 Benutzer nach Rolle</h2>
-      <div class="chart-container">
-        <div *ngFor="let item of getRoleStats()" class="chart-bar">
-          <div class="bar-label">{{ item.name }}</div>
-          <div class="bar-wrapper">
-            <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
-            <span class="bar-value">{{ item.count }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Benutzer nach Paket -->
-    <div class="section-card" *ngIf="userStats?.byPackage">
-      <h2>📦 Benutzer nach Paket</h2>
-      <div class="chart-container">
-        <div *ngFor="let item of getPackageStats()" class="chart-bar">
-          <div class="bar-label">{{ item.name }}</div>
-          <div class="bar-wrapper">
-            <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
-            <span class="bar-value">{{ item.count }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Upgrade-Anfragen -->
-    <div class="section-card" *ngIf="stats?.upgradeRequests">
-      <h2>🔄 Upgrade-Anfragen</h2>
-
-      <div class="upgrade-stats">
-        <div class="upgrade-stat priority-high">
-          <div class="upgrade-value">{{ stats.upgradeRequests.counts?.awaitingReview || 0 }}</div>
-          <div class="upgrade-label">⏳ Warten</div>
-        </div>
-        <div class="upgrade-stat">
-          <div class="upgrade-value">{{ stats.upgradeRequests.counts?.pending || 0 }}</div>
-          <div class="upgrade-label">📝 Pending</div>
-        </div>
-        <div class="upgrade-stat">
-          <div class="upgrade-value">{{ stats.upgradeRequests.counts?.paymentReceived || 0 }}</div>
-          <div class="upgrade-label">💰 Bezahlt</div>
-        </div>
-      </div>
-
-      <!-- Offene Anfragen -->
-      <div *ngIf="stats.upgradeRequests.pending?.length > 0" class="requests-list">
-        <h3>Offene Anfragen</h3>
-        <div *ngFor="let request of stats.upgradeRequests.pending" class="request-card">
-          <div class="request-header">
-            <strong>{{ request.user.firstName }} {{ request.user.lastName }}</strong>
-            <span class="status-badge" [class]="'status-' + request.status">
-              {{ getStatusLabel(request.status) }}
-            </span>
-          </div>
-          <div class="request-email">{{ request.user.email }}</div>
-
-          <div class="request-details">
-            <div class="detail-row">
-              <span class="detail-label">Aktuell:</span>
-              <span class="detail-value">{{ request.currentPackage }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Gewünscht:</span>
-              <span class="detail-value highlight">{{ request.packageDetails.displayName }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Preis:</span>
-              <span class="detail-value">{{ request.packageDetails.price }} {{ request.packageDetails.currency }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Datum:</span>
-              <span class="detail-value">{{ formatDate(request.createdAt) }}</span>
-            </div>
-          </div>
-
-          <div class="request-actions">
-            <button class="btn-approve" (click)="approveUpgradeEvent.emit(request._id)">
-              ✓ Genehmigen
-            </button>
-            <button class="btn-reject" (click)="rejectUpgradeEvent.emit(request._id)">
-              ✗ Ablehnen
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="!stats.upgradeRequests.pending || stats.upgradeRequests.pending.length === 0" class="no-data">
-        Keine offenen Upgrade-Anfragen
-      </div>
-    </div>
-
-  </div>
-
-  <!-- BERATER/ADMIN VIEW -->
-  <div *ngIf="!isSuperAdmin" class="mobile-content">
-
-    <!-- Subscription Expiration Warning -->
-    <div *ngIf="shouldShowSubscriptionWarning()"
-         class="subscription-warning-banner"
-         [class.warning-expired]="subscriptionWarningLevel === 'expired'"
-         [class.warning-danger]="subscriptionWarningLevel === 'danger'"
-         [class.warning-warning]="subscriptionWarningLevel === 'warning'"
-         [class.warning-info]="subscriptionWarningLevel === 'info'">
-      <div class="warning-icon">
-        <i class="fas"
-           [class.fa-exclamation-triangle]="subscriptionWarningLevel === 'expired' || subscriptionWarningLevel === 'danger'"
-           [class.fa-info-circle]="subscriptionWarningLevel === 'warning' || subscriptionWarningLevel === 'info'"></i>
-      </div>
-      <div class="warning-content">
-        <div class="warning-title">
-          <span *ngIf="subscriptionWarningLevel === 'expired'">Paket abgelaufen</span>
-          <span *ngIf="subscriptionWarningLevel === 'danger'">Paket läuft bald ab!</span>
-          <span *ngIf="subscriptionWarningLevel === 'warning'">Paket-Erinnerung</span>
-          <span *ngIf="subscriptionWarningLevel === 'info'">Paket-Information</span>
-        </div>
-        <div class="warning-message">{{ subscriptionWarningMessage }}</div>
-        <div class="warning-action">
-          <a routerLink="/settings" class="btn-renew">Paket verlängern</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- FAVORIT-STATISTIKEN (oben) -->
-    <div class="favorites-section" *ngIf="stats && getFavoriteStatCards().length > 0">
-      <h2>⭐ Favoriten</h2>
-      <div class="stats-cards">
-        <!-- Erinnerungen -->
-        <div class="stat-card priority-high clickable" *ngIf="isFavorite('reminders') && stats.reminders" routerLink="/todos">
-          <div class="stat-icon">🔔</div>
-          <div class="reminder-values">
-            <div class="reminder-urgent">
-              <span class="count">{{ stats.reminders.urgent || 0 }}</span>
-              <span class="label">Dringend</span>
-            </div>
-            <div class="reminder-total">
-              <span class="count">{{ stats.reminders.total || 0 }}</span>
-              <span class="label">Gesamt</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Verträge -->
-        <div class="stat-card" *ngIf="isFavorite('contracts')">
-          <div class="stat-icon">📄</div>
-          <div class="meter-values">
-            <div class="meter-free">
-              <span class="count">{{ stats.contracts?.active || 0 }}</span>
-              <span class="label">Aktiv</span>
-            </div>
-            <div class="meter-occupied">
-              <span class="count">{{ stats.contracts?.total || 0 }}</span>
-              <span class="label">Gesamt</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Zählerablesungen -->
-        <div class="stat-card clickable" *ngIf="isFavorite('recentReadings')" routerLink="/meters">
-          <div class="stat-icon">📊</div>
-          <div class="meter-values">
-            <div class="meter-free">
-              <span class="count">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</span>
-              <span class="label">Mit Ablesung</span>
-            </div>
-            <div class="meter-occupied" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">
-              <span class="count">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</span>
-              <span class="label">Ohne Ablesung</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Kunden -->
-        <div class="stat-card" *ngIf="isFavorite('customers')">
+      <!-- Stats Cards -->
+      <div class="stats-cards" *ngIf="userStats">
+        <div class="stat-card">
           <div class="stat-icon">👥</div>
-          <div class="stat-value">{{ stats.customers?.active || 0 }}</div>
-          <div class="stat-label">Aktive Kunden</div>
+          <div class="stat-value">{{ userStats.total || 0 }}</div>
+          <div class="stat-label">Benutzer</div>
         </div>
 
-        <!-- Zähler -->
-        <div class="stat-card" *ngIf="isFavorite('meters')">
-          <div class="stat-icon">⚡</div>
-          <div class="meter-values">
-            <div class="meter-free">
-              <span class="count">{{ stats.meters?.free || 0 }}</span>
-              <span class="label">Frei</span>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value">{{ userStats.active || 0 }}</div>
+          <div class="stat-label">Aktive</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">🚫</div>
+          <div class="stat-value">{{ userStats.blocked || 0 }}</div>
+          <div class="stat-label">Blockiert</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-value">{{ userStats.package || 0 }}</div>
+          <div class="stat-label">Paket</div>
+        </div>
+      </div>
+
+      <!-- Benutzer nach Rolle -->
+      <div class="section-card" *ngIf="userStats?.byRole">
+        <h2>📊 Benutzer nach Rolle</h2>
+        <div class="chart-container">
+          <div *ngFor="let item of getRoleStats()" class="chart-bar">
+            <div class="bar-label">{{ item.name }}</div>
+            <div class="bar-wrapper">
+              <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+              <span class="bar-value">{{ item.count }}</span>
             </div>
-            <div class="meter-occupied">
-              <span class="count">{{ stats.meters?.occupied || 0 }}</span>
-              <span class="label">Belegt</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Benutzer nach Paket -->
+      <div class="section-card" *ngIf="userStats?.byPackage">
+        <h2>📦 Benutzer nach Paket</h2>
+        <div class="chart-container">
+          <div *ngFor="let item of getPackageStats()" class="chart-bar">
+            <div class="bar-label">{{ item.name }}</div>
+            <div class="bar-wrapper">
+              <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
+              <span class="bar-value">{{ item.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upgrade-Anfragen -->
+      <div class="section-card" *ngIf="stats?.upgradeRequests">
+        <h2>🔄 Upgrade-Anfragen</h2>
+
+        <div class="upgrade-stats">
+          <div class="upgrade-stat priority-high">
+            <div class="upgrade-value">{{ stats.upgradeRequests.counts?.awaitingReview || 0 }}</div>
+            <div class="upgrade-label">⏳ Warten</div>
+          </div>
+          <div class="upgrade-stat">
+            <div class="upgrade-value">{{ stats.upgradeRequests.counts?.pending || 0 }}</div>
+            <div class="upgrade-label">📝 Pending</div>
+          </div>
+          <div class="upgrade-stat">
+            <div class="upgrade-value">{{ stats.upgradeRequests.counts?.paymentReceived || 0 }}</div>
+            <div class="upgrade-label">💰 Bezahlt</div>
+          </div>
+        </div>
+
+        <!-- Offene Anfragen -->
+        <div *ngIf="stats.upgradeRequests.pending?.length > 0" class="requests-list">
+          <h3>Offene Anfragen</h3>
+          <div *ngFor="let request of stats.upgradeRequests.pending" class="request-card">
+            <div class="request-header">
+              <strong>{{ request.user.firstName }} {{ request.user.lastName }}</strong>
+              <span class="status-badge" [class]="'status-' + request.status">
+                {{ getStatusLabel(request.status) }}
+              </span>
+            </div>
+            <div class="request-email">{{ request.user.email }}</div>
+
+            <div class="request-details">
+              <div class="detail-row">
+                <span class="detail-label">Aktuell:</span>
+                <span class="detail-value">{{ request.currentPackage }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Gewünscht:</span>
+                <span class="detail-value highlight">{{ request.packageDetails.displayName }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Preis:</span>
+                <span class="detail-value">{{ request.packageDetails.price }} {{ request.packageDetails.currency }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Datum:</span>
+                <span class="detail-value">{{ formatDate(request.createdAt) }}</span>
+              </div>
+            </div>
+
+            <div class="request-actions">
+              <button class="btn-approve" (click)="approveUpgradeEvent.emit(request._id)">
+                ✓ Genehmigen
+              </button>
+              <button class="btn-reject" (click)="rejectUpgradeEvent.emit(request._id)">
+                ✗ Ablehnen
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Neue Kunden -->
-        <div class="stat-card" *ngIf="isFavorite('newCustomers')">
-          <div class="stat-icon">👤+</div>
-          <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
-          <div class="stat-label">Neue Kunden</div>
-        </div>
-
-        <!-- Überfällige Verträge -->
-        <div class="stat-card warning-card" *ngIf="isFavorite('overdueContracts') && stats.overdueContracts"
-             [class.priority-high]="stats.overdueContracts.count > 0">
-          <div class="stat-icon">⚠️</div>
-          <div class="stat-value warning-text">{{ stats.overdueContracts.count || 0 }}</div>
-          <div class="stat-label">Überfällige Verträge</div>
+        <div *ngIf="!stats.upgradeRequests.pending || stats.upgradeRequests.pending.length === 0" class="no-data">
+          Keine offenen Upgrade-Anfragen
         </div>
       </div>
+
     </div>
+  }
+  <!-- BERATER/ADMIN VIEW -->
+  @if(!isSuperAdmin){
+    <div class="mobile-content">
 
-    <!-- Überfällige Verträge Liste -->
-    <div class="section-card overdue-section" *ngIf="stats?.overdueContracts?.list?.length > 0">
-      <h2>⚠️ Überfällige Verträge</h2>
-      <div class="contracts-list">
-        <div *ngFor="let contract of stats.overdueContracts.list" class="contract-card overdue">
-          <div class="contract-number">{{ contract.contractNumber }}</div>
-          <strong>{{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}</strong>
-          <div class="supplier">{{ contract.supplierId?.shortName || contract.supplierId?.name }}</div>
-          <div class="contract-footer">
-            <div class="end-date">{{ contract.endDate | date:'dd.MM.yyyy' }}</div>
-            <span class="badge badge-danger">
-              {{ getDaysOverdue(contract.endDate) }} Tage überfällig
-            </span>
+      <!-- Subscription Expiration Warning -->
+       @if(shouldShowSubscriptionWarning()){
+        <div class="subscription-warning-banner"
+            [class.warning-expired]="subscriptionWarningLevel === 'expired'"
+            [class.warning-danger]="subscriptionWarningLevel === 'danger'"
+            [class.warning-warning]="subscriptionWarningLevel === 'warning'"
+            [class.warning-info]="subscriptionWarningLevel === 'info'">
+          <div class="warning-icon">
+            <i class="fas"
+              [class.fa-exclamation-triangle]="subscriptionWarningLevel === 'expired' || subscriptionWarningLevel === 'danger'"
+              [class.fa-info-circle]="subscriptionWarningLevel === 'warning' || subscriptionWarningLevel === 'info'"></i>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Auslaufende Verträge -->
-    <div class="section-card" *ngIf="stats?.expiringContracts && stats.expiringContracts.length > 0">
-      <h2>📋 Bald auslaufende Verträge</h2>
-      <div class="contracts-list">
-        <div *ngFor="let contract of stats.expiringContracts" class="contract-card">
-          <div class="contract-number">{{ contract.contractNumber }}</div>
-          <strong>{{ contract.customerId.firstName }} {{ contract.customerId.lastName }}</strong>
-          <div class="supplier">{{ contract.supplierId.name }}</div>
-          <div class="contract-footer">
-            <div class="end-date">{{ contract.endDate | date:'dd.MM.yyyy' }}</div>
-            <span class="badge" [class.badge-danger]="getDaysRemaining(contract.endDate) <= 30">
-              {{ getDaysRemaining(contract.endDate) }} Tage
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Verträge nach Anbieter -->
-    <div class="section-card" *ngIf="stats?.contractsBySupplier">
-      <h2>📊 Verträge nach Anbieter</h2>
-      <div class="supplier-stats-container">
-        <!-- Kreisdiagramm -->
-        <div class="pie-chart-wrapper">
-          <div class="pie-chart" [style.background]="getPieChartGradient()">
-            <div class="pie-chart-center">
-              <span class="pie-total">{{ getTotalSupplierContracts() }}</span>
-              <span class="pie-label">Gesamt</span>
+          <div class="warning-content">
+            <div class="warning-title">
+              <span *ngIf="subscriptionWarningLevel === 'expired'">Paket abgelaufen</span>
+              <span *ngIf="subscriptionWarningLevel === 'danger'">Paket läuft bald ab!</span>
+              <span *ngIf="subscriptionWarningLevel === 'warning'">Paket-Erinnerung</span>
+              <span *ngIf="subscriptionWarningLevel === 'info'">Paket-Information</span>
+            </div>
+            <div class="warning-message">{{ subscriptionWarningMessage }}</div>
+            <div class="warning-action">
+              <a routerLink="/settings" class="btn-renew">Paket verlängern</a>
             </div>
           </div>
         </div>
-        <!-- Legende -->
-        <div class="supplier-legend">
-          <div *ngFor="let item of stats.contractsBySupplier; let i = index" class="supplier-row">
-            <span class="color-dot" [style.background]="getSupplierColor(i)"></span>
-            <span class="supplier-name">{{ item.shortName || item.name }}</span>
-            <span class="supplier-count">{{ item.count }}</span>
-            <span class="supplier-percent">{{ getSupplierPercentage(item.count) }}%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Monatliche Trends Chart -->
-    <div class="section-card" *ngIf="chartData">
-      <div class="trends-header">
-        <h2>📈 Monatliche Entwicklung</h2>
-        <select [(ngModel)]="chartMonths" (change)="onChartMonthsChange()" class="months-select">
-          <option [value]="3">3 Monate</option>
-          <option [value]="6">6 Monate</option>
-          <option [value]="12">12 Monate</option>
-        </select>
-      </div>
-
-      <!-- Legende -->
-      <div class="chart-legend">
-        <div class="legend-item">
-          <span class="legend-color contracts"></span>
-          <span>Verträge</span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color customers"></span>
-          <span>Kunden</span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color meters"></span>
-          <span>Zähler</span>
-        </div>
-      </div>
-
-      <!-- Chart -->
-      <div class="bar-chart">
-        <div *ngFor="let label of chartData.labels; let i = index" class="chart-column">
-          <div class="bars-group">
-            <div class="vertical-bar contracts"
-                 [style.height.%]="getBarHeight(chartData.contracts[i])"
-                 [title]="'Verträge: ' + chartData.contracts[i]">
-              <span *ngIf="chartData.contracts[i] > 0" class="bar-value-top">{{ chartData.contracts[i] }}</span>
-            </div>
-            <div class="vertical-bar customers"
-                 [style.height.%]="getBarHeight(chartData.customers[i])"
-                 [title]="'Kunden: ' + chartData.customers[i]">
-              <span *ngIf="chartData.customers[i] > 0" class="bar-value-top">{{ chartData.customers[i] }}</span>
-            </div>
-            <div class="vertical-bar meters"
-                 [style.height.%]="getBarHeight(chartData.meters[i])"
-                 [title]="'Zähler: ' + chartData.meters[i]">
-              <span *ngIf="chartData.meters[i] > 0" class="bar-value-top">{{ chartData.meters[i] }}</span>
-            </div>
-          </div>
-          <div class="chart-label">{{ label }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ALLE STATISTIKEN (unten, mit Favoriten-Toggle) -->
-    <div class="all-stats-section" *ngIf="stats">
-      <div class="section-header-toggle" (click)="showAllStats = !showAllStats">
-        <h2>📊 Alle Statistiken</h2>
-        <span class="toggle-icon">{{ showAllStats ? '▲' : '▼' }}</span>
-      </div>
-
-      <div class="accordion-content" [class.open]="showAllStats">
-        <p class="stats-hint">Tippen Sie auf den Stern, um Statistiken zu Ihren Favoriten hinzuzufügen oder zu entfernen.</p>
-        <div class="stats-cards">
-          <!-- Erinnerungen -->
-          <div class="stat-card" *ngIf="stats.reminders" [class.is-favorite]="isFavorite('reminders')">
-            <button class="favorite-toggle" (click)="toggleFavorite('reminders', $event)">
-              {{ isFavorite('reminders') ? '★' : '☆' }}
-            </button>
-            <div class="stat-icon">🔔</div>
-            <div class="reminder-values">
-              <div class="reminder-urgent">
-                <span class="count">{{ stats.reminders.urgent || 0 }}</span>
-                <span class="label">Dringend</span>
-              </div>
-              <div class="reminder-total">
-                <span class="count">{{ stats.reminders.total || 0 }}</span>
-                <span class="label">Gesamt</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Verträge -->
-          <div class="stat-card" [class.is-favorite]="isFavorite('contracts')">
-            <button class="favorite-toggle" (click)="toggleFavorite('contracts', $event)">
-              {{ isFavorite('contracts') ? '★' : '☆' }}
-            </button>
-            <div class="stat-icon">📄</div>
-            <div class="meter-values">
-              <div class="meter-free">
-                <span class="count">{{ stats.contracts?.active || 0 }}</span>
-                <span class="label">Aktiv</span>
-              </div>
-              <div class="meter-occupied">
-                <span class="count">{{ stats.contracts?.total || 0 }}</span>
-                <span class="label">Gesamt</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Zählerablesungen -->
-          <div class="stat-card" [class.is-favorite]="isFavorite('recentReadings')">
-            <button class="favorite-toggle" (click)="toggleFavorite('recentReadings', $event)">
-              {{ isFavorite('recentReadings') ? '★' : '☆' }}
-            </button>
-            <div class="stat-icon">📊</div>
-            <div class="meter-values">
-              <div class="meter-free">
-                <span class="count">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</span>
-                <span class="label">Mit Ablesung</span>
-              </div>
-              <div class="meter-occupied" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">
-                <span class="count">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</span>
-                <span class="label">Ohne Ablesung</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Kunden -->
-          <div class="stat-card" [class.is-favorite]="isFavorite('customers')">
-            <button class="favorite-toggle" (click)="toggleFavorite('customers', $event)">
-              {{ isFavorite('customers') ? '★' : '☆' }}
-            </button>
-            <div class="stat-icon">👥</div>
-            <div class="stat-value">{{ stats.customers?.active || 0 }}</div>
-            <div class="stat-label">Aktive Kunden</div>
-          </div>
-
-          <!-- Zähler -->
-          <div class="stat-card" [class.is-favorite]="isFavorite('meters')">
-            <button class="favorite-toggle" (click)="toggleFavorite('meters', $event)">
-              {{ isFavorite('meters') ? '★' : '☆' }}
-            </button>
-            <div class="stat-icon">⚡</div>
-            <div class="meter-values">
-              <div class="meter-free">
-                <span class="count">{{ stats.meters?.free || 0 }}</span>
-                <span class="label">Frei</span>
-              </div>
-              <div class="meter-occupied">
-                <span class="count">{{ stats.meters?.occupied || 0 }}</span>
-                <span class="label">Belegt</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Neue Kunden -->
-          <div class="stat-card" [class.is-favorite]="isFavorite('newCustomers')">
-            <button class="favorite-toggle" (click)="toggleFavorite('newCustomers', $event)">
-              {{ isFavorite('newCustomers') ? '★' : '☆' }}
-            </button>
-            <div class="stat-icon">👤+</div>
-            <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
-            <div class="stat-label">Neue Kunden</div>
-          </div>
-
-          <!-- Überfällige Verträge -->
-          <div class="stat-card warning-card" *ngIf="stats.overdueContracts"
-               [class.is-favorite]="isFavorite('overdueContracts')"
-               [class.priority-high]="stats.overdueContracts.count > 0">
-            <button class="favorite-toggle" (click)="toggleFavorite('overdueContracts', $event)">
-              {{ isFavorite('overdueContracts') ? '★' : '☆' }}
-            </button>
-            <div class="stat-icon">⚠️</div>
-            <div class="stat-value warning-text">{{ stats.overdueContracts.count || 0 }}</div>
-            <div class="stat-label">Überfällige Verträge</div>
-          </div>
-        </div>
-
-        <!-- Verträge nach Anbieter -->
-        <div class="section-card" *ngIf="stats?.contractsBySupplier">
-          <h2>📊 Verträge nach Anbieter</h2>
-          <div class="supplier-stats-container">
-            <!-- Kreisdiagramm -->
-            <div class="pie-chart-wrapper">
-              <div class="pie-chart" [style.background]="getPieChartGradient()">
-                <div class="pie-chart-center">
-                  <span class="pie-total">{{ getTotalSupplierContracts() }}</span>
-                  <span class="pie-label">Gesamt</span>
+      }
+      <!-- FAVORIT-STATISTIKEN (oben) -->
+       @if(stats && getFavoriteStatCards().length > 0){
+        <div class="favorites-section">
+          <h2>⭐ Favoriten</h2>
+          <div class="stats-cards">
+            <!-- Erinnerungen -->
+            <div class="stat-card priority-high clickable" *ngIf="isFavorite('reminders') && stats.reminders" routerLink="/todos">
+              <div class="stat-icon">🔔</div>
+              <div class="reminder-values">
+                <div class="reminder-urgent">
+                  <span class="count">{{ stats.reminders.urgent || 0 }}</span>
+                  <span class="label">Dringend</span>
+                </div>
+                <div class="reminder-total">
+                  <span class="count">{{ stats.reminders.total || 0 }}</span>
+                  <span class="label">Gesamt</span>
                 </div>
               </div>
             </div>
-            <!-- Legende -->
-            <div class="supplier-legend">
-              <div *ngFor="let item of stats.contractsBySupplier; let i = index" class="supplier-row">
-                <span class="color-dot" [style.background]="getSupplierColor(i)"></span>
-                <span class="supplier-name">{{ item.shortName || item.name }}</span>
-                <span class="supplier-count">{{ item.count }}</span>
-                <span class="supplier-percent">{{ getSupplierPercentage(item.count) }}%</span>
+
+            <!-- Verträge -->
+            <div class="stat-card" *ngIf="isFavorite('contracts')">
+              <div class="stat-icon">📄</div>
+              <div class="meter-values">
+                <div class="meter-free">
+                  <span class="count">{{ stats.contracts?.active || 0 }}</span>
+                  <span class="label">Aktiv</span>
+                </div>
+                <div class="meter-occupied">
+                  <span class="count">{{ stats.contracts?.total || 0 }}</span>
+                  <span class="label">Gesamt</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Zählerablesungen -->
+            <div class="stat-card clickable" *ngIf="isFavorite('recentReadings')" routerLink="/meters">
+              <div class="stat-icon">📊</div>
+              <div class="meter-values">
+                <div class="meter-free">
+                  <span class="count">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</span>
+                  <span class="label">Mit Ablesung</span>
+                </div>
+                <div class="meter-occupied" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">
+                  <span class="count">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</span>
+                  <span class="label">Ohne Ablesung</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kunden -->
+            <div class="stat-card" *ngIf="isFavorite('customers')">
+              <div class="stat-icon">👥</div>
+              <div class="stat-value">{{ stats.customers?.active || 0 }}</div>
+              <div class="stat-label">Aktive Kunden</div>
+            </div>
+
+            <!-- Zähler -->
+            <div class="stat-card" *ngIf="isFavorite('meters')">
+              <div class="stat-icon">⚡</div>
+              <div class="meter-values">
+                <div class="meter-free">
+                  <span class="count">{{ stats.meters?.free || 0 }}</span>
+                  <span class="label">Frei</span>
+                </div>
+                <div class="meter-occupied">
+                  <span class="count">{{ stats.meters?.occupied || 0 }}</span>
+                  <span class="label">Belegt</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Neue Kunden -->
+            <div class="stat-card" *ngIf="isFavorite('newCustomers')">
+              <div class="stat-icon">👤+</div>
+              <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
+              <div class="stat-label">Neue Kunden</div>
+            </div>
+
+            <!-- Überfällige Verträge -->
+            <div class="stat-card warning-card" *ngIf="isFavorite('overdueContracts') && stats.overdueContracts"
+                [class.priority-high]="stats.overdueContracts.count > 0">
+              <div class="stat-icon">⚠️</div>
+              <div class="stat-value warning-text">{{ stats.overdueContracts.count || 0 }}</div>
+              <div class="stat-label">Überfällige Verträge</div>
+            </div>
+          </div>
+        </div>
+      }
+      <!-- Überfällige Verträge Liste -->
+       @if(stats?.overdueContracts?.list?.length > 0){
+        <div class="section-card overdue-section">
+          <h2>⚠️ Überfällige Verträge</h2>
+          <div class="contracts-list">
+            <div *ngFor="let contract of stats.overdueContracts.list" class="contract-card overdue">
+              <div class="contract-number">{{ contract.contractNumber }}</div>
+              <strong>{{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}</strong>
+              <div class="supplier">{{ contract.supplierId?.shortName || contract.supplierId?.name }}</div>
+              <div class="contract-footer">
+                <div class="end-date">{{ contract.endDate | date:'dd.MM.yyyy' }}</div>
+                <span class="badge badge-danger">
+                  {{ getDaysOverdue(contract.endDate) }} Tage überfällig
+                </span>
               </div>
             </div>
           </div>
         </div>
+      }
+
+      <!-- Auslaufende Verträge -->
+       @if(stats?.expiringContracts && stats.expiringContracts.length > 0){
+        <div class="section-card">
+          <h2>📋 Bald auslaufende Verträge</h2>
+          <div class="contracts-list">
+            @for(contract of stats.expiringContracts; track contract){
+              <div class="contract-card">
+                <div class="contract-number">{{ contract.contractNumber }}</div>
+                <strong>{{ contract.customerId.firstName }} {{ contract.customerId.lastName }}</strong>
+                <div class="supplier">{{ contract.supplierId.name }}</div>
+                <div class="contract-footer">
+                  <div class="end-date">{{ contract.endDate | date:'dd.MM.yyyy' }}</div>
+                  <span class="badge" [class.badge-danger]="getDaysRemaining(contract.endDate) <= 30">
+                    {{ getDaysRemaining(contract.endDate) }} Tage
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+      <!-- Verträge nach Anbieter -->
+      <div class="section-card" *ngIf="stats?.contractsBySupplier">
+        <h2>📊 Verträge nach Anbieter</h2>
+        <div class="supplier-stats-container">
+          <!-- Kreisdiagramm -->
+          <div class="pie-chart-wrapper">
+            <div class="pie-chart" [style.background]="getPieChartGradient()">
+              <div class="pie-chart-center">
+                <span class="pie-total">{{ getTotalSupplierContracts() }}</span>
+                <span class="pie-label">Gesamt</span>
+              </div>
+            </div>
+          </div>
+          <!-- Legende -->
+          <div class="supplier-legend">
+            <div *ngFor="let item of stats.contractsBySupplier; let i = index" class="supplier-row">
+              <span class="color-dot" [style.background]="getSupplierColor(i)"></span>
+              <span class="supplier-name">{{ item.shortName || item.name }}</span>
+              <span class="supplier-count">{{ item.count }}</span>
+              <span class="supplier-percent">{{ getSupplierPercentage(item.count) }}%</span>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- Monatliche Trends Chart -->
+      <div class="section-card" *ngIf="chartData">
+        <div class="trends-header">
+          <h2>📈 Monatliche Entwicklung</h2>
+          <select [(ngModel)]="chartMonths" (change)="onChartMonthsChange()" class="months-select">
+            <option [value]="3">3 Monate</option>
+            <option [value]="6">6 Monate</option>
+            <option [value]="12">12 Monate</option>
+          </select>
+        </div>
+
+        <!-- Legende -->
+        <div class="chart-legend">
+          <div class="legend-item">
+            <span class="legend-color contracts"></span>
+            <span>Verträge</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color customers"></span>
+            <span>Kunden</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color meters"></span>
+            <span>Zähler</span>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="bar-chart">
+          @for(label of chartData.labels; track $index){
+            <div class="chart-column">
+              <div class="bars-group">
+                <div class="vertical-bar contracts"
+                    [style.height.%]="getBarHeight(chartData.contracts[$index])"
+                    [title]="'Verträge: ' + chartData.contracts[$index]">
+                  @if(chartData.contracts[$index] > 0){
+                    <span class="bar-value-top">{{ chartData.contracts[$index] }}</span>
+                  }
+                </div>
+                <div class="vertical-bar customers"
+                    [style.height.%]="getBarHeight(chartData.customers[$index])"
+                    [title]="'Kunden: ' + chartData.customers[$index]">
+                  @if(chartData.customers[$index] > 0){
+                    <span class="bar-value-top">{{ chartData.customers[$index] }}</span>
+                  }
+                </div>
+                <div class="vertical-bar meters"
+                    [style.height.%]="getBarHeight(chartData.meters[$index])"
+                    [title]="'Zähler: ' + chartData.meters[$index]">
+                  @if(chartData.meters[$index] > 0){
+                    <span class="bar-value-top">{{ chartData.meters[$index] }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-label">{{ label }}</div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ALLE STATISTIKEN (unten, mit Favoriten-Toggle) -->
+      @if(stats){
+        <div class="all-stats-section">
+          <div class="section-header-toggle" (click)="showAllStats = !showAllStats">
+            <h2>📊 Alle Statistiken</h2>
+            <span class="toggle-icon">{{ showAllStats ? '▲' : '▼' }}</span>
+          </div>
+
+          <div class="accordion-content" [class.open]="showAllStats">
+            <p class="stats-hint">Tippen Sie auf den Stern, um Statistiken zu Ihren Favoriten hinzuzufügen oder zu entfernen.</p>
+            <div class="stats-cards">
+              <!-- Erinnerungen -->
+               @if(stats.reminders){
+                <div class="stat-card" [class.is-favorite]="isFavorite('reminders')">
+                <button class="favorite-toggle" (click)="toggleFavorite('reminders', $event)">
+                  {{ isFavorite('reminders') ? '★' : '☆' }}
+                </button>
+                <div class="stat-icon">🔔</div>
+                <div class="reminder-values">
+                  <div class="reminder-urgent">
+                    <span class="count">{{ stats.reminders.urgent || 0 }}</span>
+                    <span class="label">Dringend</span>
+                  </div>
+                  <div class="reminder-total">
+                    <span class="count">{{ stats.reminders.total || 0 }}</span>
+                    <span class="label">Gesamt</span>
+                  </div>
+                </div>
+                </div>
+              }
+
+              <!-- Verträge -->
+              <div class="stat-card" [class.is-favorite]="isFavorite('contracts')">
+                <button class="favorite-toggle" (click)="toggleFavorite('contracts', $event)">
+                  {{ isFavorite('contracts') ? '★' : '☆' }}
+                </button>
+                <div class="stat-icon">📄</div>
+                <div class="meter-values">
+                  <div class="meter-free">
+                    <span class="count">{{ stats.contracts?.active || 0 }}</span>
+                    <span class="label">Aktiv</span>
+                  </div>
+                  <div class="meter-occupied">
+                    <span class="count">{{ stats.contracts?.total || 0 }}</span>
+                    <span class="label">Gesamt</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Zählerablesungen -->
+              <div class="stat-card" [class.is-favorite]="isFavorite('recentReadings')">
+                <button class="favorite-toggle" (click)="toggleFavorite('recentReadings', $event)">
+                  {{ isFavorite('recentReadings') ? '★' : '☆' }}
+                </button>
+                <div class="stat-icon">📊</div>
+                <div class="meter-values">
+                  <div class="meter-free">
+                    <span class="count">{{ stats.recentContractsReadings?.withReadings || 0 }}/{{ stats.recentContractsReadings?.totalContracts || 0 }}</span>
+                    <span class="label">Mit Ablesung</span>
+                  </div>
+                  <div class="meter-occupied" [class.text-warning]="stats.recentContractsReadings?.withoutReadings > 0">
+                    <span class="count">{{ stats.recentContractsReadings?.withoutReadings || 0 }}</span>
+                    <span class="label">Ohne Ablesung</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Kunden -->
+              <div class="stat-card" [class.is-favorite]="isFavorite('customers')">
+                <button class="favorite-toggle" (click)="toggleFavorite('customers', $event)">
+                  {{ isFavorite('customers') ? '★' : '☆' }}
+                </button>
+                <div class="stat-icon">👥</div>
+                <div class="stat-value">{{ stats.customers?.active || 0 }}</div>
+                <div class="stat-label">Aktive Kunden</div>
+              </div>
+
+              <!-- Zähler -->
+              <div class="stat-card" [class.is-favorite]="isFavorite('meters')">
+                <button class="favorite-toggle" (click)="toggleFavorite('meters', $event)">
+                  {{ isFavorite('meters') ? '★' : '☆' }}
+                </button>
+                <div class="stat-icon">⚡</div>
+                <div class="meter-values">
+                  <div class="meter-free">
+                    <span class="count">{{ stats.meters?.free || 0 }}</span>
+                    <span class="label">Frei</span>
+                  </div>
+                  <div class="meter-occupied">
+                    <span class="count">{{ stats.meters?.occupied || 0 }}</span>
+                    <span class="label">Belegt</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Neue Kunden -->
+              <div class="stat-card" [class.is-favorite]="isFavorite('newCustomers')">
+                <button class="favorite-toggle" (click)="toggleFavorite('newCustomers', $event)">
+                  {{ isFavorite('newCustomers') ? '★' : '☆' }}
+                </button>
+                <div class="stat-icon">👤+</div>
+                <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
+                <div class="stat-label">Neue Kunden</div>
+              </div>
+
+              <!-- Überfällige Verträge -->
+              <div class="stat-card warning-card" *ngIf="stats.overdueContracts"
+                  [class.is-favorite]="isFavorite('overdueContracts')"
+                  [class.priority-high]="stats.overdueContracts.count > 0">
+                <button class="favorite-toggle" (click)="toggleFavorite('overdueContracts', $event)">
+                  {{ isFavorite('overdueContracts') ? '★' : '☆' }}
+                </button>
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-value warning-text">{{ stats.overdueContracts.count || 0 }}</div>
+                <div class="stat-label">Überfällige Verträge</div>
+              </div>
+            </div>
+
+            <!-- Verträge nach Anbieter -->
+            <div class="section-card" *ngIf="stats?.contractsBySupplier">
+              <h2>📊 Verträge nach Anbieter</h2>
+              <div class="supplier-stats-container">
+                <!-- Kreisdiagramm -->
+                <div class="pie-chart-wrapper">
+                  <div class="pie-chart" [style.background]="getPieChartGradient()">
+                    <div class="pie-chart-center">
+                      <span class="pie-total">{{ getTotalSupplierContracts() }}</span>
+                      <span class="pie-label">Gesamt</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Legende -->
+                <div class="supplier-legend">
+                  <div *ngFor="let item of stats.contractsBySupplier; let i = index" class="supplier-row">
+                    <span class="color-dot" [style.background]="getSupplierColor(i)"></span>
+                    <span class="supplier-name">{{ item.shortName || item.name }}</span>
+                    <span class="supplier-count">{{ item.count }}</span>
+                    <span class="supplier-percent">{{ getSupplierPercentage(item.count) }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
-
-  </div>
-
+  }
 </div>

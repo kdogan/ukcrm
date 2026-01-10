@@ -250,7 +250,8 @@
       "CONTRACTS_BY_SUPPLIER": "Sözleşmelerinizin enerji tedarikçisine göre dağılımı.",
       "MONTHLY_TRENDS": "Seçilen dönemde sözleşmelerinizin, müşterilerinizin ve sayaçlarınızın aylık gelişimini gösterir.",
       "CONTRACT_STATISTICS": "Duruma ve döneme göre sözleşmelerinizin detaylı istatistiği.",
-      "OVERDUE_CONTRACTS": "Bitiş tarihi geçmiş ancak hala 'aktif' olarak işaretlenmiş sözleşmeler. Acil müdahale gerekli!"
+      "OVERDUE_CONTRACTS": "Bitiş tarihi geçmiş ancak hala 'aktif' olarak işaretlenmiş sözleşmeler. Acil müdahale gerekli!",
+      "ENDING_FORECAST": "Önümüzdeki aylarda kaç sözleşmenin biteceğine dair tahmin. Sözleşme yenileme planlamasına yardımcı olur."
     }
   },
   "CONTRACTS": {
@@ -799,6 +800,9 @@
     "NO_DATA": "İstatistik verisi bulunamadı",
     "FILTER_SUPPLIER": "Tedarikçi",
     "ALL_SUPPLIERS": "Tüm Tedarikçiler",
-    "ENDING_CONTRACTS": "Dönemde Biten Sözleşmeler"
+    "ENDING_CONTRACTS": "Dönemde Biten Sözleşmeler",
+    "ENDING_FORECAST": "Sözleşme Bitiş Tahmini",
+    "TOTAL_ENDING": "Toplam biten sözleşme",
+    "NO_ENDING_CONTRACTS": "Seçilen dönemde biten sözleşme yok"
   }
 }

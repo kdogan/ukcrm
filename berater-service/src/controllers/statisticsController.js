@@ -94,6 +94,52 @@ exports.getContractStatistics = async (req, res, next) => {
 
     const endingContractsCount = endingContracts.length;
 
+    // Vertragsende-Prognose: Wie viele Verträge enden pro Monat in der Zukunft
+    const futureMonthsArray = [];
+    for (let i = 0; i < monthsCount; i++) {
+      const date = new Date();
+      date.setMonth(date.getMonth() + i);
+      futureMonthsArray.push({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        label: date.toLocaleDateString('de-DE', { month: 'short', year: '2-digit' })
+      });
+    }
+
+    // Aggregation: Aktive Verträge nach Enddatum (Monat) gruppieren
+    const contractsEndingByMonth = await Contract.aggregate([
+      {
+        $match: {
+          ...baseMatch,
+          status: 'active',
+          endDate: { $gte: today, $lte: endPeriodDate }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$endDate' },
+            month: { $month: '$endDate' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { '_id.year': 1, '_id.month': 1 }
+      }
+    ]);
+
+    // Erstelle Chart-Daten für Vertragsende-Prognose
+    const endingContractsChartData = {
+      labels: futureMonthsArray.map(m => m.label),
+      data: futureMonthsArray.map(m => {
+        const found = contractsEndingByMonth.find(
+          d => d._id.year === m.year && d._id.month === m.month
+        );
+        return found ? found.count : 0;
+      })
+    };
+
     // Anbieter-Liste für Filter laden
     const suppliers = await Supplier.find({ beraterId })
       .select('_id name shortName')
@@ -165,7 +211,113 @@ exports.getContractStatistics = async (req, res, next) => {
         endingContracts: {
           list: endingContracts,
           count: endingContractsCount
+        },
+        endingContractsByMonth: endingContractsChartData
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get ending contracts forecast (separate from contract statistics)
+// @route   GET /api/statistics/ending-forecast
+// @access  Private
+exports.getEndingForecast = async (req, res, next) => {
+  try {
+    const beraterId = req.user._id;
+    const { months = 6, supplierId } = req.query;
+    const monthsCount = Math.min(Math.max(parseInt(months), 1), 24); // 1-24 Monate
+
+    // Basis-Match-Bedingung
+    const baseMatch = { beraterId };
+    if (supplierId && supplierId !== 'all') {
+      baseMatch.supplierId = new mongoose.Types.ObjectId(supplierId);
+    }
+
+    // Zeitraum für endende Verträge
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const endPeriodDate = new Date();
+    endPeriodDate.setMonth(endPeriodDate.getMonth() + monthsCount);
+    endPeriodDate.setHours(23, 59, 59, 999);
+
+    // Verträge, die im ausgewählten Zeitraum enden
+    const endingContracts = await Contract.find({
+      ...baseMatch,
+      status: 'active',
+      endDate: { $gte: today, $lte: endPeriodDate }
+    })
+      .populate('customerId', 'firstName lastName customerNumber')
+      .populate('supplierId', 'name shortName')
+      .sort({ endDate: 1 })
+      .lean();
+
+    const endingContractsCount = endingContracts.length;
+
+    // Future months array for labels
+    const futureMonthsArray = [];
+    for (let i = 0; i < monthsCount; i++) {
+      const date = new Date();
+      date.setMonth(date.getMonth() + i);
+      futureMonthsArray.push({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        label: date.toLocaleDateString('de-DE', { month: 'short', year: '2-digit' })
+      });
+    }
+
+    // Aggregation: Aktive Verträge nach Enddatum (Monat) gruppieren
+    const contractsEndingByMonth = await Contract.aggregate([
+      {
+        $match: {
+          ...baseMatch,
+          status: 'active',
+          endDate: { $gte: today, $lte: endPeriodDate }
         }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$endDate' },
+            month: { $month: '$endDate' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { '_id.year': 1, '_id.month': 1 }
+      }
+    ]);
+
+    // Erstelle Chart-Daten für Vertragsende-Prognose
+    const endingContractsByMonth = {
+      labels: futureMonthsArray.map(m => m.label),
+      data: futureMonthsArray.map(m => {
+        const found = contractsEndingByMonth.find(
+          d => d._id.year === m.year && d._id.month === m.month
+        );
+        return found ? found.count : 0;
+      })
+    };
+
+    // Anbieter-Liste für Filter laden
+    const suppliers = await Supplier.find({ beraterId })
+      .select('_id name shortName')
+      .sort({ name: 1 })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      data: {
+        endingContracts: {
+          list: endingContracts,
+          count: endingContractsCount
+        },
+        endingContractsByMonth,
+        months: monthsCount,
+        suppliers,
+        selectedSupplierId: supplierId || 'all'
       }
     });
   } catch (error) {
