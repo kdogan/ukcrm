@@ -15,10 +15,8 @@ import { StatCard } from '../dashboard.component';
 })
 export class DashboardMobileComponent {
   @Input() stats: any;
-  @Input() userStats: any;
   @Input() isSuperAdmin: boolean = false;
   @Input() maxContracts: number = 0;
-  @Input() maxUsers: number = 0;
   @Input() subscriptionInfo: SubscriptionInfo | null = null;
   @Input() subscriptionWarningMessage: string | null = null;
   @Input() subscriptionWarningLevel: 'expired' | 'danger' | 'warning' | 'info' | null = null;
@@ -27,8 +25,6 @@ export class DashboardMobileComponent {
   @Input() favoriteStats: string[] = [];
   @Input() availableStatCards: StatCard[] = [];
 
-  @Output() approveUpgradeEvent = new EventEmitter<string>();
-  @Output() rejectUpgradeEvent = new EventEmitter<string>();
   @Output() chartMonthsChange = new EventEmitter<number>();
   @Output() toggleFavoriteEvent = new EventEmitter<string>();
 
@@ -56,34 +52,7 @@ export class DashboardMobileComponent {
   }
 
   getPercentage(count: number): number {
-    const max = this.isSuperAdmin ? this.maxUsers : this.maxContracts;
-    return (count / max) * 100;
-  }
-
-  getRoleStats(): any[] {
-    if (!this.userStats?.byRole) return [];
-    const roleNames: any = {
-      berater: 'Berater',
-      admin: 'Admin',
-      superadmin: 'Superadmin'
-    };
-    return Object.entries(this.userStats.byRole).map(([key, value]) => ({
-      name: roleNames[key] || key,
-      count: value
-    }));
-  }
-
-  getPackageStats(): any[] {
-    if (!this.userStats?.byPackage) return [];
-    const packageNames: any = {
-      basic: 'Basic',
-      professional: 'Professional',
-      enterprise: 'Enterprise'
-    };
-    return Object.entries(this.userStats.byPackage).map(([key, value]) => ({
-      name: packageNames[key] || key,
-      count: value
-    }));
+    return (count / this.maxContracts) * 100;
   }
 
   getStatusLabel(status: string): string {

@@ -1,0 +1,351 @@
+.superadmin-dashboard {
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+
+    &.priority-high {
+      border-left: 4px solid var(--danger-red);
+    }
+
+    h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      color: var(--text-tertiary);
+
+      i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  // Chart Container
+  .supplier-section {
+    margin-top: 2rem;
+
+    h2 {
+      font-size: 1.5rem;
+      margin: 0 0 1rem 0;
+      color: var(--text-secondary);
+
+      i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .chart-container {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .chart-bar {
+    margin-bottom: 1rem;
+  }
+
+  .bar-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+  }
+
+  .bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .bar {
+    height: 32px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 6px;
+    transition: width 0.3s;
+  }
+
+  .bar-value {
+    font-weight: 600;
+    color: var(--primary-color);
+    min-width: 30px;
+  }
+
+  // Expiring Subscriptions Section
+  .expiring-subscriptions-section {
+    margin-top: 2rem;
+
+    h2 {
+      font-size: 1.5rem;
+      margin: 0 0 1rem 0;
+      color: var(--text-secondary);
+
+      i {
+        margin-right: 0.5rem;
+        color: var(--warning-color);
+      }
+    }
+  }
+
+  // Upgrade Requests Section
+  .upgrade-requests-section {
+    margin-top: 2rem;
+
+    h2 {
+      font-size: 1.5rem;
+      margin: 0 0 1rem 0;
+      color: var(--text-secondary);
+
+      i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .requests-list {
+    margin-top: 1.5rem;
+
+    h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+  }
+
+  .request-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    strong {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .email {
+      color: var(--text-tertiary);
+      font-size: 0.9rem;
+    }
+  }
+
+  .status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+
+    &.status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    &.status-payment_received {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    &.status-approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    &.status-rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+  }
+
+  .request-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .value {
+      font-size: 1rem;
+      color: var(--text-primary);
+      font-weight: 500;
+
+      &.highlight {
+        color: var(--primary-color);
+        font-weight: 600;
+      }
+    }
+  }
+
+  .request-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+
+  .btn-success {
+    background: #28a745;
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+
+    i {
+      margin-right: 0.5rem;
+    }
+
+    &:hover {
+      background: #218838;
+    }
+  }
+
+  .btn-danger {
+    background: var(--danger-red);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+
+    i {
+      margin-right: 0.5rem;
+    }
+
+    &:hover {
+      background: #c82333;
+    }
+  }
+
+  .no-data {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  // Data Table
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      background: var(--bg-table-header);
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    td {
+      padding: 1rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+  }
+
+  // Badges
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .badge-expired {
+    background: var(--danger-bg);
+    color: var(--danger-color);
+    font-weight: 600;
+  }
+
+  .badge-danger-warning {
+    background: var(--warning-bg);
+    color: #f57c00;
+    font-weight: 600;
+  }
+
+  .badge-warning {
+    background: #fff9c4;
+    color: #f9a825;
+    font-weight: 600;
+  }
+
+  .badge-info {
+    background: var(--info-bg);
+    color: var(--info-color);
+    font-weight: 600;
+  }
+
+  // Responsive
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .request-actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
