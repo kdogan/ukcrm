@@ -127,13 +127,13 @@
                   {{ 'DASHBOARD.FAVORITE_HINT' | translate }}
                 </p>
                 <div class="stats-grid">
-                  <ng-container *ngTemplateOutlet="RemindersCard"/>
-                  <ng-container *ngTemplateOutlet="ContractsCard"/>
-                  <ng-container *ngTemplateOutlet="RecentReadingsCard"/>
-                  <ng-container *ngTemplateOutlet="CustomersCard"/>
-                  <ng-container *ngTemplateOutlet="MetersCard"/>
-                  <ng-container *ngTemplateOutlet="NewCustomersCard"/>
-                  <ng-container *ngTemplateOutlet="OverdueContractsCard"/>
+                  @if(!isFavorite('reminders')) { <ng-container *ngTemplateOutlet="RemindersCard"/> }
+                  @if(!isFavorite('contracts')) { <ng-container *ngTemplateOutlet="ContractsCard"/> }
+                  @if(!isFavorite('recentReadings')) { <ng-container *ngTemplateOutlet="RecentReadingsCard"/> }
+                  @if(!isFavorite('customers')) { <ng-container *ngTemplateOutlet="CustomersCard"/> }
+                  @if(!isFavorite('meters')) { <ng-container *ngTemplateOutlet="MetersCard"/> }
+                  @if(!isFavorite('newCustomers')) { <ng-container *ngTemplateOutlet="NewCustomersCard"/> }
+                  @if(!isFavorite('overdueContracts')) { <ng-container *ngTemplateOutlet="OverdueContractsCard"/> }
                 </div>
 
                 <!-- Überfällige Verträge Liste -->
@@ -174,20 +174,24 @@
                 <!-- Charts Grid Container (2 Spalten auf Desktop) -->
                 <div class="charts-grid">
                   <!-- Monatliche Trends Chart -->
-                  @if(chartData) {
+                  @if(chartData && !isFavorite('monthlyTrends')) {
                     <ng-container *ngTemplateOutlet="MonthlyTrendsChart"></ng-container>
                   }
 
                   <!-- Verträge nach Anbieter -->
-                  @if(stats?.contractsBySupplier) {
+                  @if(stats?.contractsBySupplier && !isFavorite('contractsBySupplier')) {
                     <ng-container *ngTemplateOutlet="ContractsBySupplierChart"></ng-container>
                   }
 
-                <!-- Vertragsstatistik nach Status -->
-                <ng-container *ngTemplateOutlet="ContractStatisticsChart"></ng-container>
+                  <!-- Vertragsstatistik nach Status -->
+                  @if(!isFavorite('contractStatistics')) {
+                    <ng-container *ngTemplateOutlet="ContractStatisticsChart"></ng-container>
+                  }
 
-                <!-- Vertragsende-Prognose (neben Vertragsstatistik) -->
-                <ng-container *ngTemplateOutlet="VertragsendePrognose"/>
+                  <!-- Vertragsende-Prognose (neben Vertragsstatistik) -->
+                  @if(!isFavorite('endingForecast')) {
+                    <ng-container *ngTemplateOutlet="VertragsendePrognose"/>
+                  }
                 </div><!-- Ende charts-grid -->
               </div>
             </div>
