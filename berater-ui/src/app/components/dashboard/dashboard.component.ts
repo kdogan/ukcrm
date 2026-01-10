@@ -83,11 +83,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'contractStatistics', icon: 'fa-chart-bar', titleKey: 'STATISTICS.TITLE', tooltipKey: 'DASHBOARD.TOOLTIPS.CONTRACT_STATISTICS' }
   ];
 
+  // Farben passend zu den globalen CSS-Variablen (styles.scss) und contracts-mobile.component.scss
   statusColors: { [key: string]: string } = {
-    draft: '#ffc107',
-    active: '#28a745',
-    ended: '#6c757d',
-    archived: '#17a2b8'
+    draft: '#1976d2',     // Blau - Entwurf (--info-color)
+    active: '#2e7d32',    // Grün - Belieferung (--success-color)
+    ended: '#f9a825',     // Gelb/Orange - Beendet
+    archived: '#c62828'   // Rot - Gekündigt (--danger-color)
   };
 
   private subscription: Subscription = new Subscription();

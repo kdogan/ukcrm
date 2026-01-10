@@ -75,6 +75,25 @@ exports.getContractStatistics = async (req, res, next) => {
       }
     ]);
 
+    // Verträge, die im ausgewählten Zeitraum enden (endDate im Zeitraum)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const endPeriodDate = new Date();
+    endPeriodDate.setMonth(endPeriodDate.getMonth() + monthsCount);
+    endPeriodDate.setHours(23, 59, 59, 999);
+
+    const endingContracts = await Contract.find({
+      ...baseMatch,
+      status: 'active',
+      endDate: { $gte: today, $lte: endPeriodDate }
+    })
+      .populate('customerId', 'firstName lastName customerNumber')
+      .populate('supplierId', 'name shortName')
+      .sort({ endDate: 1 })
+      .lean();
+
+    const endingContractsCount = endingContracts.length;
+
     // Anbieter-Liste für Filter laden
     const suppliers = await Supplier.find({ beraterId })
       .select('_id name shortName')
@@ -142,7 +161,11 @@ exports.getContractStatistics = async (req, res, next) => {
         months: monthsCount,
         statusLabels,
         suppliers,
-        selectedSupplierId: supplierId || 'all'
+        selectedSupplierId: supplierId || 'all',
+        endingContracts: {
+          list: endingContracts,
+          count: endingContractsCount
+        }
       }
     });
   } catch (error) {

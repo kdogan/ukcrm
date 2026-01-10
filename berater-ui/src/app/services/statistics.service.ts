@@ -20,6 +20,23 @@ export interface StatisticsSupplier {
   shortName?: string;
 }
 
+export interface EndingContract {
+  _id: string;
+  contractNumber: string;
+  endDate: string;
+  customerId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    customerNumber: string;
+  };
+  supplierId: {
+    _id: string;
+    name: string;
+    shortName: string;
+  };
+}
+
 export interface ContractStatisticsData {
   chartData: ContractStatisticsChartData;
   totalStats: {
@@ -45,6 +62,10 @@ export interface ContractStatisticsData {
   };
   suppliers: StatisticsSupplier[];
   selectedSupplierId: string;
+  endingContracts: {
+    list: EndingContract[];
+    count: number;
+  };
 }
 
 @Injectable({

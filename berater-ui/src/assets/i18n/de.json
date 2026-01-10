@@ -798,6 +798,7 @@
     "CONTRACTS_BY_MONTH": "Verträge nach Monat und Status",
     "NO_DATA": "Keine Statistikdaten verfügbar",
     "FILTER_SUPPLIER": "Anbieter",
-    "ALL_SUPPLIERS": "Alle Anbieter"
+    "ALL_SUPPLIERS": "Alle Anbieter",
+    "ENDING_CONTRACTS": "Endende Verträge im Zeitraum"
   }
 }

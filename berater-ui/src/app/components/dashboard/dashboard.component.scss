@@ -933,6 +933,96 @@
   }
 }
 
+// Endende Verträge Sektion
+.ending-contracts-section {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+  border: 1px solid #ffcccc;
+  border-left: 4px solid #dc3545;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+
+  .ending-contracts-header {
+    h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 1rem;
+      color: #dc3545;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        color: #dc3545;
+      }
+    }
+  }
+
+  .ending-contracts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .ending-contract-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #ffdddd;
+
+    &:hover {
+      background: #fff0f0;
+      transform: translateX(4px);
+      box-shadow: 0 2px 4px rgba(220, 53, 69, 0.15);
+    }
+
+    .contract-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .contract-number {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .customer-name {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+
+      .supplier-name {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        background: #f5f5f5;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+      }
+    }
+
+    .contract-end-date {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #dc3545;
+      font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
+
+      i {
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
+
 .contract-chart {
   background: var(--bg-light);
   border-radius: 8px;

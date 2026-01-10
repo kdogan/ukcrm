@@ -1210,6 +1210,30 @@
                     </div>
                   </div>
 
+                  <!-- Endende Verträge im Zeitraum -->
+                  @if(contractStats.endingContracts && contractStats.endingContracts.count > 0) {
+                    <div class="ending-contracts-section">
+                      <div class="ending-contracts-header">
+                        <h4><i class="fas fa-calendar-times"></i> {{ 'STATISTICS.ENDING_CONTRACTS' | translate }} ({{ contractStats.endingContracts.count }})</h4>
+                      </div>
+                      <div class="ending-contracts-list">
+                        @for(contract of contractStats.endingContracts.list; track contract._id) {
+                          <div class="ending-contract-item" (click)="navigateToContract(contract._id)">
+                            <div class="contract-info">
+                              <span class="contract-number">{{ contract.contractNumber }}</span>
+                              <span class="customer-name">{{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}</span>
+                              <span class="supplier-name">{{ contract.supplierId?.shortName || contract.supplierId?.name }}</span>
+                            </div>
+                            <div class="contract-end-date">
+                              <i class="fas fa-calendar-alt"></i>
+                              {{ contract.endDate | date:'dd.MM.yyyy' }}
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
                   <!-- Balkendiagramm -->
                   <div class="contract-chart">
                     <div class="chart-legend">
