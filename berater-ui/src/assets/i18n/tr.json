@@ -243,7 +243,7 @@
     "TOOLTIPS": {
       "REMINDERS": "Açık hatırlatmalarınızı ve görevlerinizi gösterir. Acil görevler, kısa sürede tamamlanması gereken görevlerdir.",
       "CONTRACTS": "Sözleşmelerinize genel bakış: 'Teslimat' durumundaki aktif sözleşmeler ve toplam sözleşme sayısı.",
-      "RECENT_CONTRACTS_READINGS": "Son 30 günün sözleşmelerini ve sayaç okumalarını gösterir. Hangi yeni sözleşmelerin hala sayaç okumasına ihtiyaç duyduğunu görmenize yardımcı olur.",
+      "RECENT_CONTRACTS_READINGS": "Son 30 gün içinde başlayan sözleşmeleri ve sayaç okumalarını gösterir. Hangi yeni sözleşmelerin hala sayaç okumasına ihtiyaç duyduğunu görmenize yardımcı olur.",
       "CUSTOMERS": "En az bir sözleşmesi olan aktif müşterilerinizin sayısı.",
       "METERS": "Sayaçlarınıza genel bakış: Boş sayaçlar yeni sözleşmeler için kullanılabilir, dolu sayaçlar zaten aktif bir sözleşmeye atanmıştır.",
       "NEW_CUSTOMERS": "Son ay oluşturulan müşteri sayısı.",

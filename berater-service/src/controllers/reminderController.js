@@ -119,27 +119,32 @@ exports.getDashboardStats = async (req, res, next) => {
       endDate: { $lt: today }
     });
 
-    // Verträge der letzten 30 Tage mit Zählerablesung-Statistik
+    // Verträge, die in den letzten 30 Tagen gestartet sind (nach startDate)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    // Verträge der letzten 30 Tage
+    // Verträge mit Startdatum in den letzten 30 Tagen
     const recentContracts = await Contract.find({
       beraterId,
-      createdAt: { $gte: thirtyDaysAgo }
-    }).select('_id');
+      startDate: { $gte: thirtyDaysAgo }
+    }).select('_id meterId');
 
-    const recentContractIds = recentContracts.map(c => c._id);
-    const recentContractsCount = recentContractIds.length;
+    const recentMeterIds = recentContracts.map(c => c.meterId);
+    const recentContractsCount = recentContracts.length;
 
     // Davon: Verträge mit mindestens einer Zählerablesung
     let contractsWithReadings = 0;
     if (recentContractsCount > 0) {
-      const contractsWithReadingsResult = await MeterReading.distinct('contractId', {
+      // Finde Zähler, die Ablesungen haben (nach Vertragsbeginn)
+      const metersWithReadings = await MeterReading.distinct('meterId', {
         beraterId,
-        contractId: { $in: recentContractIds }
+        meterId: { $in: recentMeterIds }
       });
-      contractsWithReadings = contractsWithReadingsResult.length;
+
+      // Zähle Verträge, deren Zähler mindestens eine Ablesung haben
+      contractsWithReadings = recentContracts.filter(contract =>
+        metersWithReadings.some(meterId => meterId.toString() === contract.meterId.toString())
+      ).length;
     }
 
     const contractsWithoutReadings = recentContractsCount - contractsWithReadings;

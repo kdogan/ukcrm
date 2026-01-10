@@ -243,7 +243,7 @@
     "TOOLTIPS": {
       "REMINDERS": "Zeigt Ihre offenen Erinnerungen und Aufgaben. Dringende Aufgaben sind solche, die zeitnah erledigt werden müssen.",
       "CONTRACTS": "Übersicht Ihrer Verträge: Aktive Verträge im Status 'Belieferung' und die Gesamtanzahl aller Verträge.",
-      "RECENT_CONTRACTS_READINGS": "Zeigt Verträge der letzten 30 Tage und deren Zählerablesungen. Hilft zu erkennen, welche neuen Verträge noch Zählerablesungen benötigen.",
+      "RECENT_CONTRACTS_READINGS": "Zeigt Verträge, die in den letzten 30 Tagen gestartet sind, und deren Zählerablesungen. Hilft zu erkennen, welche neuen Verträge noch Zählerablesungen benötigen.",
       "CUSTOMERS": "Anzahl Ihrer aktiven Kunden, die mindestens einen Vertrag haben.",
       "METERS": "Übersicht Ihrer Zähler: Freie Zähler können für neue Verträge verwendet werden, belegte Zähler sind bereits einem aktiven Vertrag zugeordnet.",
       "NEW_CUSTOMERS": "Anzahl der Kunden, die im letzten Monat neu angelegt wurden.",
