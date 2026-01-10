@@ -10,16 +10,28 @@ import { Supplier } from '../../services/supplier.service';
   imports: [CommonModule, FormsModule, TranslateModule],
   template: `
     <div class="supplier-search">
-      <div class="search-container" [class.with-add-button]="showAddButton">
-        <input type="text"
-              [placeholder]="'SUPPLIERS.SEARCH' | translate"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchInput()"
-              (focus)="onFocus()"
-              (blur)="closeSuggestionsDelayed()"
-              class="form-control search-input"
-              autocomplete="off" />
-        @if(showAddButton){
+      <div class="search-container" [class.with-add-button]="showAddButton" [class.has-selection]="selectedSupplier">
+        @if(selectedSupplier){
+          <div class="selected-input">
+            <span class="selected-text">
+              {{ selectedSupplier.name }}
+              @if(formatAddress(selectedSupplier)){
+                <span class="selected-address">· {{ formatAddress(selectedSupplier) }}</span>
+              }
+            </span>
+            <button type="button" class="btn-clear" (click)="clearSelection(); $event.stopPropagation()">&times;</button>
+          </div>
+        } @else {
+          <input type="text"
+                [placeholder]="'SUPPLIERS.SEARCH' | translate"
+                [(ngModel)]="searchQuery"
+                (input)="onSearchInput()"
+                (focus)="onFocus()"
+                (blur)="closeSuggestionsDelayed()"
+                class="form-control search-input"
+                autocomplete="off" />
+        }
+        @if(showAddButton && !selectedSupplier){
           <button type="button" class="btn-add-inline" (click)="addNew.emit()" [title]="'SUPPLIERS.NEW' | translate">
             <i class="fas fa-plus"></i>
           </button>
@@ -46,18 +58,6 @@ import { Supplier } from '../../services/supplier.service';
           <div class="dropdown-item no-results">
             {{ 'COMMON.NO_RESULTS' | translate }}
           </div>
-        </div>
-      }
-
-      @if(selectedSupplier){
-        <div class="selected-item">
-          <span class="selected-text">
-            <strong>{{ selectedSupplier.name }}</strong>
-            @if(selectedSupplier.address?.city){
-              <span class="selected-location">- {{ formatAddress(selectedSupplier) }}</span>
-            }
-          </span>
-          <button type="button" class="btn-clear" (click)="clearSelection()">&times;</button>
         </div>
       }
     </div>
@@ -167,27 +167,31 @@ import { Supplier } from '../../services/supplier.service';
       width: 100%;
     }
 
-    .selected-item {
+    .selected-input {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 100%;
       background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
       border: 1px solid #a855f7;
       border-radius: 8px;
       padding: 0.75rem 1rem;
-      margin-top: 0.5rem;
+      min-height: 46px;
     }
 
     .selected-text {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.25rem;
+      font-weight: 500;
+      color: var(--text-primary, #333);
     }
 
-    .selected-location {
+    .selected-address {
       color: var(--text-secondary, #666);
       font-size: 0.9rem;
+      font-weight: normal;
     }
 
     .btn-clear {
@@ -199,6 +203,7 @@ import { Supplier } from '../../services/supplier.service';
       padding: 0 0.5rem;
       line-height: 1;
       transition: color 0.2s;
+      flex-shrink: 0;
     }
 
     .btn-clear:hover {

@@ -6,6 +6,7 @@ import { ContractService } from '../../services/contract.service';
 import { CustomerService } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
 import { MeterService } from '../../services/meter.service';
+import { MeterReadingService } from '../../services/meter-reading.service';
 import { PackageService } from '../../services/package.service';
 import { PackageFeatureService } from '../../services/package-feature.service';
 import { ViewportService, ViewportType } from 'src/app/services/viewport.service';
@@ -89,6 +90,20 @@ export class ContractsComponent implements OnInit {
   imageViewerUrl: string = '';
   viewport: ViewportType = ViewportType.Desktop;
 
+  // Reading modals
+  showReadingModal = false;
+  showReadingsListModal = false;
+  selectedMeterForReading: any = null;
+  currentReading: any = {
+    readingValue: null,
+    readingValueHT: null,
+    readingValueNT: null,
+    readingDate: new Date().toISOString().split('T')[0],
+    readingType: 'regular',
+    notes: ''
+  };
+  meterReadings: any[] = [];
+
   // Customer/Meter/Supplier creation modals
   showCustomerCreationModal = false;
   showMeterCreationModal = false;
@@ -136,6 +151,7 @@ export class ContractsComponent implements OnInit {
     private customerService: CustomerService,
     private supplierService: SupplierService,
     private meterService: MeterService,
+    private meterReadingService: MeterReadingService,
     private route: ActivatedRoute,
     private router: Router,
     private packageService: PackageService,
@@ -346,7 +362,7 @@ export class ContractsComponent implements OnInit {
             notes: contract.notes || ''
           };
 
-          // Setze ausgewählten Kunden und Zähler für die Anzeige
+          // Setze ausgewählten Kunden, Zähler und Anbieter für die Anzeige
           if (contract.customerId) {
             this.selectedCustomer = contract.customerId;
             this.customerSearch = typeof contract.customerId === 'object'
@@ -358,6 +374,13 @@ export class ContractsComponent implements OnInit {
             this.selectedMeter = contract.meterId;
             this.meterSearch = typeof contract.meterId === 'object'
               ? contract.meterId.meterNumber
+              : '';
+          }
+
+          if (contract.supplierId) {
+            this.selectedSupplier = contract.supplierId;
+            this.supplierSearch = typeof contract.supplierId === 'object'
+              ? contract.supplierId.name
               : '';
           }
 
@@ -776,9 +799,15 @@ export class ContractsComponent implements OnInit {
     this.selectedMeter = contract.meterId;
     this.selectedSupplier = contract.supplierId;
 
-    this.customerSearch = '';
-    this.meterSearch = '';
-    this.supplierSearch = '';
+    this.customerSearch = typeof contract.customerId === 'object'
+      ? `${contract.customerId.firstName} ${contract.customerId.lastName}`
+      : '';
+    this.meterSearch = typeof contract.meterId === 'object'
+      ? contract.meterId.meterNumber
+      : '';
+    this.supplierSearch = typeof contract.supplierId === 'object'
+      ? contract.supplierId.name
+      : '';
     this.showCustomerDropdown = false;
     this.showMeterDropdown = false;
     this.showSupplierDropdown = false;
@@ -1000,6 +1029,13 @@ export class ContractsComponent implements OnInit {
     this.showCustomerDetailsModal = false;
     this.selectedCustomerDetails = null;
     this.customerContracts = [];
+  }
+
+  createContractForCustomer(customer: any): void {
+    if (!customer || !customer._id) return;
+    this.closeCustomerDetails();
+    // Öffne das Vertragsformular mit vorausgewähltem Kunden
+    this.openCreateModalWithPreselection(customer, null);
   }
 
   onContractClick(contract: CustomerContract): void {
@@ -1490,4 +1526,113 @@ export class ContractsComponent implements OnInit {
     }
   return adresse;
 }
+
+  // Reading methods
+  showAddReadingModal(meter: any): void {
+    this.selectedMeterForReading = meter;
+    this.currentReading = {
+      readingValue: null,
+      readingValueHT: null,
+      readingValueNT: null,
+      readingDate: new Date().toISOString().split('T')[0],
+      readingType: 'regular',
+      notes: ''
+    };
+    this.showReadingModal = true;
+  }
+
+  closeReadingModal(): void {
+    this.showReadingModal = false;
+    this.selectedMeterForReading = null;
+  }
+
+  saveReading(): void {
+    if (!this.selectedMeterForReading ||
+        (this.selectedMeterForReading.isTwoTariff && !this.currentReading.readingValueHT) ||
+        (!this.selectedMeterForReading.isTwoTariff && !this.currentReading.readingValue)) {
+      this.toastService.warning('Bitte geben Sie einen Zählerstand ein');
+      return;
+    }
+
+    this.meterReadingService.createReading(this.selectedMeterForReading._id, this.currentReading).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.closeReadingModal();
+          this.toastService.success('Ablesung erfolgreich gespeichert');
+          // Aktualisiere die Zählerdetails
+          if (this.selectedMeterDetails) {
+            this.meterService.getMeter(this.selectedMeterDetails._id).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  this.selectedMeterDetails = res.data;
+                }
+              }
+            });
+          }
+        }
+      },
+      error: (error) => {
+        this.toastService.error('Fehler beim Speichern der Ablesung: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  viewMeterReadings(meter: any): void {
+    this.selectedMeterForReading = meter;
+    this.meterReadingService.getMeterReadings(meter._id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.meterReadings = response.data;
+          this.showReadingsListModal = true;
+        }
+      },
+      error: (error) => {
+        this.toastService.error('Fehler beim Laden der Ablesungen: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  closeReadingsListModal(): void {
+    this.showReadingsListModal = false;
+    this.meterReadings = [];
+    this.selectedMeterForReading = null;
+  }
+
+  async deleteReading(readingId: string): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Ablesung löschen',
+      message: 'Möchten Sie diese Ablesung wirklich löschen?',
+      confirmText: 'Löschen',
+      cancelText: 'Abbrechen',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
+
+    this.meterReadingService.deleteReading(this.selectedMeterForReading._id, readingId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.toastService.success('Ablesung erfolgreich gelöscht');
+          this.viewMeterReadings(this.selectedMeterForReading);
+        }
+      },
+      error: (error) => {
+        this.toastService.error('Fehler beim Löschen der Ablesung: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  getReadingTypeLabel(type: string): string {
+    const labels: any = {
+      initial: 'Erstablesung',
+      regular: 'Regulär',
+      final: 'Schlussablesung',
+      special: 'Sonderablesung'
+    };
+    return labels[type] || type;
+  }
+
+  getMeterUnit(type: string): string {
+    return Util.getMeterUnit(type);
+  }
 }

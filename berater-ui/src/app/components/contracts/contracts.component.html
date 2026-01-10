@@ -255,12 +255,20 @@
       <h2>{{ 'COMMON.DETAILS' | translate }}</h2>
       <button class="btn-close" (click)="closeCustomerDetails()">&times;</button>
     </div>
-    <app-customer-detail
-      [customer]="selectedCustomerDetails"
-      [contracts]="customerContracts"
-      [showContracts]="true"
-      (contractClick)="onContractClick($event)"
-    />
+    <div class="modal-body">
+      <app-customer-detail
+        [customer]="selectedCustomerDetails"
+        [contracts]="customerContracts"
+        [showContracts]="true"
+        (contractClick)="onContractClick($event)"
+      />
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-primary" (click)="createContractForCustomer(selectedCustomerDetails)">
+        <i class="fas fa-file-contract"></i> {{ 'CONTRACTS.NEW' | translate }}
+      </button>
+      <button type="button" class="btn-secondary" (click)="closeCustomerDetails()">{{ 'COMMON.CLOSE' | translate }}</button>
+    </div>
   </app-overlay-modal>
 }
 
@@ -328,6 +336,12 @@
       </app-meter-detail>
     </div>
     <div class="modal-footer">
+      <button type="button" class="btn-primary" (click)="showAddReadingModal(selectedMeterDetails)">
+        <i class="fas fa-plus-circle"></i> {{ 'METERS.ADD_READING' | translate }}
+      </button>
+      <button type="button" class="btn-secondary" (click)="viewMeterReadings(selectedMeterDetails)">
+        <i class="fas fa-list"></i> {{ 'METERS.VIEW_READINGS' | translate }}
+      </button>
       <button type="button" class="btn-secondary" (click)="closeMeterDetails()">{{ 'COMMON.CLOSE' | translate }}</button>
     </div>
   </app-overlay-modal>
@@ -542,5 +556,165 @@
         <button type="submit" class="btn-primary" [disabled]="!supplierForm.form.valid">{{ 'COMMON.CREATE' | translate }}</button>
       </div>
     </form>
+  </app-overlay-modal>
+}
+
+<!-- Modal for Adding Reading -->
+@if(showReadingModal) {
+  <app-overlay-modal (close)="closeReadingModal()">
+    <div class="modal-header">
+      <h2>Neue Ablesung für {{ selectedMeterForReading?.meterNumber }}</h2>
+      <button class="btn-close" (click)="closeReadingModal()">&times;</button>
+    </div>
+    <form (ngSubmit)="saveReading()" #readingForm="ngForm">
+      <!-- Zwei-Tarif-Zähler (HT/NT) -->
+      @if(selectedMeterForReading?.isTwoTariff){
+        <div class="form-group">
+          <label for="readingValueHT">HT (Hochtarif) in {{ getMeterUnit(selectedMeterForReading.type) }} *</label>
+          <input type="number" id="readingValueHT" name="readingValueHT" [(ngModel)]="currentReading.readingValueHT"
+            [required]="selectedMeterForReading?.isTwoTariff" min="0" step="0.01" placeholder="z.B. 12345"
+            class="form-control" />
+          @if(selectedMeterForReading?.currentReadingHT){
+            <small style="color: #666;">
+              Letzter HT-Wert: {{ selectedMeterForReading.currentReadingHT }} {{ getMeterUnit(selectedMeterForReading.type) }}
+            </small>
+          }
+        </div>
+        <div class="form-group">
+          <label for="readingValueNT">NT (Niedrigtarif) in {{ getMeterUnit(selectedMeterForReading.type) }}</label>
+          <input type="number" id="readingValueNT" name="readingValueNT" [(ngModel)]="currentReading.readingValueNT" min="0"
+            step="0.01" placeholder="z.B. 5678 (optional)" class="form-control" />
+          @if(selectedMeterForReading?.currentReadingNT){
+            <small style="color: #666;"> Letzter NT-Wert: {{ selectedMeterForReading.currentReadingNT }} {{ getMeterUnit(selectedMeterForReading.type) }}</small>
+          }
+        </div>
+      }@else{
+        <!-- Ein-Tarif-Zähler -->
+        <div class="form-group">
+          <label for="readingValue">Zählerstand in {{ getMeterUnit(selectedMeterForReading?.type) }} *</label>
+          <input type="number" id="readingValue" name="readingValue" [(ngModel)]="currentReading.readingValue"
+            [required]="!selectedMeterForReading?.isTwoTariff" min="0" step="0.01" placeholder="z.B. 12345"
+            class="form-control" />
+          @if(selectedMeterForReading?.currentReading){
+            <small style="color: #666;">
+              Letzter Zählerstand: {{ selectedMeterForReading.currentReading }} {{ getMeterUnit(selectedMeterForReading.type) }}
+            </small>
+          }
+        </div>
+      }
+
+      <div class="form-group">
+        <label for="readingDate">Ablesedatum *</label>
+        <input type="date" id="readingDate" name="readingDate" [(ngModel)]="currentReading.readingDate" required
+          class="form-control" />
+      </div>
+
+      <div class="form-group">
+        <label for="readingType">Typ</label>
+        <select id="readingType" name="readingType" [(ngModel)]="currentReading.readingType" class="form-control">
+          <option value="initial">Erstablesung</option>
+          <option value="regular">Reguläre Ablesung</option>
+          <option value="final">Schlussablesung</option>
+          <option value="special">Sonderablesung</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notizen</label>
+        <textarea id="notes" name="notes" [(ngModel)]="currentReading.notes" rows="3"
+          placeholder="Optional: Zusätzliche Informationen" class="form-control"></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeReadingModal()">Abbrechen</button>
+        <button type="submit" class="btn-primary" [disabled]="!readingForm.form.valid">
+          Speichern
+        </button>
+      </div>
+    </form>
+  </app-overlay-modal>
+}
+
+<!-- Modal for Viewing Readings -->
+@if(showReadingsListModal) {
+  <app-overlay-modal (close)="closeReadingsListModal()">
+    <div class="modal-header">
+      <h2>Ablesungen für {{ selectedMeterForReading?.meterNumber }}</h2>
+      <button class="btn-close" (click)="closeReadingsListModal()">&times;</button>
+    </div>
+
+    <div class="readings-list">
+      @if(meterReadings.length === 0) {
+        <div class="no-data">
+          Keine Ablesungen vorhanden
+        </div>
+      }
+
+      @if(meterReadings.length > 0) {
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Zählerstand</th>
+              <th>Verbrauch</th>
+              <th>Typ</th>
+              <th>Notizen</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(reading of meterReadings; track reading._id) {
+              <tr>
+                <td>{{ reading.readingDate | date:'dd.MM.yyyy' }}</td>
+                <td>
+                  <!-- Ein-Tarif-Zähler -->
+                  @if(reading.readingValue != null) {
+                    <strong>{{ reading.readingValue }} {{ getMeterUnit(selectedMeterForReading?.type) }}</strong>
+                  }
+                  <!-- Zwei-Tarif-Zähler (HT/NT) -->
+                  @if(reading.readingValueHT != null) {
+                    <div>
+                      <strong>HT:</strong> {{ reading.readingValueHT }} {{ getMeterUnit(selectedMeterForReading?.type) }}<br>
+                      <strong>NT:</strong> {{ reading.readingValueNT || '-' }} {{ reading.readingValueNT ? getMeterUnit(selectedMeterForReading?.type) : '' }}
+                    </div>
+                  }
+                </td>
+                <td>
+                  <!-- Ein-Tarif-Verbrauch -->
+                  @if(reading.consumption) {
+                    <span>{{ reading.consumption }} {{ getMeterUnit(selectedMeterForReading?.type) }} ({{ reading.daysSinceLastReading }} Tage)</span>
+                  }
+                  <!-- Zwei-Tarif-Verbrauch (HT/NT) -->
+                  @if(reading.consumptionHT != null && reading.consumptionNT != null) {
+                    <div>
+                      <strong>HT:</strong> {{ reading.consumptionHT }} {{ getMeterUnit(selectedMeterForReading?.type) }}<br>
+                      <strong>NT:</strong> {{ reading.consumptionNT }} {{ getMeterUnit(selectedMeterForReading?.type) }}<br>
+                      <strong>Gesamt:</strong> {{ reading.consumptionTotal }} {{ getMeterUnit(selectedMeterForReading?.type) }}<br>
+                      <small>({{ reading.daysSinceLastReading }} Tage)</small>
+                    </div>
+                  }
+                  @if(!reading.consumption && !reading.consumptionTotal) {
+                    <span>-</span>
+                  }
+                </td>
+                <td>{{ getReadingTypeLabel(reading.readingType) }}</td>
+                <td>{{ reading.notes || '-' }}</td>
+                <td>
+                  <button class="btn-small btn-danger" (click)="deleteReading(reading._id)">
+                    Löschen
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeReadingsListModal()">
+        Schließen
+      </button>
+    </div>
   </app-overlay-modal>
 }
