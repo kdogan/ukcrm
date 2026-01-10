@@ -70,4 +70,12 @@ export class ContractService {
   getAttachmentUrl(contractId: string, attachmentId: string): string {
     return `${this.apiUrl}/${contractId}/attachments/${attachmentId}`;
   }
+
+  /**
+   * Ermittelt das früheste erlaubte Startdatum für einen neuen Vertrag mit diesem Zähler.
+   * Basiert auf dem Enddatum des letzten gekündigten/beendeten Vertrags.
+   */
+  getMinStartDateForMeter(meterId: string): Observable<{ minStartDate: string | null }> {
+    return this.http.get<{ minStartDate: string | null }>(`${this.apiUrl}/meter/${meterId}/min-start-date`);
+  }
 }

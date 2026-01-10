@@ -135,7 +135,10 @@
         <div class="form-group">
           <label for="startDate">{{ 'CONTRACTS.FIELDS.START_DATE' | translate }} *</label>
           <input type="date" id="startDate" name="startDate" [(ngModel)]="currentContract.startDate" required
-            class="form-control" />
+            [min]="minStartDateForMeter" class="form-control" />
+          @if (minStartDateForMeter) {
+            <small class="hint-text">Frühestes Startdatum: {{ minStartDateForMeter | date:'dd.MM.yyyy' }}</small>
+          }
         </div>
 
         <div class="form-group">

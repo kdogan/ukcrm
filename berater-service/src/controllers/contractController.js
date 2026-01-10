@@ -172,10 +172,34 @@ exports.createContract = async (req, res, next) => {
       throw new Error('Zähler ist bereits in einem aktiven Vertrag');
     }
 
-    // 4️⃣ Vertragsnummer erzeugen (TX-sicher)
+    // 4️⃣ Prüfen: Startdatum nicht vor Enddatum eines gekündigten/beendeten Vertrags
+    const lastEndedContract = await Contract.findOne({
+      meterId,
+      beraterId: req.user._id,
+      status: { $in: ['archived', 'ended'] },
+      endDate: { $exists: true, $ne: null }
+    })
+      .sort({ endDate: -1 })
+      .session(session);
+
+    if (lastEndedContract && startDate) {
+      const newStartDate = new Date(startDate);
+      const lastEndDate = new Date(lastEndedContract.endDate);
+
+      // Nur Datum vergleichen (ohne Uhrzeit)
+      newStartDate.setHours(0, 0, 0, 0);
+      lastEndDate.setHours(0, 0, 0, 0);
+
+      if (newStartDate < lastEndDate) {
+        const formattedEndDate = lastEndDate.toLocaleDateString('de-DE');
+        throw new Error(`Startdatum darf nicht vor dem ${formattedEndDate} liegen (Enddatum des vorherigen Vertrags für diesen Zähler)`);
+      }
+    }
+
+    // 5️⃣ Vertragsnummer erzeugen (TX-sicher)
     const contractNumber = await getNextContractNumber(req.user._id, session);
 
-    // 5️⃣ Vertrag anlegen
+    // 6️⃣ Vertrag anlegen
     const [contract] = await Contract.create([{
       ...req.body,
       contractNumber,
@@ -188,14 +212,14 @@ exports.createContract = async (req, res, next) => {
       }]
     }], { session });
 
-    // 6️⃣ Zähler belegen
+    // 7️⃣ Zähler belegen
     await Meter.updateOne(
       { _id: meterId },
       { currentCustomerId: customerId },
       { session }
     );
 
-    // 7️⃣ MeterHistory anlegen
+    // 8️⃣ MeterHistory anlegen
     await MeterHistory.create([{
       meterId,
       beraterId: req.user._id,
@@ -205,11 +229,11 @@ exports.createContract = async (req, res, next) => {
       endDate: null
     }], { session });
 
-    // 8️⃣ Commit
+    // 9️⃣ Commit
     await session.commitTransaction();
     session.endSession();
 
-    // 9️⃣ Populierten Vertrag zurückgeben
+    // 🔟 Populierten Vertrag zurückgeben
     const populatedContract = await Contract.findById(contract._id)
       .populate('customerId', 'firstName lastName customerNumber')
       .populate('meterId', 'meterNumber type')
@@ -564,3 +588,33 @@ async function updateMeterStatusTx(contract, session) {
     );
   }
 }
+
+// @desc    Get minimum start date for a new contract with a meter
+// @route   GET /api/contracts/meter/:meterId/min-start-date
+// @access  Private
+exports.getMinStartDateForMeter = async (req, res, next) => {
+  try {
+    const { meterId } = req.params;
+
+    // Letzten beendeten/gekündigten Vertrag für diesen Zähler finden
+    const lastEndedContract = await Contract.findOne({
+      meterId,
+      beraterId: req.user._id,
+      status: { $in: ['archived', 'ended'] },
+      endDate: { $exists: true, $ne: null }
+    }).sort({ endDate: -1 });
+
+    let minStartDate = null;
+
+    if (lastEndedContract && lastEndedContract.endDate) {
+      minStartDate = new Date(lastEndedContract.endDate).toISOString().split('T')[0];
+    }
+
+    res.status(200).json({
+      success: true,
+      minStartDate
+    });
+  } catch (error) {
+    next(error);
+  }
+};

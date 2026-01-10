@@ -109,6 +109,9 @@ export class ContractsComponent implements OnInit {
   isSearchingBackend = false;
   private searchTimeout: any = null;
 
+  // Min-Startdatum für Zähler (basierend auf letztem beendeten Vertrag)
+  minStartDateForMeter: string | null = null;
+
   contractState = [
     {
       key: ContractState.ACTIVE,
@@ -593,6 +596,28 @@ export class ContractsComponent implements OnInit {
   selectMeter(meter: any): void {
     this.selectedMeter = meter;
     this.currentContract.meterId = meter._id;
+
+    // Min-Startdatum für diesen Zähler abrufen
+    this.loadMinStartDateForMeter(meter._id);
+  }
+
+  private loadMinStartDateForMeter(meterId: string): void {
+    this.contractService.getMinStartDateForMeter(meterId).subscribe({
+      next: (response) => {
+        this.minStartDateForMeter = response.minStartDate;
+
+        // Falls Startdatum bereits gesetzt und vor dem Mindestdatum liegt, anpassen
+        if (this.minStartDateForMeter && this.currentContract.startDate) {
+          if (this.currentContract.startDate < this.minStartDateForMeter) {
+            this.currentContract.startDate = this.minStartDateForMeter;
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Fehler beim Abrufen des Min-Startdatums:', err);
+        this.minStartDateForMeter = null;
+      }
+    });
   }
 
   onMeterSelected(meter: any): void {
@@ -615,6 +640,7 @@ export class ContractsComponent implements OnInit {
     this.currentContract.meterId = '';
     this.meterSearch = '';
     this.filteredFreeMeters = this.freeMeters;
+    this.minStartDateForMeter = null;
   }
 
   closeCustomerDropdownDelayed(): void {
@@ -703,6 +729,7 @@ export class ContractsComponent implements OnInit {
         this.selectedCustomer = null;
         this.selectedMeter = null;
         this.selectedSupplier = null;
+        this.minStartDateForMeter = null;
         this.showCustomerDropdown = false;
         this.showMeterDropdown = false;
         this.showSupplierDropdown = false;
@@ -722,6 +749,7 @@ export class ContractsComponent implements OnInit {
         this.selectedCustomer = null;
         this.selectedMeter = null;
         this.selectedSupplier = null;
+        this.minStartDateForMeter = null;
         this.showCustomerDropdown = false;
         this.showMeterDropdown = false;
         this.showSupplierDropdown = false;
@@ -775,6 +803,7 @@ export class ContractsComponent implements OnInit {
       this.meterSearch = '';
       this.pendingFiles = []; // Pending Files zurücksetzen
       this.isSaving = false; // Loading state zurücksetzen
+      this.minStartDateForMeter = null;
     }
   }
 
