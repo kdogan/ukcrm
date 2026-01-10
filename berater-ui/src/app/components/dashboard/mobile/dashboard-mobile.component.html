@@ -237,6 +237,32 @@
           <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
           <div class="stat-label">Neue Kunden</div>
         </div>
+
+        <!-- Überfällige Verträge -->
+        <div class="stat-card warning-card" *ngIf="isFavorite('overdueContracts') && stats.overdueContracts"
+             [class.priority-high]="stats.overdueContracts.count > 0">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-value warning-text">{{ stats.overdueContracts.count || 0 }}</div>
+          <div class="stat-label">Überfällige Verträge</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Überfällige Verträge Liste -->
+    <div class="section-card overdue-section" *ngIf="stats?.overdueContracts?.list?.length > 0">
+      <h2>⚠️ Überfällige Verträge</h2>
+      <div class="contracts-list">
+        <div *ngFor="let contract of stats.overdueContracts.list" class="contract-card overdue">
+          <div class="contract-number">{{ contract.contractNumber }}</div>
+          <strong>{{ contract.customerId?.firstName }} {{ contract.customerId?.lastName }}</strong>
+          <div class="supplier">{{ contract.supplierId?.shortName || contract.supplierId?.name }}</div>
+          <div class="contract-footer">
+            <div class="end-date">{{ contract.endDate | date:'dd.MM.yyyy' }}</div>
+            <span class="badge badge-danger">
+              {{ getDaysOverdue(contract.endDate) }} Tage überfällig
+            </span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -261,12 +287,23 @@
     <!-- Verträge nach Anbieter -->
     <div class="section-card" *ngIf="stats?.contractsBySupplier">
       <h2>📊 Verträge nach Anbieter</h2>
-      <div class="chart-container">
-        <div *ngFor="let item of stats.contractsBySupplier" class="chart-bar">
-          <div class="bar-label">{{ item.name }}</div>
-          <div class="bar-wrapper">
-            <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
-            <span class="bar-value">{{ item.count }}</span>
+      <div class="supplier-stats-container">
+        <!-- Kreisdiagramm -->
+        <div class="pie-chart-wrapper">
+          <div class="pie-chart" [style.background]="getPieChartGradient()">
+            <div class="pie-chart-center">
+              <span class="pie-total">{{ getTotalSupplierContracts() }}</span>
+              <span class="pie-label">Gesamt</span>
+            </div>
+          </div>
+        </div>
+        <!-- Legende -->
+        <div class="supplier-legend">
+          <div *ngFor="let item of stats.contractsBySupplier; let i = index" class="supplier-row">
+            <span class="color-dot" [style.background]="getSupplierColor(i)"></span>
+            <span class="supplier-name">{{ item.shortName || item.name }}</span>
+            <span class="supplier-count">{{ item.count }}</span>
+            <span class="supplier-percent">{{ getSupplierPercentage(item.count) }}%</span>
           </div>
         </div>
       </div>
@@ -425,17 +462,40 @@
             <div class="stat-value">{{ stats.newCustomers?.count || 0 }}</div>
             <div class="stat-label">Neue Kunden</div>
           </div>
+
+          <!-- Überfällige Verträge -->
+          <div class="stat-card warning-card" *ngIf="stats.overdueContracts"
+               [class.is-favorite]="isFavorite('overdueContracts')"
+               [class.priority-high]="stats.overdueContracts.count > 0">
+            <button class="favorite-toggle" (click)="toggleFavorite('overdueContracts', $event)">
+              {{ isFavorite('overdueContracts') ? '★' : '☆' }}
+            </button>
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-value warning-text">{{ stats.overdueContracts.count || 0 }}</div>
+            <div class="stat-label">Überfällige Verträge</div>
+          </div>
         </div>
 
         <!-- Verträge nach Anbieter -->
         <div class="section-card" *ngIf="stats?.contractsBySupplier">
           <h2>📊 Verträge nach Anbieter</h2>
-          <div class="chart-container">
-            <div *ngFor="let item of stats.contractsBySupplier" class="chart-bar">
-              <div class="bar-label">{{ item.name }}</div>
-              <div class="bar-wrapper">
-                <div class="bar" [style.width.%]="getPercentage(item.count)"></div>
-                <span class="bar-value">{{ item.count }}</span>
+          <div class="supplier-stats-container">
+            <!-- Kreisdiagramm -->
+            <div class="pie-chart-wrapper">
+              <div class="pie-chart" [style.background]="getPieChartGradient()">
+                <div class="pie-chart-center">
+                  <span class="pie-total">{{ getTotalSupplierContracts() }}</span>
+                  <span class="pie-label">Gesamt</span>
+                </div>
+              </div>
+            </div>
+            <!-- Legende -->
+            <div class="supplier-legend">
+              <div *ngFor="let item of stats.contractsBySupplier; let i = index" class="supplier-row">
+                <span class="color-dot" [style.background]="getSupplierColor(i)"></span>
+                <span class="supplier-name">{{ item.shortName || item.name }}</span>
+                <span class="supplier-count">{{ item.count }}</span>
+                <span class="supplier-percent">{{ getSupplierPercentage(item.count) }}%</span>
               </div>
             </div>
           </div>

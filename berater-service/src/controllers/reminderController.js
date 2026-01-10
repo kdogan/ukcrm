@@ -4,6 +4,7 @@ const Customer = require('../models/Customer');
 const Meter = require('../models/Meter');
 const MeterReading = require('../models/MeterReading');
 const PackageUpgradeRequest = require('../models/PackageUpgradeRequest');
+const Todo = require('../models/Todo');
 
 // @desc    Get all reminders
 // @route   GET /api/reminders
@@ -171,7 +172,7 @@ exports.getDashboardStats = async (req, res, next) => {
     });
     const occupiedMeters = totalMeters - freeMeters;
 
-    // Offene Erinnerungen
+    // Offene Erinnerungen (Reminders)
     const openReminders = await Reminder.countDocuments({
       beraterId,
       status: 'open'
@@ -181,6 +182,23 @@ exports.getDashboardStats = async (req, res, next) => {
       beraterId,
       status: 'open',
       dueDate: { $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) }
+    });
+
+    // Offene TODOs (nicht Support-Tickets)
+    const openTodos = await Todo.countDocuments({
+      beraterId,
+      status: { $in: ['open', 'in_progress'] },
+      isSupportTicket: { $ne: true }
+    });
+
+    const urgentTodos = await Todo.countDocuments({
+      beraterId,
+      status: { $in: ['open', 'in_progress'] },
+      isSupportTicket: { $ne: true },
+      $or: [
+        { priority: 'high' },
+        { dueDate: { $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) } }
+      ]
     });
 
     // Verträge Statistik (aktiv/gesamt)
@@ -199,6 +217,23 @@ exports.getDashboardStats = async (req, res, next) => {
     const newCustomersCount = await Customer.countDocuments({
       beraterId,
       createdAt: { $gte: oneMonthAgo }
+    });
+
+    // Überfällige Verträge (Enddatum überschritten, aber noch aktiv)
+    const overdueContracts = await Contract.find({
+      beraterId,
+      status: 'active',
+      endDate: { $lt: today }
+    })
+      .populate('customerId', 'firstName lastName customerNumber')
+      .populate('supplierId', 'name shortName')
+      .sort({ endDate: 1 })
+      .limit(20);
+
+    const overdueContractsCount = await Contract.countDocuments({
+      beraterId,
+      status: 'active',
+      endDate: { $lt: today }
     });
 
     // Verträge der letzten 30 Tage mit Zählerablesung-Statistik
@@ -258,6 +293,10 @@ exports.getDashboardStats = async (req, res, next) => {
 
     const dashboardData = {
       expiringContracts,
+      overdueContracts: {
+        list: overdueContracts,
+        count: overdueContractsCount
+      },
       contractsBySupplier,
       customers: {
         active: activeCustomers,
@@ -269,8 +308,10 @@ exports.getDashboardStats = async (req, res, next) => {
         occupied: occupiedMeters
       },
       reminders: {
-        total: openReminders,
-        urgent: urgentReminders
+        total: openReminders + openTodos,
+        urgent: urgentReminders + urgentTodos,
+        remindersOnly: openReminders,
+        todosOnly: openTodos
       },
       contracts: {
         total: contractStats[0]?.total || 0,

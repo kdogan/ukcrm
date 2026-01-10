@@ -24,7 +24,7 @@ export interface UserSettings {
 }
 
 // Verfügbare Statistik-Karten für das Dashboard
-export type StatCardId = 'reminders' | 'contracts' | 'recentReadings' | 'customers' | 'meters' | 'newCustomers' | 'contractsBySupplier';
+export type StatCardId = 'reminders' | 'contracts' | 'recentReadings' | 'customers' | 'meters' | 'newCustomers' | 'contractsBySupplier' | 'monthlyTrends' | 'contractStatistics' | 'overdueContracts';
 
 const DEFAULT_FAVORITE_STATS: string[] = ['reminders', 'contracts', 'recentReadings'];
 

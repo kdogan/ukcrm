@@ -182,6 +182,7 @@
     "ACTIVE": "Belieferung",
     "NO_EXPIRING": "Keine ablaufenden Verträge",
     "CONTRACTS_BY_SUPPLIER": "Verträge nach Anbieter",
+    "BAR_CHART": "Balkendiagramm",
     "DAYS": "Tage",
     "PACKAGES": "Pakete",
     "EXPIRING_PACKAGES": "Ablaufende & Abgelaufene Pakete",
@@ -224,6 +225,11 @@
     },
     "NEW_CUSTOMERS": "Neue Kunden",
     "LAST_MONTH": "Letzter Monat",
+    "OVERDUE_CONTRACTS": "Überfällige Verträge",
+    "OVERDUE_CONTRACTS_DESC": "Aktiv aber abgelaufen",
+    "OVERDUE_CONTRACTS_LIST": "Überfällige Verträge (Details)",
+    "OVERDUE_MODAL_SUBTITLE": "Klicken Sie auf einen Vertrag, um ihn zu öffnen:",
+    "NO_OVERDUE_CONTRACTS": "Keine überfälligen Verträge vorhanden",
     "METER_READINGS": "Zählerablesungen",
     "RECENT": "Aktuell",
     "MONTHLY_TRENDS": "Monatliche Entwicklung",
@@ -241,7 +247,10 @@
       "CUSTOMERS": "Anzahl Ihrer aktiven Kunden, die mindestens einen Vertrag haben.",
       "METERS": "Übersicht Ihrer Zähler: Freie Zähler können für neue Verträge verwendet werden, belegte Zähler sind bereits einem aktiven Vertrag zugeordnet.",
       "NEW_CUSTOMERS": "Anzahl der Kunden, die im letzten Monat neu angelegt wurden.",
-      "CONTRACTS_BY_SUPPLIER": "Verteilung Ihrer Verträge nach Energieanbieter."
+      "CONTRACTS_BY_SUPPLIER": "Verteilung Ihrer Verträge nach Energieanbieter.",
+      "MONTHLY_TRENDS": "Zeigt die monatliche Entwicklung Ihrer Verträge, Kunden und Zähler im gewählten Zeitraum.",
+      "CONTRACT_STATISTICS": "Detaillierte Statistik Ihrer Verträge nach Status und Zeitraum.",
+      "OVERDUE_CONTRACTS": "Verträge, deren Enddatum überschritten ist, aber noch als 'aktiv' markiert sind. Sofortiger Handlungsbedarf!"
     }
   },
   "CONTRACTS": {
@@ -736,7 +745,9 @@
     "OF": "von",
     "PER_PAGE": "pro Seite",
     "OR": "oder",
-    "TOTAL": "Gesamt"
+    "TOTAL": "Gesamt",
+    "MORE": "weitere",
+    "CLICK_TO_VIEW": "Klicken zum Anzeigen"
   },
   "ERRORS": {
     "GENERIC": "Ein Fehler ist aufgetreten",

@@ -182,6 +182,7 @@
     "ACTIVE": "Aktif",
     "NO_EXPIRING": "Biten sözleşme yok",
     "CONTRACTS_BY_SUPPLIER": "Tedarikçiye göre Sözleşmeler",
+    "BAR_CHART": "Çubuk Grafik",
     "DAYS": "Gün",
     "PACKAGES": "Paketler",
     "EXPIRING_PACKAGES": "Biten & Sona Eren Paketler",
@@ -224,6 +225,11 @@
     },
     "NEW_CUSTOMERS": "Yeni Müşteriler",
     "LAST_MONTH": "Son Ay",
+    "OVERDUE_CONTRACTS": "Gecikmiş Sözleşmeler",
+    "OVERDUE_CONTRACTS_DESC": "Aktif ama süresi dolmuş",
+    "OVERDUE_CONTRACTS_LIST": "Gecikmiş Sözleşmeler (Detay)",
+    "OVERDUE_MODAL_SUBTITLE": "Açmak için sözleşmeye tıklayın:",
+    "NO_OVERDUE_CONTRACTS": "Gecikmiş sözleşme bulunmuyor",
     "METER_READINGS": "Sayaç Okumaları",
     "RECENT": "Güncel",
     "MONTHLY_TRENDS": "Aylık Gelişim",
@@ -241,7 +247,10 @@
       "CUSTOMERS": "En az bir sözleşmesi olan aktif müşterilerinizin sayısı.",
       "METERS": "Sayaçlarınıza genel bakış: Boş sayaçlar yeni sözleşmeler için kullanılabilir, dolu sayaçlar zaten aktif bir sözleşmeye atanmıştır.",
       "NEW_CUSTOMERS": "Son ay oluşturulan müşteri sayısı.",
-      "CONTRACTS_BY_SUPPLIER": "Sözleşmelerinizin enerji tedarikçisine göre dağılımı."
+      "CONTRACTS_BY_SUPPLIER": "Sözleşmelerinizin enerji tedarikçisine göre dağılımı.",
+      "MONTHLY_TRENDS": "Seçilen dönemde sözleşmelerinizin, müşterilerinizin ve sayaçlarınızın aylık gelişimini gösterir.",
+      "CONTRACT_STATISTICS": "Duruma ve döneme göre sözleşmelerinizin detaylı istatistiği.",
+      "OVERDUE_CONTRACTS": "Bitiş tarihi geçmiş ancak hala 'aktif' olarak işaretlenmiş sözleşmeler. Acil müdahale gerekli!"
     }
   },
   "CONTRACTS": {
@@ -736,7 +745,9 @@
     "OF": "/",
     "PER_PAGE": "sayfa başına",
     "OR": "veya",
-    "TOTAL": "Toplam"
+    "TOTAL": "Toplam",
+    "MORE": "daha fazla",
+    "CLICK_TO_VIEW": "Görüntülemek için tıklayın"
   },
   "ERRORS": {
     "GENERIC": "Bir hata oluştu",

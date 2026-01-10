@@ -1458,3 +1458,646 @@
 .all-stats-section .stat-card {
   padding-right: 3.5rem;
 }
+
+/* HEADER-ACTIONS für Charts und Sections */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Section mit Favorit-Markierung (Charts) */
+.trends-section.is-favorite,
+.supplier-section.is-favorite,
+.contract-statistics-section.is-favorite {
+  border: 2px solid #fcd34d;
+  background: linear-gradient(135deg, #fffbeb 0%, var(--white) 100%);
+}
+
+/* Anpassung der section-header-with-info für Favoriten */
+.section-header-with-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+/* Trends-Header Anpassung */
+.trends-header {
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+/* Überfällige Verträge - Warning Card */
+.stat-card.warning-card {
+  border-left: 4px solid var(--danger-red);
+  background: linear-gradient(135deg, #fff5f5 0%, var(--white) 100%);
+
+  h3 {
+    i {
+      color: var(--danger-red) !important;
+    }
+  }
+
+  &.priority-high {
+    animation: pulse-warning 2s ease-in-out infinite;
+  }
+}
+
+.stat-number.warning-text {
+  color: var(--danger-red) !important;
+}
+
+@keyframes pulse-warning {
+  0%, 100% {
+    box-shadow: var(--shadow-md);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.2), var(--shadow-md);
+  }
+}
+
+/* Überfällige Verträge Sektion */
+.overdue-contracts-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-light);
+
+  h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: var(--danger-red);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i {
+      color: var(--danger-red);
+    }
+  }
+}
+
+/* Warning Card mit Favorit-Markierung */
+.stat-card.warning-card.is-favorite {
+  border: 2px solid var(--danger-red);
+  border-left: 4px solid var(--danger-red);
+  background: linear-gradient(135deg, #fff5f5 0%, #fffbeb 100%);
+}
+
+/* KREISDIAGRAMM - Verträge nach Anbieter */
+.supplier-stats-container {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.pie-chart-wrapper {
+  flex-shrink: 0;
+}
+
+.pie-chart {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pie-chart-center {
+  width: 100px;
+  height: 100px;
+  background: var(--white);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.pie-total {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.pie-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.supplier-legend {
+  flex: 1;
+}
+
+.supplier-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.supplier-row {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+
+  &.header {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 0.75rem;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.supplier-name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.supplier-count {
+  width: 60px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.supplier-percent {
+  width: 50px;
+  text-align: right;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.bar-chart-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+
+  h4 {
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+}
+
+@media (max-width: 768px) {
+  .supplier-stats-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .pie-chart {
+    width: 160px;
+    height: 160px;
+  }
+
+  .pie-chart-center {
+    width: 90px;
+    height: 90px;
+  }
+
+  .pie-total {
+    font-size: 1.75rem;
+  }
+
+  .supplier-legend {
+    width: 100%;
+  }
+
+  .supplier-row {
+    font-size: 0.85rem;
+  }
+
+  .supplier-count {
+    width: 50px;
+  }
+
+  .supplier-percent {
+    width: 45px;
+  }
+}
+
+/* CHARTS GRID - 2 Spalten auf Desktop */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+
+  // Alle Sections im Grid bekommen konsistentes Styling
+  .trends-section,
+  .supplier-section,
+  .contract-statistics-section {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    margin: 0; // Reset margin da Grid gap verwendet wird
+  }
+
+  // Vertragsstatistik nimmt volle Breite (2 Spalten)
+  .contract-statistics-section {
+    grid-column: 1 / -1;
+  }
+
+  // Trends-Section Anpassungen für Grid
+  .trends-section {
+    .trends-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: var(--primary-color);
+        }
+      }
+    }
+
+    .trends-chart-container {
+      margin-top: 1rem;
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+
+    .contract-statistics-section {
+      grid-column: auto;
+    }
+  }
+}
+
+/* FAVORIT-CHARTS GRID - volle Größe im Favoriten-Bereich */
+.favorite-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+
+  .trends-section,
+  .supplier-section,
+  .contract-statistics-section {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    margin: 0;
+
+    &.is-favorite {
+      border: 2px solid var(--primary-color);
+      border-left: 4px solid var(--primary-color);
+    }
+
+    // Wenn nur ein Chart im Grid ist, nimmt es die volle Breite
+    &:only-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .contract-statistics-section {
+    grid-column: 1 / -1;
+  }
+
+  .trends-section {
+    .trends-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: var(--primary-color);
+        }
+      }
+    }
+
+    .trends-chart-container {
+      margin-top: 1rem;
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .favorite-charts-grid {
+    grid-template-columns: 1fr;
+
+    .contract-statistics-section {
+      grid-column: auto;
+    }
+  }
+}
+
+/* KLICKBARE STAT-CARDS */
+.stat-card.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.click-hint {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  i {
+    font-size: 0.7rem;
+  }
+}
+
+.stat-card.warning-card .click-hint {
+  color: var(--danger-red);
+  opacity: 0.7;
+}
+
+/* KLICKBARE TABELLENZEILEN */
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(102, 126, 234, 0.08);
+  }
+}
+
+/* MODAL FÜR ÜBERFÄLLIGE VERTRÄGE */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-container {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  background: linear-gradient(135deg, #fff5f5 0%, var(--white) 100%);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .warning-icon {
+      color: var(--danger-red);
+    }
+  }
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--bg-light);
+    color: var(--text-primary);
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-subtitle {
+  margin: 0 0 1rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.overdue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.overdue-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--danger-red);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #fff5f5 0%, var(--bg-light) 100%);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.overdue-item-main,
+.overdue-item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.overdue-customer,
+.overdue-contract-number,
+.overdue-supplier,
+.overdue-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+
+  i {
+    color: var(--text-muted);
+    width: 16px;
+    text-align: center;
+  }
+}
+
+.overdue-customer {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.overdue-contract-number {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.overdue-supplier,
+.overdue-date {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.overdue-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .badge-danger {
+    background: var(--danger-red);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .fa-chevron-right {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-muted);
+
+  i {
+    font-size: 3rem;
+    color: var(--success-green);
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .overdue-item {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .overdue-badge {
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-light);
+  }
+}

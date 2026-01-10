@@ -41,6 +41,13 @@ export class DashboardMobileComponent {
            this.subscriptionInfo.package !== 'free';
   }
 
+  getDaysOverdue(endDate: string): number {
+    const end = new Date(endDate);
+    const today = new Date();
+    const diff = today.getTime() - end.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+
   getDaysRemaining(endDate: string): number {
     const end = new Date(endDate);
     const today = new Date();
@@ -122,5 +129,49 @@ export class DashboardMobileComponent {
 
   getFavoriteStatCards(): StatCard[] {
     return this.availableStatCards.filter(card => this.favoriteStats.includes(card.id));
+  }
+
+  // Kreisdiagramm-Methoden für Anbieter-Statistik
+  supplierColors: string[] = [
+    '#667eea', '#764ba2', '#11998e', '#38ef7d', '#f093fb',
+    '#f5576c', '#4facfe', '#00f2fe', '#43e97b', '#fa709a',
+    '#fee140', '#fa709a', '#6a11cb', '#2575fc'
+  ];
+
+  getTotalSupplierContracts(): number {
+    if (!this.stats?.contractsBySupplier) return 0;
+    return this.stats.contractsBySupplier.reduce((sum: number, item: { count: number }) => sum + item.count, 0);
+  }
+
+  getSupplierPercentage(count: number): number {
+    const total = this.getTotalSupplierContracts();
+    if (total === 0) return 0;
+    return Math.round((count / total) * 100);
+  }
+
+  getSupplierColor(index: number): string {
+    return this.supplierColors[index % this.supplierColors.length];
+  }
+
+  getPieChartGradient(): string {
+    if (!this.stats?.contractsBySupplier || this.stats.contractsBySupplier.length === 0) {
+      return 'conic-gradient(#e5e7eb 0deg 360deg)';
+    }
+
+    const total = this.getTotalSupplierContracts();
+    if (total === 0) return 'conic-gradient(#e5e7eb 0deg 360deg)';
+
+    let currentAngle = 0;
+    const segments: string[] = [];
+
+    this.stats.contractsBySupplier.forEach((item: { count: number }, index: number) => {
+      const percentage = (item.count / total) * 100;
+      const angle = (percentage / 100) * 360;
+      const color = this.getSupplierColor(index);
+      segments.push(`${color} ${currentAngle}deg ${currentAngle + angle}deg`);
+      currentAngle += angle;
+    });
+
+    return `conic-gradient(${segments.join(', ')})`;
   }
 }

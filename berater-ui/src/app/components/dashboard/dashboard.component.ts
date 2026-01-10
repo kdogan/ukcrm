@@ -8,7 +8,7 @@ import { SettingsService } from '../../services/settings.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TableContainerComponent } from '../shared/tablecontainer.component';
 import { ViewportService } from 'src/app/services/viewport.service';
 import { DashboardMobileComponent } from './mobile/dashboard-mobile.component';
@@ -65,6 +65,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Tooltip
   activeTooltip: string | null = null;
 
+  // Modal für überfällige Verträge
+  showOverdueModal = false;
+
   // Favorit-Statistiken
   favoriteStats: string[] = [];
   availableStatCards: StatCard[] = [
@@ -73,7 +76,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { id: 'recentReadings', icon: 'fa-tachometer-alt', titleKey: 'DASHBOARD.RECENT_CONTRACTS_READINGS', tooltipKey: 'DASHBOARD.TOOLTIPS.RECENT_CONTRACTS_READINGS' },
     { id: 'customers', icon: 'fa-users', titleKey: 'DASHBOARD.CUSTOMERS', tooltipKey: 'DASHBOARD.TOOLTIPS.CUSTOMERS' },
     { id: 'meters', icon: 'fa-bolt', titleKey: 'DASHBOARD.METERS', tooltipKey: 'DASHBOARD.TOOLTIPS.METERS' },
-    { id: 'newCustomers', icon: 'fa-user-plus', titleKey: 'DASHBOARD.NEW_CUSTOMERS', tooltipKey: 'DASHBOARD.TOOLTIPS.NEW_CUSTOMERS' }
+    { id: 'newCustomers', icon: 'fa-user-plus', titleKey: 'DASHBOARD.NEW_CUSTOMERS', tooltipKey: 'DASHBOARD.TOOLTIPS.NEW_CUSTOMERS' },
+    { id: 'overdueContracts', icon: 'fa-exclamation-triangle', titleKey: 'DASHBOARD.OVERDUE_CONTRACTS', tooltipKey: 'DASHBOARD.TOOLTIPS.OVERDUE_CONTRACTS' },
+    { id: 'contractsBySupplier', icon: 'fa-chart-pie', titleKey: 'DASHBOARD.CONTRACTS_BY_SUPPLIER', tooltipKey: 'DASHBOARD.TOOLTIPS.CONTRACTS_BY_SUPPLIER' },
+    { id: 'monthlyTrends', icon: 'fa-chart-line', titleKey: 'DASHBOARD.MONTHLY_TRENDS', tooltipKey: 'DASHBOARD.TOOLTIPS.MONTHLY_TRENDS' },
+    { id: 'contractStatistics', icon: 'fa-chart-bar', titleKey: 'STATISTICS.TITLE', tooltipKey: 'DASHBOARD.TOOLTIPS.CONTRACT_STATISTICS' }
   ];
 
   statusColors: { [key: string]: string } = {
@@ -98,7 +105,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     private viewport: ViewportService,
     private toastService: ToastService,
-    private confirmDialog: ConfirmDialogService
+    private confirmDialog: ConfirmDialogService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -445,9 +453,63 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   }
 
+  getDaysOverdue(endDate: string): number {
+    const end = new Date(endDate);
+    const today = new Date();
+    const diff = today.getTime() - end.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+
   getPercentage(count: number): number {
     const max = this.isSuperAdmin ? this.maxUsers : this.maxContracts;
     return (count / max) * 100;
+  }
+
+  // Berechnet die Gesamtanzahl aller Verträge bei Anbietern
+  getTotalSupplierContracts(): number {
+    if (!this.stats?.contractsBySupplier) return 0;
+    return this.stats.contractsBySupplier.reduce((sum: number, item: { count: number }) => sum + item.count, 0);
+  }
+
+  // Berechnet den Prozentsatz eines Anbieters
+  getSupplierPercentage(count: number): number {
+    const total = this.getTotalSupplierContracts();
+    if (total === 0) return 0;
+    return Math.round((count / total) * 100);
+  }
+
+  // Farben für Kreisdiagramm
+  supplierColors: string[] = [
+    '#667eea', '#764ba2', '#11998e', '#38ef7d', '#f093fb',
+    '#f5576c', '#4facfe', '#00f2fe', '#43e97b', '#fa709a',
+    '#fee140', '#fa709a', '#6a11cb', '#2575fc'
+  ];
+
+  getSupplierColor(index: number): string {
+    return this.supplierColors[index % this.supplierColors.length];
+  }
+
+  // Berechnet den conic-gradient für das Kreisdiagramm
+  getPieChartGradient(): string {
+    if (!this.stats?.contractsBySupplier || this.stats.contractsBySupplier.length === 0) {
+      return 'conic-gradient(#e5e7eb 0deg 360deg)';
+    }
+
+    const total = this.getTotalSupplierContracts();
+    if (total === 0) return 'conic-gradient(#e5e7eb 0deg 360deg)';
+
+    let currentAngle = 0;
+    const segments: string[] = [];
+
+    this.stats.contractsBySupplier.forEach((item: { count: number }, index: number) => {
+      const percentage = (item.count / total) * 100;
+      const angle = (percentage / 100) * 360;
+      const color = this.getSupplierColor(index);
+      segments.push(`${color} ${currentAngle}deg ${currentAngle + angle}deg`);
+      currentAngle += angle;
+    });
+
+    return `conic-gradient(${segments.join(', ')})`;
   }
 
   getStatusLabel(status: string): string {
@@ -587,5 +649,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.toastService.error('Fehler beim Speichern der Favoriten');
       }
     });
+  }
+
+  // Überfällige Verträge Modal
+  openOverdueModal(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (this.stats?.overdueContracts?.count > 0) {
+      this.showOverdueModal = true;
+    }
+  }
+
+  closeOverdueModal(): void {
+    this.showOverdueModal = false;
+  }
+
+  navigateToContract(contractId: string): void {
+    this.closeOverdueModal();
+    this.router.navigate(['/contracts'], { queryParams: { id: contractId } });
   }
 }

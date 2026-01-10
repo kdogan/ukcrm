@@ -10,8 +10,29 @@ export interface ChartData {
   meters: number[];
 }
 
+export interface OverdueContract {
+  _id: string;
+  contractNumber: string;
+  endDate: string;
+  customerId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    customerNumber: string;
+  };
+  supplierId: {
+    _id: string;
+    name: string;
+    shortName: string;
+  };
+}
+
 export interface DashboardStats {
   expiringContracts: any[];
+  overdueContracts: {
+    list: OverdueContract[];
+    count: number;
+  };
   contractsBySupplier: Array<{
     _id: string;
     name: string;
@@ -30,6 +51,8 @@ export interface DashboardStats {
   reminders: {
     total: number;
     urgent: number;
+    remindersOnly?: number;
+    todosOnly?: number;
   };
   contracts: {
     total: number;
