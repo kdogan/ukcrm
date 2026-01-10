@@ -16,11 +16,14 @@
     .badge {
       padding: 0.25rem 0.75rem;
       border-radius: 12px;
-      background: var(--danger-bg);
-      color: var(--danger-color);
+      background: #eceff1;
+      color: #455a64;
       font-size: 0.875rem;
     }
     .badge-active { background: var(--success-bg); color: var(--success-color); }
+    .badge-archived { background: var(--danger-bg); color: var(--danger-color); }
+    .badge-draft { background: var(--info-bg, #e3f2fd); color: var(--info-color, #1976d2); }
+    .badge-ended { background: #fff8e1; color: #f9a825; }
     .btn-primary, .btn-secondary, .btn-small {
       padding: 0.625rem 1.25rem;
       border: none;

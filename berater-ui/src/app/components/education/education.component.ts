@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { EducationService, EducationMaterial, EducationStats, Berater, ShareStatus } from '../../services/education.service';
 import { AuthService } from '../../services/auth.service';
 import { ViewportService } from '../../services/viewport.service';
+import { LanguageService } from '../../services/language.service';
 import { EducationDesktopComponent } from './desktop/education-desktop.component';
 import { EducationMobileComponent } from './mobile/education-mobile.component';
 import { OverlayModalComponent } from '../shared/overlay-modal.component';
@@ -97,10 +98,13 @@ export class EducationComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     public viewportService: ViewportService,
     private sanitizer: DomSanitizer,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private languageService: LanguageService
   ) {}
 
   ngOnInit(): void {
+    // Setze Sprachfilter auf Systemsprache BEVOR Materialien geladen werden
+    this.selectedLanguage = this.languageService.getCurrentLanguage();
     this.checkUserRole();
     this.loadShareStatus();
     this.setupFullscreenListener();

@@ -72,8 +72,11 @@
             </td>
             <td>{{ contract.startDate | date:'dd.MM.yyyy' }}</td>
             <td>{{ contract.endDate | date:'dd.MM.yyyy' }}</td>
-            <td><span class="badge" [class.badge-active]="contract.status === 'active'">{{ getStatusLabel(contract.status)
-                }}</span></td>
+            <td><span class="badge"
+                  [class.badge-active]="contract.status === 'active'"
+                  [class.badge-archived]="contract.status === 'archived'"
+                  [class.badge-draft]="contract.status === 'draft'"
+                  [class.badge-ended]="contract.status === 'ended'">{{ getStatusLabel(contract.status) }}</span></td>
             <td class="actions-cell">
               <div class="action-menu-container">
                 <button class="action-menu-btn" (click)="emitActionMenuId(contract._id); $event.stopPropagation()">

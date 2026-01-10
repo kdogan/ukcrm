@@ -26,13 +26,13 @@
 }
 
 .status-icon.archived {
-  background: #eceff1;
-  color: #455a64;
+  background: var(--danger-bg);
+  color: var(--danger-color);
 }
 
 .status-icon.draft {
-  background: var(--info-bg);
-  color: var(--info-color);
+  background: var(--info-bg, #e3f2fd);
+  color: var(--info-color, #1976d2);
 }
 
 .row {
