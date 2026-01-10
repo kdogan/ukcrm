@@ -42,21 +42,35 @@ const generateExpiringContractTodos = async () => {
       const reminderDays = berater.settings?.reminderDays?.custom || 30;
       if (daysUntilExpiry > reminderDays) continue;
 
-      // Prüfe ob bereits ein TODO für diesen Vertrag existiert (auch completed)
+      // Prüfe ob bereits ein offenes TODO für diesen Vertrag existiert
       const existingTodo = await Todo.findOne({
         beraterId: contract.beraterId,
         relatedContractId: contract._id,
-        autoGenerationType: 'contract_expiring'
+        autoGenerationType: 'contract_expiring',
+        status: { $ne: 'completed' } // Nur offene TODOs prüfen
       });
 
-      if (!existingTodo && contract.customerId) {
-        // TODO erstellen
+      if (!contract.customerId) continue;
+
+      // Priorität basierend auf prozentualem Anteil der verbleibenden Zeit
+      // <= 33% der Zeit = high, <= 66% = medium, sonst low
+      const percentRemaining = (daysUntilExpiry / reminderDays) * 100;
+      const newPriority = percentRemaining <= 33 ? 'high' : percentRemaining <= 66 ? 'medium' : 'low';
+      const newDescription = `Der Vertrag von ${contract.customerId.firstName} ${contract.customerId.lastName} läuft in ${daysUntilExpiry} Tagen ab. Bitte Verlängerung oder Kündigung vorbereiten.`;
+
+      if (existingTodo) {
+        // Bestehende TODO aktualisieren (Beschreibung und Priorität)
+        existingTodo.description = newDescription;
+        existingTodo.priority = newPriority;
+        await existingTodo.save();
+      } else {
+        // Neues TODO erstellen
         await Todo.create({
           beraterId: contract.beraterId,
           title: `Vertrag ${contract.contractNumber} läuft ab`,
-          description: `Der Vertrag von ${contract.customerId.firstName} ${contract.customerId.lastName} läuft in ${daysUntilExpiry} Tagen ab. Bitte Verlängerung oder Kündigung vorbereiten.`,
+          description: newDescription,
           status: 'open',
-          priority: daysUntilExpiry <= 30 ? 'high' : daysUntilExpiry <= 60 ? 'medium' : 'low',
+          priority: newPriority,
           dueDate: contract.endDate,
           relatedCustomerId: contract.customerId,
           relatedContractId: contract._id,
@@ -66,7 +80,7 @@ const generateExpiringContractTodos = async () => {
 
         createdCount++;
 
-        // E-Mail senden wenn aktiviert
+        // E-Mail nur bei neuer TODO senden (nicht bei Updates)
         if (berater.settings?.reminderDays?.sendEmail) {
           try {
             await sendContractExpirationReminder(berater, contract, daysUntilExpiry);

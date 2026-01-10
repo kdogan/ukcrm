@@ -5,11 +5,8 @@ import { environment } from '../../environments/environment';
 
 export interface UserSettings {
   reminderDays: {
-    days90: boolean;
-    days60: boolean;
-    days30: boolean;
-    custom?: number;
-    sendEmail?: boolean;
+    custom: number;
+    sendEmail: boolean;
   };
   notifications: {
     email: boolean;
@@ -30,9 +27,6 @@ const DEFAULT_FAVORITE_STATS: string[] = ['reminders', 'contracts', 'recentReadi
 
 const DEFAULT_SETTINGS: UserSettings = {
   reminderDays: {
-    days90: true,
-    days60: true,
-    days30: true,
     custom: 30,
     sendEmail: false
   },
@@ -125,18 +119,9 @@ export class SettingsService {
     return colorMap[color] || colorMap['mint'];
   }
 
-  getReminderDays(): number[] {
+  getReminderDays(): number {
     const settings = this.settingsSubject.value;
-    const days: number[] = [];
-
-    if (settings.reminderDays.days90) days.push(90);
-    if (settings.reminderDays.days60) days.push(60);
-    if (settings.reminderDays.days30) days.push(30);
-    if (settings.reminderDays.custom && settings.reminderDays.custom > 0) {
-      days.push(settings.reminderDays.custom);
-    }
-
-    return days;
+    return settings.reminderDays.custom || 30;
   }
 
   getPrimaryColor(): string {

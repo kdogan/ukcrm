@@ -134,10 +134,7 @@ const userSchema = new mongoose.Schema({
   },
   settings: {
     reminderDays: {
-      days90: { type: Boolean, default: true },
-      days60: { type: Boolean, default: true },
-      days30: { type: Boolean, default: true },
-      custom: { type: Number },
+      custom: { type: Number, default: 30 },
       sendEmail: { type: Boolean, default: false }
     },
     sidebarLabels: {

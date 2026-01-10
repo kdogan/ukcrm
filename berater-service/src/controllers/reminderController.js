@@ -1,114 +1,9 @@
-const Reminder = require('../models/Reminder');
 const Contract = require('../models/Contract');
 const Customer = require('../models/Customer');
 const Meter = require('../models/Meter');
 const MeterReading = require('../models/MeterReading');
 const PackageUpgradeRequest = require('../models/PackageUpgradeRequest');
 const Todo = require('../models/Todo');
-
-// @desc    Get all reminders
-// @route   GET /api/reminders
-// @access  Private
-exports.getReminders = async (req, res, next) => {
-  try {
-    const { status = 'open', page = 1, limit = 50 } = req.query;
-
-    const filter = { beraterId: req.user._id };
-    if (status) filter.status = status;
-
-    const skip = (page - 1) * limit;
-    const total = await Reminder.countDocuments(filter);
-
-    const reminders = await Reminder.find(filter)
-      .populate({
-        path: 'contractId',
-        populate: [
-          { path: 'customerId', select: 'firstName lastName customerNumber' },
-          { path: 'supplierId', select: 'name shortName' }
-        ]
-      })
-      .sort({ dueDate: 1 })
-      .limit(parseInt(limit))
-      .skip(skip);
-
-    res.status(200).json({
-      success: true,
-      data: reminders,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// @desc    Mark reminder as done
-// @route   PATCH /api/reminders/:id/done
-// @access  Private
-exports.markReminderDone = async (req, res, next) => {
-  try {
-    const { note } = req.body;
-
-    const reminder = await Reminder.findOne({
-      _id: req.params.id,
-      beraterId: req.user._id
-    });
-
-    if (!reminder) {
-      return res.status(404).json({
-        success: false,
-        message: 'Erinnerung nicht gefunden'
-      });
-    }
-
-    reminder.status = 'done';
-    if (note) reminder.note = note;
-    await reminder.save();
-
-    res.status(200).json({
-      success: true,
-      data: reminder
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// @desc    Mark reminder as ignored
-// @route   PATCH /api/reminders/:id/ignore
-// @access  Private
-exports.ignoreReminder = async (req, res, next) => {
-  try {
-    const { note } = req.body;
-
-    const reminder = await Reminder.findOne({
-      _id: req.params.id,
-      beraterId: req.user._id
-    });
-
-    if (!reminder) {
-      return res.status(404).json({
-        success: false,
-        message: 'Erinnerung nicht gefunden'
-      });
-    }
-
-    reminder.status = 'ignored';
-    if (note) reminder.note = note;
-    await reminder.save();
-
-    res.status(200).json({
-      success: true,
-      data: reminder
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 // @desc    Get dashboard statistics
 // @route   GET /api/dashboard/stats
@@ -171,18 +66,6 @@ exports.getDashboardStats = async (req, res, next) => {
       currentCustomerId: null
     });
     const occupiedMeters = totalMeters - freeMeters;
-
-    // Offene Erinnerungen (Reminders)
-    const openReminders = await Reminder.countDocuments({
-      beraterId,
-      status: 'open'
-    });
-
-    const urgentReminders = await Reminder.countDocuments({
-      beraterId,
-      status: 'open',
-      dueDate: { $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) }
-    });
 
     // Offene TODOs (nicht Support-Tickets)
     const openTodos = await Todo.countDocuments({
@@ -308,9 +191,8 @@ exports.getDashboardStats = async (req, res, next) => {
         occupied: occupiedMeters
       },
       reminders: {
-        total: openReminders + openTodos,
-        urgent: urgentReminders + urgentTodos,
-        remindersOnly: openReminders,
+        total: openTodos,
+        urgent: urgentTodos,
         todosOnly: openTodos
       },
       contracts: {

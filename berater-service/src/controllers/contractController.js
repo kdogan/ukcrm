@@ -1,5 +1,4 @@
 const Contract = require('../models/Contract');
-const Reminder = require('../models/Reminder');
 const Todo = require('../models/Todo');
 const getNextContractNumber = require('../utils/getNextContractNumber');
 
@@ -210,10 +209,7 @@ exports.createContract = async (req, res, next) => {
     await session.commitTransaction();
     session.endSession();
 
-    // 9️⃣ Reminders außerhalb der TX
-    await createReminders(contract);
-
-    // 🔟 Populierten Vertrag zurückgeben
+    // 9️⃣ Populierten Vertrag zurückgeben
     const populatedContract = await Contract.findById(contract._id)
       .populate('customerId', 'firstName lastName customerNumber')
       .populate('meterId', 'meterNumber type')
@@ -536,52 +532,6 @@ exports.downloadAttachment = async (req, res, next) => {
     next(error);
   }
 };
-
-// Hilfsfunktion: Erinnerungen erstellen
-async function createReminders(contract) {
-  // Prüfe zuerst ob bereits ein TODO für diesen Vertrag existiert
-  const existingTodo = await Todo.findOne({
-    beraterId: contract.beraterId,
-    relatedContractId: contract._id,
-    autoGenerationType: 'contract_expiring',
-    status: { $ne: 'completed' }
-  });
-
-  // Wenn bereits ein TODO existiert, keine Reminders erstellen
-  if (existingTodo) {
-    console.log(`Skipping reminder creation - TODO already exists for contract ${contract._id}`);
-    return;
-  }
-
-  const reminders = [
-    { type: '90days', days: 90 },
-    { type: '60days', days: 60 },
-    { type: '30days', days: 30 }
-  ];
-
-  for (const reminder of reminders) {
-    const dueDate = new Date(contract.endDate);
-    dueDate.setDate(dueDate.getDate() - reminder.days);
-
-    // Nur erstellen wenn in der Zukunft
-    if (dueDate > new Date()) {
-      try {
-        await Reminder.create({
-          beraterId: contract.beraterId,
-          contractId: contract._id,
-          reminderType: reminder.type,
-          dueDate,
-          status: 'open'
-        });
-      } catch (error) {
-        // Ignoriere Duplikat-Fehler
-        if (error.code !== 11000) {
-          console.error('Error creating reminder:', error);
-        }
-      }
-    }
-  }
-}
 
 async function updateMeterStatusTx(contract, session) {
   const Meter = require('../models/Meter');

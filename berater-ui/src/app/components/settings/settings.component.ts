@@ -187,33 +187,6 @@ import { ConfirmDialogService } from '../../shared/services/confirm-dialog.servi
           </p>
 
           <div class="setting-group">
-            <!-- <label class="checkbox-label">
-              <input
-                type="checkbox"
-                [(ngModel)]="settings.reminderDays.days90"
-                (change)="saveSettings()"
-              />
-              <span>{{ 'SETTINGS.REMINDERS.DAYS_90' | translate }}</span>
-            </label>
-
-            <label class="checkbox-label">
-              <input
-                type="checkbox"
-                [(ngModel)]="settings.reminderDays.days60"
-                (change)="saveSettings()"
-              />
-              <span>{{ 'SETTINGS.REMINDERS.DAYS_60' | translate }}</span>
-            </label>
-
-            <label class="checkbox-label">
-              <input
-                type="checkbox"
-                [(ngModel)]="settings.reminderDays.days30"
-                (change)="saveSettings()"
-              />
-              <span>{{ 'SETTINGS.REMINDERS.DAYS_30' | translate }}</span>
-            </label> -->
-
             <div class="custom-days">
               <label>{{ 'SETTINGS.REMINDERS.CUSTOM_DAYS' | translate }}: {{ settings.reminderDays.custom || 1 }} {{ 'SETTINGS.REMINDERS.DAYS_BEFORE' | translate }}</label>
               <div class="slider-container">
