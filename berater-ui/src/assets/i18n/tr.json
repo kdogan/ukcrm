@@ -367,8 +367,12 @@
       "READING": "Sayaç Değeri",
       "LAST_READING": "Son Değer",
       "READING_DATE": "Okuma Tarihi",
-      "NOTES": "Notlar"
+      "NOTES": "Notlar",
+      "MALO_ID": "MALO-ID",
+      "TWO_TARIFF": "Çift Tarifeli Sayaç (HT/NT)",
+      "TWO_TARIFF_HINT": "Gündüz/Gece tarifeli elektrik sayaçları için"
     },
+    "PLEASE_SELECT": "Lütfen seçin",
     "SHOW_CUSTOMER_DETAILS": "Müşteri detaylarını göster",
     "STATUS": {
       "FREE": "Boş",

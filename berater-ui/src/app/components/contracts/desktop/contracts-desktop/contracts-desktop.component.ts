@@ -29,6 +29,7 @@ export class ContractsDesktopComponent {
   @Output() edit = new EventEmitter<Contract>();
   @Output() delete = new EventEmitter<string>();
   @Output() showDetails = new EventEmitter<Contract>();
+  @Output() exportExcel = new EventEmitter<void>();
 
   @Output() closeActionMenu = new EventEmitter<void>();
   @Output() statusFilterChange = new EventEmitter<string>();

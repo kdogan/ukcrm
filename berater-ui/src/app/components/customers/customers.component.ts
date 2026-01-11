@@ -14,6 +14,7 @@ import { Contract } from 'src/app/models/contract.model';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from '../../shared/services/toast.service';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
+import { ExcelExportService } from '../../services/excel-export.service';
 
 @Component({
     selector: 'app-customers',
@@ -49,7 +50,8 @@ export class CustomersComponent implements OnInit {
     private router: Router,
     private viewport: ViewportService,
     private toastService: ToastService,
-    private confirmDialog: ConfirmDialogService
+    private confirmDialog: ConfirmDialogService,
+    private excelExportService: ExcelExportService
   ) {}
 
     get isMobile() {
@@ -77,7 +79,22 @@ export class CustomersComponent implements OnInit {
     this.customerService.getCustomer(id).subscribe({
       next: (response) => {
         if (response.success) {
-          this.currentCustomer = response.data;
+          const customer = response.data;
+          this.currentCustomer = customer;
+          this.customerFormData = {
+            _id: customer._id,
+            anrede: customer.anrede,
+            firstName: customer.firstName || '',
+            lastName: customer.lastName || '',
+            email: customer.email,
+            phone: customer.phone,
+            notes: customer.notes,
+            address: {
+              street: customer.address?.street ?? '',
+              zip: customer.address?.zip ?? '',
+              city: customer.address?.city ?? ''
+            }
+          };
           this.editMode = true;
           this.showModal = true;
         }
@@ -144,7 +161,8 @@ export class CustomersComponent implements OnInit {
 
   showCreateModal(): void {
     this.editMode = false;
-    this.currentCustomer = {
+    this.currentCustomer = {};
+    this.customerFormData = {
       firstName: '',
       lastName: '',
       email: '',
@@ -161,8 +179,15 @@ export class CustomersComponent implements OnInit {
 
   editCustomer(customer: Customer) {
     this.editMode = true;
-    this.currentCustomer = {
-      ...customer,
+    this.currentCustomer = { ...customer };
+    this.customerFormData = {
+      _id: customer._id,
+      anrede: customer.anrede,
+      firstName: customer.firstName || '',
+      lastName: customer.lastName || '',
+      email: customer.email,
+      phone: customer.phone,
+      notes: customer.notes,
       address: {
         street: customer.address?.street ?? '',
         zip: customer.address?.zip ?? '',
@@ -179,8 +204,7 @@ export class CustomersComponent implements OnInit {
 
   saveCustomer(customerData: CustomerFormData): void {
     this.savingCustomer = true;
-    const customerPayload = {
-      anrede: customerData.anrede,
+    const customerPayload: any = {
       firstName: customerData.firstName,
       lastName: customerData.lastName,
       email: customerData.email,
@@ -192,6 +216,11 @@ export class CustomersComponent implements OnInit {
         city: customerData.address?.city || ''
       }
     };
+
+    // Nur anrede hinzufügen wenn es gesetzt ist (nicht undefined)
+    if (customerData.anrede) {
+      customerPayload.anrede = customerData.anrede;
+    }
 
     if (this.editMode && customerData._id) {
       this.customerService.updateCustomer(customerData._id, customerPayload).subscribe({
@@ -290,16 +319,29 @@ export class CustomersComponent implements OnInit {
     this.router.navigate(['/contracts'], { queryParams: { customerId: customer._id } });
   }
 
-  get customerFormData(): CustomerFormData {
-    return {
-      _id: this.currentCustomer._id,
-      anrede: this.currentCustomer.anrede,
-      firstName: this.currentCustomer.firstName || '',
-      lastName: this.currentCustomer.lastName || '',
-      email: this.currentCustomer.email,
-      phone: this.currentCustomer.phone,
-      notes: this.currentCustomer.notes,
-      address: this.currentCustomer.address
-    };
+  customerFormData: CustomerFormData = {
+    firstName: '',
+    lastName: ''
+  };
+
+  exportToExcel(): void {
+    // Lade alle Kunden ohne Pagination für den Export
+    this.customerService.getCustomers({
+      isActive: this.filterActive,
+      search: this.searchTerm,
+      limit: 10000
+    }).subscribe({
+      next: (response) => {
+        if (response.success && response.data.length > 0) {
+          this.excelExportService.exportCustomers(response.data, 'Kunden');
+          this.toastService.success('Export erfolgreich');
+        } else {
+          this.toastService.info('Keine Daten zum Exportieren');
+        }
+      },
+      error: () => {
+        this.toastService.error('Export fehlgeschlagen');
+      }
+    });
   }
 }

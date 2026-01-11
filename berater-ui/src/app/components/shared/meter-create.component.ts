@@ -1,38 +1,39 @@
 import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { TranslateModule } from "@ngx-translate/core";
 import { meterTypes } from "src/app/models/meter.model";
 import { Util } from "../util/util";
 import { AddressAutocompleteComponent, AddressData } from "./address-autocomplete.component";
 
 @Component({
     selector: 'app-meter-create',
-    imports: [CommonModule, FormsModule, AddressAutocompleteComponent],
+    imports: [CommonModule, FormsModule, AddressAutocompleteComponent, TranslateModule],
     standalone:true,
     template: `
       <div class="modal-header">
-        <h2>{{ isEditMode ? 'Zähler bearbeiten' : 'Neuer Zähler' }}</h2>
+        <h2>{{ isEditMode ? ('METERS.EDIT' | translate) : ('METERS.NEW' | translate) }}</h2>
         <button class="btn-close" (click)="close.emit()">&times;</button>
         </div>
         @if(meter){
         <form (ngSubmit)="save.emit()" #meterForm="ngForm">
             <div class="form-group">
-            <label for="meter-number-input">Zählernummer *</label>
+            <label for="meter-number-input">{{ 'METERS.FIELDS.METER_NUMBER' | translate }} *</label>
             <input type="text" id="meter-number-input" name="meterNumber" [(ngModel)]="meter.meterNumber" required
                 placeholder="z.B. Z-2024-001" class="form-control" />
             </div>
 
             <div class="form-group">
-            <label for="meter-type-select">Typ *</label>
+            <label for="meter-type-select">{{ 'METERS.FIELDS.TYPE' | translate }} *</label>
             <select id="meter-type-select" name="type" [(ngModel)]="meter.type" required class="form-control">
-                <option value="">Bitte wählen</option>
+                <option value="">{{ 'METERS.PLEASE_SELECT' | translate }}</option>
                 @for(type of meterTypes; track type) {
                   <option [value]="type">{{getTypeLabel(type)}}</option>
                 }
             </select>
             </div>
             <div class="form-group">
-            <label for="meter-malo-input">Malo Id</label>
+            <label for="meter-malo-input">{{ 'METERS.FIELDS.MALO_ID' | translate }}</label>
             <input type="text" id="meter-malo-input" name="maloId" [(ngModel)]="meter.maloId"
                 placeholder="" class="form-control" />
             </div>
@@ -44,14 +45,14 @@ import { AddressAutocompleteComponent, AddressData } from "./address-autocomplet
                        [(ngModel)]="meter.isTwoTariff"
                        class="checkbox-input"
                 />
-                <label for="meter-two-tariff-check" class="checkbox-label">Zwei-Tarif-Zähler (HT/NT)</label>
+                <label for="meter-two-tariff-check" class="checkbox-label">{{ 'METERS.FIELDS.TWO_TARIFF' | translate }}</label>
               </div>
               <small style="display: block; color: #666; margin-top: 0.5rem;">
-                <i class="fas fa-info-circle"></i> Für Stromzähler mit Tag/Nacht-Tarif (Hochtarif/Niedrigtarif)
+                <i class="fas fa-info-circle"></i> {{ 'METERS.FIELDS.TWO_TARIFF_HINT' | translate }}
               </small>
             </div>
 
-            <label>Standort:</label>
+            <label>{{ 'METERS.FIELDS.LOCATION' | translate }}:</label>
              <hr/>
             <app-address-autocomplete
                 [address]="locationData"
@@ -59,16 +60,16 @@ import { AddressAutocompleteComponent, AddressData } from "./address-autocomplet
             />
 
             <div class="modal-footer">
-            <button type="button" class="btn-secondary" (click)="close.emit()">Abbrechen</button>
+            <button type="button" class="btn-secondary" (click)="close.emit()">{{ 'COMMON.CANCEL' | translate }}</button>
             <button type="submit" class="btn-primary" [disabled]="!meterForm.form.valid">
-                {{ isEditMode ? 'Speichern' : 'Erstellen' }}
+                {{ isEditMode ? ('COMMON.SAVE' | translate) : ('COMMON.CREATE' | translate) }}
             </button>
             </div>
         </form>
     }
     `,
     styles: ``
-    
+
 })
 export class MeterCreateComponent {
 

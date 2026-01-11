@@ -1,9 +1,14 @@
 <div class="page-container" (click)="closeActionMenu.emit()">
   <div class="page-header">
     <h1>{{ 'CONTRACTS.TITLE' | translate }}</h1>
-    <button class="btn-primary" (click)="create.emit(); $event.stopPropagation()">
-      <i class="fas fa-plus"></i> {{ 'CONTRACTS.NEW' | translate }}
-    </button>
+    <div class="header-actions">
+      <button class="btn-secondary" (click)="exportExcel.emit(); $event.stopPropagation()" title="Als Excel exportieren">
+        <i class="fas fa-file-excel"></i> Export
+      </button>
+      <button class="btn-primary" (click)="create.emit(); $event.stopPropagation()">
+        <i class="fas fa-plus"></i> {{ 'CONTRACTS.NEW' | translate }}
+      </button>
+    </div>
   </div>
   <div class="filters">
     <app-search-input

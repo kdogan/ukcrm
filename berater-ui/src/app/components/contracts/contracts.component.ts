@@ -27,6 +27,7 @@ import { MeterSearchComponent } from '../shared/meter-search.component';
 import { SupplierSearchComponent } from '../shared/supplier-search.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
+import { ExcelExportService } from '../../services/excel-export.service';
 
 // CONTRACTS COMPONENT
 @Component({
@@ -158,7 +159,8 @@ export class ContractsComponent implements OnInit {
     public viewportService: ViewportService,
     public packageFeatureService: PackageFeatureService,
     private toastService: ToastService,
-    private confirmDialog: ConfirmDialogService
+    private confirmDialog: ConfirmDialogService,
+    private excelExportService: ExcelExportService
   ) { }
 
   ngOnInit(): void {
@@ -1634,5 +1636,27 @@ export class ContractsComponent implements OnInit {
 
   getMeterUnit(type: string): string {
     return Util.getMeterUnit(type);
+  }
+
+  exportToExcel(): void {
+    // Lade alle Verträge ohne Pagination für den Export
+    const filters: any = { limit: 10000 };
+    if (this.statusFilter) filters.status = this.statusFilter;
+    if (this.daysFilter) filters.daysRemaining = this.daysFilter;
+    if (this.contractSearchTerm) filters.search = this.contractSearchTerm;
+
+    this.contractService.getContracts(filters).subscribe({
+      next: (response) => {
+        if (response.success && response.data.length > 0) {
+          this.excelExportService.exportContracts(response.data, 'Verträge');
+          this.toastService.success('Export erfolgreich');
+        } else {
+          this.toastService.info('Keine Daten zum Exportieren');
+        }
+      },
+      error: () => {
+        this.toastService.error('Export fehlgeschlagen');
+      }
+    });
   }
 }

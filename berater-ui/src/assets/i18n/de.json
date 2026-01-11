@@ -367,8 +367,12 @@
       "READING": "Zählerstand",
       "LAST_READING": "Letzter Stand",
       "READING_DATE": "Ablesedatum",
-      "NOTES": "Notizen"
+      "NOTES": "Notizen",
+      "MALO_ID": "MALO-ID",
+      "TWO_TARIFF": "Zwei-Tarif-Zähler (HT/NT)",
+      "TWO_TARIFF_HINT": "Für Stromzähler mit Tag/Nacht-Tarif (Hochtarif/Niedrigtarif)"
     },
+    "PLEASE_SELECT": "Bitte wählen",
     "SHOW_CUSTOMER_DETAILS": "Kundendetails anzeigen",
     "STATUS": {
       "FREE": "Frei",

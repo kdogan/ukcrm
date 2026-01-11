@@ -20,6 +20,7 @@ import { MeterDetailComponent, MeterContract } from '../shared/meter-detail.comp
 import { Customer } from '../../services/customer.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
+import { ExcelExportService } from '../../services/excel-export.service';
 
 @Component({
     selector: 'app-meters',
@@ -89,7 +90,8 @@ meterTypes: any;
     private router: Router,
     private viewport: ViewportService,
     private toastService: ToastService,
-    private confirmDialog: ConfirmDialogService
+    private confirmDialog: ConfirmDialogService,
+    private excelExportService: ExcelExportService
   ) { }
 
   ngOnInit(): void {
@@ -494,5 +496,27 @@ meterTypes: any;
 
   createContractForMeter(meter: Meter): void {
     this.router.navigate(['/contracts'], { queryParams: { meterId: meter._id } });
+  }
+
+  exportToExcel(): void {
+    // Lade alle Zähler ohne Pagination für den Export
+    const params: any = { limit: 10000 };
+    if (this.searchTerm) params.search = this.searchTerm;
+    if (this.statusFilter) params.isFree = this.statusFilter === 'free' ? 'true' : 'false';
+    if (this.typeFilter) params.type = this.typeFilter;
+
+    this.meterService.getMeters(params).subscribe({
+      next: (response) => {
+        if (response.success && response.data.length > 0) {
+          this.excelExportService.exportMeters(response.data, 'Zähler');
+          this.toastService.success('Export erfolgreich');
+        } else {
+          this.toastService.info('Keine Daten zum Exportieren');
+        }
+      },
+      error: () => {
+        this.toastService.error('Export fehlgeschlagen');
+      }
+    });
   }
 }
