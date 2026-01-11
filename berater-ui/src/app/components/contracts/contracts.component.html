@@ -272,11 +272,30 @@
       />
     </div>
     <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="openCustomerEditModal(selectedCustomerDetails)">
+        <i class="fas fa-edit"></i> {{ 'COMMON.EDIT' | translate }}
+      </button>
       <button type="button" class="btn-primary" (click)="createContractForCustomer(selectedCustomerDetails)">
         <i class="fas fa-file-contract"></i> {{ 'CONTRACTS.NEW' | translate }}
       </button>
       <button type="button" class="btn-secondary" (click)="closeCustomerDetails()">{{ 'COMMON.CLOSE' | translate }}</button>
     </div>
+  </app-overlay-modal>
+}
+
+<!-- Customer Edit Modal -->
+@if(showCustomerEditModal){
+  <app-overlay-modal (close)="closeCustomerEditModal()">
+    <h2>{{ 'CUSTOMERS.EDIT' | translate }}</h2>
+    <app-customer-form
+      [customer]="editingCustomer"
+      [isEditMode]="true"
+      [saving]="savingEditCustomer"
+      [showSalutation]="true"
+      [showAddressToggle]="true"
+      (save)="saveEditedCustomer($event)"
+      (cancel)="closeCustomerEditModal()"
+    />
   </app-overlay-modal>
 }
 
@@ -344,13 +363,77 @@
       </app-meter-detail>
     </div>
     <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="openMeterEditModal(selectedMeterDetails)">
+        <i class="fas fa-edit"></i> {{ 'COMMON.EDIT' | translate }}
+      </button>
       <button type="button" class="btn-primary" (click)="showAddReadingModal(selectedMeterDetails)">
         <i class="fas fa-plus-circle"></i> {{ 'METERS.ADD_READING' | translate }}
       </button>
       <button type="button" class="btn-secondary" (click)="viewMeterReadings(selectedMeterDetails)">
         <i class="fas fa-list"></i> {{ 'METERS.VIEW_READINGS' | translate }}
       </button>
+      <button type="button" class="btn-secondary" (click)="showYearlyEstimates(selectedMeterDetails)">
+        <i class="fas fa-chart-line"></i> Jahresverbrauch
+      </button>
+      @if(!selectedMeterDetails?.currentCustomerId){
+        <button type="button" class="btn-primary" (click)="createContractForMeter(selectedMeterDetails); closeMeterDetails()">
+          <i class="fas fa-file-contract"></i> {{ 'CONTRACTS.NEW' | translate }}
+        </button>
+      }
       <button type="button" class="btn-secondary" (click)="closeMeterDetails()">{{ 'COMMON.CLOSE' | translate }}</button>
+    </div>
+  </app-overlay-modal>
+}
+
+<!-- Meter Edit Modal -->
+@if(showMeterEditModal){
+  <app-overlay-modal (close)="closeMeterEditModal()">
+    <app-meter-create
+      [meter]="editingMeter"
+      [isEditMode]="true"
+      (close)="closeMeterEditModal()"
+      (save)="saveEditedMeter()"
+    />
+  </app-overlay-modal>
+}
+
+<!-- Yearly Estimates Modal -->
+@if(showYearlyEstimatesModal){
+  <app-overlay-modal (close)="closeYearlyEstimatesModal()">
+    <div class="modal-header">
+      <h2>Jahresverbrauch - {{ selectedMeterForReading?.meterNumber }}</h2>
+      <button class="btn-close" (click)="closeYearlyEstimatesModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      @if(yearlyEstimatesData){
+        <div class="yearly-estimates">
+          @if(yearlyEstimatesData.years && yearlyEstimatesData.years.length > 0){
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Jahr</th>
+                  <th>Verbrauch</th>
+                  <th>Ablesungen</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for(year of yearlyEstimatesData.years; track year.year){
+                  <tr>
+                    <td>{{ year.year }}</td>
+                    <td>{{ year.consumption }} {{ getMeterUnit(selectedMeterForReading?.type) }}</td>
+                    <td>{{ year.readingCount }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div class="no-data">Keine Verbrauchsdaten vorhanden</div>
+          }
+        </div>
+      }
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeYearlyEstimatesModal()">{{ 'COMMON.CLOSE' | translate }}</button>
     </div>
   </app-overlay-modal>
 }

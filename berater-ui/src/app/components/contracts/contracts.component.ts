@@ -111,6 +111,21 @@ export class ContractsComponent implements OnInit {
   showSupplierCreationModal = false;
   newCustomer: CustomerFormData = this.getEmptyCustomer();
   savingNewCustomer = false;
+
+  // Customer edit modal
+  showCustomerEditModal = false;
+  editingCustomer: CustomerFormData = this.getEmptyCustomer();
+  savingEditCustomer = false;
+
+  // Meter edit modal
+  showMeterEditModal = false;
+  editingMeter: any = this.getEmptyMeter();
+  savingEditMeter = false;
+
+  // Yearly estimates modal
+  showYearlyEstimatesModal = false;
+  yearlyEstimatesData: any = null;
+
   newMeter: any = this.getEmptyMeter();
   newSupplier: any = this.getEmptySupplier();
   meterTypes = meterTypes;
@@ -1486,6 +1501,77 @@ export class ContractsComponent implements OnInit {
     });
   }
 
+  // Customer Edit Methods
+  openCustomerEditModal(customer: any): void {
+    this.editingCustomer = {
+      _id: customer._id,
+      anrede: customer.anrede,
+      firstName: customer.firstName || '',
+      lastName: customer.lastName || '',
+      email: customer.email,
+      phone: customer.phone,
+      notes: customer.notes,
+      address: {
+        street: customer.address?.street ?? '',
+        zip: customer.address?.zip ?? '',
+        city: customer.address?.city ?? ''
+      }
+    };
+    this.showCustomerEditModal = true;
+    this.showCustomerDetailsModal = false;
+  }
+
+  closeCustomerEditModal(): void {
+    this.showCustomerEditModal = false;
+    this.editingCustomer = this.getEmptyCustomer();
+  }
+
+  saveEditedCustomer(customerData: CustomerFormData): void {
+    if (!customerData._id) return;
+
+    this.savingEditCustomer = true;
+    const customerPayload: any = {
+      firstName: customerData.firstName,
+      lastName: customerData.lastName,
+      email: customerData.email,
+      phone: customerData.phone,
+      notes: customerData.notes,
+      address: {
+        street: customerData.address?.street || '',
+        zip: customerData.address?.zip || '',
+        city: customerData.address?.city || ''
+      }
+    };
+
+    if (customerData.anrede) {
+      customerPayload.anrede = customerData.anrede;
+    }
+
+    this.customerService.updateCustomer(customerData._id, customerPayload).subscribe({
+      next: (response) => {
+        this.savingEditCustomer = false;
+        if (response.success) {
+          // Aktualisiere die Kundenliste
+          const index = this.customers.findIndex(c => c._id === customerData._id);
+          if (index !== -1) {
+            this.customers[index] = response.data;
+            this.filteredCustomers = this.customers;
+          }
+
+          this.closeCustomerEditModal();
+          this.toastService.success('Kunde erfolgreich aktualisiert!');
+
+          // Lade Verträge neu um aktualisierte Kundendaten anzuzeigen
+          this.loadContracts();
+        }
+      },
+      error: (error) => {
+        this.savingEditCustomer = false;
+        this.toastService.error('Fehler beim Aktualisieren des Kunden: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
   saveNewMeter(): void {
     this.meterService.createMeter(this.newMeter).subscribe({
       next: (response) => {
@@ -1511,6 +1597,78 @@ export class ContractsComponent implements OnInit {
     });
   }
 
+  // Meter Edit Methods
+  openMeterEditModal(meter: any): void {
+    this.editingMeter = {
+      _id: meter._id,
+      meterNumber: meter.meterNumber,
+      type: meter.type,
+      maloId: meter.maloId || '',
+      isTwoTariff: meter.isTwoTariff || false,
+      location: {
+        street: meter.location?.street || '',
+        zip: meter.location?.zip || '',
+        city: meter.location?.city || ''
+      }
+    };
+    this.showMeterEditModal = true;
+    this.showMeterDetailsModal = false;
+  }
+
+  closeMeterEditModal(): void {
+    this.showMeterEditModal = false;
+    this.editingMeter = this.getEmptyMeter();
+  }
+
+  saveEditedMeter(): void {
+    if (!this.editingMeter._id) return;
+
+    this.savingEditMeter = true;
+    this.meterService.updateMeter(this.editingMeter._id, this.editingMeter).subscribe({
+      next: (response) => {
+        this.savingEditMeter = false;
+        if (response.success) {
+          this.closeMeterEditModal();
+          this.toastService.success('Zähler erfolgreich aktualisiert!');
+          this.loadContracts();
+        }
+      },
+      error: (error) => {
+        this.savingEditMeter = false;
+        this.toastService.error('Fehler beim Aktualisieren des Zählers: ' + (error.error?.message || 'Unbekannter Fehler'));
+      }
+    });
+  }
+
+  // Yearly Estimates Methods
+  showYearlyEstimates(meter: any): void {
+    this.selectedMeterForReading = meter;
+    this.meterReadingService.getYearlyEstimates(meter._id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.yearlyEstimatesData = response.data;
+          this.showYearlyEstimatesModal = true;
+          this.showMeterDetailsModal = false;
+        }
+      },
+      error: () => {
+        this.toastService.error('Fehler beim Laden der Jahresverbrauchsdaten');
+      }
+    });
+  }
+
+  closeYearlyEstimatesModal(): void {
+    this.showYearlyEstimatesModal = false;
+    this.yearlyEstimatesData = null;
+  }
+
+  createContractForMeter(meter: any): void {
+    // Öffne das Vertragserstellungs-Modal mit vorausgewähltem Zähler
+    this.showCreateModal();
+    if (meter) {
+      this.selectMeter(meter);
+    }
+  }
 
   formatAddress(address: Address): string {
     let adresse = '';
