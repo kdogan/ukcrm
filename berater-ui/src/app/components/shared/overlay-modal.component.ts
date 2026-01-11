@@ -4,8 +4,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
     selector: 'app-overlay-modal',
     imports: [],
     template: `
-    <div class="modal-overlay" (click)="close.emit()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-overlay">
+      <div class="modal-content">
         <ng-content/>
       </div>
     </div>
