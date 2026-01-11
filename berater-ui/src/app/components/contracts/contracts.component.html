@@ -50,7 +50,8 @@
       <h2>{{ isEditMode ? ('CONTRACTS.EDIT' | translate) : ('CONTRACTS.NEW' | translate) }}</h2>
       <button class="btn-close" (click)="closeModal()">&times;</button>
     </div>
-    <form (ngSubmit)="saveContract()" #contractForm="ngForm">
+    <form (ngSubmit)="saveContract()" #contractForm="ngForm" class="modal-form">
+      <div class="modal-body">
       @if(isEditMode){
         <div class="form-group">
           <label>Id</label>
@@ -245,6 +246,7 @@
         <textarea id="notes" name="notes" [(ngModel)]="currentContract.notes" rows="3"
           class="form-control"></textarea>
       </div>
+      </div>
 
       <div class="modal-footer">
         <button type="button" class="btn-secondary" (click)="closeModal()" [disabled]="isSaving">{{ 'COMMON.CANCEL' | translate }}</button>
@@ -278,7 +280,6 @@
       <button type="button" class="btn-primary" (click)="createContractForCustomer(selectedCustomerDetails)">
         <i class="fas fa-file-contract"></i> {{ 'CONTRACTS.NEW' | translate }}
       </button>
-      <button type="button" class="btn-secondary" (click)="closeCustomerDetails()">{{ 'COMMON.CLOSE' | translate }}</button>
     </div>
   </app-overlay-modal>
 }
@@ -380,7 +381,6 @@
           <i class="fas fa-file-contract"></i> {{ 'CONTRACTS.NEW' | translate }}
         </button>
       }
-      <button type="button" class="btn-secondary" (click)="closeMeterDetails()">{{ 'COMMON.CLOSE' | translate }}</button>
     </div>
   </app-overlay-modal>
 }
@@ -431,9 +431,6 @@
           }
         </div>
       }
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeYearlyEstimatesModal()">{{ 'COMMON.CLOSE' | translate }}</button>
     </div>
   </app-overlay-modal>
 }

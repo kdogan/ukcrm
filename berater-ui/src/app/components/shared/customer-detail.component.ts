@@ -70,7 +70,6 @@ export interface CustomerContract {
       <!-- Vertragsverlauf -->
        @if(showContracts){
         <ng-container>
-          <hr class="section-divider" />
           <h3 class="section-title">{{ 'CONTRACTS.CONTRACTS_LIST' | translate }}</h3>
           @if(contracts.length === 0){
             <div class="no-data">{{ 'CONTRACTS.NO_CONTRACTS' | translate }}</div>
@@ -107,12 +106,13 @@ export interface CustomerContract {
   `,
   styles: [`
     .customer-detail {
-      padding: 0.5rem 0;
+      padding-left: 1rem;
+      padding-right:1rem
     }
 
     .detail-row {
       display: flex;
-      padding: 0.75rem 0;
+      padding: 0.5rem 0;
       border-bottom: 1px solid #f0f0f0;
     }
 

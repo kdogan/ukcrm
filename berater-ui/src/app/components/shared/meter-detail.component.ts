@@ -153,12 +153,12 @@ export interface MeterForDetail {
   `,
   styles: [`
     .meter-detail {
-      padding: 0.5rem 0;
+      padding: 0;
     }
 
     .detail-row {
       display: flex;
-      padding: 0.75rem 0;
+      padding: 0.5rem 0;
       border-bottom: 1px solid #f0f0f0;
     }
 
