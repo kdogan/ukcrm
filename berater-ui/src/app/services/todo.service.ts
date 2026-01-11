@@ -83,6 +83,15 @@ export interface CreateTodoDto {
   relatedMeterId?: string;
 }
 
+export interface TodoTopic {
+  _id: string;
+  beraterId: string;
+  name: string;
+  isDefault: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -167,5 +176,19 @@ export class TodoService {
   // Refresh badge count (call this after ticket operations)
   refreshSupportBadgeCount(): void {
     this.getSupportTicketBadgeCount().subscribe();
+  }
+
+  // ============= TODO TOPICS =============
+
+  getTopics(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/topics`);
+  }
+
+  createTopic(name: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/topics`, { name });
+  }
+
+  deleteTopic(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/topics/${id}`);
   }
 }

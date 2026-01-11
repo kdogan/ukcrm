@@ -464,6 +464,8 @@
     },
     "FIELDS": {
       "TITLE": "Titel",
+      "TOPIC": "Thema",
+      "CUSTOM_TOPIC": "Eigenes Thema",
       "DESCRIPTION": "Beschreibung",
       "DUE_DATE": "Fälligkeitsdatum",
       "PRIORITY": "Priorität",
@@ -472,6 +474,14 @@
       "CONTRACT": "Vertrag",
       "CUSTOMER": "Kunde",
       "METER": "Zähler"
+    },
+    "SELECT_TOPIC": "Thema auswählen...",
+    "CUSTOM_TOPIC_PLACEHOLDER": "Eigenes Thema eingeben...",
+    "ADD_TOPIC": "Neues Thema hinzufügen",
+    "NEW_TOPIC": "Neues Thema",
+    "NEW_TOPIC_PLACEHOLDER": "Thema eingeben...",
+    "TOPICS": {
+      "OTHER": "Sonstiges"
     },
     "PRIORITY": {
       "LOW": "Niedrig",

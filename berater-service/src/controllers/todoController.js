@@ -1,8 +1,19 @@
 const Todo = require('../models/Todo');
+const TodoTopic = require('../models/TodoTopic');
 const Contract = require('../models/Contract');
 const User = require('../models/User');
 const path = require('path');
 const fs = require('fs').promises;
+
+// Standard-Themen die für jeden neuen Benutzer erstellt werden
+const DEFAULT_TOPICS = [
+  'Zählerablesung',
+  'Kündigung',
+  'Rechnungsklärung',
+  'Anmeldung',
+  'Empfehlung',
+  'Vertragsbestätigung'
+];
 
 // @desc    Get all todos
 // @route   GET /api/todos
@@ -645,5 +656,121 @@ exports.getSupportTicketImage = async (req, res, next) => {
     res.sendFile(path.resolve(image.path));
   } catch (error) {
     res.status(500).send('Fehler beim Laden des Bildes');
+  }
+};
+
+// ============= TODO TOPICS =============
+
+// @desc    Get all topics for current user
+// @route   GET /api/todos/topics
+// @access  Private
+exports.getTopics = async (req, res, next) => {
+  try {
+    let topics = await TodoTopic.find({ beraterId: req.user._id })
+      .sort({ isDefault: -1, name: 1 });
+
+    // Falls keine Topics existieren, erstelle die Standard-Topics
+    if (topics.length === 0) {
+      const defaultTopics = DEFAULT_TOPICS.map(name => ({
+        beraterId: req.user._id,
+        name,
+        isDefault: true
+      }));
+
+      await TodoTopic.insertMany(defaultTopics);
+      topics = await TodoTopic.find({ beraterId: req.user._id })
+        .sort({ isDefault: -1, name: 1 });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: topics
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Create a new topic
+// @route   POST /api/todos/topics
+// @access  Private
+exports.createTopic = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Thema-Name ist erforderlich'
+      });
+    }
+
+    // Prüfe ob das Thema bereits existiert
+    const existingTopic = await TodoTopic.findOne({
+      beraterId: req.user._id,
+      name: name.trim()
+    });
+
+    if (existingTopic) {
+      return res.status(400).json({
+        success: false,
+        message: 'Dieses Thema existiert bereits'
+      });
+    }
+
+    const topic = await TodoTopic.create({
+      beraterId: req.user._id,
+      name: name.trim(),
+      isDefault: false
+    });
+
+    res.status(201).json({
+      success: true,
+      data: topic
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Dieses Thema existiert bereits'
+      });
+    }
+    next(error);
+  }
+};
+
+// @desc    Delete a topic
+// @route   DELETE /api/todos/topics/:id
+// @access  Private
+exports.deleteTopic = async (req, res, next) => {
+  try {
+    const topic = await TodoTopic.findOne({
+      _id: req.params.id,
+      beraterId: req.user._id
+    });
+
+    if (!topic) {
+      return res.status(404).json({
+        success: false,
+        message: 'Thema nicht gefunden'
+      });
+    }
+
+    // Standard-Themen können nicht gelöscht werden
+    if (topic.isDefault) {
+      return res.status(400).json({
+        success: false,
+        message: 'Standard-Themen können nicht gelöscht werden'
+      });
+    }
+
+    await TodoTopic.deleteOne({ _id: topic._id });
+
+    res.status(200).json({
+      success: true,
+      message: 'Thema gelöscht'
+    });
+  } catch (error) {
+    next(error);
   }
 };

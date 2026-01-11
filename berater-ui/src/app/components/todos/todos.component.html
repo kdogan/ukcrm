@@ -45,88 +45,129 @@
 <!-- Modal for Create/Edit TODO -->
  @if(showModal){
 <app-overlay-modal (close)="closeModal()">
-  <div class="modal-header">
-    <h2>{{ isEditMode ? ('TODOS.EDIT' | translate) : ('TODOS.NEW' | translate) }}</h2>
-    <button class="btn-close" (click)="closeModal()">&times;</button>
-  </div>
-
-  <form (ngSubmit)="saveTodo()" #todoForm="ngForm">
-    <div class="form-group">
-      <label for="title">{{ 'TODOS.FIELDS.TITLE' | translate }} *</label>
-      <input type="text" id="title" name="title" [(ngModel)]="currentTodo.title" required
-        class="form-control" />
+  <form (ngSubmit)="saveTodo()" #todoForm="ngForm" class="todo-modal-form">
+    <div class="modal-header">
+      <h2>{{ isEditMode ? ('TODOS.EDIT' | translate) : ('TODOS.NEW' | translate) }}</h2>
+      <button type="button" class="btn-close" (click)="closeModal()">&times;</button>
     </div>
 
-    <div class="form-group">
-      <label for="description">{{ 'TODOS.FIELDS.DESCRIPTION' | translate }}</label>
-      <textarea id="description" name="description" [(ngModel)]="currentTodo.description" rows="4"
-        class="form-control"></textarea>
-    </div>
-
-    <div class="form-row">
+    <div class="modal-body">
       <div class="form-group">
-        <label for="priority">{{ 'TODOS.FIELDS.PRIORITY' | translate }}</label>
-        <select id="priority" name="priority" [(ngModel)]="currentTodo.priority" class="form-control">
-          <option value="low">{{ 'TODOS.PRIORITY.LOW' | translate }}</option>
-          <option value="medium">{{ 'TODOS.PRIORITY.MEDIUM' | translate }}</option>
-          <option value="high">{{ 'TODOS.PRIORITY.HIGH' | translate }}</option>
-        </select>
+        <label for="topic">{{ 'TODOS.FIELDS.TOPIC' | translate }} *</label>
+        <div class="topic-select-wrapper">
+          <select id="topic" name="topic" [(ngModel)]="selectedTopic" (ngModelChange)="onTopicChange()" required
+            class="form-control">
+            <option value="" disabled>{{ 'TODOS.SELECT_TOPIC' | translate }}</option>
+            @for (topic of topics; track topic._id) {
+              <option [value]="topic._id">{{ topic.name }}</option>
+            }
+            <option value="other">{{ 'TODOS.TOPICS.OTHER' | translate }}</option>
+          </select>
+          <button type="button" class="btn-add-topic" (click)="toggleAddTopic()" title="{{ 'TODOS.ADD_TOPIC' | translate }}">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+
+      @if (showAddTopic) {
+        <div class="form-group add-topic-group">
+          <label for="newTopic">{{ 'TODOS.NEW_TOPIC' | translate }}</label>
+          <div class="add-topic-wrapper">
+            <input type="text" id="newTopic" [(ngModel)]="newTopicName" name="newTopicName"
+              class="form-control" placeholder="{{ 'TODOS.NEW_TOPIC_PLACEHOLDER' | translate }}" />
+            <button type="button" class="btn-save-topic" (click)="addNewTopic()" [disabled]="!newTopicName.trim()">
+              <i class="fas fa-check"></i>
+            </button>
+            <button type="button" class="btn-cancel-topic" (click)="toggleAddTopic()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (selectedTopic === 'other') {
+        <div class="form-group">
+          <label for="customTopic">{{ 'TODOS.FIELDS.CUSTOM_TOPIC' | translate }} *</label>
+          <input type="text" id="customTopic" name="customTopic" [(ngModel)]="customTopic"
+            (ngModelChange)="onCustomTopicChange()" required class="form-control"
+            placeholder="{{ 'TODOS.CUSTOM_TOPIC_PLACEHOLDER' | translate }}" />
+        </div>
+      }
+
+      <!-- Hidden title field that gets auto-populated -->
+      <input type="hidden" name="title" [(ngModel)]="currentTodo.title" />
+
+      <div class="form-group">
+        <label for="description">{{ 'TODOS.FIELDS.DESCRIPTION' | translate }}</label>
+        <textarea id="description" name="description" [(ngModel)]="currentTodo.description" rows="4"
+          class="form-control"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="priority">{{ 'TODOS.FIELDS.PRIORITY' | translate }}</label>
+          <select id="priority" name="priority" [(ngModel)]="currentTodo.priority" class="form-control">
+            <option value="low">{{ 'TODOS.PRIORITY.LOW' | translate }}</option>
+            <option value="medium">{{ 'TODOS.PRIORITY.MEDIUM' | translate }}</option>
+            <option value="high">{{ 'TODOS.PRIORITY.HIGH' | translate }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status">{{ 'TODOS.FIELDS.STATUS' | translate }}</label>
+          <select id="status" name="status" [(ngModel)]="currentTodo.status" class="form-control">
+            <option value="open">{{ 'TODOS.STATUS.OPEN' | translate }}</option>
+            <option value="in_progress">{{ 'TODOS.STATUS.IN_PROGRESS' | translate }}</option>
+            <option value="completed">{{ 'TODOS.STATUS.COMPLETED' | translate }}</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="status">{{ 'TODOS.FIELDS.STATUS' | translate }}</label>
-        <select id="status" name="status" [(ngModel)]="currentTodo.status" class="form-control">
-          <option value="open">{{ 'TODOS.STATUS.OPEN' | translate }}</option>
-          <option value="in_progress">{{ 'TODOS.STATUS.IN_PROGRESS' | translate }}</option>
-          <option value="completed">{{ 'TODOS.STATUS.COMPLETED' | translate }}</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="dueDate">{{ 'TODOS.FIELDS.DUE_DATE' | translate }}</label>
-      <input type="date" id="dueDate" name="dueDate" [(ngModel)]="currentTodo.dueDate"
-        class="form-control" />
-    </div>
-
-    <div class="form-section">
-      <h3>{{ 'TODOS.LINKS' | translate }}</h3>
-
-      <!-- Kunde Suche -->
-      <div class="form-group">
-        <label>{{ 'TODOS.FIELDS.CUSTOMER' | translate }}</label>
-        <app-customer-search
-          [customers]="customers"
-          [selectedCustomer]="selectedCustomer"
-          [showAddButton]="false"
-          (customerSelected)="onCustomerSelected($event)"
-          (customerCleared)="onCustomerCleared()"
-        />
+        <label for="dueDate">{{ 'TODOS.FIELDS.DUE_DATE' | translate }}</label>
+        <input type="date" id="dueDate" name="dueDate" [(ngModel)]="currentTodo.dueDate"
+          class="form-control" />
       </div>
 
-      <!-- Vertrag Suche -->
-      <div class="form-group">
-        <label>{{ 'TODOS.FIELDS.CONTRACT' | translate }}</label>
-        <app-contract-search
-          [contracts]="contracts"
-          [selectedContract]="selectedContract"
-          [showAddButton]="false"
-          (contractSelected)="onContractSelected($event)"
-          (contractCleared)="onContractCleared()"
-        />
-      </div>
+      <div class="form-section">
+        <h3>{{ 'TODOS.LINKS' | translate }}</h3>
 
-      <!-- Zähler Suche -->
-      <div class="form-group">
-        <label>{{ 'TODOS.FIELDS.METER' | translate }}</label>
-        <app-meter-search
-          [meters]="meters"
-          [selectedMeter]="selectedMeter"
-          [showAddButton]="false"
-          [showFreeStatus]="false"
-          (meterSelected)="onMeterSelected($event)"
-          (meterCleared)="onMeterCleared()"
-        />
+        <!-- Kunde Suche -->
+        <div class="form-group">
+          <label>{{ 'TODOS.FIELDS.CUSTOMER' | translate }}</label>
+          <app-customer-search
+            [customers]="customers"
+            [selectedCustomer]="selectedCustomer"
+            [showAddButton]="false"
+            (customerSelected)="onCustomerSelected($event)"
+            (customerCleared)="onCustomerCleared()"
+          />
+        </div>
+
+        <!-- Vertrag Suche -->
+        <div class="form-group">
+          <label>{{ 'TODOS.FIELDS.CONTRACT' | translate }}</label>
+          <app-contract-search
+            [contracts]="contracts"
+            [selectedContract]="selectedContract"
+            [showAddButton]="false"
+            (contractSelected)="onContractSelected($event)"
+            (contractCleared)="onContractCleared()"
+          />
+        </div>
+
+        <!-- Zähler Suche -->
+        <div class="form-group">
+          <label>{{ 'TODOS.FIELDS.METER' | translate }}</label>
+          <app-meter-search
+            [meters]="meters"
+            [selectedMeter]="selectedMeter"
+            [showAddButton]="false"
+            [showFreeStatus]="false"
+            (meterSelected)="onMeterSelected($event)"
+            (meterCleared)="onMeterCleared()"
+          />
+        </div>
       </div>
     </div>
 

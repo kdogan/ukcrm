@@ -464,6 +464,8 @@
     },
     "FIELDS": {
       "TITLE": "Başlık",
+      "TOPIC": "Konu",
+      "CUSTOM_TOPIC": "Özel Konu",
       "DESCRIPTION": "Açıklama",
       "DUE_DATE": "Son Tarih",
       "PRIORITY": "Öncelik",
@@ -472,6 +474,14 @@
       "CONTRACT": "Sözleşme",
       "CUSTOMER": "Müşteri",
       "METER": "Sayaç"
+    },
+    "SELECT_TOPIC": "Konu seçin...",
+    "CUSTOM_TOPIC_PLACEHOLDER": "Özel konu girin...",
+    "ADD_TOPIC": "Yeni konu ekle",
+    "NEW_TOPIC": "Yeni Konu",
+    "NEW_TOPIC_PLACEHOLDER": "Konu girin...",
+    "TOPICS": {
+      "OTHER": "Diğer"
     },
     "PRIORITY": {
       "LOW": "Düşük",

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { TodoService, Todo, CreateTodoDto } from '../../services/todo.service';
+import { TodoService, Todo, CreateTodoDto, TodoTopic } from '../../services/todo.service';
 import { CustomerService } from '../../services/customer.service';
 import { ContractService } from '../../services/contract.service';
 import { MeterService } from '../../services/meter.service';
@@ -39,6 +39,13 @@ export class TodosComponent implements OnInit {
   showModal = false;
   isEditMode = false;
   currentTodo: any = this.getEmptyTodo();
+
+  // Themen für TODOs (werden vom Server geladen)
+  topics: TodoTopic[] = [];
+  selectedTopic = '';
+  customTopic = '';
+  showAddTopic = false;
+  newTopicName = '';
 
   // Daten für Verknüpfungen
   customers: any[] = [];
@@ -79,6 +86,20 @@ export class TodosComponent implements OnInit {
   ngOnInit(): void {
     this.loadTodos();
     this.loadRelatedData();
+    this.loadTopics();
+  }
+
+  loadTopics(): void {
+    this.todoService.getTopics().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.topics = response.data;
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden der Themen:', error);
+      }
+    });
   }
 
   loadTodos(): void {
@@ -174,6 +195,8 @@ export class TodosComponent implements OnInit {
     this.currentTodo = this.getEmptyTodo();
     this.isEditMode = false;
     this.resetSearchFields();
+    this.selectedTopic = '';
+    this.customTopic = '';
     this.showModal = true;
   }
 
@@ -352,6 +375,16 @@ export class TodosComponent implements OnInit {
       this.meterSearch = `${todo.relatedMeterId.meterNumber} (${this.getTypeLabel(todo.relatedMeterId.type)})`;
     }
 
+    // Thema ermitteln basierend auf dem Titel
+    const matchingTopic = this.topics.find(t => t.name === todo.title);
+    if (matchingTopic) {
+      this.selectedTopic = matchingTopic._id;
+      this.customTopic = '';
+    } else {
+      this.selectedTopic = 'other';
+      this.customTopic = todo.title;
+    }
+
     this.isEditMode = true;
     this.showModal = true;
   }
@@ -360,6 +393,74 @@ export class TodosComponent implements OnInit {
     this.showModal = false;
     this.currentTodo = this.getEmptyTodo();
     this.isEditMode = false;
+    this.selectedTopic = '';
+    this.customTopic = '';
+    this.showAddTopic = false;
+    this.newTopicName = '';
+  }
+
+  onTopicChange(): void {
+    if (this.selectedTopic && this.selectedTopic !== 'other') {
+      const topic = this.topics.find(t => t._id === this.selectedTopic);
+      if (topic) {
+        this.currentTodo.title = topic.name;
+      }
+    } else if (this.selectedTopic === 'other') {
+      this.currentTodo.title = this.customTopic;
+    }
+  }
+
+  onCustomTopicChange(): void {
+    if (this.selectedTopic === 'other') {
+      this.currentTodo.title = this.customTopic;
+    }
+  }
+
+  toggleAddTopic(): void {
+    this.showAddTopic = !this.showAddTopic;
+    this.newTopicName = '';
+  }
+
+  addNewTopic(): void {
+    if (!this.newTopicName.trim()) return;
+
+    this.todoService.createTopic(this.newTopicName.trim()).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.topics.push(response.data);
+          this.selectedTopic = response.data._id;
+          this.currentTodo.title = response.data.name;
+          this.showAddTopic = false;
+          this.newTopicName = '';
+          this.toastService.success('Thema erfolgreich erstellt');
+        }
+      },
+      error: (error) => {
+        this.toastService.error(error.error?.message || 'Fehler beim Erstellen des Themas');
+      }
+    });
+  }
+
+  deleteTopic(topicId: string, event: Event): void {
+    event.stopPropagation();
+    const topic = this.topics.find(t => t._id === topicId);
+    if (!topic || topic.isDefault) return;
+
+    this.todoService.deleteTopic(topicId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.topics = this.topics.filter(t => t._id !== topicId);
+          if (this.selectedTopic === topicId) {
+            this.selectedTopic = '';
+            this.currentTodo.title = '';
+          }
+          this.toastService.success('Thema gelöscht');
+        }
+      },
+      error: (error) => {
+        this.toastService.error(error.error?.message || 'Fehler beim Löschen des Themas');
+      }
+    });
   }
 
   saveTodo(): void {

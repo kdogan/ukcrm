@@ -17,7 +17,10 @@ const {
   respondToSupportTicket,
   getSupportTicketImage,
   getSupportTicketBadgeCount,
-  markSupportTicketAsRead
+  markSupportTicketAsRead,
+  getTopics,
+  createTopic,
+  deleteTopic
 } = require('../controllers/todoController');
 const { authenticate, requireSuperAdmin, authenticateFromQuery } = require('../middleware/auth');
 
@@ -68,6 +71,13 @@ router.route('/')
   .post(createTodo);
 
 router.post('/generate-expiring', generateExpiringContractTodos);
+
+// Topic Routes
+router.route('/topics')
+  .get(getTopics)
+  .post(createTopic);
+
+router.delete('/topics/:id', deleteTopic);
 
 // Support Ticket Routes
 router.post('/support-ticket', upload.array('images', 5), createSupportTicket);
